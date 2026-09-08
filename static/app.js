@@ -9,8 +9,8 @@ let currentSort = 'newest'; // 기본 정렬: 최신순 복원
 let bookmarks = new Set();
 let userViews = {};
 
-// 페이징 (카테고리별 분할: 기본 12개씩 표시 및 개별 더보기)
-const CATEGORY_PAGE_SIZE = 12;
+// 페이징 (카테고리별 분할: 기본 6개씩 표시 및 개별 더보기)
+const CATEGORY_PAGE_SIZE = 6;
 let categoryDisplayedCount = {};
 
 // 공모전 상태
@@ -500,7 +500,7 @@ function renderArticles() {
     totalMatchingCount += catCount;
     totalWithDupsCount += catArticles.reduce((acc, a) => acc + 1 + (a.related_articles ? a.related_articles.length : 0), 0);
 
-    // 12개 단위 페이징
+    // 6개 단위 페이징
     const limit = getCategoryDisplayLimit(cat.id);
     const visibleArticles = catArticles.slice(0, limit);
     const hasMore = catCount > limit;
@@ -551,12 +551,12 @@ function renderArticles() {
           </button>
         </div>
 
-        <!-- 12개 기사 카드 그리드 -->
+        <!-- 6개 기사 카드 그리드 -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           ${visibleArticles.map(renderArticleCard).join('')}
         </div>
 
-        <!-- 칸마다 개별 기사 더보기 버튼 (12개 초과 시 노출) -->
+        <!-- 칸마다 개별 기사 더보기 버튼 (6개 초과 시 노출) -->
         ${hasMore ? `
           <div class="flex flex-col items-center justify-center pt-7 pb-2">
             <button 
@@ -564,13 +564,13 @@ function renderArticles() {
               class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-blue-600 dark:text-blue-400 font-semibold text-xs sm:text-sm border border-slate-200 dark:border-slate-700 shadow-sm transition active:scale-95 cursor-pointer"
             >
               <i data-lucide="chevron-down" class="w-4 h-4"></i>
-              <span>${cat.name} 기사 더보기 (+${Math.min(12, remaining)}개)</span>
+              <span>${cat.name} 기사 더보기 (+${Math.min(CATEGORY_PAGE_SIZE, remaining)}개)</span>
             </button>
             <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1.5">
               ${catCount}개 중 ${visibleArticles.length}개 표시 중
             </p>
           </div>
-        ` : (catCount > 12 ? `
+        ` : (catCount > CATEGORY_PAGE_SIZE ? `
           <div class="pt-6 pb-1 text-center text-xs text-slate-400 dark:text-slate-500">
             모든 ${catCount}개의 기사를 불러왔습니다.
           </div>
