@@ -690,56 +690,72 @@ function showToast(message) {
 // 10. 로딩 상태 제어
 function showLoading(show) {
   const loading = document.getElementById('loadingIndicator');
-  const grid = document.getElementById('articleGrid');
-  if (show) {
-    loading.classList.remove('hidden');
-    grid.classList.add('hidden');
-  } else {
-    loading.classList.add('hidden');
-    grid.classList.remove('hidden');
+  const container = document.getElementById('categorySectionsContainer');
+  if (loading) {
+    if (show) {
+      loading.classList.remove('hidden');
+      loading.classList.add('flex');
+    } else {
+      loading.classList.add('hidden');
+      loading.classList.remove('flex');
+    }
+  }
+  if (container) {
+    if (show) {
+      container.classList.add('hidden');
+    } else {
+      container.classList.remove('hidden');
+    }
   }
 }
 
 // 11. 이벤트 리스너 등록
 function setupEventListeners() {
   // 테마 토글
-  document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+  const themeToggle = document.getElementById('themeToggle');
+  if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
   
   // 새로고침 버튼
-  document.getElementById('refreshBtn').addEventListener('click', triggerRefresh);
+  const refreshBtn = document.getElementById('refreshBtn');
+  if (refreshBtn) refreshBtn.addEventListener('click', triggerRefresh);
   
   // 북마크 탭 버튼
-  document.getElementById('bookmarkTabBtn').addEventListener('click', () => {
-    isBookmarkView = !isBookmarkView;
-    displayedCount = PAGE_SIZE;
-    renderCategoryTabs();
-    updateBookmarkTabStyle();
-    renderArticles();
-  });
+  const bookmarkTabBtn = document.getElementById('bookmarkTabBtn');
+  if (bookmarkTabBtn) {
+    bookmarkTabBtn.addEventListener('click', () => {
+      isBookmarkView = !isBookmarkView;
+      categoryDisplayedCount = {};
+      renderCategoryTabs();
+      updateBookmarkTabStyle();
+      renderArticles();
+    });
+  }
   
   // 검색어 입력
   const searchInput = document.getElementById('searchInput');
   const clearBtn = document.getElementById('clearSearchBtn');
   
-  searchInput.addEventListener('input', (e) => {
-    searchQuery = e.target.value.trim();
-    displayedCount = PAGE_SIZE;
-    if (searchQuery) {
-      clearBtn.classList.remove('hidden');
-    } else {
+  if (searchInput && clearBtn) {
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value.trim();
+      categoryDisplayedCount = {};
+      if (searchQuery) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+      renderArticles();
+    });
+    
+    clearBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      searchQuery = '';
+      categoryDisplayedCount = {};
       clearBtn.classList.add('hidden');
-    }
-    renderArticles();
-  });
-  
-  clearBtn.addEventListener('click', () => {
-    searchInput.value = '';
-    searchQuery = '';
-    displayedCount = PAGE_SIZE;
-    clearBtn.classList.add('hidden');
-    searchInput.focus();
-    renderArticles();
-  });
+      searchInput.focus();
+      renderArticles();
+    });
+  }
   
   // 정렬 셀렉트
   const sortSelect = document.getElementById('sortSelect');
@@ -747,31 +763,25 @@ function setupEventListeners() {
     sortSelect.value = currentSort;
     sortSelect.addEventListener('change', (e) => {
       currentSort = e.target.value;
-      displayedCount = PAGE_SIZE;
+      categoryDisplayedCount = {};
       renderArticles();
     });
   }
   
   // 빈 상태 리셋 버튼
-  document.getElementById('resetFilterBtn').addEventListener('click', () => {
-    isBookmarkView = false;
-    activeCategory = 'all';
-    searchQuery = '';
-    searchInput.value = '';
-    currentSort = 'newest';
-    if (sortSelect) sortSelect.value = 'newest';
-    displayedCount = PAGE_SIZE;
-    clearBtn.classList.add('hidden');
-    renderCategoryTabs();
-    updateBookmarkTabStyle();
-    renderArticles();
-  });
-
-  // 기사 더보기 버튼
-  const loadMoreBtn = document.getElementById('loadMoreBtn');
-  if (loadMoreBtn) {
-    loadMoreBtn.addEventListener('click', () => {
-      displayedCount += PAGE_SIZE;
+  const resetFilterBtn = document.getElementById('resetFilterBtn');
+  if (resetFilterBtn) {
+    resetFilterBtn.addEventListener('click', () => {
+      isBookmarkView = false;
+      activeCategory = 'all';
+      searchQuery = '';
+      if (searchInput) searchInput.value = '';
+      currentSort = 'newest';
+      if (sortSelect) sortSelect.value = 'newest';
+      categoryDisplayedCount = {};
+      if (clearBtn) clearBtn.classList.add('hidden');
+      renderCategoryTabs();
+      updateBookmarkTabStyle();
       renderArticles();
     });
   }
