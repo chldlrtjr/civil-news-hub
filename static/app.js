@@ -206,10 +206,7 @@ function scrollToCategory(catId) {
       renderCategoryTabs();
       renderArticles();
     }
-    const container = document.getElementById('categoryTabsSticky') || document.getElementById('categorySectionsContainer');
-    if (container) {
-      container.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     return;
   }
 
@@ -549,16 +546,6 @@ function renderArticles() {
               </p>
             </div>
           </div>
-
-          <!-- 상단으로 이동 퀵버튼 -->
-          <button 
-            onclick="scrollToCategory('all')" 
-            class="self-start sm:self-auto flex items-center gap-1 text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 px-2.5 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
-            title="상단 카테고리 바로가기로 이동"
-          >
-            <i data-lucide="arrow-up" class="w-3.5 h-3.5"></i>
-            <span>상단으로</span>
-          </button>
         </div>
 
         <!-- 6개 기사 카드 그리드 -->
@@ -566,25 +553,47 @@ function renderArticles() {
           ${visibleArticles.map(renderArticleCard).join('')}
         </div>
 
-        <!-- 칸마다 개별 기사 더보기 버튼 (6개 초과 시 노출) -->
-        ${hasMore ? `
-          <div class="flex flex-col items-center justify-center pt-7 pb-2">
+        <!-- 섹션 하단 영역 (더보기 버튼 중앙 + 상단으로 퀵버튼 오른쪽 아래 배치) -->
+        <div class="relative pt-6 sm:pt-7 mt-3 border-t border-slate-100 dark:border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <!-- 좌측 여백 균형용 빈 영역 -->
+          <div class="hidden sm:block w-28 flex-shrink-0"></div>
+
+          <!-- 중앙 영역 (기사 더보기 버튼) -->
+          <div class="flex flex-col items-center justify-center text-center flex-1">
+            ${hasMore ? `
+              <button 
+                onclick="loadMoreCategory('${cat.id}')"
+                class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-blue-600 dark:text-blue-400 font-semibold text-xs sm:text-sm border border-slate-200 dark:border-slate-700 shadow-sm transition active:scale-95 cursor-pointer"
+              >
+                <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                <span>${cat.name} 기사 더보기 (+${Math.min(CATEGORY_PAGE_SIZE, remaining)}개)</span>
+              </button>
+              <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1.5">
+                ${catCount}개 중 ${visibleArticles.length}개 표시 중
+              </p>
+            ` : (catCount > CATEGORY_PAGE_SIZE ? `
+              <p class="text-xs text-slate-400 dark:text-slate-500">
+                모든 ${catCount}개의 기사를 불러왔습니다.
+              </p>
+            ` : `
+              <p class="text-[11px] text-slate-400 dark:text-slate-500">
+                총 ${catCount}개의 기사
+              </p>
+            `)}
+          </div>
+
+          <!-- 우측 영역: 상단으로 버튼 (오른쪽 아래 배치) -->
+          <div class="w-full sm:w-28 flex justify-end flex-shrink-0">
             <button 
-              onclick="loadMoreCategory('${cat.id}')"
-              class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-blue-600 dark:text-blue-400 font-semibold text-xs sm:text-sm border border-slate-200 dark:border-slate-700 shadow-sm transition active:scale-95 cursor-pointer"
+              onclick="scrollToCategory('top')" 
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-300 bg-slate-50 dark:bg-slate-800/90 hover:bg-blue-50 dark:hover:bg-slate-700 border border-slate-200/90 dark:border-slate-700/80 shadow-xs transition active:scale-95 cursor-pointer"
+              title="상단 카테고리로 이동"
             >
-              <i data-lucide="chevron-down" class="w-4 h-4"></i>
-              <span>${cat.name} 기사 더보기 (+${Math.min(CATEGORY_PAGE_SIZE, remaining)}개)</span>
+              <i data-lucide="arrow-up" class="w-3.5 h-3.5"></i>
+              <span>상단으로</span>
             </button>
-            <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1.5">
-              ${catCount}개 중 ${visibleArticles.length}개 표시 중
-            </p>
           </div>
-        ` : (catCount > CATEGORY_PAGE_SIZE ? `
-          <div class="pt-6 pb-1 text-center text-xs text-slate-400 dark:text-slate-500">
-            모든 ${catCount}개의 기사를 불러왔습니다.
-          </div>
-        ` : '')}
+        </div>
       </section>
     `;
   });
