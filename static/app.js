@@ -769,14 +769,22 @@ function renderContests() {
     return `
       <div class="bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 sm:p-5 flex flex-col justify-between hover:border-blue-400 dark:hover:border-blue-500 transition shadow-sm hover:shadow-md">
         <div>
-          <!-- 상단 뱃지: 카테고리 & 접수상태 -->
+          <!-- 상단 뱃지: 카테고리 & (접수기간 + 접수상태) -->
           <div class="flex items-center justify-between gap-2 mb-2.5">
-            <span class="inline-block px-2.5 py-0.5 text-[11px] font-semibold rounded-md border ${badgeColor}">
+            <span class="inline-block px-2.5 py-0.5 text-[11px] font-semibold rounded-md border ${badgeColor} flex-shrink-0">
               ${escapeHtml(c.category || '토목·일반')}
             </span>
-            <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded-full border ${statusColor}">
-              ${escapeHtml(c.status || '진행중')}
-            </span>
+            <div class="flex items-center gap-1.5 min-w-0">
+              ${c.period ? `
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300 text-[10px] sm:text-[11px] font-medium border border-slate-200/80 dark:border-slate-700/60 truncate" title="접수기간: ${escapeHtml(c.period)}">
+                  <i data-lucide="calendar" class="w-3 h-3 text-blue-500 dark:text-blue-400 flex-shrink-0"></i>
+                  <span class="truncate">${escapeHtml(c.period)}</span>
+                </span>
+              ` : ''}
+              <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded-full border ${statusColor} flex-shrink-0">
+                ${escapeHtml(c.status || '진행중')}
+              </span>
+            </div>
           </div>
 
           <!-- 공모전 제목 -->
