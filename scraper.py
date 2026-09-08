@@ -366,7 +366,7 @@ FEATURED_CONTESTS = [
         "status_color": "emerald",
         "period": "공식 공고 진행중",
         "description": "스마트 안전, 단지·도로 BIM, 철도 스마트 유지관리 등 토목·인프라 첨단 시공 및 관리기술 경진대회",
-        "link": "https://smartconstchallenge.com"
+        "link": "https://smartconstchallenge.com/main?mc_code=1110"
     },
     {
         "id": "fc-2",
@@ -380,7 +380,7 @@ FEATURED_CONTESTS = [
         "status_color": "emerald",
         "period": "2026.08.24 ~ 10.29 18:00 마감",
         "description": "고속도로 시설물, 교량, 방음벽, 터널 입구부, 휴게시설 등 인프라 시설물의 심미성과 안전성을 높이는 디자인 및 AI 활용 디자인 공모",
-        "link": "https://ex-contest.co.kr"
+        "link": "https://www.ex-contest.co.kr/design26"
     },
     {
         "id": "fc-3",
@@ -394,7 +394,7 @@ FEATURED_CONTESTS = [
         "status_color": "emerald",
         "period": "2026.09.14 ~ 10.13 마감",
         "description": "건설현장 추락재해 예방을 위한 안전 콘텐츠, 포스터, 정책 및 신기술 제안 대국민 아이디어 공모",
-        "link": "http://www.safecontest.kr"
+        "link": "https://www.safecontest.kr/summary"
     },
     {
         "id": "fc-4",
@@ -408,7 +408,7 @@ FEATURED_CONTESTS = [
         "status_color": "emerald",
         "period": "2026.08.01 ~ 09.13 접수",
         "description": "AI 및 로보틱스 기반 토목 자동화 시공, 스마트 안전, BIM, 모듈러, 친환경 플랜트 기술 발굴",
-        "link": "https://www.samsungena.com"
+        "link": "https://www.samsungena.com/kr/newsroom/news/view?idx=15836"
     },
     {
         "id": "fc-5",
@@ -436,7 +436,7 @@ FEATURED_CONTESTS = [
         "status_color": "blue",
         "period": "매년 정기 개최",
         "description": "토목구조물 모형경진대회, 토목 홍보 디지털 포스터 및 UCC 경진대회, 캡스톤 디자인 어워즈",
-        "link": "https://civilday.ksce.or.kr/"
+        "link": "https://www.ksce.or.kr/not/default.asp?gbn=6&htop=MN0031&ctop=MN0048&ptop=MN0031"
     },
     {
         "id": "fc-7",
@@ -450,7 +450,7 @@ FEATURED_CONTESTS = [
         "status_color": "emerald",
         "period": "공식 공고 확인",
         "description": "스마트 댐·하천 치수 관리, 기후위기 대응 홍수·가뭄 예방 인프라, 상하수도 디지털 솔루션 제안",
-        "link": "https://www.water.or.kr"
+        "link": "https://www.water.or.kr/kor/board/index.do?bid=BD_00017&mode=list&menuId=17_189"
     },
     {
         "id": "fc-8",
@@ -464,7 +464,7 @@ FEATURED_CONTESTS = [
         "status_color": "purple",
         "period": "연중 상시",
         "description": "지하시설물 안전관리, 굴착공사 지반침하(싱크홀) 예방, 토목공사 현장 안전관리 우수기술 및 아이디어",
-        "link": "https://www.jis.go.kr"
+        "link": "https://www.jis.go.kr/community/boa01005_list.do"
     },
     {
         "id": "fc-9",
@@ -478,7 +478,7 @@ FEATURED_CONTESTS = [
         "status_color": "blue",
         "period": "공고 확인 요망",
         "description": "철도 선로·교량·터널 구조물 안전성 향상 및 여객 편의 인프라 개선 아이디어 제안",
-        "link": "https://info.korail.com"
+        "link": "https://info.korail.com/info/selectBbsNttList.do?key=911&bbsNo=199"
     },
     {
         "id": "fc-10",
@@ -492,7 +492,7 @@ FEATURED_CONTESTS = [
         "status_color": "emerald",
         "period": "정기 공모",
         "description": "철도 복합역사, 하부공간 및 선로 유휴부지를 활용한 스마트 인프라 개발 아이디어 공모",
-        "link": "https://www.kr.or.kr"
+        "link": "https://www.kr.or.kr/boardCnts/list.do?boardID=1100660"
     },
     {
         "id": "fc-11",
@@ -506,7 +506,7 @@ FEATURED_CONTESTS = [
         "status_color": "emerald",
         "period": "공고 확인 요망",
         "description": "스마트 토목 시공, 현장 안전 탄소중립 기술 및 친환경 인프라 혁신 솔루션 공모",
-        "link": "https://www.skecoplant.com"
+        "link": "https://news.skecoplant.com/board/19268"
     },
     {
         "id": "fc-12",
@@ -520,36 +520,39 @@ FEATURED_CONTESTS = [
         "status_color": "blue",
         "period": "공고 확인 요망",
         "description": "토목·교통 건설신기술 현장 적용 우수사례 발굴 및 건설신기술 홍보 슬로건 공모",
-        "link": "https://www.kcnet.or.kr"
+        "link": "http://www.kcna.or.kr/notice/notify.php"
     }
 ]
 
-# 2. 공식 주최 기관 웹사이트 매핑 룰 (전용 공모전 접수 사이트 우선 매핑)
+# 2. 공식 주최 기관 웹사이트 매핑 룰 (전용 공모전 상세 공고문/접수처 1순위 직결 매핑)
 OFFICIAL_CONTEST_MAPPINGS = [
-    (["스마트건설", "챌린지"], "https://smartconstchallenge.com", "국토교통부 · 한국건설기술연구원"),
-    (["스마트건설챌린지"], "https://smartconstchallenge.com", "국토교통부 · 한국건설기술연구원"),
-    (["도로경관", "디자인"], "https://ex-contest.co.kr", "한국도로공사"),
-    (["도로경관디자인"], "https://ex-contest.co.kr", "한국도로공사"),
-    (["도로공사", "디자인"], "https://ex-contest.co.kr", "한국도로공사"),
-    (["추락사고", "예방"], "http://www.safecontest.kr", "국토교통부 · 고용노동부"),
-    (["추락사고예방"], "http://www.safecontest.kr", "국토교통부 · 고용노동부"),
-    (["추락", "예방"], "http://www.safecontest.kr", "국토교통부 · 고용노동부"),
-    (["토목학회", "토목의 날"], "https://civilday.ksce.or.kr/", "대한토목학회"),
-    (["토목의 날"], "https://civilday.ksce.or.kr/", "대한토목학회"),
-    (["토목의날"], "https://civilday.ksce.or.kr/", "대한토목학회"),
-    (["수자원공사", "물빅데이터"], "https://www.water.or.kr", "한국수자원공사 · 환경부"),
-    (["물빅데이터"], "https://www.water.or.kr", "한국수자원공사 · 환경부"),
-    (["수자원공사", "물산업"], "https://www.kwater.or.kr", "한국수자원공사"),
-    (["지하안전", "국토안전관리원"], "https://www.jis.go.kr", "국토안전관리원 · 국토교통부"),
-    (["지하안전"], "https://www.jis.go.kr", "국토안전관리원 · 국토교통부"),
+    (["스마트건설", "챌린지"], "https://smartconstchallenge.com/main?mc_code=1110", "국토교통부 · 한국건설기술연구원"),
+    (["스마트건설챌린지"], "https://smartconstchallenge.com/main?mc_code=1110", "국토교통부 · 한국건설기술연구원"),
+    (["도로경관", "디자인"], "https://www.ex-contest.co.kr/design26", "한국도로공사"),
+    (["도로경관디자인"], "https://www.ex-contest.co.kr/design26", "한국도로공사"),
+    (["도로공사", "디자인"], "https://www.ex-contest.co.kr/design26", "한국도로공사"),
+    (["추락사고", "예방"], "https://www.safecontest.kr/summary", "국토교통부 · 고용노동부"),
+    (["추락사고예방"], "https://www.safecontest.kr/summary", "국토교통부 · 고용노동부"),
+    (["추락", "예방"], "https://www.safecontest.kr/summary", "국토교통부 · 고용노동부"),
+    (["토목학회", "토목의 날"], "https://www.ksce.or.kr/not/default.asp?gbn=6&htop=MN0031&ctop=MN0048&ptop=MN0031", "대한토목학회"),
+    (["토목의 날"], "https://www.ksce.or.kr/not/default.asp?gbn=6&htop=MN0031&ctop=MN0048&ptop=MN0031", "대한토목학회"),
+    (["토목의날"], "https://www.ksce.or.kr/not/default.asp?gbn=6&htop=MN0031&ctop=MN0048&ptop=MN0031", "대한토목학회"),
+    (["수자원공사", "물빅데이터"], "https://www.water.or.kr/kor/board/index.do?bid=BD_00017&mode=list&menuId=17_189", "한국수자원공사 · 환경부"),
+    (["물빅데이터"], "https://www.water.or.kr/kor/board/index.do?bid=BD_00017&mode=list&menuId=17_189", "한국수자원공사 · 환경부"),
+    (["수자원공사", "물산업"], "https://www.water.or.kr/kor/board/index.do?bid=BD_00017&mode=list&menuId=17_189", "한국수자원공사"),
+    (["지하안전", "국토안전관리원"], "https://www.jis.go.kr/community/boa01005_list.do", "국토안전관리원 · 국토교통부"),
+    (["지하안전"], "https://www.jis.go.kr/community/boa01005_list.do", "국토안전관리원 · 국토교통부"),
     (["국토기술대전"], "https://lh.or.kr/user/land/intro.do", "한국토지주택공사 (LH)"),
-    (["철도공사", "코레일"], "https://info.korail.com", "한국철도공사"),
-    (["철도공단"], "https://www.kr.or.kr", "국가철도공단"),
-    (["sk에코플랜트", "콘테크"], "https://www.skecoplant.com", "SK에코플랜트"),
-    (["콘테크", "삼성"], "https://www.samsungena.com", "삼성물산 · 삼성E&A · 삼성중공업"),
-    (["건설교통신기술", "슬로건"], "https://www.kcnet.or.kr", "한국건설교통신기술협회"),
+    (["철도공사", "코레일"], "https://info.korail.com/info/selectBbsNttList.do?key=911&bbsNo=199", "한국철도공사"),
+    (["철도공단"], "https://www.kr.or.kr/boardCnts/list.do?boardID=1100660", "국가철도공단"),
+    (["sk에코플랜트", "콘테크"], "https://news.skecoplant.com/board/19268", "SK에코플랜트"),
+    (["콘테크", "삼성"], "https://www.samsungena.com/kr/newsroom/news/view?idx=15836", "삼성물산 · 삼성E&A · 삼성중공업"),
+    (["건설교통신기술", "슬로건"], "http://www.kcna.or.kr/notice/notify.php", "한국건설교통신기술협회"),
+    (["혁신제품", "국토교통"], "https://hub.kaia.re.kr", "국토교통과학기술진흥원"),
+    (["혁신제품"], "https://hub.kaia.re.kr", "국토교통과학기술진흥원"),
     (["평택항", "항만공사"], "https://www.gppc.or.kr", "경기평택항만공사"),
-    (["대경 스마트건설", "스마트건설 대상"], "https://smartconstchallenge.com", "스마트건설 대상 추진위원회")
+    (["대경 스마트건설", "스마트건설 대상"], "https://www.dnews.co.kr", "대한경제 (스마트건설대상)"),
+    (["스마트건설 대상"], "https://www.dnews.co.kr", "대한경제 (스마트건설대상)")
 ]
 
 # 3. 비토목 및 부적격 공고 제외 키워드
