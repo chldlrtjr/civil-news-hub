@@ -374,13 +374,13 @@ FEATURED_CONTESTS = [
         "organizer": "한국도로공사",
         "category": "도로·디자인",
         "badge_color": "emerald",
-        "prize": "총 상금 2,240만원 · 국토교통부 장관상",
+        "prize": "총 상금 2,240만원 · 국토교통부 장관상 (대상 500만원)",
         "target": "대한민국 국민 누구나 (대학생, 일반)",
         "status": "접수중",
         "status_color": "emerald",
-        "period": "10월 29일 접수 마감",
+        "period": "2026.08.24 ~ 10.29 18:00 마감",
         "description": "고속도로 시설물, 교량, 방음벽, 터널 입구부, 휴게시설 등 인프라 시설물의 심미성과 안전성을 높이는 디자인 및 AI 활용 디자인 공모",
-        "link": "https://www.ex.co.kr"
+        "link": "https://ex-contest.co.kr"
     },
     {
         "id": "fc-3",
@@ -392,9 +392,9 @@ FEATURED_CONTESTS = [
         "target": "전 국민 누구나 (학생, 건설현장 근로자, 일반)",
         "status": "접수중",
         "status_color": "emerald",
-        "period": "10월 13일까지 접수",
+        "period": "2026.09.14 ~ 10.13 마감",
         "description": "건설현장 추락재해 예방을 위한 안전 콘텐츠, 포스터, 정책 및 신기술 제안 대국민 아이디어 공모",
-        "link": "https://www.molit.go.kr"
+        "link": "http://www.safecontest.kr"
     },
     {
         "id": "fc-4",
@@ -406,9 +406,9 @@ FEATURED_CONTESTS = [
         "target": "국내 중소기업, 스타트업, 대학(원) 연구팀",
         "status": "접수중",
         "status_color": "emerald",
-        "period": "공고 확인 요망",
+        "period": "2026.08.01 ~ 09.13 접수",
         "description": "AI 및 로보틱스 기반 토목 자동화 시공, 스마트 안전, BIM, 모듈러, 친환경 플랜트 기술 발굴",
-        "link": "https://www.samsungcnt.com"
+        "link": "https://www.samsungena.com"
     },
     {
         "id": "fc-5",
@@ -422,7 +422,7 @@ FEATURED_CONTESTS = [
         "status_color": "emerald",
         "period": "정기 공고 진행",
         "description": "도시 및 단지토목, 도로, 스마트시티 기반시설 인프라 신기술 및 설계 아이디어 제안",
-        "link": "https://cotis.lh.or.kr"
+        "link": "https://lh.or.kr/user/land/intro.do"
     },
     {
         "id": "fc-6",
@@ -430,13 +430,13 @@ FEATURED_CONTESTS = [
         "organizer": "대한토목학회",
         "category": "학회·대학생",
         "badge_color": "blue",
-        "prize": "국토교통부 장관상 · 토목학회 회장상",
+        "prize": "국토교통부 장관상 · 대한토목학회 회장상",
         "target": "전국 토목공학 관련 학과 대학(원)생",
         "status": "접수예정",
         "status_color": "blue",
         "period": "매년 정기 개최",
         "description": "토목구조물 모형경진대회, 토목 홍보 디지털 포스터 및 UCC 경진대회, 캡스톤 디자인 어워즈",
-        "link": "https://www.ksce.or.kr"
+        "link": "https://civilday.ksce.or.kr/"
     },
     {
         "id": "fc-7",
@@ -448,9 +448,9 @@ FEATURED_CONTESTS = [
         "target": "전 국민, 대학생, 예비 창업자",
         "status": "접수중",
         "status_color": "emerald",
-        "period": "공고 확인 요망",
+        "period": "공식 공고 확인",
         "description": "스마트 댐·하천 치수 관리, 기후위기 대응 홍수·가뭄 예방 인프라, 상하수도 디지털 솔루션 제안",
-        "link": "https://www.kwater.or.kr"
+        "link": "https://www.water.or.kr"
     },
     {
         "id": "fc-8",
@@ -464,7 +464,7 @@ FEATURED_CONTESTS = [
         "status_color": "purple",
         "period": "연중 상시",
         "description": "지하시설물 안전관리, 굴착공사 지반침하(싱크홀) 예방, 토목공사 현장 안전관리 우수기술 및 아이디어",
-        "link": "https://www.kalis.or.kr"
+        "link": "https://www.jis.go.kr"
     },
     {
         "id": "fc-9",
@@ -524,22 +524,29 @@ FEATURED_CONTESTS = [
     }
 ]
 
-# 2. 공식 주최 기관 웹사이트 매핑 룰
+# 2. 공식 주최 기관 웹사이트 매핑 룰 (전용 공모전 접수 사이트 우선 매핑)
 OFFICIAL_CONTEST_MAPPINGS = [
     (["스마트건설", "챌린지"], "https://smartconstchallenge.com", "국토교통부 · 한국건설기술연구원"),
-    (["도로경관", "디자인"], "https://www.ex.co.kr", "한국도로공사"),
-    (["도로공사", "디자인"], "https://www.ex.co.kr", "한국도로공사"),
-    (["추락사고", "예방"], "https://www.molit.go.kr", "국토교통부 · 고용노동부"),
-    (["추락", "예방", "공모"], "https://www.molit.go.kr", "국토교통부 · 고용노동부"),
-    (["토목학회", "토목의 날"], "https://www.ksce.or.kr", "대한토목학회"),
-    (["수자원공사", "물빅데이터"], "https://www.kwater.or.kr", "한국수자원공사"),
+    (["스마트건설챌린지"], "https://smartconstchallenge.com", "국토교통부 · 한국건설기술연구원"),
+    (["도로경관", "디자인"], "https://ex-contest.co.kr", "한국도로공사"),
+    (["도로경관디자인"], "https://ex-contest.co.kr", "한국도로공사"),
+    (["도로공사", "디자인"], "https://ex-contest.co.kr", "한국도로공사"),
+    (["추락사고", "예방"], "http://www.safecontest.kr", "국토교통부 · 고용노동부"),
+    (["추락사고예방"], "http://www.safecontest.kr", "국토교통부 · 고용노동부"),
+    (["추락", "예방"], "http://www.safecontest.kr", "국토교통부 · 고용노동부"),
+    (["토목학회", "토목의 날"], "https://civilday.ksce.or.kr/", "대한토목학회"),
+    (["토목의 날"], "https://civilday.ksce.or.kr/", "대한토목학회"),
+    (["토목의날"], "https://civilday.ksce.or.kr/", "대한토목학회"),
+    (["수자원공사", "물빅데이터"], "https://www.water.or.kr", "한국수자원공사 · 환경부"),
+    (["물빅데이터"], "https://www.water.or.kr", "한국수자원공사 · 환경부"),
     (["수자원공사", "물산업"], "https://www.kwater.or.kr", "한국수자원공사"),
-    (["지하안전", "국토안전관리원"], "https://www.kalis.or.kr", "국토안전관리원"),
-    (["국토기술대전"], "https://cotis.lh.or.kr", "한국토지주택공사"),
+    (["지하안전", "국토안전관리원"], "https://www.jis.go.kr", "국토안전관리원 · 국토교통부"),
+    (["지하안전"], "https://www.jis.go.kr", "국토안전관리원 · 국토교통부"),
+    (["국토기술대전"], "https://lh.or.kr/user/land/intro.do", "한국토지주택공사 (LH)"),
     (["철도공사", "코레일"], "https://info.korail.com", "한국철도공사"),
     (["철도공단"], "https://www.kr.or.kr", "국가철도공단"),
     (["sk에코플랜트", "콘테크"], "https://www.skecoplant.com", "SK에코플랜트"),
-    (["콘테크", "삼성"], "https://www.samsungcnt.com", "삼성물산 · 삼성E&A · 삼성중공업"),
+    (["콘테크", "삼성"], "https://www.samsungena.com", "삼성물산 · 삼성E&A · 삼성중공업"),
     (["건설교통신기술", "슬로건"], "https://www.kcnet.or.kr", "한국건설교통신기술협회"),
     (["평택항", "항만공사"], "https://www.gppc.or.kr", "경기평택항만공사"),
     (["대경 스마트건설", "스마트건설 대상"], "https://smartconstchallenge.com", "스마트건설 대상 추진위원회")
@@ -581,6 +588,69 @@ FEATURED_KEYWORD_SETS = [
     ["콘테크", "sk에코플랜트"],
     ["건설교통신기술", "슬로건"]
 ]
+
+def extract_contest_prize(title, snippet):
+    """공모전 기사 제목 및 본문에서 상금 및 포상 내역 정밀 추출"""
+    combined = f"{title} {snippet}"
+    
+    # 팩트 기반 검증 우선 매핑 (오차 방지)
+    if "도로경관" in combined:
+        return "총 상금 2,240만원 · 국토교통부 장관상 (대상 500만원)"
+    if "스마트건설" in combined and "챌린지" in combined:
+        return "총 상금 3억 9,000만원 · 국토교통부 장관상 5점"
+    if "추락사고" in combined and "예방" in combined:
+        return "총 상금 3,200만원 · 대상 500만원"
+    if "물빅데이터" in combined:
+        return "총 상금 2,500만원 · 환경부 장관상"
+    if "국토기술대전" in combined:
+        return "국토교통부 장관상 · LH 사장상"
+    if "토목의 날" in combined or "토목의날" in combined:
+        return "국토교통부 장관상 · 대한토목학회 회장상"
+        
+    # 정규식 패턴 탐색
+    prize_patterns = [
+        r'(?:총\s*상금|총상금)\s*[:：]?\s*([0-9,]+(?:\s*(?:조|억|천만|백만|만|천))?\s*원?)',
+        r'상금\s*(?:총|규모)?\s*[:：]?\s*([0-9,]+(?:\s*(?:조|억|천만|백만|만|천))?\s*원?)',
+        r'([0-9,]+(?:\s*(?:억|천만|백만|만))\s*원\s*(?:상당|규모|상금|포상))',
+        r'(국토교통부\s*장관상|환경부\s*장관상|해양수산부\s*장관상|장관표창|장관상|대상\s*[0-9,]+(?:\s*만)?\s*원)'
+    ]
+    for pattern in prize_patterns:
+        m = re.search(pattern, combined)
+        if m:
+            val = m.group(0).strip()
+            if not val.startswith("총 상금") and not val.startswith("상금") and "원" in val:
+                val = f"상금 {val}"
+            return val
+            
+    return "공식 공고문 참조"
+
+def extract_contest_period(title, snippet, default_date_str=""):
+    """공모전 접수 기간 및 마감일 정밀 추출"""
+    combined = f"{title} {snippet}"
+    
+    # 팩트 기반 검증 우선 매핑
+    if "도로경관" in combined:
+        return "2026.08.24 ~ 10.29 18:00 마감"
+    if "추락사고" in combined and "예방" in combined:
+        return "2026.09.14 ~ 10.13 마감"
+    if "스마트건설" in combined and "챌린지" in combined:
+        return "공식 공고 진행중"
+        
+    period_patterns = [
+        r'(\d{4}[.\-/]\d{1,2}[.\-/]\d{1,2}\s*~\s*(?:\d{4}[.\-/])?\d{1,2}[.\-/]\d{1,2}(?:\s*\d{1,2}:\d{1,2})?)',
+        r'(\d{1,2}월\s*\d{1,2}일\s*~\s*\d{1,2}월\s*\d{1,2}일)',
+        r'(\d{1,2}월\s*\d{1,2}일(?:\s*\(.*?\))?\s*까지(?:\s*접수)?)',
+        r'(\d{1,2}월\s*\d{1,2}일\s*마감)',
+        r'(마감일?\s*[:：]?\s*\d{1,2}[.\-/]\d{1,2})'
+    ]
+    for pattern in period_patterns:
+        m = re.search(pattern, combined)
+        if m:
+            return m.group(0).strip()
+            
+    if default_date_str:
+        return f"공고일: {default_date_str}"
+    return "공식 공고 확인"
 
 def scrape_civil_contests():
     """토목 관련 최신 공모전 및 경진대회 공고 정밀 수집 및 군집화"""
@@ -693,17 +763,20 @@ def scrape_civil_contests():
             if not snippet:
                 snippet = f"{final_organizer} 주관 토목 관련 공모 공고입니다. 공식 웹사이트에서 세부 요강을 확인하세요."
                 
+            prize_info = extract_contest_prize(title, snippet)
+            period_info = extract_contest_period(title, snippet, date_str)
+                
             collected_contests.append({
                 "id": str(abs(hash(title + final_link)))[-10:],
                 "title": title,
                 "organizer": final_organizer,
                 "category": cat_tag,
                 "badge_color": badge_color,
-                "prize": "공식 공고문 참조",
+                "prize": prize_info,
                 "target": "전국민 / 관련분야 전공자 및 기업",
                 "status": "진행중",
                 "status_color": "emerald",
-                "period": f"공고일: {date_str}",
+                "period": period_info,
                 "description": snippet,
                 "link": final_link
             })
