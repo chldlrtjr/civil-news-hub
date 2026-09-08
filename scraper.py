@@ -240,8 +240,6 @@ def scrape_civil_news():
         "raw_total_count": len(all_articles),
         "duplicate_count": duplicate_count,
         "categories": [
-            {"id": "all", "name": "전체 보기", "badge_color": "slate"}
-        ] + [
             {"id": c["id"], "name": c["name"], "badge_color": c["badge_color"]} for c in CATEGORIES
         ],
         "articles": final_articles

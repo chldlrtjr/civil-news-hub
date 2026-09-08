@@ -2,7 +2,7 @@
 
 let allArticles = [];
 let categories = [];
-let activeCategory = 'all';
+let activeCategory = 'general';
 let isBookmarkView = false;
 let searchQuery = '';
 let currentSort = 'newest'; // 기본 정렬: 최신순 복원
@@ -125,7 +125,10 @@ async function loadNewsData() {
     allArticles = data.articles || [];
     
     // 카테고리 01 -> 05 순차 정렬 (토목 종합 -> 도로·교량·철도 -> 수자원 -> 터널 -> 스마트건설·정책)
-    categories = (data.categories || []).slice().sort((a, b) => (CATEGORY_ORDER[a.id] ?? 99) - (CATEGORY_ORDER[b.id] ?? 99));
+    categories = (data.categories || [])
+      .filter(c => c.id !== 'all')
+      .slice()
+      .sort((a, b) => (CATEGORY_ORDER[a.id] ?? 99) - (CATEGORY_ORDER[b.id] ?? 99));
     
     // 마지막 업데이트 및 총 건수 표시
     const lastUpEl = document.getElementById('lastUpdated');
@@ -146,7 +149,6 @@ async function loadNewsData() {
 
 // 카테고리 순서: 1위 토목 종합, 2위 도로·교량·철도, 3위 수자원·하천·항만, 4위 터널·지반·안전, 5위 스마트건설·정책
 const CATEGORY_ORDER = {
-  'all': 0,
   'general': 1,
   'road_rail': 2,
   'water_port': 3,
@@ -197,13 +199,14 @@ function loadMoreCategory(catId) {
 }
 
 function scrollToCategory(catId) {
-  if (catId === 'all') {
-    isBookmarkView = false;
-    activeCategory = 'all';
-    updateBookmarkTabStyle();
-    renderCategoryTabs();
-    renderArticles();
-    const container = document.getElementById('categorySectionsContainer') || document.getElementById('categoryTabsSticky');
+  if (catId === 'all' || catId === 'top') {
+    if (isBookmarkView) {
+      isBookmarkView = false;
+      updateBookmarkTabStyle();
+      renderCategoryTabs();
+      renderArticles();
+    }
+    const container = document.getElementById('categoryTabsSticky') || document.getElementById('categorySectionsContainer');
     if (container) {
       container.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -231,11 +234,9 @@ function renderCategoryTabs() {
   if (!tabsContainer) return;
   tabsContainer.innerHTML = '';
   
-  categories.forEach(cat => {
+  categories.filter(c => c.id !== 'all').forEach(cat => {
     // 해당 카테고리 기사 수 계산
-    const count = cat.id === 'all' 
-      ? allArticles.length 
-      : allArticles.filter(a => a.category_id === cat.id).length;
+    const count = allArticles.filter(a => a.category_id === cat.id).length;
     
     const isActive = !isBookmarkView && activeCategory === cat.id;
     
@@ -654,7 +655,10 @@ async function triggerRefresh() {
     
     if (data.success && data.data) {
       allArticles = data.data.articles || [];
-      categories = (data.data.categories || []).slice().sort((a, b) => (CATEGORY_ORDER[a.id] ?? 99) - (CATEGORY_ORDER[b.id] ?? 99));
+      categories = (data.data.categories || [])
+        .filter(c => c.id !== 'all')
+        .slice()
+        .sort((a, b) => (CATEGORY_ORDER[a.id] ?? 99) - (CATEGORY_ORDER[b.id] ?? 99));
       document.getElementById('lastUpdated').textContent = data.data.last_updated_display || '방금 전';
       document.getElementById('totalCount').textContent = `${allArticles.length}건`;
       
@@ -792,7 +796,7 @@ function setupEventListeners() {
   if (resetFilterBtn) {
     resetFilterBtn.addEventListener('click', () => {
       isBookmarkView = false;
-      activeCategory = 'all';
+      activeCategory = 'general';
       searchQuery = '';
       if (searchInput) searchInput.value = '';
       currentSort = 'newest';
