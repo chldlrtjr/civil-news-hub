@@ -123,17 +123,23 @@ async function loadNewsData() {
     
     const data = await response.json();
     allArticles = data.articles || [];
-    categories = data.categories || [];
+    
+    // 카테고리 01 -> 05 순차 정렬 (도로·교량·철도 -> 수자원 -> 스마트건설 -> 터널 -> 토목 종합)
+    const ORDER = { 'all': 0, 'road_rail': 1, 'water_port': 2, 'smart_policy': 3, 'tunnel_geo': 4, 'general': 5 };
+    categories = (data.categories || []).slice().sort((a, b) => (ORDER[a.id] ?? 99) - (ORDER[b.id] ?? 99));
     
     // 마지막 업데이트 및 총 건수 표시
-    document.getElementById('lastUpdated').textContent = data.last_updated_display || data.last_updated || '방금 전';
-    document.getElementById('totalCount').textContent = `${allArticles.length}건`;
+    const lastUpEl = document.getElementById('lastUpdated');
+    if (lastUpEl) lastUpEl.textContent = data.last_updated_display || data.last_updated || '방금 전';
+    const totalCountEl = document.getElementById('totalCount');
+    if (totalCountEl) totalCountEl.textContent = `${allArticles.length}건`;
     
     renderCategoryTabs();
     renderArticles();
   } catch (error) {
     console.error('뉴스 데이터 로딩 실패:', error);
-    document.getElementById('resultCountNotice').textContent = '데이터를 불러오지 못했습니다. 새로고침을 시도해 보세요.';
+    const noticeEl = document.getElementById('resultCountNotice');
+    if (noticeEl) noticeEl.textContent = '데이터를 불러오지 못했습니다. 새로고침을 시도해 보세요.';
   } finally {
     showLoading(false);
   }
@@ -693,17 +699,21 @@ function showLoading(show) {
   const container = document.getElementById('categorySectionsContainer');
   if (loading) {
     if (show) {
+      loading.style.display = 'flex';
       loading.classList.remove('hidden');
       loading.classList.add('flex');
     } else {
+      loading.style.display = 'none';
       loading.classList.add('hidden');
       loading.classList.remove('flex');
     }
   }
   if (container) {
     if (show) {
+      container.style.display = 'none';
       container.classList.add('hidden');
     } else {
+      container.style.display = 'block';
       container.classList.remove('hidden');
     }
   }
