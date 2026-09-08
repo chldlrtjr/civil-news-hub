@@ -1,6 +1,7 @@
 import os
 import json
 import webbrowser
+import urllib.parse
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 import scraper
 
@@ -20,17 +21,25 @@ class CivilNewsHandler(SimpleHTTPRequestHandler):
         super().end_headers()
 
     def do_GET(self):
-        # 1. 루트 경로 요청 시 static/index.html 반환
-        if self.path == "/" or self.path == "/index.html":
+        # URL에서 쿼리스트링(?v=... 등)을 분리하여 순수 경로(clean_path) 추출
+        parsed_url = urllib.parse.urlparse(self.path)
+        clean_path = parsed_url.path
+
+        # 1. 루트 경로 요청 시 index.html 반환
+        if clean_path in ["", "/", "/index.html"]:
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.end_headers()
-            with open(os.path.join(STATIC_DIR, "index.html"), "rb") as f:
+            # root index.html 우선 (없으면 static/index.html)
+            index_path = os.path.join(BASE_DIR, "index.html")
+            if not os.path.exists(index_path):
+                index_path = os.path.join(STATIC_DIR, "index.html")
+            with open(index_path, "rb") as f:
                 self.wfile.write(f.read())
             return
 
         # 2. 뉴스 데이터 API 요청
-        if self.path == "/api/news":
+        if clean_path in ["/api/news", "/data/news.json"]:
             if not os.path.exists(NEWS_JSON_PATH):
                 scraper.scrape_civil_news()
             
@@ -42,7 +51,7 @@ class CivilNewsHandler(SimpleHTTPRequestHandler):
             return
 
         # 2-1. 공모전 데이터 API 요청
-        if self.path == "/api/contests":
+        if clean_path in ["/api/contests", "/data/contests.json"]:
             if not os.path.exists(CONTESTS_JSON_PATH):
                 scraper.scrape_civil_contests()
             
@@ -53,22 +62,35 @@ class CivilNewsHandler(SimpleHTTPRequestHandler):
                 self.wfile.write(f.read())
             return
 
-        # 3. 정적 리소스 서빙 (CSS, JS 등)
-        if self.path.startswith("/static/"):
-            rel_path = self.path[8:]
+        # 3. 정적 리소스 서빙 (/static/ 또는 루트 경로 파일)
+        if clean_path.startswith("/static/"):
+            rel_path = clean_path[8:]
             target_path = os.path.join(STATIC_DIR, rel_path)
-            if os.path.exists(target_path) and os.path.isfile(target_path):
-                self.send_response(200)
-                if target_path.endswith(".css"):
-                    self.send_header("Content-Type", "text/css; charset=utf-8")
-                elif target_path.endswith(".js"):
-                    self.send_header("Content-Type", "application/javascript; charset=utf-8")
-                self.end_headers()
-                with open(target_path, "rb") as f:
-                    self.wfile.write(f.read())
-                return
+        elif clean_path in ["/app.js", "/style.css"]:
+            target_path = os.path.join(STATIC_DIR, clean_path[1:])
+        else:
+            target_path = os.path.join(BASE_DIR, clean_path.lstrip("/"))
 
-        super().do_GET()
+        if os.path.exists(target_path) and os.path.isfile(target_path):
+            self.send_response(200)
+            if target_path.endswith(".css"):
+                self.send_header("Content-Type", "text/css; charset=utf-8")
+            elif target_path.endswith(".js"):
+                self.send_header("Content-Type", "application/javascript; charset=utf-8")
+            elif target_path.endswith(".json"):
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+            elif target_path.endswith(".html"):
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+            elif target_path.endswith((".png", ".jpg", ".jpeg", ".ico", ".svg")):
+                ext = target_path.rsplit(".", 1)[-1].lower()
+                mime = "image/svg+xml" if ext == "svg" else f"image/{ext}"
+                self.send_header("Content-Type", mime)
+            self.end_headers()
+            with open(target_path, "rb") as f:
+                self.wfile.write(f.read())
+            return
+
+        self.send_error(404, "File not found")
 
     def do_POST(self):
         # 최신 기사 즉시 새로고침(재수집) API
