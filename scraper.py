@@ -27,16 +27,16 @@ CATEGORIES = [
         "badge_color": "emerald"
     },
     {
-        "id": "tunnel_geo",
-        "name": "터널·지반·안전",
-        "queries": ["터널공사", "지반침하", "지하안전평가", "싱크홀 공사", "사면안정", "연약지반 시공"],
-        "badge_color": "amber"
-    },
-    {
         "id": "water_port",
         "name": "수자원·하천·항만",
         "queries": ["하천정비", "댐건설", "항만공사", "수자원개발", "방파제 공사", "치수 대책"],
         "badge_color": "cyan"
+    },
+    {
+        "id": "tunnel_geo",
+        "name": "터널·지반·안전",
+        "queries": ["터널공사", "지반침하", "지하안전평가", "싱크홀 공사", "사면안정", "연약지반 시공"],
+        "badge_color": "amber"
     },
     {
         "id": "smart_policy",

@@ -21,14 +21,14 @@
       "badge_color": "emerald"
     },
     {
-      "id": "tunnel_geo",
-      "name": "터널·지반·안전",
-      "badge_color": "amber"
-    },
-    {
       "id": "water_port",
       "name": "수자원·하천·항만",
       "badge_color": "cyan"
+    },
+    {
+      "id": "tunnel_geo",
+      "name": "터널·지반·안전",
+      "badge_color": "amber"
     },
     {
       "id": "smart_policy",

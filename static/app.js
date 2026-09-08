@@ -124,9 +124,8 @@ async function loadNewsData() {
     const data = await response.json();
     allArticles = data.articles || [];
     
-    // 카테고리 01 -> 05 순차 정렬 (도로·교량·철도 -> 수자원 -> 스마트건설 -> 터널 -> 토목 종합)
-    const ORDER = { 'all': 0, 'road_rail': 1, 'water_port': 2, 'smart_policy': 3, 'tunnel_geo': 4, 'general': 5 };
-    categories = (data.categories || []).slice().sort((a, b) => (ORDER[a.id] ?? 99) - (ORDER[b.id] ?? 99));
+    // 카테고리 01 -> 05 순차 정렬 (토목 종합 -> 도로·교량·철도 -> 수자원 -> 터널 -> 스마트건설·정책)
+    categories = (data.categories || []).slice().sort((a, b) => (CATEGORY_ORDER[a.id] ?? 99) - (CATEGORY_ORDER[b.id] ?? 99));
     
     // 마지막 업데이트 및 총 건수 표시
     const lastUpEl = document.getElementById('lastUpdated');
@@ -145,24 +144,34 @@ async function loadNewsData() {
   }
 }
 
+// 카테고리 순서: 1위 토목 종합, 2위 도로·교량·철도, 3위 수자원·하천·항만, 4위 터널·지반·안전, 5위 스마트건설·정책
+const CATEGORY_ORDER = {
+  'all': 0,
+  'general': 1,
+  'road_rail': 2,
+  'water_port': 3,
+  'tunnel_geo': 4,
+  'smart_policy': 5
+};
+
 const CATEGORY_META = {
-  'road_rail': {
+  'general': {
     num: '01',
+    icon: 'layout-grid',
+    badgeClass: 'bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+    desc: '국내외 토목 엔지니어링, 설계, 인프라 동향 및 토목학회 종합 소식'
+  },
+  'road_rail': {
+    num: '02',
     icon: 'route',
     badgeClass: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
     desc: '고속도로·국도 개설, 교량 안전진단 및 KTX·광역철도망 건설 소식'
   },
   'water_port': {
-    num: '02',
+    num: '03',
     icon: 'waves',
     badgeClass: 'bg-cyan-100 text-cyan-700 dark:bg-cyan-950/60 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800',
     desc: '국가 하천정비, 댐 건설 및 치수 대책, 주요 무역항 항만 인프라 소식'
-  },
-  'smart_policy': {
-    num: '03',
-    icon: 'cpu',
-    badgeClass: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800',
-    desc: '스마트 건설 신기술, BIM 설계 자동화 및 국토교통부 정책·SOC 발주 소식'
   },
   'tunnel_geo': {
     num: '04',
@@ -170,11 +179,11 @@ const CATEGORY_META = {
     badgeClass: 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800',
     desc: '대심도 터널 공사, 지하안전평가, 싱크홀 예방 및 지반 보강 기술 소식'
   },
-  'general': {
+  'smart_policy': {
     num: '05',
-    icon: 'layout-grid',
-    badgeClass: 'bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800',
-    desc: '국내외 토목 엔지니어링, 설계, 인프라 동향 및 토목학회 종합 소식'
+    icon: 'cpu',
+    badgeClass: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800',
+    desc: '스마트 건설 신기술, BIM 설계 자동화 및 국토교통부 정책·SOC 발주 소식'
   }
 };
 
@@ -645,7 +654,7 @@ async function triggerRefresh() {
     
     if (data.success && data.data) {
       allArticles = data.data.articles || [];
-      categories = data.data.categories || [];
+      categories = (data.data.categories || []).slice().sort((a, b) => (CATEGORY_ORDER[a.id] ?? 99) - (CATEGORY_ORDER[b.id] ?? 99));
       document.getElementById('lastUpdated').textContent = data.data.last_updated_display || '방금 전';
       document.getElementById('totalCount').textContent = `${allArticles.length}건`;
       
