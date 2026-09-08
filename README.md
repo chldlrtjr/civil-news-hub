@@ -2,6 +2,10 @@
 
 매일 아침 인터넷에 올라오는 토목(도로·철도·교량, 터널·지반, 수자원·하천, 스마트건설 등) 관련 기사를 자동으로 수집하고, 편리하게 링크를 클릭하여 확인할 수 있는 **반응형 웹 대시보드**입니다.
 
+> 💼 **Notion 포트폴리오**: [토목 뉴스 & 공모전 자동화 브리핑 허브 포트폴리오 보기](https://app.notion.com/p/3d5009a14e198038ba3ff62b74d18e03)
+
+![Civil News Hub Software Architecture](static/architecture_diagram.jpg)
+
 ---
 
 ## 🌟 주요 기능
