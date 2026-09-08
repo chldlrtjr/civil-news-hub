@@ -12,24 +12,24 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 NEWS_JSON_PATH = os.path.join(DATA_DIR, "news.json")
 
-# 수집 카테고리 및 검색어 그룹
+# 토목 전문 분야 및 정밀 검색어 그룹
 CATEGORIES = [
     {
         "id": "general",
         "name": "토목 종합",
-        "queries": ["토목", "토목공학", "토목건설", "인프라 구축"],
+        "queries": ["토목공사", "토목사업", "토목현장", "토목설계", "토목 엔지니어링", "토목학회"],
         "badge_color": "blue"
     },
     {
         "id": "road_rail",
         "name": "도로·교량·철도",
-        "queries": ["도로공사", "교량공사", "철도건설", "지하철공사", "고속도로건설", "GTX 착공"],
+        "queries": ["도로공사", "교량공사", "철도건설", "지하철공사", "고속도로건설", "국가철도망"],
         "badge_color": "emerald"
     },
     {
         "id": "tunnel_geo",
         "name": "터널·지반·안전",
-        "queries": ["터널공사", "지반침하", "지하안전평가", "싱크홀", "사면안정", "연약지반"],
+        "queries": ["터널공사", "지반침하", "지하안전평가", "싱크홀 공사", "사면안정", "연약지반 시공"],
         "badge_color": "amber"
     },
     {
@@ -41,14 +41,33 @@ CATEGORIES = [
     {
         "id": "smart_policy",
         "name": "스마트건설·정책",
-        "queries": ["스마트건설", "건설신기술", "국토교통부 SOC", "토목 BIM", "인프라 투자"],
+        "queries": ["스마트건설 국토교통부", "국토교통부 SOC", "국토교통부 도로", "국토교통부 철도", "스마트 토목", "건설신기술 국토교통부"],
         "badge_color": "indigo"
     }
 ]
 
-# 제외할 불필요한 노이즈 단어
+# 필수 토목 연관 키워드 (제목이나 내용에 최소 1개 이상 반드시 포함되어야 함)
+CIVIL_MUST_HAVE = [
+    "토목", "시공", "도로", "교량", "철도", "터널", "지반", "하천", "항만", 
+    "수자원", "SOC", "국토부", "국토교통부", "지하안전", "공사", "준공", "착공", 
+    "엔지니어링", "교통망", "포장", "상하수도", "방파제", "댐", "싱크홀", 
+    "인프라", "고속철", "지하철", "고속도로", "안전진단", "건설기술", "교량안전"
+]
+
+# 제외할 무관한 노이즈 키워드 (주식, IT, 코인, 외신 번역, 잡담)
 EXCLUDE_KEYWORDS = [
-    "토토", "사설토토", "바카라", "카지노", "불법도박", "승진인사", "부고", "동정"
+    # 주식/증시/재테크
+    "반도체", "메모리", "삼전", "하이닉스", "주가", "코스피", "코스닥", "증시", 
+    "목표가", "매수의견", "특징주", "급등주", "증권사",
+    # IT / 가상화폐
+    "비트코인", "가상화폐", "암호화폐", "코인", "이더리움", "솔라나", "블록체인",
+    "데이터센터", "클라우드", "GPU", "엔비디아", "AGI", "AI 인프라", "초거대 AI",
+    # 외신 번역 및 무관 이슈
+    "vietnam.vn", "VND", "베트남", "인민위원회", "미 육군", "차관보", "사관학교", "육·해·공", "육해공",
+    # 사건사고 및 잡담 (단순 교통사고, 화재속보 등)
+    "화재사고", "추돌사고", "교통사고", "단순사고", "시위", "집회", "시식", "맛집",
+    # 노이즈 / 도박 / 단순 인사
+    "토토", "사설토토", "바카라", "카지노", "불법도박", "승진인사", "정기인사", "부고", "동정", "화촉"
 ]
 
 def clean_html(raw_html):
@@ -84,9 +103,9 @@ def format_relative_time(dt_kst):
         return f"{days}일 전"
     return dt_kst.strftime("%Y.%m.%d")
 
-def fetch_rss_for_term(term, when="2d"):
+def fetch_rss_for_term(term, when="3d"):
     """구글 뉴스 RSS 단일 검색어 수집"""
-    encoded_q = urllib.parse.quote(f'"{term}" when:{when}')
+    encoded_q = urllib.parse.quote(f'{term} when:{when}')
     url = f"https://news.google.com/rss/search?q={encoded_q}&hl=ko&gl=KR&ceid=KR:ko"
     
     req = urllib.request.Request(
@@ -106,9 +125,9 @@ def fetch_rss_for_term(term, when="2d"):
         return []
 
 def scrape_civil_news():
-    """모든 카테고리 뉴스 수집, 정제 및 JSON 저장"""
+    """모든 카테고리 뉴스 정밀 수집, 필터링 및 JSON 저장"""
     print("=" * 60)
-    print("🚀 [토목 뉴스 수집기] 최신 토목 기사를 수집합니다...")
+    print("🚀 [토목 뉴스 수집기] 토목 관련 순수 기사를 정밀 수집합니다...")
     print("=" * 60)
     
     kst = timezone(timedelta(hours=9))
@@ -126,8 +145,17 @@ def scrape_civil_news():
                 raw_desc = item.find("description").text if item.find("description") is not None else ""
                 source_el = item.find("source")
                 
-                # 노이즈 필터링
-                if any(bad in raw_title for bad in EXCLUDE_KEYWORDS):
+                # 1. 외신 및 특정 제외 링크 필터링
+                if "vietnam.vn" in raw_link.lower():
+                    continue
+                
+                # 2. 제외 키워드 필터링 (주식, IT, 코인, 번역 노이즈 등)
+                title_desc = (raw_title + " " + raw_desc).lower()
+                if any(bad.lower() in title_desc for bad in EXCLUDE_KEYWORDS):
+                    continue
+                
+                # 3. 필수 토목 연관 키워드 검증 (토목/인프라/건설 어휘가 하나도 없으면 제외)
+                if not any(must in raw_title for must in CIVIL_MUST_HAVE):
                     continue
                 
                 # 언론사 추출
@@ -175,7 +203,7 @@ def scrape_civil_news():
                 if not snippet or snippet == title:
                     snippet = f"{publisher} 보도 - 클릭하여 원문 기사를 확인하세요."
                 
-                # 기본 조회수 (해시 기반 현실적인 초기 조회수 120~2,400 사이 배정)
+                # 기본 조회수 배정
                 base_views = 120 + (abs(hash(title)) % 2280)
 
                 article = {
@@ -195,7 +223,7 @@ def scrape_civil_news():
                 all_articles.append(article)
                 cat_count += 1
                 
-        print(f"  - [{cat['name']}] 고유 기사 {cat_count}건 수집 완료")
+        print(f"  - [{cat['name']}] 엄선된 기사 {cat_count}건 수집 완료")
     
     # 최신순 정렬
     all_articles.sort(key=lambda x: x["iso_date"], reverse=True)
@@ -218,7 +246,7 @@ def scrape_civil_news():
     with open(NEWS_JSON_PATH, "w", encoding="utf-8") as f:
         json.dump(result_data, f, ensure_ascii=False, indent=2)
         
-    print(f"✅ 총 {len(all_articles)}건의 토목 기사가 최종 정리되었습니다. ({NEWS_JSON_PATH})")
+    print(f"✅ 총 {len(all_articles)}건의 순수 토목 기사가 최종 정리되었습니다. ({NEWS_JSON_PATH})")
     return result_data
 
 if __name__ == "__main__":
