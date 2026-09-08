@@ -743,6 +743,19 @@ def scrape_civil_contests():
             prize_info = extract_contest_prize(title, snippet)
             period_info = extract_contest_period(title, snippet, date_str)
                 
+            # 상태 및 뱃지 색상 정밀 판별
+            contest_status = "접수중"
+            status_color = "emerald"
+            if "마감" in period_info or "종료" in period_info or "접수마감" in period_info:
+                contest_status = "접수마감"
+                status_color = "slate"
+            elif "접수예정" in period_info or "오픈예정" in period_info:
+                contest_status = "접수예정"
+                status_color = "blue"
+            elif "상시" in period_info:
+                contest_status = "상시접수"
+                status_color = "purple"
+                
             collected_contests.append({
                 "id": str(abs(hash(title + final_link)))[-10:],
                 "title": title,
@@ -751,8 +764,8 @@ def scrape_civil_contests():
                 "badge_color": badge_color,
                 "prize": prize_info,
                 "target": "전국민 / 관련분야 전공자 및 기업",
-                "status": "진행중",
-                "status_color": "emerald",
+                "status": contest_status,
+                "status_color": status_color,
                 "period": period_info,
                 "description": snippet,
                 "link": final_link
