@@ -378,7 +378,7 @@ FEATURED_CONTESTS = [
         "target": "대학생, 일반인(아이디어부문) / 초기 스타트업(사업화부문)",
         "status": "접수중",
         "status_color": "emerald",
-        "period": "2026.08.20 ~ 10.19 (접수마감)",
+        "period": "2026.08.20 ~ 10.19 (18:00 마감)",
         "description": "기후위기 대응 스마트 물관리, 탄소중립 및 물-에너지 융합 인프라 혁신 스타트업 발굴",
         "link": "http://www.startupwater.net"
     },
@@ -392,7 +392,7 @@ FEATURED_CONTESTS = [
         "target": "스마트 건설 스타트업 및 중소·중견기업",
         "status": "접수중",
         "status_color": "emerald",
-        "period": "2026.09.07 ~ 09.30 (접수마감)",
+        "period": "2026.09.07 ~ 09.30 (23:59 마감)",
         "description": "AI 데이터센터, OSC(탈현장 시공), 시공 자동화 로봇, 안전 및 친환경 인프라 혁신 솔루션 공모",
         "link": "https://innobranch.com/front/challenge/detail/1451"
     },
@@ -423,76 +423,6 @@ FEATURED_CONTESTS = [
         "period": "2026.01.27 ~ 12.31 (상시접수)",
         "description": "철도 폐선부지, 복합역사 하부공간 및 선로 유휴부지를 활용한 주민친화 공간 조성 및 개발 제안",
         "link": "https://www.kr.or.kr/boardCnts/view.do?boardID=52&boardSeq=1122113"
-    },
-    {
-        "id": "fc-1",
-        "title": "2026 스마트건설 챌린지",
-        "organizer": "국토교통부 · 한국건설기술연구원",
-        "category": "스마트·기술",
-        "badge_color": "indigo",
-        "prize": "총 상금 3억 원 · 국토교통부 장관상 5점",
-        "target": "기업, 대학(원)생, 연구자, 일반",
-        "status": "접수마감",
-        "status_color": "slate",
-        "period": "2026.06.15 ~ 07.14 (접수마감)",
-        "description": "스마트 안전, 단지·도로 BIM, 철도 스마트 유지관리 등 5대 토목·인프라 첨단 시공 및 관리기술 경진대회",
-        "link": "https://smartconstchallenge.com/main/"
-    },
-    {
-        "id": "fc-4",
-        "title": "2026 삼성 EPC 3사 콘테크(Con-Tech) 공모전",
-        "organizer": "삼성물산 · 삼성E&A · 삼성중공업",
-        "category": "스마트·기술",
-        "badge_color": "indigo",
-        "prize": "기술개발 지원금 · Test Bed 실증 및 공동개발 협력",
-        "target": "국내 중소기업, 스타트업, 대학(원) 및 산학협력단",
-        "status": "접수마감",
-        "status_color": "slate",
-        "period": "2026.07.20 ~ 08.21 (접수마감)",
-        "description": "토목·건축, 플랜트, 조선해양 분야 DT, AI 기반 스마트 자동화 시공, BIM, 친환경 인프라 기술 공모",
-        "link": "https://www.samsungena.com/kr/newsroom/news/view?idx=15836"
-    },
-    {
-        "id": "fc-13",
-        "title": "K-water 대국민 물 빅데이터 공모전",
-        "organizer": "한국수자원공사 (K-water)",
-        "category": "수자원·환경",
-        "badge_color": "cyan",
-        "prize": "K-water 사장상 · 총 상금 1,500만원 · 범정부 본선 진출",
-        "target": "대한민국 국민 누구나 (대학생, 일반, 예비창업자)",
-        "status": "접수마감",
-        "status_color": "slate",
-        "period": "2026.05.20 ~ 07.12 (접수마감)",
-        "description": "국가 물정보포털(MyWater) 공공데이터 기반 홍수·가뭄 예측 및 스마트 수자원 인프라 분석 아이디어",
-        "link": "https://www.kwater.or.kr/danbitoktok/kor/citizenContest/view/50917898-5158-47ce-a632-d77454b90d1e.do"
-    },
-    {
-        "id": "fc-8",
-        "title": "지하안전관리 우수사례 및 대국민 아이디어 공모전",
-        "organizer": "국토교통부 · 국토안전관리원",
-        "category": "지반·안전",
-        "badge_color": "amber",
-        "prize": "국토교통부 장관상 · 국토안전관리원장상",
-        "target": "토목 현장 실무자, 지자체 공무원, 대학생 및 일반 국민",
-        "status": "접수마감",
-        "status_color": "slate",
-        "period": "2026.06.09 ~ 08.08 (접수마감)",
-        "description": "지하시설물 안전관리, 굴착공사 지반침하(싱크홀) 예방, 토목공사 현장 안전관리 우수기술 및 아이디어",
-        "link": "https://www.jis.go.kr/community/boa01005_popup.do?board_no=1207"
-    },
-    {
-        "id": "fc-9",
-        "title": "코레일 차세대 KTX & 철도 인프라 아이디어 공모전",
-        "organizer": "한국철도공사 (코레일)",
-        "category": "철도·인프라",
-        "badge_color": "indigo",
-        "prize": "한국철도공사 사장상 · 포상금 수여",
-        "target": "전 국민 누구나",
-        "status": "접수마감",
-        "status_color": "slate",
-        "period": "2026.07.01 ~ 07.30 (접수마감)",
-        "description": "차세대 KTX(EMU-320) 차내 시설, 철도 역사 인프라 안전 시스템 및 여객 편의 혁신 아이디어",
-        "link": "https://info.korail.com/info/selectBbsNttView.do?key=911&bbsNo=199&nttNo=26949&searchCtgry=&searchCnd=all&searchKrwd=&integrDeptCode=&pageIndex=1"
     }
 ]
 
@@ -743,10 +673,10 @@ def scrape_civil_contests():
             prize_info = extract_contest_prize(title, snippet)
             period_info = extract_contest_period(title, snippet, date_str)
                 
-            # 상태 및 뱃지 색상 정밀 판별
+            # 상태 판별
             contest_status = "접수중"
             status_color = "emerald"
-            if "마감" in period_info or "종료" in period_info or "접수마감" in period_info:
+            if "접수마감" in period_info or "모집마감" in period_info or "종료" in period_info:
                 contest_status = "접수마감"
                 status_color = "slate"
             elif "접수예정" in period_info or "오픈예정" in period_info:
@@ -755,6 +685,10 @@ def scrape_civil_contests():
             elif "상시" in period_info:
                 contest_status = "상시접수"
                 status_color = "purple"
+                
+            # [사용자 절대 원칙] 접수마감된 공모전은 대시보드 게시 목록에서 즉시 내림(제외)
+            if contest_status == "접수마감":
+                continue
                 
             collected_contests.append({
                 "id": str(abs(hash(title + final_link)))[-10:],
@@ -771,15 +705,15 @@ def scrape_civil_contests():
                 "link": final_link
             })
             
-    # 대표 공모전 + 엄선된 실시간 공모전 결합
-    all_contests = FEATURED_CONTESTS + collected_contests
+    # 대표 공모전 + 엄선된 실시간 공모전 결합 (접수마감 항목 철저 배제)
+    all_contests = [c for c in (FEATURED_CONTESTS + collected_contests) if c.get("status") != "접수마감"]
     
     now_kst = datetime.now(kst)
     contests_data = {
         "last_updated": now_kst.strftime("%Y-%m-%d %H:%M:%S"),
         "last_updated_display": now_kst.strftime("%m월 %d일 %H:%M"),
         "total_count": len(all_contests),
-        "featured_count": len(FEATURED_CONTESTS),
+        "featured_count": len([c for c in FEATURED_CONTESTS if c.get("status") != "접수마감"]),
         "contests": all_contests
     }
     

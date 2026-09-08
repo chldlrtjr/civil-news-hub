@@ -642,7 +642,8 @@ async function loadContestsData() {
     }
     if (!res.ok) return;
     const data = await res.json();
-    allContests = data.contests || [];
+    // 접수마감된 공모전은 서비스에서 즉시 내림(제외) 처리
+    allContests = (data.contests || []).filter(c => c.status !== '접수마감');
     
     // 버튼 뱃지 업데이트
     const countBadge = document.getElementById('contestBtnCount');
