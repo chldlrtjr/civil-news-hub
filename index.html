@@ -48,7 +48,7 @@
 <body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
 
   <!-- 상단 네비게이션 헤더 -->
-  <header class="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
+  <header class="sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 transition-colors shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
         
@@ -171,6 +171,20 @@
         <!-- JS로 뉴스 카드 렌더링 -->
       </div>
 
+      <!-- 기사 더보기 버튼 (Load More) -->
+      <div id="loadMoreContainer" class="hidden flex-col items-center justify-center pt-8 pb-4">
+        <button 
+          id="loadMoreBtn" 
+          class="flex items-center gap-2 px-6 py-3 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-blue-600 dark:text-blue-400 font-semibold text-sm border border-slate-200 dark:border-slate-800 shadow-sm transition active:scale-95 cursor-pointer"
+        >
+          <i data-lucide="chevron-down" class="w-4 h-4"></i>
+          <span>기사 더보기 (<span id="loadMoreCount">24</span>개 더보기)</span>
+        </button>
+        <p id="loadMoreStatus" class="text-xs text-slate-400 dark:text-slate-500 mt-2">
+          353개 중 24개 표시됨
+        </p>
+      </div>
+
       <!-- 빈 상태 (기사 없음) -->
       <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-center">
         <div class="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-4">
@@ -202,7 +216,7 @@
   <div class="fixed bottom-5 inset-x-0 flex justify-center z-30 pointer-events-none px-4">
     <button 
       id="openContestBtn" 
-      class="pointer-events-auto flex items-center gap-2.5 px-5 py-3 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold text-xs sm:text-sm shadow-xl shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105 active:scale-95 transition-all duration-200 border border-white/20 backdrop-blur-sm cursor-pointer"
+      class="pointer-events-auto flex items-center gap-2.5 px-5 py-3 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold text-xs sm:text-sm shadow-xl shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105 active:scale-95 transition-all duration-200 border border-white/20 cursor-pointer"
       title="토목 공모전 및 경진대회 공고 보기"
     >
       <i data-lucide="trophy" class="w-4 h-4 text-amber-300"></i>
@@ -213,8 +227,8 @@
 
   <!-- 토목 공모전 슬라이드업 레이어 (Bottom Sheet / Overlay Modal) -->
   <div id="contestLayer" class="fixed inset-0 z-50 invisible opacity-0 transition-all duration-300 flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <!-- 배경 어둡게 & 블러 -->
-    <div id="contestBackdrop" class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity"></div>
+    <!-- 배경 어둡게 -->
+    <div id="contestBackdrop" class="absolute inset-0 bg-slate-950/75 transition-opacity"></div>
 
     <!-- 레이어 본문 컨테이너 -->
     <div id="contestContent" class="relative w-full max-w-4xl bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[92vh] sm:max-h-[85vh] transform translate-y-full sm:translate-y-8 sm:scale-95 transition-all duration-300 ease-out z-10">

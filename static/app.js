@@ -9,6 +9,10 @@ let currentSort = 'newest';
 let bookmarks = new Set();
 let userViews = {};
 
+// 페이징 (성능 최적화: 24개씩 렌더링)
+const PAGE_SIZE = 24;
+let displayedCount = PAGE_SIZE;
+
 // 공모전 상태
 let allContests = [];
 let activeContestCategory = 'all';
@@ -167,6 +171,7 @@ function renderCategoryTabs() {
     btn.addEventListener('click', () => {
       isBookmarkView = false;
       activeCategory = cat.id;
+      displayedCount = PAGE_SIZE;
       renderCategoryTabs();
       updateBookmarkTabStyle();
       renderArticles();
@@ -229,20 +234,51 @@ function renderArticles() {
   });
   
   // 카운트 표시
-  notice.textContent = `총 ${filtered.length}개의 기사가 표시되었습니다.`;
+  notice.textContent = `총 ${filtered.length}개의 기사가 준비되어 있습니다.`;
   
+  const loadMoreContainer = document.getElementById('loadMoreContainer');
+  const loadMoreCount = document.getElementById('loadMoreCount');
+  const loadMoreStatus = document.getElementById('loadMoreStatus');
+
   if (filtered.length === 0) {
     grid.innerHTML = '';
     emptyState.classList.remove('hidden');
     emptyState.classList.add('flex');
+    if (loadMoreContainer) {
+      loadMoreContainer.classList.add('hidden');
+      loadMoreContainer.classList.remove('flex');
+    }
     return;
   }
   
   emptyState.classList.add('hidden');
   emptyState.classList.remove('flex');
+
+  // 페이징 자르기 (24개씩 가볍게 렌더링)
+  const visibleArticles = filtered.slice(0, displayedCount);
+
+  // 더보기 버튼 제어
+  if (filtered.length > displayedCount) {
+    if (loadMoreContainer) {
+      loadMoreContainer.classList.remove('hidden');
+      loadMoreContainer.classList.add('flex');
+    }
+    const remaining = filtered.length - displayedCount;
+    if (loadMoreCount) {
+      loadMoreCount.textContent = Math.min(PAGE_SIZE, remaining);
+    }
+    if (loadMoreStatus) {
+      loadMoreStatus.textContent = `${filtered.length}개 중 ${visibleArticles.length}개 표시 중`;
+    }
+  } else {
+    if (loadMoreContainer) {
+      loadMoreContainer.classList.add('hidden');
+      loadMoreContainer.classList.remove('flex');
+    }
+  }
   
   // 카드 HTML 생성
-  grid.innerHTML = filtered.map(article => {
+  grid.innerHTML = visibleArticles.map(article => {
     const isBookmarked = bookmarks.has(article.id);
     const badgeColorClass = `badge-${article.badge_color || 'slate'}`;
     const totalViews = (article.views || 0) + (userViews[article.id] || 0);
@@ -423,6 +459,7 @@ function setupEventListeners() {
   // 북마크 탭 버튼
   document.getElementById('bookmarkTabBtn').addEventListener('click', () => {
     isBookmarkView = !isBookmarkView;
+    displayedCount = PAGE_SIZE;
     renderCategoryTabs();
     updateBookmarkTabStyle();
     renderArticles();
@@ -434,6 +471,7 @@ function setupEventListeners() {
   
   searchInput.addEventListener('input', (e) => {
     searchQuery = e.target.value.trim();
+    displayedCount = PAGE_SIZE;
     if (searchQuery) {
       clearBtn.classList.remove('hidden');
     } else {
@@ -445,6 +483,7 @@ function setupEventListeners() {
   clearBtn.addEventListener('click', () => {
     searchInput.value = '';
     searchQuery = '';
+    displayedCount = PAGE_SIZE;
     clearBtn.classList.add('hidden');
     searchInput.focus();
     renderArticles();
@@ -453,6 +492,7 @@ function setupEventListeners() {
   // 정렬 셀렉트
   document.getElementById('sortSelect').addEventListener('change', (e) => {
     currentSort = e.target.value;
+    displayedCount = PAGE_SIZE;
     renderArticles();
   });
   
@@ -462,11 +502,21 @@ function setupEventListeners() {
     activeCategory = 'all';
     searchQuery = '';
     searchInput.value = '';
+    displayedCount = PAGE_SIZE;
     clearBtn.classList.add('hidden');
     renderCategoryTabs();
     updateBookmarkTabStyle();
     renderArticles();
   });
+
+  // 기사 더보기 버튼
+  const loadMoreBtn = document.getElementById('loadMoreBtn');
+  if (loadMoreBtn) {
+    loadMoreBtn.addEventListener('click', () => {
+      displayedCount += PAGE_SIZE;
+      renderArticles();
+    });
+  }
 
   // 공모전 레이어 이벤트 리스너
   const openContestBtn = document.getElementById('openContestBtn');

@@ -9,9 +9,12 @@
   scrollbar-width: none;
 }
 
-/* 기사 카드 스타일 및 호버 효과 */
+/* 기사 카드 스타일 및 고성능 렌더링 최적화 */
 .news-card {
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+  content-visibility: auto;
+  contain-intrinsic-size: 0 180px;
+  transform: translateZ(0);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
 .news-card:hover {
