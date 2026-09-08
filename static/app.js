@@ -5,7 +5,7 @@ let categories = [];
 let activeCategory = 'all';
 let isBookmarkView = false;
 let searchQuery = '';
-let currentSort = 'views'; // 기본 정렬: 조회순 (인기순)
+let currentSort = 'newest'; // 기본 정렬: 최신순 복원
 let bookmarks = new Set();
 let userViews = {};
 
@@ -231,9 +231,13 @@ function renderArticles() {
       return viewsB - viewsA;
     }
     if (currentSort === 'oldest') {
-      return (a.iso_date || '').localeCompare(b.iso_date || '');
+      const dateA = a.latest_iso_date || a.iso_date || '';
+      const dateB = b.latest_iso_date || b.iso_date || '';
+      return dateA.localeCompare(dateB);
     }
-    return (b.iso_date || '').localeCompare(a.iso_date || '');
+    const dateA = a.latest_iso_date || a.iso_date || '';
+    const dateB = b.latest_iso_date || b.iso_date || '';
+    return dateB.localeCompare(dateA);
   });
   
   // 카운트 표시 (토픽 및 중복 기사 총합)
@@ -343,9 +347,9 @@ function renderArticles() {
               </span>
             </button>
 
-            <!-- 펼쳐지는 타 언론사 기사 목록 -->
+            <!-- 펼쳐지는 타 언론사 기사 목록 (최신순 정렬) -->
             <div id="related-list-${article.id}" class="hidden space-y-1.5 mt-2 max-h-52 overflow-y-auto pr-1">
-              ${article.related_articles.map(rel => `
+              ${(article.related_articles || []).slice().sort((r1, r2) => (r2.iso_date || r2.published_at || '').localeCompare(r1.iso_date || r1.published_at || '')).map(rel => `
                 <div class="flex items-start justify-between gap-2 p-2 rounded-lg bg-slate-50/90 dark:bg-slate-800/50 hover:bg-blue-50/50 dark:hover:bg-slate-800 border border-slate-100 dark:border-slate-800/90 transition">
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-1.5 mb-0.5">
@@ -585,8 +589,8 @@ function setupEventListeners() {
     activeCategory = 'all';
     searchQuery = '';
     searchInput.value = '';
-    currentSort = 'views';
-    if (sortSelect) sortSelect.value = 'views';
+    currentSort = 'newest';
+    if (sortSelect) sortSelect.value = 'newest';
     displayedCount = PAGE_SIZE;
     clearBtn.classList.add('hidden');
     renderCategoryTabs();

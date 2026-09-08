@@ -231,9 +231,6 @@ def scrape_civil_news():
     # 유사/중복 기사 군집화 (대표 기사 하위에 타 언론사 보도자료 그룹핑)
     final_articles, duplicate_count = cluster_related_articles(all_articles)
     
-    # 조회수 높은 순으로 기본 정렬 (인기 기사 최우선 노출)
-    final_articles.sort(key=lambda x: x.get("views", 0), reverse=True)
-    
     # 결과 구조체
     now_kst = datetime.now(kst)
     result_data = {
@@ -316,39 +313,69 @@ def is_similar_article(title_a, tokens_a, title_b, tokens_b):
     return False
 
 def cluster_related_articles(articles):
-    """동일/유사 보도자료를 발행한 타 언론사 기사들을 대표 기사 하위로 묶음 (Option 2)"""
+    """동일/유사 보도자료를 발행한 타 언론사 기사들을 대표 기사 하위로 묶음.
+    - 같은 기사 군집(단락)에서 '조회수 기준 1등' 기사를 타이틀(메인 기사)로 선정
+    - 모두보기 시에는 타 언론사 기사들을 '최신순'으로 정렬
+    - 전체 피드는 최신순 유지
+    """
     clusters = []
     for art in articles:
         tokens = extract_article_keywords(art['title'])
         placed = False
         for cluster in clusters:
-            primary = cluster['primary']
+            primary = cluster['items'][0]
             if is_similar_article(primary['title'], cluster['tokens'], art['title'], tokens):
-                cluster['related'].append({
-                    'id': art['id'],
-                    'title': art['title'],
-                    'link': art['link'],
-                    'publisher': art['publisher'],
-                    'relative_date': art.get('relative_date', '최근'),
-                    'published_at': art.get('published_at', '')
-                })
+                cluster['items'].append(art)
                 placed = True
                 break
         if not placed:
             clusters.append({
-                'primary': art,
                 'tokens': tokens,
-                'related': []
+                'items': [art]
             })
             
     final_articles = []
     total_duplicates = 0
     for c in clusters:
-        item = c['primary']
-        item['related_articles'] = c['related']
-        total_duplicates += len(c['related'])
-        final_articles.append(item)
-        
+        items = c['items']
+        if len(items) == 1:
+            item = dict(items[0])
+            item['related_articles'] = []
+            final_articles.append(item)
+        else:
+            # 1. 같은 기사 군집(단락)에서 '조회수 기준 1등' 기사를 타이틀(메인 기사)로 선정
+            items_by_views = sorted(items, key=lambda x: x.get('views', 0), reverse=True)
+            primary_article = dict(items_by_views[0])
+            
+            # 2. 나머지 기사들은 '최신순'으로 정렬하여 모두보기 목록으로 구성
+            other_articles = items_by_views[1:]
+            other_articles_sorted_newest = sorted(other_articles, key=lambda x: x.get('iso_date', x.get('published_at', '')), reverse=True)
+            
+            primary_article['related_articles'] = [
+                {
+                    'id': a['id'],
+                    'title': a['title'],
+                    'link': a['link'],
+                    'publisher': a['publisher'],
+                    'relative_date': a.get('relative_date', '최근'),
+                    'published_at': a.get('published_at', ''),
+                    'iso_date': a.get('iso_date', ''),
+                    'views': a.get('views', 0)
+                }
+                for a in other_articles_sorted_newest
+            ]
+            total_duplicates += len(other_articles)
+            
+            # 클러스터 대표 일시는 가장 최신 기사의 일시를 보존하여 최신 피드에 올바르게 배치
+            latest_iso = max(a.get('iso_date', '') for a in items)
+            if latest_iso:
+                primary_article['latest_iso_date'] = latest_iso
+                
+            final_articles.append(primary_article)
+            
+    # 전체 피드는 최신순(newest)으로 정렬하여 가장 최근 기사들이 상단에 뜨도록 유지
+    final_articles.sort(key=lambda x: x.get('latest_iso_date', x.get('iso_date', '')), reverse=True)
+    
     print(f"📊 [유사기사 군집화 완료] 대표 토픽 {len(final_articles)}건 (중복 기사 {total_duplicates}건 하위 그룹핑)")
     return final_articles, total_duplicates
 
