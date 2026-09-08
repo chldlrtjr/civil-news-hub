@@ -23,13 +23,13 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: 토목 뉴스 크롤링 실행
+      - name: 토목 뉴스 및 공모전 크롤링 실행
         run: |
           python scraper.py
 
-      - name: 업데이트된 뉴스 데이터 커밋 및 푸시
+      - name: 업데이트된 뉴스 및 공모전 데이터 커밋 및 푸시
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/news.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: [자동 수집] $(date '+%Y-%m-%d %H:%M') 토목 뉴스 업데이트" && git push)
+          git add data/news.json data/contests.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: [자동 수집] $(date '+%Y-%m-%d %H:%M') 토목 뉴스 및 공모전 업데이트" && git push)

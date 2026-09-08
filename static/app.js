@@ -9,6 +9,11 @@ let currentSort = 'newest';
 let bookmarks = new Set();
 let userViews = {};
 
+// 공모전 상태
+let allContests = [];
+let activeContestCategory = 'all';
+let contestSearchQuery = '';
+
 // 1. 초기화
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
@@ -16,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadUserViews();
   setupEventListeners();
   loadNewsData();
+  loadContestsData();
 });
 
 // 조회수 로컬 스토리지 관리
@@ -461,9 +467,234 @@ function setupEventListeners() {
     updateBookmarkTabStyle();
     renderArticles();
   });
+
+  // 공모전 레이어 이벤트 리스너
+  const openContestBtn = document.getElementById('openContestBtn');
+  if (openContestBtn) {
+    openContestBtn.addEventListener('click', openContestLayer);
+  }
+
+  const closeContestBtn = document.getElementById('closeContestBtn');
+  if (closeContestBtn) {
+    closeContestBtn.addEventListener('click', closeContestLayer);
+  }
+
+  const closeContestBottomBtn = document.getElementById('closeContestBottomBtn');
+  if (closeContestBottomBtn) {
+    closeContestBottomBtn.addEventListener('click', closeContestLayer);
+  }
+
+  const contestBackdrop = document.getElementById('contestBackdrop');
+  if (contestBackdrop) {
+    contestBackdrop.addEventListener('click', closeContestLayer);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeContestLayer();
+    }
+  });
+
+  const contestSearchInput = document.getElementById('contestSearchInput');
+  if (contestSearchInput) {
+    contestSearchInput.addEventListener('input', (e) => {
+      contestSearchQuery = e.target.value.trim();
+      renderContests();
+    });
+  }
 }
 
-// 12. 유틸리티: HTML 이스케이프
+// 12. 공모전 데이터 로드 및 레이어 인터랙션
+async function loadContestsData() {
+  try {
+    let res = await fetch('/api/contests').catch(() => null);
+    if (!res || !res.ok) {
+      res = await fetch('./data/contests.json');
+    }
+    if (!res.ok) return;
+    const data = await res.json();
+    allContests = data.contests || [];
+    
+    // 버튼 뱃지 업데이트
+    const countBadge = document.getElementById('contestBtnCount');
+    if (countBadge) {
+      countBadge.textContent = `${allContests.length}건`;
+    }
+    const lastUp = document.getElementById('contestLastUpdated');
+    if (lastUp) {
+      lastUp.textContent = `최근 업데이트: ${data.last_updated_display || '실시간'}`;
+    }
+  } catch (err) {
+    console.error('공모전 데이터 로드 실패:', err);
+  }
+}
+
+function openContestLayer() {
+  const layer = document.getElementById('contestLayer');
+  const content = document.getElementById('contestContent');
+  if (!layer || !content) return;
+
+  layer.classList.remove('invisible', 'opacity-0');
+  layer.classList.add('visible', 'opacity-100');
+  
+  content.classList.remove('translate-y-full', 'sm:translate-y-8', 'sm:scale-95');
+  content.classList.add('translate-y-0', 'sm:translate-y-0', 'sm:scale-100');
+  document.body.style.overflow = 'hidden';
+
+  renderContestCategories();
+  renderContests();
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function closeContestLayer() {
+  const layer = document.getElementById('contestLayer');
+  const content = document.getElementById('contestContent');
+  if (!layer || !content) return;
+
+  content.classList.remove('translate-y-0', 'sm:translate-y-0', 'sm:scale-100');
+  content.classList.add('translate-y-full', 'sm:translate-y-8', 'sm:scale-95');
+  
+  layer.classList.remove('visible', 'opacity-100');
+  layer.classList.add('invisible', 'opacity-0');
+  document.body.style.overflow = '';
+}
+
+function renderContestCategories() {
+  const container = document.getElementById('contestCategoryFilter');
+  if (!container) return;
+
+  const categories = [
+    { id: 'all', name: '전체' },
+    { id: '스마트·기술', name: '스마트·기술' },
+    { id: '도로·디자인', name: '도로·디자인' },
+    { id: '수자원·환경', name: '수자원·환경' },
+    { id: '지반·안전', name: '지반·안전' },
+    { id: '학회·대학생', name: '학회·대학생' }
+  ];
+
+  container.innerHTML = categories.map(cat => {
+    const isActive = activeContestCategory === cat.id;
+    const count = cat.id === 'all' 
+      ? allContests.length 
+      : allContests.filter(c => c.category === cat.id).length;
+
+    return `
+      <button 
+        onclick="selectContestCategory('${cat.id}')"
+        class="flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
+          isActive 
+            ? 'bg-blue-600 text-white shadow-sm' 
+            : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
+        }"
+      >
+        <span>${cat.name}</span>
+        <span class="text-[10px] px-1.5 py-0.2 rounded-full ${
+          isActive ? 'bg-blue-800 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
+        }">${count}</span>
+      </button>
+    `;
+  }).join('');
+}
+
+function selectContestCategory(catId) {
+  activeContestCategory = catId;
+  renderContestCategories();
+  renderContests();
+}
+
+function renderContests() {
+  const grid = document.getElementById('contestGrid');
+  const emptyState = document.getElementById('contestEmptyState');
+  if (!grid) return;
+
+  let filtered = allContests.filter(contest => {
+    if (activeContestCategory !== 'all' && contest.category !== activeContestCategory) {
+      return false;
+    }
+    if (contestSearchQuery) {
+      const q = contestSearchQuery.toLowerCase();
+      const matchTitle = (contest.title || '').toLowerCase().includes(q);
+      const matchOrg = (contest.organizer || '').toLowerCase().includes(q);
+      const matchDesc = (contest.description || '').toLowerCase().includes(q);
+      if (!matchTitle && !matchOrg && !matchDesc) return false;
+    }
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '';
+    emptyState.classList.remove('hidden');
+    emptyState.classList.add('flex');
+    return;
+  }
+
+  emptyState.classList.add('hidden');
+  emptyState.classList.remove('flex');
+
+  grid.innerHTML = filtered.map(c => {
+    const badgeColor = `badge-${c.badge_color || 'blue'}`;
+    const statusColor = c.status === '접수중' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800'
+      : c.status === '상시접수' ? 'bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border-purple-300 dark:border-purple-800'
+      : 'bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border-blue-300 dark:border-blue-800';
+
+    return `
+      <div class="bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 sm:p-5 flex flex-col justify-between hover:border-blue-400 dark:hover:border-blue-500 transition shadow-sm hover:shadow-md">
+        <div>
+          <!-- 상단 뱃지: 카테고리 & 접수상태 -->
+          <div class="flex items-center justify-between gap-2 mb-2.5">
+            <span class="inline-block px-2.5 py-0.5 text-[11px] font-semibold rounded-md border ${badgeColor}">
+              ${escapeHtml(c.category || '토목·일반')}
+            </span>
+            <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded-full border ${statusColor}">
+              ${escapeHtml(c.status || '진행중')}
+            </span>
+          </div>
+
+          <!-- 공모전 제목 -->
+          <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 leading-snug mb-2 line-clamp-2 transition">
+            <a href="${c.link}" target="_blank" rel="noopener noreferrer">
+              ${escapeHtml(c.title)}
+            </a>
+          </h3>
+
+          <!-- 주관기관 -->
+          <div class="flex items-center text-xs text-slate-500 dark:text-slate-400 mb-2 gap-1">
+            <i data-lucide="building-2" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
+            <span class="font-medium truncate">${escapeHtml(c.organizer)}</span>
+          </div>
+
+          <!-- 요약 설명 -->
+          <p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 mb-3 leading-relaxed">
+            ${escapeHtml(c.description || '')}
+          </p>
+        </div>
+
+        <!-- 하단 정보 & 액션 버튼 -->
+        <div class="pt-3 mt-auto border-t border-slate-100 dark:border-slate-700/80 flex items-center justify-between gap-2">
+          <!-- 상금/혜택 정보 -->
+          <div class="text-[11px] font-semibold text-amber-600 dark:text-amber-400 truncate max-w-[170px] sm:max-w-[200px]" title="${escapeHtml(c.prize)}">
+            <i data-lucide="gift" class="w-3 h-3 inline mr-1"></i>${escapeHtml(c.prize)}
+          </div>
+
+          <!-- 공고 바로가기 버튼 -->
+          <a 
+            href="${c.link}" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-sm transition active:scale-95"
+          >
+            <span>공고문</span>
+            <i data-lucide="external-link" class="w-3 h-3"></i>
+          </a>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  if (window.lucide) window.lucide.createIcons();
+}
+
+// 13. 유틸리티: HTML 이스케이프
 function escapeHtml(text) {
   if (!text) return '';
   return text

@@ -10,6 +10,8 @@ STATIC_DIR = os.path.join(BASE_DIR, "static")
 DATA_DIR = os.path.join(BASE_DIR, "data")
 NEWS_JSON_PATH = os.path.join(DATA_DIR, "news.json")
 
+CONTESTS_JSON_PATH = os.path.join(DATA_DIR, "contests.json")
+
 class CivilNewsHandler(SimpleHTTPRequestHandler):
     def end_headers(self):
         # UTF-8 및 캐시 방지 헤더 추가
@@ -30,13 +32,24 @@ class CivilNewsHandler(SimpleHTTPRequestHandler):
         # 2. 뉴스 데이터 API 요청
         if self.path == "/api/news":
             if not os.path.exists(NEWS_JSON_PATH):
-                # 파일이 아직 없으면 즉시 첫 수집 실행
                 scraper.scrape_civil_news()
             
             self.send_response(200)
             self.send_header("Content-Type", "application/json; charset=utf-8")
             self.end_headers()
             with open(NEWS_JSON_PATH, "rb") as f:
+                self.wfile.write(f.read())
+            return
+
+        # 2-1. 공모전 데이터 API 요청
+        if self.path == "/api/contests":
+            if not os.path.exists(CONTESTS_JSON_PATH):
+                scraper.scrape_civil_contests()
+            
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.end_headers()
+            with open(CONTESTS_JSON_PATH, "rb") as f:
                 self.wfile.write(f.read())
             return
 
