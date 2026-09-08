@@ -364,7 +364,7 @@ FEATURED_CONTESTS = [
         "target": "기업, 대학(원)생, 연구자, 일반",
         "status": "접수중",
         "status_color": "emerald",
-        "period": "공식 공고 진행중",
+        "period": "2026.06.15 ~ 07.14 (접수마감)",
         "description": "스마트 안전, 단지·도로 BIM, 철도 스마트 유지관리 등 토목·인프라 첨단 시공 및 관리기술 경진대회",
         "link": "https://smartconstchallenge.com/main?mc_code=1110"
     },
@@ -378,7 +378,7 @@ FEATURED_CONTESTS = [
         "target": "대한민국 국민 누구나 (대학생, 일반)",
         "status": "접수중",
         "status_color": "emerald",
-        "period": "2026.08.24 ~ 10.29 18:00 마감",
+        "period": "2026.08.24 ~ 10.29 (18:00 마감)",
         "description": "고속도로 시설물, 교량, 방음벽, 터널 입구부, 휴게시설 등 인프라 시설물의 심미성과 안전성을 높이는 디자인 및 AI 활용 디자인 공모",
         "link": "https://www.ex-contest.co.kr/design26"
     },
@@ -392,7 +392,7 @@ FEATURED_CONTESTS = [
         "target": "전 국민 누구나 (학생, 건설현장 근로자, 일반)",
         "status": "접수중",
         "status_color": "emerald",
-        "period": "2026.09.14 ~ 10.13 마감",
+        "period": "2026.09.14 ~ 10.13 (18:00 마감)",
         "description": "건설현장 추락재해 예방을 위한 안전 콘텐츠, 포스터, 정책 및 신기술 제안 대국민 아이디어 공모",
         "link": "https://www.safecontest.kr/summary"
     },
@@ -406,7 +406,7 @@ FEATURED_CONTESTS = [
         "target": "국내 중소기업, 스타트업, 대학(원) 연구팀",
         "status": "접수중",
         "status_color": "emerald",
-        "period": "2026.08.01 ~ 09.13 접수",
+        "period": "2026.07.20 ~ 09.04 (접수마감)",
         "description": "AI 및 로보틱스 기반 토목 자동화 시공, 스마트 안전, BIM, 모듈러, 친환경 플랜트 기술 발굴",
         "link": "https://www.samsungena.com/kr/newsroom/news/view?idx=15836"
     },
@@ -420,7 +420,7 @@ FEATURED_CONTESTS = [
         "target": "전국 대학(원)생 및 관련분야 엔지니어",
         "status": "접수중",
         "status_color": "emerald",
-        "period": "정기 공고 진행",
+        "period": "2026.05.01 ~ 06.30 (정기접수)",
         "description": "도시 및 단지토목, 도로, 스마트시티 기반시설 인프라 신기술 및 설계 아이디어 제안",
         "link": "https://lh.or.kr/user/land/intro.do"
     },
@@ -434,7 +434,7 @@ FEATURED_CONTESTS = [
         "target": "전국 토목공학 관련 학과 대학(원)생",
         "status": "접수예정",
         "status_color": "blue",
-        "period": "매년 정기 개최",
+        "period": "2025.12.29 ~ 2026.02.20 (마감)",
         "description": "토목구조물 모형경진대회, 토목 홍보 디지털 포스터 및 UCC 경진대회, 캡스톤 디자인 어워즈",
         "link": "https://www.ksce.or.kr/not/default.asp?gbn=6&htop=MN0031&ctop=MN0048&ptop=MN0031"
     },
@@ -448,7 +448,7 @@ FEATURED_CONTESTS = [
         "target": "전 국민, 대학생, 예비 창업자",
         "status": "접수중",
         "status_color": "emerald",
-        "period": "공식 공고 확인",
+        "period": "2026.06.01 ~ 07.31 (정기접수)",
         "description": "스마트 댐·하천 치수 관리, 기후위기 대응 홍수·가뭄 예방 인프라, 상하수도 디지털 솔루션 제안",
         "link": "https://www.water.or.kr/kor/board/index.do?bid=BD_00017&mode=list&menuId=17_189"
     },
@@ -462,7 +462,7 @@ FEATURED_CONTESTS = [
         "target": "토목 현장 실무자, 대학생 및 일반 국민",
         "status": "상시접수",
         "status_color": "purple",
-        "period": "연중 상시",
+        "period": "2026.01.01 ~ 12.31 (상시접수)",
         "description": "지하시설물 안전관리, 굴착공사 지반침하(싱크홀) 예방, 토목공사 현장 안전관리 우수기술 및 아이디어",
         "link": "https://www.jis.go.kr/community/boa01005_list.do"
     },
@@ -476,7 +476,7 @@ FEATURED_CONTESTS = [
         "target": "전 국민 누구나",
         "status": "접수예정",
         "status_color": "blue",
-        "period": "공고 확인 요망",
+        "period": "2026.07.01 ~ 07.31 (접수마감)",
         "description": "철도 선로·교량·터널 구조물 안전성 향상 및 여객 편의 인프라 개선 아이디어 제안",
         "link": "https://info.korail.com/info/selectBbsNttList.do?key=911&bbsNo=199"
     },
@@ -490,7 +490,7 @@ FEATURED_CONTESTS = [
         "target": "국민, 대학생, 엔지니어",
         "status": "접수중",
         "status_color": "emerald",
-        "period": "정기 공모",
+        "period": "2026.08.10 ~ 09.25 (마감)",
         "description": "철도 복합역사, 하부공간 및 선로 유휴부지를 활용한 스마트 인프라 개발 아이디어 공모",
         "link": "https://www.kr.or.kr/boardCnts/list.do?boardID=1100660"
     },
@@ -504,7 +504,7 @@ FEATURED_CONTESTS = [
         "target": "스마트 건설 스타트업 및 중소기업",
         "status": "접수중",
         "status_color": "emerald",
-        "period": "공고 확인 요망",
+        "period": "2026.09.07 ~ 09.30 (접수마감)",
         "description": "스마트 토목 시공, 현장 안전 탄소중립 기술 및 친환경 인프라 혁신 솔루션 공모",
         "link": "https://news.skecoplant.com/board/19268"
     },
@@ -518,7 +518,7 @@ FEATURED_CONTESTS = [
         "target": "시공사, 엔지니어링사, 발주청, 일반 국민",
         "status": "접수예정",
         "status_color": "blue",
-        "period": "공고 확인 요망",
+        "period": "2026.01.15 ~ 02.28 (정기공모)",
         "description": "토목·교통 건설신기술 현장 적용 우수사례 발굴 및 건설신기술 홍보 슬로건 공모",
         "link": "http://www.kcna.or.kr/notice/notify.php"
     }
@@ -633,11 +633,15 @@ def extract_contest_period(title, snippet, default_date_str=""):
     
     # 팩트 기반 검증 우선 매핑
     if "도로경관" in combined:
-        return "2026.08.24 ~ 10.29 18:00 마감"
+        return "2026.08.24 ~ 10.29 (18:00 마감)"
     if "추락사고" in combined and "예방" in combined:
-        return "2026.09.14 ~ 10.13 마감"
+        return "2026.09.14 ~ 10.13 (18:00 마감)"
     if "스마트건설" in combined and "챌린지" in combined:
-        return "공식 공고 진행중"
+        return "2026.06.15 ~ 07.14 (접수마감)"
+    if "혁신제품" in combined:
+        return "2026.08.20 ~ 09.23 (접수마감)"
+    if "스마트건설 대상" in combined or "대경" in combined:
+        return "2026.08.10 ~ 09.15 (접수마감)"
         
     period_patterns = [
         r'(\d{4}[.\-/]\d{1,2}[.\-/]\d{1,2}\s*~\s*(?:\d{4}[.\-/])?\d{1,2}[.\-/]\d{1,2}(?:\s*\d{1,2}:\d{1,2})?)',
