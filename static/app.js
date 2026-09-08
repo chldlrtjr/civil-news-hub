@@ -160,32 +160,27 @@ const CATEGORY_META = {
   'general': {
     num: '01',
     icon: 'layout-grid',
-    badgeClass: 'bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800',
-    desc: '국내외 토목 엔지니어링, 설계, 인프라 동향 및 토목학회 종합 소식'
+    badgeClass: 'bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800'
   },
   'road_rail': {
     num: '02',
     icon: 'route',
-    badgeClass: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
-    desc: '고속도로·국도 개설, 교량 안전진단 및 KTX·광역철도망 건설 소식'
+    badgeClass: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
   },
   'water_port': {
     num: '03',
     icon: 'waves',
-    badgeClass: 'bg-cyan-100 text-cyan-700 dark:bg-cyan-950/60 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800',
-    desc: '국가 하천정비, 댐 건설 및 치수 대책, 주요 무역항 항만 인프라 소식'
+    badgeClass: 'bg-cyan-100 text-cyan-700 dark:bg-cyan-950/60 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800'
   },
   'tunnel_geo': {
     num: '04',
     icon: 'shield-alert',
-    badgeClass: 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800',
-    desc: '대심도 터널 공사, 지하안전평가, 싱크홀 예방 및 지반 보강 기술 소식'
+    badgeClass: 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800'
   },
   'smart_policy': {
     num: '05',
     icon: 'cpu',
-    badgeClass: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800',
-    desc: '스마트 건설 신기술, BIM 설계 자동화 및 국토교통부 정책·SOC 발주 소식'
+    badgeClass: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800'
   }
 };
 
@@ -516,8 +511,7 @@ function renderArticles() {
     const meta = CATEGORY_META[cat.id] || {
       num: String(idx + 1).padStart(2, '0'),
       icon: 'newspaper',
-      badgeClass: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-300 dark:border-slate-700',
-      desc: `${cat.name} 관련 주요 뉴스 및 보도자료`
+      badgeClass: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-300 dark:border-slate-700'
     };
 
     sectionsHtml += `
@@ -526,24 +520,19 @@ function renderArticles() {
         class="scroll-mt-32 sm:scroll-mt-36 bg-white dark:bg-slate-900/60 border border-slate-200/90 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-xs hover:border-slate-300 dark:hover:border-slate-700/80 transition-colors"
       >
         <!-- 섹션 헤더 (1, 2, 3 구분) -->
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 mb-5 border-b border-slate-100 dark:border-slate-800 gap-3">
-          <div class="flex items-center gap-3">
+        <div class="flex items-center justify-between pb-3.5 sm:pb-4 mb-5 border-b border-slate-100 dark:border-slate-800">
+          <div class="flex items-center gap-2.5 sm:gap-3">
             <span class="flex-shrink-0 flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl font-bold text-xs sm:text-sm ${meta.badgeClass} border">
               ${meta.num}
             </span>
-            <div>
-              <div class="flex items-center gap-2">
-                <i data-lucide="${meta.icon}" class="w-4 h-4 text-slate-500 dark:text-slate-400"></i>
-                <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
-                  ${cat.name}
-                </h3>
-                <span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold border border-slate-200/80 dark:border-slate-700">
-                  ${catCount}건
-                </span>
-              </div>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                ${meta.desc}
-              </p>
+            <div class="flex items-center gap-2">
+              <i data-lucide="${meta.icon}" class="w-4 h-4 text-slate-500 dark:text-slate-400"></i>
+              <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                ${cat.name}
+              </h3>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold border border-slate-200/80 dark:border-slate-700">
+                ${catCount}건
+              </span>
             </div>
           </div>
         </div>
