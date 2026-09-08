@@ -137,17 +137,19 @@
         </button>
       </div>
 
-      <!-- 카테고리 탭 (가로 스크롤 가능) -->
-      <div class="flex items-center justify-between gap-2 overflow-x-auto pb-2 scrollbar-none">
-        <div id="categoryTabs" class="flex items-center gap-2 flex-nowrap">
-          <!-- JS에서 동적 탭 렌더링 -->
-        </div>
+      <!-- 카테고리 탭 (가로 스크롤 및 상단 고정 네비게이션) -->
+      <div id="categoryTabsSticky" class="sticky top-16 z-20 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-2.5 bg-slate-50/90 dark:bg-slate-950/90 backdrop-blur-md border-y border-slate-200/80 dark:border-slate-800/80 transition-all">
+        <div class="flex items-center justify-between gap-2 overflow-x-auto pb-1 scrollbar-none">
+          <div id="categoryTabs" class="flex items-center gap-2 flex-nowrap">
+            <!-- JS에서 동적 탭 렌더링 -->
+          </div>
 
-        <!-- 북마크 필터 버튼 -->
-        <button id="bookmarkTabBtn" class="flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition border border-amber-300 dark:border-amber-900/60 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300 hover:bg-amber-100">
-          <i data-lucide="star" class="w-4 h-4 fill-amber-400 text-amber-500"></i>
-          <span>북마크 (<span id="bookmarkCount">0</span>)</span>
-        </button>
+          <!-- 북마크 필터 버튼 -->
+          <button id="bookmarkTabBtn" class="flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition border border-amber-300 dark:border-amber-900/60 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300 hover:bg-amber-100 cursor-pointer">
+            <i data-lucide="star" class="w-4 h-4 fill-amber-400 text-amber-500"></i>
+            <span>북마크 (<span id="bookmarkCount">0</span>)</span>
+          </button>
+        </div>
       </div>
 
     </div>
@@ -155,7 +157,7 @@
     <!-- 기사 리스트 영역 -->
     <div class="mt-6">
       <!-- 검색/필터 결과 안내 -->
-      <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-3 px-1">
+      <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-4 px-1">
         <span id="resultCountNotice">기사를 불러오는 중입니다...</span>
         <div class="flex items-center space-x-2">
           <select id="sortSelect" class="bg-white dark:bg-slate-900 text-xs text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm cursor-pointer">
@@ -166,23 +168,9 @@
         </div>
       </div>
 
-      <!-- 카드 그리드 컨테이너 -->
-      <div id="articleGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-        <!-- JS로 뉴스 카드 렌더링 -->
-      </div>
-
-      <!-- 기사 더보기 버튼 (Load More) -->
-      <div id="loadMoreContainer" class="hidden flex-col items-center justify-center pt-8 pb-4">
-        <button 
-          id="loadMoreBtn" 
-          class="flex items-center gap-2 px-6 py-3 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-blue-600 dark:text-blue-400 font-semibold text-sm border border-slate-200 dark:border-slate-800 shadow-sm transition active:scale-95 cursor-pointer"
-        >
-          <i data-lucide="chevron-down" class="w-4 h-4"></i>
-          <span>기사 더보기 (<span id="loadMoreCount">24</span>개 더보기)</span>
-        </button>
-        <p id="loadMoreStatus" class="text-xs text-slate-400 dark:text-slate-500 mt-2">
-          353개 중 24개 표시됨
-        </p>
+      <!-- 카테고리별 분할 섹션 컨테이너 (1, 2, 3... 분할 렌더링) -->
+      <div id="categorySectionsContainer" class="space-y-10 sm:space-y-14">
+        <!-- JS로 각 카테고리별 섹션 박스 및 12개씩 카드 렌더링 -->
       </div>
 
       <!-- 빈 상태 (기사 없음) -->

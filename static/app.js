@@ -9,9 +9,9 @@ let currentSort = 'newest'; // 기본 정렬: 최신순 복원
 let bookmarks = new Set();
 let userViews = {};
 
-// 페이징 (성능 최적화: 24개씩 렌더링)
-const PAGE_SIZE = 24;
-let displayedCount = PAGE_SIZE;
+// 페이징 (카테고리별 분할: 기본 12개씩 표시 및 개별 더보기)
+const CATEGORY_PAGE_SIZE = 12;
+let categoryDisplayedCount = {};
 
 // 공모전 상태
 let allContests = [];
@@ -139,9 +139,81 @@ async function loadNewsData() {
   }
 }
 
+const CATEGORY_META = {
+  'road_rail': {
+    num: '01',
+    icon: 'route',
+    badgeClass: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
+    desc: '고속도로·국도 개설, 교량 안전진단 및 KTX·광역철도망 건설 소식'
+  },
+  'water_port': {
+    num: '02',
+    icon: 'waves',
+    badgeClass: 'bg-cyan-100 text-cyan-700 dark:bg-cyan-950/60 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800',
+    desc: '국가 하천정비, 댐 건설 및 치수 대책, 주요 무역항 항만 인프라 소식'
+  },
+  'smart_policy': {
+    num: '03',
+    icon: 'cpu',
+    badgeClass: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800',
+    desc: '스마트 건설 신기술, BIM 설계 자동화 및 국토교통부 정책·SOC 발주 소식'
+  },
+  'tunnel_geo': {
+    num: '04',
+    icon: 'shield-alert',
+    badgeClass: 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800',
+    desc: '대심도 터널 공사, 지하안전평가, 싱크홀 예방 및 지반 보강 기술 소식'
+  },
+  'general': {
+    num: '05',
+    icon: 'layout-grid',
+    badgeClass: 'bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+    desc: '국내외 토목 엔지니어링, 설계, 인프라 동향 및 토목학회 종합 소식'
+  }
+};
+
+function getCategoryDisplayLimit(catId) {
+  return categoryDisplayedCount[catId] || CATEGORY_PAGE_SIZE;
+}
+
+function loadMoreCategory(catId) {
+  categoryDisplayedCount[catId] = getCategoryDisplayLimit(catId) + CATEGORY_PAGE_SIZE;
+  renderArticles();
+}
+
+function scrollToCategory(catId) {
+  if (catId === 'all') {
+    isBookmarkView = false;
+    activeCategory = 'all';
+    updateBookmarkTabStyle();
+    renderCategoryTabs();
+    renderArticles();
+    const container = document.getElementById('categorySectionsContainer') || document.getElementById('categoryTabsSticky');
+    if (container) {
+      container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    return;
+  }
+
+  if (isBookmarkView) {
+    isBookmarkView = false;
+    updateBookmarkTabStyle();
+    renderArticles();
+  }
+
+  activeCategory = catId;
+  renderCategoryTabs();
+
+  const targetSection = document.getElementById(`category-section-${catId}`);
+  if (targetSection) {
+    targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
 // 5. 카테고리 탭 렌더링
 function renderCategoryTabs() {
   const tabsContainer = document.getElementById('categoryTabs');
+  if (!tabsContainer) return;
   tabsContainer.innerHTML = '';
   
   categories.forEach(cat => {
@@ -153,9 +225,9 @@ function renderCategoryTabs() {
     const isActive = !isBookmarkView && activeCategory === cat.id;
     
     const btn = document.createElement('button');
-    btn.className = `flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition ${
+    btn.className = `flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition cursor-pointer ${
       isActive
-        ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20'
+        ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20 ring-2 ring-blue-500/30'
         : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800'
     }`;
     
@@ -169,12 +241,7 @@ function renderCategoryTabs() {
     `;
     
     btn.addEventListener('click', () => {
-      isBookmarkView = false;
-      activeCategory = cat.id;
-      displayedCount = PAGE_SIZE;
-      renderCategoryTabs();
-      updateBookmarkTabStyle();
-      renderArticles();
+      scrollToCategory(cat.id);
     });
     
     tabsContainer.appendChild(btn);
@@ -183,48 +250,32 @@ function renderCategoryTabs() {
 
 function updateBookmarkTabStyle() {
   const bookmarkBtn = document.getElementById('bookmarkTabBtn');
+  if (!bookmarkBtn) return;
   if (isBookmarkView) {
-    bookmarkBtn.className = 'flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition bg-amber-500 text-white shadow-sm shadow-amber-500/20';
+    bookmarkBtn.className = 'flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition bg-amber-500 text-white shadow-sm shadow-amber-500/20 cursor-pointer';
   } else {
-    bookmarkBtn.className = 'flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition border border-amber-300 dark:border-amber-900/60 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300 hover:bg-amber-100';
+    bookmarkBtn.className = 'flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition border border-amber-300 dark:border-amber-900/60 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300 hover:bg-amber-100 cursor-pointer';
   }
 }
 
-// 6. 기사 목록 필터링 및 렌더링
-function renderArticles() {
-  const grid = document.getElementById('articleGrid');
-  const emptyState = document.getElementById('emptyState');
-  const notice = document.getElementById('resultCountNotice');
-  
-  // 필터링 적용
-  let filtered = allArticles.filter(article => {
-    // 북마크 모드
-    if (isBookmarkView) {
-      if (!bookmarks.has(article.id)) return false;
-    } else {
-      // 카테고리 필터
-      if (activeCategory !== 'all' && article.category_id !== activeCategory) {
-        return false;
-      }
-    }
-    
-    // 검색어 필터
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      const matchTitle = article.title.toLowerCase().includes(q);
-      const matchSnippet = article.snippet.toLowerCase().includes(q);
-      const matchPub = article.publisher.toLowerCase().includes(q);
-      const matchRelated = (article.related_articles || []).some(rel =>
-        rel.title.toLowerCase().includes(q) || rel.publisher.toLowerCase().includes(q)
-      );
-      if (!matchTitle && !matchSnippet && !matchPub && !matchRelated) return false;
-    }
-    
-    return true;
+// 검색어 필터링 헬퍼
+function filterBySearch(articles) {
+  if (!searchQuery) return articles;
+  const q = searchQuery.toLowerCase();
+  return articles.filter(article => {
+    const matchTitle = (article.title || '').toLowerCase().includes(q);
+    const matchSnippet = (article.snippet || '').toLowerCase().includes(q);
+    const matchPub = (article.publisher || '').toLowerCase().includes(q);
+    const matchRelated = (article.related_articles || []).some(rel =>
+      (rel.title || '').toLowerCase().includes(q) || (rel.publisher || '').toLowerCase().includes(q)
+    );
+    return matchTitle || matchSnippet || matchPub || matchRelated;
   });
-  
-  // 정렬 적용
-  filtered.sort((a, b) => {
+}
+
+// 정렬 헬퍼
+function sortArticlesList(articles) {
+  articles.sort((a, b) => {
     if (currentSort === 'views') {
       const viewsA = (a.views || 0) + (userViews[a.id] || 0);
       const viewsB = (b.views || 0) + (userViews[b.id] || 0);
@@ -239,192 +290,310 @@ function renderArticles() {
     const dateB = b.latest_iso_date || b.iso_date || '';
     return dateB.localeCompare(dateA);
   });
-  
-  // 카운트 표시 (토픽 및 중복 기사 총합)
-  const totalWithDups = filtered.reduce((acc, a) => acc + 1 + (a.related_articles ? a.related_articles.length : 0), 0);
-  if (totalWithDups > filtered.length) {
-    notice.textContent = `주요 토픽 ${filtered.length}개 (타 언론사 중복 보도 포함 총 ${totalWithDups}건)`;
-  } else {
-    notice.textContent = `총 ${filtered.length}개의 기사가 준비되어 있습니다.`;
-  }
-  
-  const loadMoreContainer = document.getElementById('loadMoreContainer');
-  const loadMoreCount = document.getElementById('loadMoreCount');
-  const loadMoreStatus = document.getElementById('loadMoreStatus');
+}
 
-  if (filtered.length === 0) {
-    grid.innerHTML = '';
-    emptyState.classList.remove('hidden');
-    emptyState.classList.add('flex');
-    if (loadMoreContainer) {
-      loadMoreContainer.classList.add('hidden');
-      loadMoreContainer.classList.remove('flex');
+// 개별 기사 카드 렌더링 헬퍼
+function renderArticleCard(article) {
+  const isBookmarked = bookmarks.has(article.id);
+  const badgeColorClass = `badge-${article.badge_color || 'slate'}`;
+  const totalViews = (article.views || 0) + (userViews[article.id] || 0);
+  const hasRelated = article.related_articles && article.related_articles.length > 0;
+  const relatedCount = hasRelated ? article.related_articles.length : 0;
+  
+  return `
+    <article class="news-card flex flex-col justify-between bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500/50 transition">
+      <div>
+        <!-- 상단 메타: 카테고리 뱃지 & 발행일 & 조회수 -->
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <span class="inline-block px-2.5 py-1 text-xs font-semibold rounded-md border ${badgeColorClass}">
+            ${escapeHtml(article.category_name || '토목')}
+          </span>
+          <div class="flex items-center text-xs text-slate-500 dark:text-slate-400 gap-2.5">
+            <span class="flex items-center">
+              <i data-lucide="clock" class="w-3.5 h-3.5 mr-1 text-slate-400"></i>
+              <span>${escapeHtml(article.relative_date || '최근')}</span>
+            </span>
+            <span class="flex items-center text-slate-400 dark:text-slate-500 text-[11px]" title="조회수">
+              <i data-lucide="eye" class="w-3.5 h-3.5 mr-0.5"></i>
+              <span id="view-count-${article.id}">${totalViews.toLocaleString()}</span>회
+            </span>
+          </div>
+        </div>
+
+        <!-- 기사 제목 (클릭 시 새 탭으로 원문 이동 및 조회수 증가) -->
+        <h3 class="font-bold text-base text-slate-900 dark:text-slate-100 hover:text-blue-600 dark:hover:text-blue-400 leading-snug line-clamp-2 mb-2 transition">
+          <a href="${article.link}" target="_blank" rel="noopener noreferrer" onclick="recordView('${article.id}')">
+            ${escapeHtml(article.title)}
+          </a>
+        </h3>
+
+        <!-- 기사 요약 -->
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-3 leading-relaxed mb-3">
+          ${escapeHtml(article.snippet)}
+        </p>
+
+        ${hasRelated ? `
+        <!-- 중복/관련 보도자료 아코디언 버튼 (조회수 1등 기사가 메인 타이틀) -->
+        <div class="mb-3">
+          <button 
+            type="button"
+            onclick="toggleRelatedArticles('${article.id}', event)"
+            class="w-full flex items-center justify-between px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/80 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg border border-slate-200/80 dark:border-slate-700/80 transition group cursor-pointer"
+          >
+            <span class="flex items-center gap-1.5 text-blue-600 dark:text-blue-400 font-semibold">
+              <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+              <span>같은 내용의 타 언론사 보도 <strong class="text-blue-700 dark:text-blue-300">${relatedCount}건</strong></span>
+            </span>
+            <span class="flex items-center text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 text-[11px] gap-1">
+              <span id="related-text-${article.id}">모두보기</span>
+              <i id="related-icon-${article.id}" data-lucide="chevron-down" class="w-3.5 h-3.5 transition-transform duration-200"></i>
+            </span>
+          </button>
+
+          <!-- 펼쳐지는 타 언론사 기사 목록 (최신순 정렬) -->
+          <div id="related-list-${article.id}" class="hidden space-y-1.5 mt-2 max-h-52 overflow-y-auto pr-1">
+            ${(article.related_articles || []).slice().sort((r1, r2) => (r2.iso_date || r2.published_at || '').localeCompare(r1.iso_date || r1.published_at || '')).map(rel => `
+              <div class="flex items-start justify-between gap-2 p-2 rounded-lg bg-slate-50/90 dark:bg-slate-800/50 hover:bg-blue-50/50 dark:hover:bg-slate-800 border border-slate-100 dark:border-slate-800/90 transition">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-1.5 mb-0.5">
+                    <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-200/80 dark:bg-slate-700 text-slate-700 dark:text-slate-200 truncate max-w-[100px]">
+                      ${escapeHtml(rel.publisher)}
+                    </span>
+                    <span class="text-[10px] text-slate-400 dark:text-slate-500">${escapeHtml(rel.relative_date || '')}</span>
+                  </div>
+                  <a href="${rel.link}" target="_blank" rel="noopener noreferrer" onclick="recordView('${rel.id}')" class="text-xs text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 line-clamp-1 block transition font-normal">
+                    ${escapeHtml(rel.title)}
+                  </a>
+                </div>
+                <a href="${rel.link}" target="_blank" rel="noopener noreferrer" onclick="recordView('${rel.id}')" class="flex-shrink-0 p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition" title="원문 보기">
+                  <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                </a>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        ` : ''}
+      </div>
+
+      <!-- 하단 액션 영역 -->
+      <div class="pt-3 mt-auto border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+        <!-- 언론사 정보 -->
+        <span class="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1 truncate max-w-[120px] sm:max-w-[140px]">
+          <i data-lucide="building" class="w-3.5 h-3.5 flex-shrink-0 text-slate-400"></i>
+          <span class="truncate">${escapeHtml(article.publisher)}</span>
+        </span>
+
+        <!-- 액션 버튼들 -->
+        <div class="flex items-center gap-1.5">
+          <!-- 링크 복사 버튼 -->
+          <button 
+            onclick="copyArticleLink('${encodeURIComponent(article.link)}', event)"
+            title="기사 링크 복사"
+            class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+          >
+            <i data-lucide="share-2" class="w-4 h-4"></i>
+          </button>
+
+          <!-- 북마크 버튼 -->
+          <button 
+            onclick="toggleBookmark('${article.id}', event)"
+            title="${isBookmarked ? '북마크 해제' : '북마크 추가'}"
+            class="p-1.5 rounded-lg transition cursor-pointer ${
+              isBookmarked 
+                ? 'text-amber-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/40' 
+                : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
+            }"
+          >
+            <i data-lucide="star" class="w-4 h-4 ${isBookmarked ? 'fill-amber-400' : ''}"></i>
+          </button>
+
+          <!-- 원문 보러가기 버튼 (클릭 시 조회수 증가) -->
+          <a 
+            href="${article.link}" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            onclick="recordView('${article.id}')"
+            class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white dark:bg-blue-950/40 dark:text-blue-300 dark:hover:bg-blue-600 dark:hover:text-white transition"
+          >
+            <span>원문</span>
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+// 6. 카테고리별 섹션 분할 및 12개씩 렌더링 (1, 2, 3 분할 뷰)
+function renderArticles() {
+  const container = document.getElementById('categorySectionsContainer');
+  const emptyState = document.getElementById('emptyState');
+  const notice = document.getElementById('resultCountNotice');
+  if (!container) return;
+
+  // 1. 북마크 모드
+  if (isBookmarkView) {
+    const bookmarkedArticles = allArticles.filter(a => bookmarks.has(a.id));
+    const filteredBookmarks = filterBySearch(bookmarkedArticles);
+    sortArticlesList(filteredBookmarks);
+
+    if (filteredBookmarks.length === 0) {
+      container.innerHTML = '';
+      emptyState.classList.remove('hidden');
+      emptyState.classList.add('flex');
+      if (notice) notice.textContent = '북마크된 기사가 없습니다.';
+      return;
     }
+
+    emptyState.classList.add('hidden');
+    emptyState.classList.remove('flex');
+    if (notice) notice.textContent = `⭐ 북마크 기사 총 ${filteredBookmarks.length}건`;
+
+    container.innerHTML = `
+      <section class="bg-white dark:bg-slate-900/80 border border-amber-200 dark:border-amber-900/60 rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-xs">
+        <div class="flex items-center justify-between pb-4 mb-5 border-b border-amber-100 dark:border-amber-900/40">
+          <div class="flex items-center gap-2.5">
+            <span class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 flex items-center justify-center font-bold">
+              <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+            </span>
+            <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+              저장한 북마크 기사
+              <span class="text-xs px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 font-semibold border border-amber-200 dark:border-amber-900">
+                ${filteredBookmarks.length}건
+              </span>
+            </h3>
+          </div>
+          <button onclick="scrollToCategory('all')" class="text-xs text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 flex items-center gap-1 cursor-pointer">
+            전체 기사로 돌아가기
+          </button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+          ${filteredBookmarks.map(renderArticleCard).join('')}
+        </div>
+      </section>
+    `;
+    if (window.lucide) window.lucide.createIcons();
     return;
   }
-  
+
+  // 2. 카테고리별 섹션 분할 렌더링 (1, 2, 3... 분할 뷰)
+  const targetCategories = categories.filter(c => c.id !== 'all');
+  let totalMatchingCount = 0;
+  let totalWithDupsCount = 0;
+  let sectionsHtml = '';
+
+  targetCategories.forEach((cat, idx) => {
+    // 해당 카테고리 기사 가져오기
+    let catArticles = allArticles.filter(a => a.category_id === cat.id);
+    catArticles = filterBySearch(catArticles);
+    sortArticlesList(catArticles);
+
+    const catCount = catArticles.length;
+    if (catCount === 0) return;
+
+    totalMatchingCount += catCount;
+    totalWithDupsCount += catArticles.reduce((acc, a) => acc + 1 + (a.related_articles ? a.related_articles.length : 0), 0);
+
+    // 12개 단위 페이징
+    const limit = getCategoryDisplayLimit(cat.id);
+    const visibleArticles = catArticles.slice(0, limit);
+    const hasMore = catCount > limit;
+    const remaining = catCount - limit;
+
+    const meta = CATEGORY_META[cat.id] || {
+      num: String(idx + 1).padStart(2, '0'),
+      icon: 'newspaper',
+      badgeClass: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-300 dark:border-slate-700',
+      desc: `${cat.name} 관련 주요 뉴스 및 보도자료`
+    };
+
+    sectionsHtml += `
+      <section 
+        id="category-section-${cat.id}" 
+        class="scroll-mt-32 sm:scroll-mt-36 bg-white dark:bg-slate-900/60 border border-slate-200/90 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-xs hover:border-slate-300 dark:hover:border-slate-700/80 transition-colors"
+      >
+        <!-- 섹션 헤더 (1, 2, 3 구분) -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 mb-5 border-b border-slate-100 dark:border-slate-800 gap-3">
+          <div class="flex items-center gap-3">
+            <span class="flex-shrink-0 flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl font-bold text-xs sm:text-sm ${meta.badgeClass} border">
+              ${meta.num}
+            </span>
+            <div>
+              <div class="flex items-center gap-2">
+                <i data-lucide="${meta.icon}" class="w-4 h-4 text-slate-500 dark:text-slate-400"></i>
+                <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                  ${cat.name}
+                </h3>
+                <span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold border border-slate-200/80 dark:border-slate-700">
+                  ${catCount}건
+                </span>
+              </div>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                ${meta.desc}
+              </p>
+            </div>
+          </div>
+
+          <!-- 상단으로 이동 퀵버튼 -->
+          <button 
+            onclick="scrollToCategory('all')" 
+            class="self-start sm:self-auto flex items-center gap-1 text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 px-2.5 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+            title="상단 카테고리 바로가기로 이동"
+          >
+            <i data-lucide="arrow-up" class="w-3.5 h-3.5"></i>
+            <span>상단으로</span>
+          </button>
+        </div>
+
+        <!-- 12개 기사 카드 그리드 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+          ${visibleArticles.map(renderArticleCard).join('')}
+        </div>
+
+        <!-- 칸마다 개별 기사 더보기 버튼 (12개 초과 시 노출) -->
+        ${hasMore ? `
+          <div class="flex flex-col items-center justify-center pt-7 pb-2">
+            <button 
+              onclick="loadMoreCategory('${cat.id}')"
+              class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-blue-600 dark:text-blue-400 font-semibold text-xs sm:text-sm border border-slate-200 dark:border-slate-700 shadow-sm transition active:scale-95 cursor-pointer"
+            >
+              <i data-lucide="chevron-down" class="w-4 h-4"></i>
+              <span>${cat.name} 기사 더보기 (+${Math.min(12, remaining)}개)</span>
+            </button>
+            <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1.5">
+              ${catCount}개 중 ${visibleArticles.length}개 표시 중
+            </p>
+          </div>
+        ` : (catCount > 12 ? `
+          <div class="pt-6 pb-1 text-center text-xs text-slate-400 dark:text-slate-500">
+            모든 ${catCount}개의 기사를 불러왔습니다.
+          </div>
+        ` : '')}
+      </section>
+    `;
+  });
+
+  if (totalMatchingCount === 0) {
+    container.innerHTML = '';
+    emptyState.classList.remove('hidden');
+    emptyState.classList.add('flex');
+    if (notice) notice.textContent = '검색된 기사가 없습니다.';
+    return;
+  }
+
   emptyState.classList.add('hidden');
   emptyState.classList.remove('flex');
 
-  // 페이징 자르기 (24개씩 가볍게 렌더링)
-  const visibleArticles = filtered.slice(0, displayedCount);
-
-  // 더보기 버튼 제어
-  if (filtered.length > displayedCount) {
-    if (loadMoreContainer) {
-      loadMoreContainer.classList.remove('hidden');
-      loadMoreContainer.classList.add('flex');
-    }
-    const remaining = filtered.length - displayedCount;
-    if (loadMoreCount) {
-      loadMoreCount.textContent = Math.min(PAGE_SIZE, remaining);
-    }
-    if (loadMoreStatus) {
-      loadMoreStatus.textContent = `${filtered.length}개 중 ${visibleArticles.length}개 표시 중`;
-    }
-  } else {
-    if (loadMoreContainer) {
-      loadMoreContainer.classList.add('hidden');
-      loadMoreContainer.classList.remove('flex');
+  if (notice) {
+    if (totalWithDupsCount > totalMatchingCount) {
+      notice.textContent = `주요 토픽 ${totalMatchingCount}개 (타 언론사 중복 보도 포함 총 ${totalWithDupsCount}건)`;
+    } else {
+      notice.textContent = `총 ${totalMatchingCount}개의 기사가 준비되어 있습니다.`;
     }
   }
-  
-  // 카드 HTML 생성
-  grid.innerHTML = visibleArticles.map(article => {
-    const isBookmarked = bookmarks.has(article.id);
-    const badgeColorClass = `badge-${article.badge_color || 'slate'}`;
-    const totalViews = (article.views || 0) + (userViews[article.id] || 0);
-    const hasRelated = article.related_articles && article.related_articles.length > 0;
-    const relatedCount = hasRelated ? article.related_articles.length : 0;
-    
-    return `
-      <article class="news-card flex flex-col justify-between bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500/50">
-        <div>
-          <!-- 상단 메타: 카테고리 뱃지 & 발행일 & 조회수 -->
-          <div class="flex items-center justify-between gap-2 mb-3">
-            <span class="inline-block px-2.5 py-1 text-xs font-semibold rounded-md border ${badgeColorClass}">
-              ${escapeHtml(article.category_name || '토목')}
-            </span>
-            <div class="flex items-center text-xs text-slate-500 dark:text-slate-400 gap-2.5">
-              <span class="flex items-center">
-                <i data-lucide="clock" class="w-3.5 h-3.5 mr-1 text-slate-400"></i>
-                <span>${escapeHtml(article.relative_date || '최근')}</span>
-              </span>
-              <span class="flex items-center text-slate-400 dark:text-slate-500 text-[11px]" title="조회수">
-                <i data-lucide="eye" class="w-3.5 h-3.5 mr-0.5"></i>
-                <span id="view-count-${article.id}">${totalViews.toLocaleString()}</span>회
-              </span>
-            </div>
-          </div>
 
-          <!-- 기사 제목 (클릭 시 새 탭으로 원문 이동 및 조회수 증가) -->
-          <h3 class="font-bold text-base text-slate-900 dark:text-slate-100 hover:text-blue-600 dark:hover:text-blue-400 leading-snug line-clamp-2 mb-2 transition">
-            <a href="${article.link}" target="_blank" rel="noopener noreferrer" onclick="recordView('${article.id}')">
-              ${escapeHtml(article.title)}
-            </a>
-          </h3>
-
-          <!-- 기사 요약 -->
-          <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-3 leading-relaxed mb-3">
-            ${escapeHtml(article.snippet)}
-          </p>
-
-          ${hasRelated ? `
-          <!-- 중복/관련 보도자료 아코디언 버튼 (Option 2) -->
-          <div class="mb-3">
-            <button 
-              type="button"
-              onclick="toggleRelatedArticles('${article.id}', event)"
-              class="w-full flex items-center justify-between px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/80 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg border border-slate-200/80 dark:border-slate-700/80 transition group"
-            >
-              <span class="flex items-center gap-1.5 text-blue-600 dark:text-blue-400 font-semibold">
-                <i data-lucide="layers" class="w-3.5 h-3.5"></i>
-                <span>같은 내용의 타 언론사 보도 <strong class="text-blue-700 dark:text-blue-300">${relatedCount}건</strong></span>
-              </span>
-              <span class="flex items-center text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 text-[11px] gap-1">
-                <span id="related-text-${article.id}">모두보기</span>
-                <i id="related-icon-${article.id}" data-lucide="chevron-down" class="w-3.5 h-3.5 transition-transform duration-200"></i>
-              </span>
-            </button>
-
-            <!-- 펼쳐지는 타 언론사 기사 목록 (최신순 정렬) -->
-            <div id="related-list-${article.id}" class="hidden space-y-1.5 mt-2 max-h-52 overflow-y-auto pr-1">
-              ${(article.related_articles || []).slice().sort((r1, r2) => (r2.iso_date || r2.published_at || '').localeCompare(r1.iso_date || r1.published_at || '')).map(rel => `
-                <div class="flex items-start justify-between gap-2 p-2 rounded-lg bg-slate-50/90 dark:bg-slate-800/50 hover:bg-blue-50/50 dark:hover:bg-slate-800 border border-slate-100 dark:border-slate-800/90 transition">
-                  <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-1.5 mb-0.5">
-                      <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-200/80 dark:bg-slate-700 text-slate-700 dark:text-slate-200 truncate max-w-[100px]">
-                        ${escapeHtml(rel.publisher)}
-                      </span>
-                      <span class="text-[10px] text-slate-400 dark:text-slate-500">${escapeHtml(rel.relative_date || '')}</span>
-                    </div>
-                    <a href="${rel.link}" target="_blank" rel="noopener noreferrer" onclick="recordView('${rel.id}')" class="text-xs text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 line-clamp-1 block transition font-normal">
-                      ${escapeHtml(rel.title)}
-                    </a>
-                  </div>
-                  <a href="${rel.link}" target="_blank" rel="noopener noreferrer" onclick="recordView('${rel.id}')" class="flex-shrink-0 p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition" title="원문 보기">
-                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                  </a>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-          ` : ''}
-        </div>
-
-        <!-- 하단 액션 영역 -->
-        <div class="pt-3 mt-auto border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
-          <!-- 언론사 정보 -->
-          <span class="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1 truncate max-w-[120px] sm:max-w-[140px]">
-            <i data-lucide="building" class="w-3.5 h-3.5 flex-shrink-0 text-slate-400"></i>
-            <span class="truncate">${escapeHtml(article.publisher)}</span>
-          </span>
-
-          <!-- 액션 버튼들 -->
-          <div class="flex items-center gap-1.5">
-            <!-- 링크 복사 버튼 -->
-            <button 
-              onclick="copyArticleLink('${encodeURIComponent(article.link)}', event)"
-              title="기사 링크 복사"
-              class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-            >
-              <i data-lucide="share-2" class="w-4 h-4"></i>
-            </button>
-
-            <!-- 북마크 버튼 -->
-            <button 
-              onclick="toggleBookmark('${article.id}', event)"
-              title="${isBookmarked ? '북마크 해제' : '북마크 추가'}"
-              class="p-1.5 rounded-lg transition ${
-                isBookmarked 
-                  ? 'text-amber-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/40' 
-                  : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
-              }"
-            >
-              <i data-lucide="star" class="w-4 h-4 ${isBookmarked ? 'fill-amber-400' : ''}"></i>
-            </button>
-
-            <!-- 원문 보러가기 버튼 (클릭 시 조회수 증가) -->
-            <a 
-              href="${article.link}" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              onclick="recordView('${article.id}')"
-              class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white dark:bg-blue-950/40 dark:text-blue-300 dark:hover:bg-blue-600 dark:hover:text-white transition"
-            >
-              <span>원문</span>
-              <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-            </a>
-          </div>
-        </div>
-      </article>
-    `;
-  }).join('');
-  
-  // Lucide 아이콘 새로 렌더링
-  if (window.lucide) {
-    window.lucide.createIcons();
-  }
+  container.innerHTML = sectionsHtml;
+  if (window.lucide) window.lucide.createIcons();
 }
 
 // 중복/관련 기사 아코디언 토글 함수
