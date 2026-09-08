@@ -265,9 +265,9 @@ function updateBookmarkTabStyle() {
   const bookmarkBtn = document.getElementById('bookmarkTabBtn');
   if (!bookmarkBtn) return;
   if (isBookmarkView) {
-    bookmarkBtn.className = 'flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition bg-amber-500 text-white shadow-sm shadow-amber-500/20 cursor-pointer';
+    bookmarkBtn.className = 'flex-shrink-0 flex items-center px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition bg-amber-500 text-white shadow-sm shadow-amber-500/20 cursor-pointer border border-amber-500';
   } else {
-    bookmarkBtn.className = 'flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition border border-amber-300 dark:border-amber-900/60 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300 hover:bg-amber-100 cursor-pointer';
+    bookmarkBtn.className = 'flex-shrink-0 flex items-center px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition border border-amber-300/90 dark:border-amber-700/60 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40 cursor-pointer shadow-xs';
   }
 }
 
@@ -760,6 +760,7 @@ function setupEventListeners() {
       renderCategoryTabs();
       updateBookmarkTabStyle();
       renderArticles();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
   

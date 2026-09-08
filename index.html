@@ -52,20 +52,20 @@
 
   <!-- 상단 네비게이션 헤더 -->
   <header class="sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 transition-colors shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-14 sm:h-16 gap-1">
         
         <!-- 로고 및 타이틀 -->
-        <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
-            <i data-lucide="hard-hat" class="w-6 h-6"></i>
+        <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
+          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 flex-shrink-0">
+            <i data-lucide="hard-hat" class="w-4 h-4 sm:w-6 sm:h-6"></i>
           </div>
-          <div>
-            <div class="flex items-center space-x-2">
-              <h1 class="text-lg sm:text-xl font-bold tracking-tight bg-gradient-to-r from-slate-900 to-blue-600 dark:from-white dark:to-blue-400 bg-clip-text text-transparent">
+          <div class="min-w-0">
+            <div class="flex items-center space-x-1 sm:space-x-2 min-w-0">
+              <h1 class="text-sm sm:text-xl font-bold tracking-tight bg-gradient-to-r from-slate-900 to-blue-600 dark:from-white dark:to-blue-400 bg-clip-text text-transparent truncate">
                 토목 뉴스 브리핑
               </h1>
-              <span class="text-xs px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-semibold border border-blue-200 dark:border-blue-800">
+              <span class="text-[9px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-semibold border border-blue-200 dark:border-blue-800 flex-shrink-0">
                 DAILY
               </span>
             </div>
@@ -76,18 +76,23 @@
         </div>
 
         <!-- 우측 액션 버튼들 -->
-        <div class="flex items-center space-x-2 sm:space-x-3">
+        <div class="flex items-center gap-1 sm:gap-2 flex-shrink-0">
           
+          <!-- 북마크 필터 버튼 (상단 네비게이션 헤더로 이동, 별 아이콘 제외) -->
+          <button id="bookmarkTabBtn" class="flex-shrink-0 flex items-center px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium transition border border-amber-300/90 dark:border-amber-700/60 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40 cursor-pointer shadow-xs" title="북마크 기사 모아보기">
+            <span>북마크 (<span id="bookmarkCount">0</span>)</span>
+          </button>
+
           <!-- 새로고침(수집) 버튼 -->
-          <button id="refreshBtn" class="flex items-center space-x-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-blue-400 border border-blue-200 dark:border-slate-700 transition">
-            <i data-lucide="refresh-cw" id="refreshIcon" class="w-4 h-4"></i>
+          <button id="refreshBtn" class="flex items-center space-x-1 sm:space-x-1.5 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-blue-400 border border-blue-200 dark:border-slate-700 transition flex-shrink-0" title="최신 뉴스 새로고침">
+            <i data-lucide="refresh-cw" id="refreshIcon" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
             <span class="hidden sm:inline">최신 수집</span>
           </button>
 
           <!-- 다크 모드 토글 -->
-          <button id="themeToggle" aria-label="테마 전환" class="p-2 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-            <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
-            <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+          <button id="themeToggle" aria-label="테마 전환" class="p-1.5 sm:p-2 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex-shrink-0">
+            <i data-lucide="sun" class="w-4 h-4 sm:w-5 sm:h-5 hidden dark:block"></i>
+            <i data-lucide="moon" class="w-4 h-4 sm:w-5 sm:h-5 block dark:hidden"></i>
           </button>
         </div>
 
@@ -141,16 +146,10 @@
 
     <!-- 카테고리 탭 (상단 고정 Sticky Navigation - 스크롤 시 상단에 항상 고정 노출) -->
     <div id="categoryTabsSticky" class="sticky top-16 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-3 my-4 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-y border-slate-200/80 dark:border-slate-800/80 shadow-sm transition-all">
-      <div class="max-w-7xl mx-auto flex items-center justify-between gap-2 overflow-x-auto pb-0.5 scrollbar-none">
+      <div class="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto pb-0.5 scrollbar-none">
         <div id="categoryTabs" class="flex items-center gap-2 flex-nowrap">
           <!-- JS에서 동적 탭 렌더링 -->
         </div>
-
-        <!-- 북마크 필터 버튼 -->
-        <button id="bookmarkTabBtn" class="flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition border border-amber-300 dark:border-amber-900/60 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300 hover:bg-amber-100 cursor-pointer">
-          <i data-lucide="star" class="w-4 h-4 fill-amber-400 text-amber-500"></i>
-          <span>북마크 (<span id="bookmarkCount">0</span>)</span>
-        </button>
       </div>
     </div>
 
@@ -298,6 +297,6 @@
   </footer>
 
   <!-- 스크립트 로드 -->
-  <script src="./static/app.js?v=20260908_2258"></script>
+  <script src="./static/app.js?v=20260908_2345"></script>
 </body>
 </html>
