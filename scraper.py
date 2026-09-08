@@ -416,13 +416,13 @@ FEATURED_CONTESTS = [
         "organizer": "한국토지주택공사 (LH)",
         "category": "스마트·기술",
         "badge_color": "indigo",
-        "prize": "국토교통부 장관상 · LH 사장상 · 채용 서류면제 혜택",
-        "target": "전국 대학(원)생 및 관련분야 엔지니어",
+        "prize": "총 상금 1,800만원 · LH 사장상 · 채용 서류면제 혜택",
+        "target": "전국 대학(원)생 (휴학생 및 졸업예정자 포함)",
         "status": "접수중",
         "status_color": "emerald",
-        "period": "2026.05.01 ~ 06.30 (정기접수)",
-        "description": "도시 및 단지토목, 도로, 스마트시티 기반시설 인프라 신기술 및 설계 아이디어 제안",
-        "link": "https://lh.or.kr/user/land/intro.do"
+        "period": "2026.07.27 ~ 08.28 (접수마감)",
+        "description": "스마트건설, 안전도시, 모빌리티 혁신, ESG, AI·빅데이터 기반 국토도시 인프라 기술 공모",
+        "link": "https://lh.or.kr/land/intro.do"
     },
     {
         "id": "fc-6",
@@ -636,6 +636,8 @@ def extract_contest_period(title, snippet, default_date_str=""):
         return "2026.08.24 ~ 10.29 (18:00 마감)"
     if "추락사고" in combined and "예방" in combined:
         return "2026.09.14 ~ 10.13 (18:00 마감)"
+    if "LH" in combined and "국토기술대전" in combined:
+        return "2026.07.27 ~ 08.28 (접수마감)"
     if "스마트건설" in combined and "챌린지" in combined:
         return "2026.06.15 ~ 07.14 (접수마감)"
     if "혁신제품" in combined:
