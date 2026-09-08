@@ -352,7 +352,7 @@ def cluster_related_articles(articles):
 
 CONTESTS_JSON_PATH = os.path.join(DATA_DIR, "contests.json")
 
-# 대표 정기 토목 공모전 데이터
+# 1. 대표 정기 토목 공모전 & 경진대회 데이터 (공식 웹사이트 연동)
 FEATURED_CONTESTS = [
     {
         "id": "fc-1",
@@ -360,11 +360,11 @@ FEATURED_CONTESTS = [
         "organizer": "국토교통부 · 한국건설기술연구원",
         "category": "스마트·기술",
         "badge_color": "indigo",
-        "prize": "총 상금 3억 9,000만원 · 국토교통부 장관상",
-        "target": "기업, 대학(원)생, 일반",
+        "prize": "총 상금 3억 9,000만원 · 국토교통부 장관상 5점",
+        "target": "기업, 대학(원)생, 연구자, 일반",
         "status": "접수중",
         "status_color": "emerald",
-        "period": "공고 확인 요망",
+        "period": "공식 공고 진행중",
         "description": "스마트 안전, 단지·도로 BIM, 철도 스마트 유지관리 등 토목·인프라 첨단 시공 및 관리기술 경진대회",
         "link": "https://smartconstchallenge.com"
     },
@@ -374,16 +374,58 @@ FEATURED_CONTESTS = [
         "organizer": "한국도로공사",
         "category": "도로·디자인",
         "badge_color": "emerald",
-        "prize": "총 상금 4,000만원 · 국토교통부 장관상",
+        "prize": "총 상금 2,240만원 · 국토교통부 장관상",
         "target": "대한민국 국민 누구나 (대학생, 일반)",
         "status": "접수중",
         "status_color": "emerald",
-        "period": "공고 진행중",
-        "description": "고속도로 시설물, 교량, 방음벽, 터널 입구부, 휴게시설 등 인프라 시설물의 심미성과 안전성을 높이는 디자인 공모",
+        "period": "10월 29일 접수 마감",
+        "description": "고속도로 시설물, 교량, 방음벽, 터널 입구부, 휴게시설 등 인프라 시설물의 심미성과 안전성을 높이는 디자인 및 AI 활용 디자인 공모",
         "link": "https://www.ex.co.kr"
     },
     {
         "id": "fc-3",
+        "title": "2026 국토부·고용부 건설 추락사고 예방 콘텐츠 공모전",
+        "organizer": "국토교통부 · 고용노동부 · 안전보건공단",
+        "category": "지반·안전",
+        "badge_color": "amber",
+        "prize": "총 상금 3,200만원 · 대상 500만원",
+        "target": "전 국민 누구나 (학생, 건설현장 근로자, 일반)",
+        "status": "접수중",
+        "status_color": "emerald",
+        "period": "10월 13일까지 접수",
+        "description": "건설현장 추락재해 예방을 위한 안전 콘텐츠, 포스터, 정책 및 신기술 제안 대국민 아이디어 공모",
+        "link": "https://www.molit.go.kr"
+    },
+    {
+        "id": "fc-4",
+        "title": "2026 삼성 EPC 3사 콘테크(Con-Tech) 공모전",
+        "organizer": "삼성물산 · 삼성E&A · 삼성중공업",
+        "category": "스마트·기술",
+        "badge_color": "indigo",
+        "prize": "기술개발 지원금 · PoC(기술실증) 및 투자 기회",
+        "target": "국내 중소기업, 스타트업, 대학(원) 연구팀",
+        "status": "접수중",
+        "status_color": "emerald",
+        "period": "공고 확인 요망",
+        "description": "AI 및 로보틱스 기반 토목 자동화 시공, 스마트 안전, BIM, 모듈러, 친환경 플랜트 기술 발굴",
+        "link": "https://www.samsungcnt.com"
+    },
+    {
+        "id": "fc-5",
+        "title": "제17회 LH 국토기술대전",
+        "organizer": "한국토지주택공사 (LH)",
+        "category": "스마트·기술",
+        "badge_color": "indigo",
+        "prize": "국토교통부 장관상 · LH 사장상 · 채용 서류면제 혜택",
+        "target": "전국 대학(원)생 및 관련분야 엔지니어",
+        "status": "접수중",
+        "status_color": "emerald",
+        "period": "정기 공고 진행",
+        "description": "도시 및 단지토목, 도로, 스마트시티 기반시설 인프라 신기술 및 설계 아이디어 제안",
+        "link": "https://cotis.lh.or.kr"
+    },
+    {
+        "id": "fc-6",
         "title": "대한토목학회 제28회 토목의 날 경진대회",
         "organizer": "대한토목학회",
         "category": "학회·대학생",
@@ -397,9 +439,9 @@ FEATURED_CONTESTS = [
         "link": "https://www.ksce.or.kr"
     },
     {
-        "id": "fc-4",
-        "title": "K-water 대국민 물빅데이터 & 혁신 아이디어 공모전",
-        "organizer": "한국수자원공사",
+        "id": "fc-7",
+        "title": "K-water 대국민 물빅데이터 & 혁신 창업대전",
+        "organizer": "한국수자원공사 · 환경부",
         "category": "수자원·환경",
         "badge_color": "cyan",
         "prize": "환경부 장관상 · 사장상 · 총 상금 2,500만원",
@@ -411,7 +453,7 @@ FEATURED_CONTESTS = [
         "link": "https://www.kwater.or.kr"
     },
     {
-        "id": "fc-5",
+        "id": "fc-8",
         "title": "건설·지하안전 우수사례 및 대국민 아이디어 공모전",
         "organizer": "국토안전관리원 · 국토교통부",
         "category": "지반·안전",
@@ -425,7 +467,7 @@ FEATURED_CONTESTS = [
         "link": "https://www.kalis.or.kr"
     },
     {
-        "id": "fc-6",
+        "id": "fc-9",
         "title": "철도 인프라 및 안전 혁신 아이디어 공모전",
         "organizer": "한국철도공사 (코레일)",
         "category": "철도·인프라",
@@ -437,23 +479,123 @@ FEATURED_CONTESTS = [
         "period": "공고 확인 요망",
         "description": "철도 선로·교량·터널 구조물 안전성 향상 및 여객 편의 인프라 개선 아이디어 제안",
         "link": "https://info.korail.com"
+    },
+    {
+        "id": "fc-10",
+        "title": "국가철도공단 철도 유휴부지 & 인프라 공간혁신 아이디어 공모",
+        "organizer": "국가철도공단",
+        "category": "철도·인프라",
+        "badge_color": "indigo",
+        "prize": "국가철도공단 이사장상 및 포상금",
+        "target": "국민, 대학생, 엔지니어",
+        "status": "접수중",
+        "status_color": "emerald",
+        "period": "정기 공모",
+        "description": "철도 복합역사, 하부공간 및 선로 유휴부지를 활용한 스마트 인프라 개발 아이디어 공모",
+        "link": "https://www.kr.or.kr"
+    },
+    {
+        "id": "fc-11",
+        "title": "SK에코플랜트 2026 콘테크 미트업 데이 공모전",
+        "organizer": "SK에코플랜트",
+        "category": "스마트·기술",
+        "badge_color": "indigo",
+        "prize": "공동 R&D 자금 지원 및 사업화 협력 기회",
+        "target": "스마트 건설 스타트업 및 중소기업",
+        "status": "접수중",
+        "status_color": "emerald",
+        "period": "공고 확인 요망",
+        "description": "스마트 토목 시공, 현장 안전 탄소중립 기술 및 친환경 인프라 혁신 솔루션 공모",
+        "link": "https://www.skecoplant.com"
+    },
+    {
+        "id": "fc-12",
+        "title": "제25회 건설교통신기술 슬로건 및 우수활용사례 공모",
+        "organizer": "한국건설교통신기술협회 · 국토교통부",
+        "category": "스마트·기술",
+        "badge_color": "indigo",
+        "prize": "국토교통부 장관 표창 · 협회장상",
+        "target": "시공사, 엔지니어링사, 발주청, 일반 국민",
+        "status": "접수예정",
+        "status_color": "blue",
+        "period": "공고 확인 요망",
+        "description": "토목·교통 건설신기술 현장 적용 우수사례 발굴 및 건설신기술 홍보 슬로건 공모",
+        "link": "https://www.kcnet.or.kr"
     }
 ]
 
+# 2. 공식 주최 기관 웹사이트 매핑 룰
+OFFICIAL_CONTEST_MAPPINGS = [
+    (["스마트건설", "챌린지"], "https://smartconstchallenge.com", "국토교통부 · 한국건설기술연구원"),
+    (["도로경관", "디자인"], "https://www.ex.co.kr", "한국도로공사"),
+    (["도로공사", "디자인"], "https://www.ex.co.kr", "한국도로공사"),
+    (["추락사고", "예방"], "https://www.molit.go.kr", "국토교통부 · 고용노동부"),
+    (["추락", "예방", "공모"], "https://www.molit.go.kr", "국토교통부 · 고용노동부"),
+    (["토목학회", "토목의 날"], "https://www.ksce.or.kr", "대한토목학회"),
+    (["수자원공사", "물빅데이터"], "https://www.kwater.or.kr", "한국수자원공사"),
+    (["수자원공사", "물산업"], "https://www.kwater.or.kr", "한국수자원공사"),
+    (["지하안전", "국토안전관리원"], "https://www.kalis.or.kr", "국토안전관리원"),
+    (["국토기술대전"], "https://cotis.lh.or.kr", "한국토지주택공사"),
+    (["철도공사", "코레일"], "https://info.korail.com", "한국철도공사"),
+    (["철도공단"], "https://www.kr.or.kr", "국가철도공단"),
+    (["sk에코플랜트", "콘테크"], "https://www.skecoplant.com", "SK에코플랜트"),
+    (["콘테크", "삼성"], "https://www.samsungcnt.com", "삼성물산 · 삼성E&A · 삼성중공업"),
+    (["건설교통신기술", "슬로건"], "https://www.kcnet.or.kr", "한국건설교통신기술협회"),
+    (["평택항", "항만공사"], "https://www.gppc.or.kr", "경기평택항만공사"),
+    (["대경 스마트건설", "스마트건설 대상"], "https://smartconstchallenge.com", "스마트건설 대상 추진위원회")
+]
+
+# 3. 비토목 및 부적격 공고 제외 키워드
+CONTEST_EXCLUDE_KEYWORDS = [
+    "민간위원", "위원 공모", "위원공모", "위원모집", "사업자 공모", "사업자공모", 
+    "입주자 공모", "입주자모집", "임원 공모", "사장 공모", "신임사장", "용역 공모", 
+    "사진 공모", "미술대전", "도솔미술", "포스터 공모전", "수기 공모", "숏폼", "에너지 절약", 
+    "절감 챌린지", "간판개선", "외국인 유학생", "카드 수기", "어촌", "청년 성장",
+    "탈플라스틱", "조류 사진", "지방세", "승강기", "비즈니스 항공", "도시계획위", "민간위원",
+    "최종 선정", "우수작 선정", "수상작", "로컬여행", "맞춤지원", "공모사업"
+]
+
+# 4. 토목 공모전 필수 검증 키워드
+CIVIL_CONTEST_MUST_HAVE = [
+    "토목", "스마트건설", "BIM", "콘테크", "도로", "교량", "철도", 
+    "터널", "지반", "수자원", "하천", "댐", "항만", "국토", "인프라", 
+    "건설기술", "지하안전", "추락사고", "토목공학"
+]
+
+# 5. 대표 공모전 중복 감지용 핵심 단어 세트
+FEATURED_KEYWORD_SETS = [
+    ["스마트건설", "챌린지"],
+    ["도로경관", "디자인"],
+    ["도로경관디자인"],
+    ["도로공사", "디자인"],
+    ["추락사고", "예방"],
+    ["추락사고예방"],
+    ["추락", "예방"],
+    ["콘테크", "삼성"],
+    ["국토기술대전"],
+    ["토목의 날", "토목학회"],
+    ["물빅데이터"],
+    ["지하안전", "아이디어"],
+    ["철도 인프라", "철도안전"],
+    ["철도 유휴부지"],
+    ["콘테크", "sk에코플랜트"],
+    ["건설교통신기술", "슬로건"]
+]
+
 def scrape_civil_contests():
-    """토목 관련 최신 공모전 및 경진대회 공고 수집"""
+    """토목 관련 최신 공모전 및 경진대회 공고 정밀 수집 및 군집화"""
     print("=" * 60)
-    print("🏆 [토목 공모전 수집기] 최신 공모전 공고를 수집합니다...")
+    print("🏆 [토목 공모전 수집기] 고정밀 필터링 및 공모전 수집을 시작합니다...")
     print("=" * 60)
     
     kst = timezone(timedelta(hours=9))
     contest_queries = [
         "토목 공모전", "스마트건설 챌린지", "도로공사 디자인 공모", 
-        "수자원공사 공모전", "국토교통부 공모전", "토목 경진대회"
+        "수자원공사 공모전", "국토교통부 공모전", "토목 경진대회", "콘테크 공모전"
     ]
     
     collected_contests = []
-    seen_titles = set()
+    seen_cluster_keys = set()
     
     for q in contest_queries:
         items = fetch_rss_for_term(q, when="60d")
@@ -463,32 +605,63 @@ def scrape_civil_contests():
             raw_pub_date = item.find("pubDate").text if item.find("pubDate") is not None else ""
             raw_desc = item.find("description").text if item.find("description") is not None else ""
             source_el = item.find("source")
+            publisher = source_el.text.strip() if source_el is not None and source_el.text else "기관공고"
             
-            # 노이즈 필터링
-            if "vietnam.vn" in raw_link.lower():
-                continue
+            # (1) 비토목/부적격 공고 제외
             title_desc = (raw_title + " " + raw_desc).lower()
-            if any(bad.lower() in title_desc for bad in EXCLUDE_KEYWORDS):
+            if any(bad.lower() in title_desc for bad in CONTEST_EXCLUDE_KEYWORDS):
                 continue
             
-            # 공모전/대회 관련 키워드 확인
+            # (2) 공모/대회 필수 키워드 확인
             if not any(k in raw_title for k in ["공모", "챌린지", "경진", "대전", "대회", "공모전"]):
                 continue
             
-            publisher = source_el.text.strip() if source_el is not None and source_el.text else "기관공고"
+            # (3) 토목 분야 필수 키워드 검증
+            if not any(k.lower() in title_desc for k in CIVIL_CONTEST_MUST_HAVE):
+                continue
+            
             title = clean_html(raw_title)
             if " - " in title:
                 title = title.rsplit(" - ", 1)[0].strip()
                 
-            clean_key = re.sub(r'[^a-zA-Z0-9가-힣]', '', title)[:20]
-            if not clean_key or clean_key in seen_titles:
+            title_lower = title.lower()
+                
+            # (4) 대표 공모전(FEATURED_CONTESTS)과 키워드 중복 검증 (이미 대표 공모전에 있는 건 스킵)
+            is_dup_featured = False
+            for k_set in FEATURED_KEYWORD_SETS:
+                if all(k.lower() in title_lower for k in k_set):
+                    is_dup_featured = True
+                    break
+            if is_dup_featured:
                 continue
-            seen_titles.add(clean_key)
+                
+            # (5) 군집화 키워드 추출 (동일 공모전 중복 기사 제거)
+            title_clean = re.sub(r'[^a-zA-Z0-9가-힣]', '', title_lower)
+            cluster_key = None
+            for key_cand in ["물산업", "물빅데이터", "토목의날", "안전이용", "지하안전", "평택항", "스마트건설대상", "혁신제품"]:
+                if key_cand in title_lower:
+                    cluster_key = key_cand
+                    break
+            if not cluster_key:
+                cluster_key = title_clean[:12]
+                
+            if cluster_key in seen_cluster_keys:
+                continue
+            seen_cluster_keys.add(cluster_key)
             
-            # 카테고리 태깅
+            # (6) 공식 웹사이트 링크 및 주최 기관 매핑
+            final_link = raw_link
+            final_organizer = publisher
+            for pattern_keys, official_url, official_org in OFFICIAL_CONTEST_MAPPINGS:
+                if all(pk.lower() in title_lower for pk in pattern_keys):
+                    final_link = official_url
+                    final_organizer = official_org
+                    break
+            
+            # (7) 카테고리 태깅
             cat_tag = "토목·일반"
             badge_color = "blue"
-            if any(k in title for k in ["스마트", "BIM", "기술"]):
+            if any(k in title for k in ["스마트", "BIM", "기술", "콘테크"]):
                 cat_tag = "스마트·기술"
                 badge_color = "indigo"
             elif any(k in title for k in ["도로", "교량", "디자인"]):
@@ -497,14 +670,17 @@ def scrape_civil_contests():
             elif any(k in title for k in ["물", "수자원", "하천"]):
                 cat_tag = "수자원·환경"
                 badge_color = "cyan"
-            elif any(k in title for k in ["지하", "안전", "싱크홀"]):
+            elif any(k in title for k in ["지하", "안전", "싱크홀", "추락"]):
                 cat_tag = "지반·안전"
                 badge_color = "amber"
             elif any(k in title for k in ["대학", "학회", "모형"]):
                 cat_tag = "학회·대학생"
                 badge_color = "blue"
+            elif any(k in title for k in ["철도", "선로", "코레일"]):
+                cat_tag = "철도·인프라"
+                badge_color = "indigo"
                 
-            # 날짜
+            # (8) 날짜 파싱
             try:
                 dt = parsedate_to_datetime(raw_pub_date).astimezone(kst)
                 date_str = dt.strftime("%Y.%m.%d")
@@ -512,27 +688,27 @@ def scrape_civil_contests():
                 date_str = "최근 공고"
                 
             snippet = clean_html(raw_desc)
-            if len(snippet) > 140:
-                snippet = snippet[:140] + "..."
+            if len(snippet) > 130:
+                snippet = snippet[:130] + "..."
             if not snippet:
-                snippet = f"{publisher} 주관 토목 관련 공모 공고입니다. 원문에서 세부 요강을 확인하세요."
+                snippet = f"{final_organizer} 주관 토목 관련 공모 공고입니다. 공식 웹사이트에서 세부 요강을 확인하세요."
                 
             collected_contests.append({
-                "id": str(abs(hash(title + raw_link)))[-10:],
+                "id": str(abs(hash(title + final_link)))[-10:],
                 "title": title,
-                "organizer": publisher,
+                "organizer": final_organizer,
                 "category": cat_tag,
                 "badge_color": badge_color,
-                "prize": "공고문 참조",
-                "target": "전국민 / 관련분야",
+                "prize": "공식 공고문 참조",
+                "target": "전국민 / 관련분야 전공자 및 기업",
                 "status": "진행중",
                 "status_color": "emerald",
-                "period": f"게시일: {date_str}",
+                "period": f"공고일: {date_str}",
                 "description": snippet,
-                "link": raw_link
+                "link": final_link
             })
             
-    # 대표 공모전 + 수집된 최신 공모전 결합
+    # 대표 공모전 + 엄선된 실시간 공모전 결합
     all_contests = FEATURED_CONTESTS + collected_contests
     
     now_kst = datetime.now(kst)
@@ -547,7 +723,7 @@ def scrape_civil_contests():
     with open(CONTESTS_JSON_PATH, "w", encoding="utf-8") as f:
         json.dump(contests_data, f, ensure_ascii=False, indent=2)
         
-    print(f"✅ 총 {len(all_contests)}건의 토목 공모전 공고 저장 완료! ({CONTESTS_JSON_PATH})")
+    print(f"✅ 검증 완료된 총 {len(all_contests)}건의 토목 공모전 저장 완료! ({CONTESTS_JSON_PATH})")
     return contests_data
 
 if __name__ == "__main__":
