@@ -440,16 +440,30 @@ FEATURED_CONTESTS = [
     },
     {
         "id": "fc-7",
-        "title": "K-water 대국민 물빅데이터 & 혁신 창업대전",
-        "organizer": "한국수자원공사 · 환경부",
+        "title": "2026 대한민국 물산업 혁신 창업대전",
+        "organizer": "환경부 · 한국수자원공사 (K-water)",
         "category": "수자원·환경",
         "badge_color": "cyan",
-        "prize": "환경부 장관상 · 사장상 · 총 상금 2,500만원",
-        "target": "전 국민, 대학생, 예비 창업자",
+        "prize": "기후에너지환경부 장관상 · 총 상금 2,000만원",
+        "target": "대학생, 일반인(아이디어부문) / 초기 스타트업(사업화부문)",
         "status": "접수중",
         "status_color": "emerald",
-        "period": "2026.06.01 ~ 07.31 (정기접수)",
-        "description": "스마트 댐·하천 치수 관리, 기후위기 대응 홍수·가뭄 예방 인프라, 상하수도 디지털 솔루션 제안",
+        "period": "2026.08.20 ~ 10.19 (접수마감)",
+        "description": "기후위기 대응 스마트 물관리, 탄소중립 및 물-에너지 융합 인프라 혁신 스타트업 발굴",
+        "link": "http://www.startupwater.net"
+    },
+    {
+        "id": "fc-13",
+        "title": "K-water 대국민 물 빅데이터 공모전",
+        "organizer": "한국수자원공사 (K-water)",
+        "category": "수자원·환경",
+        "badge_color": "cyan",
+        "prize": "K-water 사장상 · 총 상금 1,500만원 · 범정부 본선 진출",
+        "target": "대한민국 국민 누구나 (대학생, 일반, 예비창업자)",
+        "status": "접수중",
+        "status_color": "emerald",
+        "period": "2026.05.20 ~ 07.12 (접수마감)",
+        "description": "국가 물정보포털(MyWater) 공공데이터 기반 홍수·가뭄 예측 및 스마트 수자원 인프라 분석 아이디어",
         "link": "https://www.water.or.kr/kor/board/index.do?bid=BD_00017&mode=list&menuId=17_189"
     },
     {
@@ -537,12 +551,14 @@ OFFICIAL_CONTEST_MAPPINGS = [
     (["토목학회", "토목의 날"], "https://www.ksce.or.kr/not/default.asp?gbn=6&htop=MN0031&ctop=MN0048&ptop=MN0031", "대한토목학회"),
     (["토목의 날"], "https://www.ksce.or.kr/not/default.asp?gbn=6&htop=MN0031&ctop=MN0048&ptop=MN0031", "대한토목학회"),
     (["토목의날"], "https://www.ksce.or.kr/not/default.asp?gbn=6&htop=MN0031&ctop=MN0048&ptop=MN0031", "대한토목학회"),
+    (["물산업", "창업대전"], "http://www.startupwater.net", "환경부 · 한국수자원공사"),
+    (["물산업혁신"], "http://www.startupwater.net", "환경부 · 한국수자원공사"),
     (["수자원공사", "물빅데이터"], "https://www.water.or.kr/kor/board/index.do?bid=BD_00017&mode=list&menuId=17_189", "한국수자원공사 · 환경부"),
     (["물빅데이터"], "https://www.water.or.kr/kor/board/index.do?bid=BD_00017&mode=list&menuId=17_189", "한국수자원공사 · 환경부"),
     (["수자원공사", "물산업"], "https://www.water.or.kr/kor/board/index.do?bid=BD_00017&mode=list&menuId=17_189", "한국수자원공사"),
     (["지하안전", "국토안전관리원"], "https://www.jis.go.kr/community/boa01005_list.do", "국토안전관리원 · 국토교통부"),
     (["지하안전"], "https://www.jis.go.kr/community/boa01005_list.do", "국토안전관리원 · 국토교통부"),
-    (["국토기술대전"], "https://lh.or.kr/user/land/intro.do", "한국토지주택공사 (LH)"),
+    (["국토기술대전"], "https://lh.or.kr/land/intro.do", "한국토지주택공사 (LH)"),
     (["철도공사", "코레일"], "https://info.korail.com/info/selectBbsNttList.do?key=911&bbsNo=199", "한국철도공사"),
     (["철도공단"], "https://www.kr.or.kr/boardCnts/list.do?boardID=1100660", "국가철도공단"),
     (["sk에코플랜트", "콘테크"], "https://news.skecoplant.com/board/19268", "SK에코플랜트"),
@@ -603,8 +619,10 @@ def extract_contest_prize(title, snippet):
         return "총 상금 3억 9,000만원 · 국토교통부 장관상 5점"
     if "추락사고" in combined and "예방" in combined:
         return "총 상금 3,200만원 · 대상 500만원"
+    if "물산업" in combined and "창업대전" in combined:
+        return "기후에너지환경부 장관상 · 총 상금 2,000만원"
     if "물빅데이터" in combined:
-        return "총 상금 2,500만원 · 환경부 장관상"
+        return "K-water 사장상 · 총 상금 1,500만원"
     if "국토기술대전" in combined:
         return "국토교통부 장관상 · LH 사장상"
     if "토목의 날" in combined or "토목의날" in combined:
@@ -638,6 +656,10 @@ def extract_contest_period(title, snippet, default_date_str=""):
         return "2026.09.14 ~ 10.13 (18:00 마감)"
     if "LH" in combined and "국토기술대전" in combined:
         return "2026.07.27 ~ 08.28 (접수마감)"
+    if "물산업" in combined and "창업대전" in combined:
+        return "2026.08.20 ~ 10.19 (접수마감)"
+    if "물빅데이터" in combined:
+        return "2026.05.20 ~ 07.12 (접수마감)"
     if "스마트건설" in combined and "챌린지" in combined:
         return "2026.06.15 ~ 07.14 (접수마감)"
     if "혁신제품" in combined:

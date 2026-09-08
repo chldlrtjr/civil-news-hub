@@ -1,8 +1,8 @@
 {
   "last_updated": "2026-09-08 18:27:42",
   "last_updated_display": "09월 08일 18:27",
-  "total_count": 13,
-  "featured_count": 12,
+  "total_count": 14,
+  "featured_count": 13,
   "contests": [
     {
       "id": "fc-1",
@@ -90,16 +90,30 @@
     },
     {
       "id": "fc-7",
-      "title": "K-water 대국민 물빅데이터 & 혁신 창업대전",
-      "organizer": "한국수자원공사 · 환경부",
+      "title": "2026 대한민국 물산업 혁신 창업대전",
+      "organizer": "환경부 · 한국수자원공사 (K-water)",
       "category": "수자원·환경",
       "badge_color": "cyan",
-      "prize": "환경부 장관상 · 사장상 · 총 상금 2,500만원",
-      "target": "전 국민, 대학생, 예비 창업자",
+      "prize": "기후에너지환경부 장관상 · 총 상금 2,000만원",
+      "target": "대학생, 일반인(아이디어부문) / 초기 스타트업(사업화부문)",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "2026.06.01 ~ 07.31 (정기접수)",
-      "description": "스마트 댐·하천 치수 관리, 기후위기 대응 홍수·가뭄 예방 인프라, 상하수도 디지털 솔루션 제안",
+      "period": "2026.08.20 ~ 10.19 (접수마감)",
+      "description": "기후위기 대응 스마트 물관리, 탄소중립 및 물-에너지 융합 인프라 혁신 스타트업 발굴",
+      "link": "http://www.startupwater.net"
+    },
+    {
+      "id": "fc-13",
+      "title": "K-water 대국민 물 빅데이터 공모전",
+      "organizer": "한국수자원공사 (K-water)",
+      "category": "수자원·환경",
+      "badge_color": "cyan",
+      "prize": "K-water 사장상 · 총 상금 1,500만원 · 범정부 본선 진출",
+      "target": "대한민국 국민 누구나 (대학생, 일반, 예비창업자)",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.05.20 ~ 07.12 (접수마감)",
+      "description": "국가 물정보포털(MyWater) 공공데이터 기반 홍수·가뭄 예측 및 스마트 수자원 인프라 분석 아이디어",
       "link": "https://www.water.or.kr/kor/board/index.do?bid=BD_00017&mode=list&menuId=17_189"
     },
     {
