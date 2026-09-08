@@ -121,10 +121,8 @@
       </div>
     </div>
 
-    <!-- 검색 바 및 필터 컨트롤 바 -->
-    <div class="mt-5 space-y-4">
-      
-      <!-- 검색 입력창 -->
+    <!-- 검색 입력창 -->
+    <div class="mt-5">
       <div class="relative w-full">
         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
           <i data-lucide="search" class="w-5 h-5"></i>
@@ -139,22 +137,21 @@
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
+    </div>
 
-      <!-- 카테고리 탭 (가로 스크롤 및 상단 고정 네비게이션) -->
-      <div id="categoryTabsSticky" class="sticky top-16 z-20 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-2.5 bg-slate-50/90 dark:bg-slate-950/90 backdrop-blur-md border-y border-slate-200/80 dark:border-slate-800/80 transition-all">
-        <div class="flex items-center justify-between gap-2 overflow-x-auto pb-1 scrollbar-none">
-          <div id="categoryTabs" class="flex items-center gap-2 flex-nowrap">
-            <!-- JS에서 동적 탭 렌더링 -->
-          </div>
-
-          <!-- 북마크 필터 버튼 -->
-          <button id="bookmarkTabBtn" class="flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition border border-amber-300 dark:border-amber-900/60 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300 hover:bg-amber-100 cursor-pointer">
-            <i data-lucide="star" class="w-4 h-4 fill-amber-400 text-amber-500"></i>
-            <span>북마크 (<span id="bookmarkCount">0</span>)</span>
-          </button>
+    <!-- 카테고리 탭 (상단 고정 Sticky Navigation - 스크롤 시 상단에 항상 고정 노출) -->
+    <div id="categoryTabsSticky" class="sticky top-16 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-3 my-4 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-y border-slate-200/80 dark:border-slate-800/80 shadow-sm transition-all">
+      <div class="max-w-7xl mx-auto flex items-center justify-between gap-2 overflow-x-auto pb-0.5 scrollbar-none">
+        <div id="categoryTabs" class="flex items-center gap-2 flex-nowrap">
+          <!-- JS에서 동적 탭 렌더링 -->
         </div>
-      </div>
 
+        <!-- 북마크 필터 버튼 -->
+        <button id="bookmarkTabBtn" class="flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition border border-amber-300 dark:border-amber-900/60 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300 hover:bg-amber-100 cursor-pointer">
+          <i data-lucide="star" class="w-4 h-4 fill-amber-400 text-amber-500"></i>
+          <span>북마크 (<span id="bookmarkCount">0</span>)</span>
+        </button>
+      </div>
     </div>
 
     <!-- 기사 리스트 영역 -->
@@ -301,6 +298,6 @@
   </footer>
 
   <!-- 스크립트 로드 -->
-  <script src="./static/app.js?v=20260908_2105"></script>
+  <script src="./static/app.js?v=20260908_2125"></script>
 </body>
 </html>
