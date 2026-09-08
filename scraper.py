@@ -355,20 +355,6 @@ CONTESTS_JSON_PATH = os.path.join(DATA_DIR, "contests.json")
 # 1. 대표 정기 토목 공모전 & 경진대회 데이터 (공식 웹사이트 연동)
 FEATURED_CONTESTS = [
     {
-        "id": "fc-1",
-        "title": "2026 스마트건설 챌린지",
-        "organizer": "국토교통부 · 한국건설기술연구원",
-        "category": "스마트·기술",
-        "badge_color": "indigo",
-        "prize": "총 상금 3억 원 · 국토교통부 장관상 5점",
-        "target": "기업, 대학(원)생, 연구자, 일반",
-        "status": "접수마감",
-        "status_color": "slate",
-        "period": "2026.06.15 ~ 07.14 (접수마감)",
-        "description": "스마트 안전, 단지·도로 BIM, 철도 스마트 유지관리 등 5대 토목·인프라 첨단 시공 및 관리기술 경진대회",
-        "link": "https://smartconstchallenge.com/main?mc_code=1110"
-    },
-    {
         "id": "fc-2",
         "title": "제15회 도로경관디자인 대전",
         "organizer": "한국도로공사 (후원 국토교통부)",
@@ -381,62 +367,6 @@ FEATURED_CONTESTS = [
         "period": "2026.08.24 ~ 10.29 (18:00 마감)",
         "description": "휴게소 보행안전, 지하고속도로 입출구부, 생태통로 등 인프라 시설물의 심미성과 안전성을 높이는 디자인 공모",
         "link": "https://www.ex-contest.co.kr/design26"
-    },
-    {
-        "id": "fc-3",
-        "title": "2026 건설 추락사고 예방 콘텐츠 공모전",
-        "organizer": "국토교통부 · 고용노동부 · 안전보건공단",
-        "category": "지반·안전",
-        "badge_color": "amber",
-        "prize": "총 상금 3,200만원 · 대상 4점(각 500만원) 장관상",
-        "target": "전 국민 누구나 (학생, 건설현장 근로자, 일반)",
-        "status": "접수예정",
-        "status_color": "blue",
-        "period": "2026.09.14 ~ 10.13 (18:00 마감)",
-        "description": "건설현장 추락재해 예방을 위한 숏폼 영상, 정책제안 및 신기술·현장개선 우수사례 대국민 공모",
-        "link": "https://www.safecontest.kr/summary"
-    },
-    {
-        "id": "fc-4",
-        "title": "2026 삼성 EPC 3사 콘테크(Con-Tech) 공모전",
-        "organizer": "삼성물산 · 삼성E&A · 삼성중공업",
-        "category": "스마트·기술",
-        "badge_color": "indigo",
-        "prize": "기술개발 지원금 · Test Bed 실증 및 공동개발 협력",
-        "target": "국내 중소기업, 스타트업, 대학(원) 및 산학협력단",
-        "status": "접수마감",
-        "status_color": "slate",
-        "period": "2026.07.20 ~ 08.21 (접수마감)",
-        "description": "토목·건축, 플랜트, 조선해양 분야 DT, AI 기반 스마트 자동화 시공, BIM, 친환경 인프라 기술 공모",
-        "link": "https://www.samsungena.com/kr/newsroom/news/view?idx=15836"
-    },
-    {
-        "id": "fc-5",
-        "title": "제17회 LH 국토기술대전",
-        "organizer": "한국토지주택공사 (LH)",
-        "category": "스마트·기술",
-        "badge_color": "indigo",
-        "prize": "총 상금 1,800만원 · LH 사장상 · 신입사원 서류면제",
-        "target": "전국 대학(원)생 (휴학생 및 졸업예정자 포함 / 2인 이내)",
-        "status": "접수마감",
-        "status_color": "slate",
-        "period": "2026.07.27 ~ 08.28 (접수마감)",
-        "description": "스마트건설, 안전도시, 모빌리티 혁신, ESG, AI·빅데이터 기반 국토도시 인프라 기술 아이디어 공모",
-        "link": "https://lh.or.kr/land/intro.do"
-    },
-    {
-        "id": "fc-6",
-        "title": "대한토목학회 제29회 토목의 날 경진대회",
-        "organizer": "대한토목학회 (후원 국토교통부)",
-        "category": "학회·대학생",
-        "badge_color": "blue",
-        "prize": "국토교통부 장관상 · 대한토목학회 회장상",
-        "target": "전국 토목공학 관련 학과 대학(원)생",
-        "status": "접수마감",
-        "status_color": "slate",
-        "period": "2025.12.08 ~ 2026.02.16 (접수마감)",
-        "description": "토목구조물 모형경진대회, 토목 홍보 디지털 포스터 및 동영상 경진대회, 캡스톤 디자인 어워즈",
-        "link": "http://civilday.ksce.or.kr"
     },
     {
         "id": "fc-7",
@@ -453,46 +383,32 @@ FEATURED_CONTESTS = [
         "link": "http://www.startupwater.net"
     },
     {
-        "id": "fc-13",
-        "title": "K-water 대국민 물 빅데이터 공모전",
-        "organizer": "한국수자원공사 (K-water)",
-        "category": "수자원·환경",
-        "badge_color": "cyan",
-        "prize": "K-water 사장상 · 총 상금 1,500만원 · 범정부 본선 진출",
-        "target": "대한민국 국민 누구나 (대학생, 일반, 예비창업자)",
-        "status": "접수마감",
-        "status_color": "slate",
-        "period": "2026.05.20 ~ 07.12 (접수마감)",
-        "description": "국가 물정보포털(MyWater) 공공데이터 기반 홍수·가뭄 예측 및 스마트 수자원 인프라 분석 아이디어",
-        "link": "https://www.water.or.kr/kor/board/index.do?bid=BD_00017&mode=list&menuId=17_189"
+        "id": "fc-11",
+        "title": "SK에코플랜트 2026 콘테크 미트업 데이 공모전",
+        "organizer": "SK에코플랜트",
+        "category": "스마트·기술",
+        "badge_color": "indigo",
+        "prize": "공동 R&D 자금 지원 및 사업화·투자유치 협력 기회",
+        "target": "스마트 건설 스타트업 및 중소·중견기업",
+        "status": "접수중",
+        "status_color": "emerald",
+        "period": "2026.09.07 ~ 09.30 (접수마감)",
+        "description": "AI 데이터센터, OSC(탈현장 시공), 시공 자동화 로봇, 안전 및 친환경 인프라 혁신 솔루션 공모",
+        "link": "https://innobranch.com/front/challenge/detail/1451"
     },
     {
-        "id": "fc-8",
-        "title": "지하안전관리 우수사례 및 대국민 아이디어 공모전",
-        "organizer": "국토교통부 · 국토안전관리원",
+        "id": "fc-3",
+        "title": "2026 건설 추락사고 예방 콘텐츠 공모전",
+        "organizer": "국토교통부 · 고용노동부 · 안전보건공단",
         "category": "지반·안전",
         "badge_color": "amber",
-        "prize": "국토교통부 장관상 · 국토안전관리원장상",
-        "target": "토목 현장 실무자, 지자체 공무원, 대학생 및 일반 국민",
-        "status": "접수마감",
-        "status_color": "slate",
-        "period": "2026.06.09 ~ 08.08 (접수마감)",
-        "description": "지하시설물 안전관리, 굴착공사 지반침하(싱크홀) 예방, 토목공사 현장 안전관리 우수기술 및 아이디어",
-        "link": "https://www.jis.go.kr"
-    },
-    {
-        "id": "fc-9",
-        "title": "코레일 차세대 KTX & 철도 인프라 아이디어 공모전",
-        "organizer": "한국철도공사 (코레일)",
-        "category": "철도·인프라",
-        "badge_color": "indigo",
-        "prize": "한국철도공사 사장상 · 포상금 수여",
-        "target": "전 국민 누구나",
-        "status": "접수마감",
-        "status_color": "slate",
-        "period": "2026.07.01 ~ 07.30 (접수마감)",
-        "description": "차세대 KTX(EMU-320) 차내 시설, 철도 역사 인프라 안전 시스템 및 여객 편의 혁신 아이디어",
-        "link": "https://info.korail.com/info/selectBbsNttList.do?key=911&bbsNo=199"
+        "prize": "총 상금 3,200만원 · 대상 4점(각 500만원) 장관상",
+        "target": "전 국민 누구나 (학생, 건설현장 근로자, 일반)",
+        "status": "접수예정",
+        "status_color": "blue",
+        "period": "2026.09.14 ~ 10.13 (18:00 마감)",
+        "description": "건설현장 추락재해 예방을 위한 숏폼 영상, 정책제안 및 신기술·현장개선 우수사례 대국민 공모",
+        "link": "https://www.safecontest.kr/summary"
     },
     {
         "id": "fc-10",
@@ -506,64 +422,102 @@ FEATURED_CONTESTS = [
         "status_color": "purple",
         "period": "2026.01.27 ~ 12.31 (상시접수)",
         "description": "철도 폐선부지, 복합역사 하부공간 및 선로 유휴부지를 활용한 주민친화 공간 조성 및 개발 제안",
-        "link": "https://www.kr.or.kr"
+        "link": "https://www.kr.or.kr/boardCnts/view.do?boardID=52&boardSeq=1122113"
     },
     {
-        "id": "fc-11",
-        "title": "SK에코플랜트 2026 콘테크 미트업 데이 공모전",
-        "organizer": "SK에코플랜트",
+        "id": "fc-1",
+        "title": "2026 스마트건설 챌린지",
+        "organizer": "국토교통부 · 한국건설기술연구원",
         "category": "스마트·기술",
         "badge_color": "indigo",
-        "prize": "공동 R&D 자금 지원 및 사업화·투자유치 협력 기회",
-        "target": "스마트 건설 스타트업 및 중소·중견기업",
-        "status": "접수중",
-        "status_color": "emerald",
-        "period": "2026.09.07 ~ 09.30 (접수마감)",
-        "description": "AI 데이터센터, OSC(탈현장 시공), 시공 자동화 로봇, 안전 및 친환경 인프라 혁신 솔루션 공모",
-        "link": "https://news.skecoplant.com/board/19268"
-    },
-    {
-        "id": "fc-12",
-        "title": "제7회 건설·교통신기술 창작 공모전",
-        "organizer": "한국건설교통신기술협회 · 국토교통부",
-        "category": "스마트·기술",
-        "badge_color": "indigo",
-        "prize": "국토교통부 장관 표창 · 협회장상",
-        "target": "시공사, 엔지니어링사, 발주청, 대학생 및 일반 국민",
+        "prize": "총 상금 3억 원 · 국토교통부 장관상 5점",
+        "target": "기업, 대학(원)생, 연구자, 일반",
         "status": "접수마감",
         "status_color": "slate",
-        "period": "2026.02.09 ~ 03.13 (접수마감)",
-        "description": "토목·교통 건설신기술 현장 적용 우수사례 발굴 및 건설신기술 홍보 슬로건·영상·사진 공모",
-        "link": "http://www.kcna.or.kr/notice/notify.php"
+        "period": "2026.06.15 ~ 07.14 (접수마감)",
+        "description": "스마트 안전, 단지·도로 BIM, 철도 스마트 유지관리 등 5대 토목·인프라 첨단 시공 및 관리기술 경진대회",
+        "link": "https://smartconstchallenge.com/main/"
+    },
+    {
+        "id": "fc-4",
+        "title": "2026 삼성 EPC 3사 콘테크(Con-Tech) 공모전",
+        "organizer": "삼성물산 · 삼성E&A · 삼성중공업",
+        "category": "스마트·기술",
+        "badge_color": "indigo",
+        "prize": "기술개발 지원금 · Test Bed 실증 및 공동개발 협력",
+        "target": "국내 중소기업, 스타트업, 대학(원) 및 산학협력단",
+        "status": "접수마감",
+        "status_color": "slate",
+        "period": "2026.07.20 ~ 08.21 (접수마감)",
+        "description": "토목·건축, 플랜트, 조선해양 분야 DT, AI 기반 스마트 자동화 시공, BIM, 친환경 인프라 기술 공모",
+        "link": "https://www.samsungena.com/kr/newsroom/news/view?idx=15836"
+    },
+    {
+        "id": "fc-13",
+        "title": "K-water 대국민 물 빅데이터 공모전",
+        "organizer": "한국수자원공사 (K-water)",
+        "category": "수자원·환경",
+        "badge_color": "cyan",
+        "prize": "K-water 사장상 · 총 상금 1,500만원 · 범정부 본선 진출",
+        "target": "대한민국 국민 누구나 (대학생, 일반, 예비창업자)",
+        "status": "접수마감",
+        "status_color": "slate",
+        "period": "2026.05.20 ~ 07.12 (접수마감)",
+        "description": "국가 물정보포털(MyWater) 공공데이터 기반 홍수·가뭄 예측 및 스마트 수자원 인프라 분석 아이디어",
+        "link": "https://www.kwater.or.kr/danbitoktok/kor/citizenContest/view/50917898-5158-47ce-a632-d77454b90d1e.do"
+    },
+    {
+        "id": "fc-8",
+        "title": "지하안전관리 우수사례 및 대국민 아이디어 공모전",
+        "organizer": "국토교통부 · 국토안전관리원",
+        "category": "지반·안전",
+        "badge_color": "amber",
+        "prize": "국토교통부 장관상 · 국토안전관리원장상",
+        "target": "토목 현장 실무자, 지자체 공무원, 대학생 및 일반 국민",
+        "status": "접수마감",
+        "status_color": "slate",
+        "period": "2026.06.09 ~ 08.08 (접수마감)",
+        "description": "지하시설물 안전관리, 굴착공사 지반침하(싱크홀) 예방, 토목공사 현장 안전관리 우수기술 및 아이디어",
+        "link": "https://www.jis.go.kr/community/boa01005_popup.do?board_no=1207"
+    },
+    {
+        "id": "fc-9",
+        "title": "코레일 차세대 KTX & 철도 인프라 아이디어 공모전",
+        "organizer": "한국철도공사 (코레일)",
+        "category": "철도·인프라",
+        "badge_color": "indigo",
+        "prize": "한국철도공사 사장상 · 포상금 수여",
+        "target": "전 국민 누구나",
+        "status": "접수마감",
+        "status_color": "slate",
+        "period": "2026.07.01 ~ 07.30 (접수마감)",
+        "description": "차세대 KTX(EMU-320) 차내 시설, 철도 역사 인프라 안전 시스템 및 여객 편의 혁신 아이디어",
+        "link": "https://info.korail.com/info/selectBbsNttView.do?key=911&bbsNo=199&nttNo=26949&searchCtgry=&searchCnd=all&searchKrwd=&integrDeptCode=&pageIndex=1"
     }
 ]
 
 # 2. 공식 주최 기관 웹사이트 매핑 룰 (전용 공모전 상세 공고문/접수처 1순위 직결 매핑)
 OFFICIAL_CONTEST_MAPPINGS = [
-    (["스마트건설", "챌린지"], "https://smartconstchallenge.com/main?mc_code=1110", "국토교통부 · 한국건설기술연구원"),
-    (["스마트건설챌린지"], "https://smartconstchallenge.com/main?mc_code=1110", "국토교통부 · 한국건설기술연구원"),
+    (["스마트건설", "챌린지"], "https://smartconstchallenge.com/main/", "국토교통부 · 한국건설기술연구원"),
+    (["스마트건설챌린지"], "https://smartconstchallenge.com/main/", "국토교통부 · 한국건설기술연구원"),
     (["도로경관", "디자인"], "https://www.ex-contest.co.kr/design26", "한국도로공사"),
     (["도로경관디자인"], "https://www.ex-contest.co.kr/design26", "한국도로공사"),
     (["도로공사", "디자인"], "https://www.ex-contest.co.kr/design26", "한국도로공사"),
     (["추락사고", "예방"], "https://www.safecontest.kr/summary", "국토교통부 · 고용노동부"),
     (["추락사고예방"], "https://www.safecontest.kr/summary", "국토교통부 · 고용노동부"),
     (["추락", "예방"], "https://www.safecontest.kr/summary", "국토교통부 · 고용노동부"),
-    (["토목학회", "토목의 날"], "https://www.ksce.or.kr/not/default.asp?gbn=6&htop=MN0031&ctop=MN0048&ptop=MN0031", "대한토목학회"),
-    (["토목의 날"], "https://www.ksce.or.kr/not/default.asp?gbn=6&htop=MN0031&ctop=MN0048&ptop=MN0031", "대한토목학회"),
-    (["토목의날"], "https://www.ksce.or.kr/not/default.asp?gbn=6&htop=MN0031&ctop=MN0048&ptop=MN0031", "대한토목학회"),
     (["물산업", "창업대전"], "http://www.startupwater.net", "환경부 · 한국수자원공사"),
     (["물산업혁신"], "http://www.startupwater.net", "환경부 · 한국수자원공사"),
-    (["수자원공사", "물빅데이터"], "https://www.water.or.kr/kor/board/index.do?bid=BD_00017&mode=list&menuId=17_189", "한국수자원공사 · 환경부"),
-    (["물빅데이터"], "https://www.water.or.kr/kor/board/index.do?bid=BD_00017&mode=list&menuId=17_189", "한국수자원공사 · 환경부"),
-    (["수자원공사", "물산업"], "https://www.water.or.kr/kor/board/index.do?bid=BD_00017&mode=list&menuId=17_189", "한국수자원공사"),
-    (["지하안전", "국토안전관리원"], "https://www.jis.go.kr/community/boa01005_list.do", "국토안전관리원 · 국토교통부"),
-    (["지하안전"], "https://www.jis.go.kr/community/boa01005_list.do", "국토안전관리원 · 국토교통부"),
-    (["국토기술대전"], "https://lh.or.kr/land/intro.do", "한국토지주택공사 (LH)"),
-    (["철도공사", "코레일"], "https://info.korail.com/info/selectBbsNttList.do?key=911&bbsNo=199", "한국철도공사"),
-    (["철도공단"], "https://www.kr.or.kr/boardCnts/list.do?boardID=1100660", "국가철도공단"),
-    (["sk에코플랜트", "콘테크"], "https://news.skecoplant.com/board/19268", "SK에코플랜트"),
+    (["수자원공사", "물빅데이터"], "https://www.kwater.or.kr/danbitoktok/kor/citizenContest/view/50917898-5158-47ce-a632-d77454b90d1e.do", "한국수자원공사"),
+    (["물빅데이터"], "https://www.kwater.or.kr/danbitoktok/kor/citizenContest/view/50917898-5158-47ce-a632-d77454b90d1e.do", "한국수자원공사"),
+    (["지하안전", "국토안전관리원"], "https://www.jis.go.kr/community/boa01005_popup.do?board_no=1207", "국토안전관리원 · 국토교통부"),
+    (["지하안전"], "https://www.jis.go.kr/community/boa01005_popup.do?board_no=1207", "국토안전관리원 · 국토교통부"),
+    (["철도공사", "코레일"], "https://info.korail.com/info/selectBbsNttView.do?key=911&bbsNo=199&nttNo=26949&searchCtgry=&searchCnd=all&searchKrwd=&integrDeptCode=&pageIndex=1", "한국철도공사"),
+    (["철도공단", "유휴부지"], "https://www.kr.or.kr/boardCnts/view.do?boardID=52&boardSeq=1122113", "국가철도공단"),
+    (["유휴부지"], "https://www.kr.or.kr/boardCnts/view.do?boardID=52&boardSeq=1122113", "국가철도공단"),
+    (["sk에코플랜트", "콘테크"], "https://innobranch.com/front/challenge/detail/1451", "SK에코플랜트"),
+    (["미트업", "sk에코플랜트"], "https://innobranch.com/front/challenge/detail/1451", "SK에코플랜트"),
     (["콘테크", "삼성"], "https://www.samsungena.com/kr/newsroom/news/view?idx=15836", "삼성물산 · 삼성E&A · 삼성중공업"),
-    (["건설교통신기술", "슬로건"], "http://www.kcna.or.kr/notice/notify.php", "한국건설교통신기술협회"),
     (["혁신제품", "국토교통"], "https://hub.kaia.re.kr", "국토교통과학기술진흥원"),
     (["혁신제품"], "https://hub.kaia.re.kr", "국토교통과학기술진흥원"),
     (["평택항", "항만공사"], "https://www.gppc.or.kr", "경기평택항만공사"),
@@ -598,14 +552,12 @@ FEATURED_KEYWORD_SETS = [
     ["추락사고예방"],
     ["추락", "예방"],
     ["콘테크", "삼성"],
-    ["국토기술대전"],
-    ["토목의 날", "토목학회"],
+    ["물산업", "창업대전"],
     ["물빅데이터"],
     ["지하안전", "아이디어"],
     ["철도 인프라", "철도안전"],
     ["철도 유휴부지"],
-    ["콘테크", "sk에코플랜트"],
-    ["건설교통신기술", "슬로건"]
+    ["콘테크", "sk에코플랜트"]
 ]
 
 def extract_contest_prize(title, snippet):
@@ -623,10 +575,6 @@ def extract_contest_prize(title, snippet):
         return "기후에너지환경부 장관상 · 총 상금 2,000만원"
     if "물빅데이터" in combined:
         return "K-water 사장상 · 총 상금 1,500만원"
-    if "국토기술대전" in combined:
-        return "국토교통부 장관상 · LH 사장상"
-    if "토목의 날" in combined or "토목의날" in combined:
-        return "국토교통부 장관상 · 대한토목학회 회장상"
         
     # 정규식 패턴 탐색
     prize_patterns = [
@@ -654,8 +602,6 @@ def extract_contest_period(title, snippet, default_date_str=""):
         return "2026.08.24 ~ 10.29 (18:00 마감)"
     if "추락사고" in combined and "예방" in combined:
         return "2026.09.14 ~ 10.13 (18:00 마감)"
-    if "LH" in combined and "국토기술대전" in combined:
-        return "2026.07.27 ~ 08.28 (접수마감)"
     if "물산업" in combined and "창업대전" in combined:
         return "2026.08.20 ~ 10.19 (접수마감)"
     if "물빅데이터" in combined:
@@ -739,7 +685,7 @@ def scrape_civil_contests():
             # (5) 군집화 키워드 추출 (동일 공모전 중복 기사 제거)
             title_clean = re.sub(r'[^a-zA-Z0-9가-힣]', '', title_lower)
             cluster_key = None
-            for key_cand in ["물산업", "물빅데이터", "토목의날", "안전이용", "지하안전", "평택항", "스마트건설대상", "혁신제품"]:
+            for key_cand in ["물산업", "물빅데이터", "안전이용", "지하안전", "평택항", "스마트건설대상", "혁신제품"]:
                 if key_cand in title_lower:
                     cluster_key = key_cand
                     break
