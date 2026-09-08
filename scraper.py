@@ -231,6 +231,9 @@ def scrape_civil_news():
     # 유사/중복 기사 군집화 (대표 기사 하위에 타 언론사 보도자료 그룹핑)
     final_articles, duplicate_count = cluster_related_articles(all_articles)
     
+    # 조회수 높은 순으로 기본 정렬 (인기 기사 최우선 노출)
+    final_articles.sort(key=lambda x: x.get("views", 0), reverse=True)
+    
     # 결과 구조체
     now_kst = datetime.now(kst)
     result_data = {

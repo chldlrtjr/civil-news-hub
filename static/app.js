@@ -5,7 +5,7 @@ let categories = [];
 let activeCategory = 'all';
 let isBookmarkView = false;
 let searchQuery = '';
-let currentSort = 'newest';
+let currentSort = 'views'; // 기본 정렬: 조회순 (인기순)
 let bookmarks = new Set();
 let userViews = {};
 
@@ -569,11 +569,15 @@ function setupEventListeners() {
   });
   
   // 정렬 셀렉트
-  document.getElementById('sortSelect').addEventListener('change', (e) => {
-    currentSort = e.target.value;
-    displayedCount = PAGE_SIZE;
-    renderArticles();
-  });
+  const sortSelect = document.getElementById('sortSelect');
+  if (sortSelect) {
+    sortSelect.value = currentSort;
+    sortSelect.addEventListener('change', (e) => {
+      currentSort = e.target.value;
+      displayedCount = PAGE_SIZE;
+      renderArticles();
+    });
+  }
   
   // 빈 상태 리셋 버튼
   document.getElementById('resetFilterBtn').addEventListener('click', () => {
@@ -581,6 +585,8 @@ function setupEventListeners() {
     activeCategory = 'all';
     searchQuery = '';
     searchInput.value = '';
+    currentSort = 'views';
+    if (sortSelect) sortSelect.value = 'views';
     displayedCount = PAGE_SIZE;
     clearBtn.classList.add('hidden');
     renderCategoryTabs();
