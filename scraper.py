@@ -228,26 +228,127 @@ def scrape_civil_news():
     # 최신순 정렬
     all_articles.sort(key=lambda x: x["iso_date"], reverse=True)
     
+    # 유사/중복 기사 군집화 (대표 기사 하위에 타 언론사 보도자료 그룹핑)
+    final_articles, duplicate_count = cluster_related_articles(all_articles)
+    
     # 결과 구조체
     now_kst = datetime.now(kst)
     result_data = {
         "last_updated": now_kst.strftime("%Y-%m-%d %H:%M:%S"),
         "last_updated_display": now_kst.strftime("%m월 %d일 %H:%M"),
-        "total_count": len(all_articles),
+        "total_count": len(final_articles),
+        "raw_total_count": len(all_articles),
+        "duplicate_count": duplicate_count,
         "categories": [
             {"id": "all", "name": "전체 보기", "badge_color": "slate"}
         ] + [
             {"id": c["id"], "name": c["name"], "badge_color": c["badge_color"]} for c in CATEGORIES
         ],
-        "articles": all_articles
+        "articles": final_articles
     }
     
     os.makedirs(DATA_DIR, exist_ok=True)
     with open(NEWS_JSON_PATH, "w", encoding="utf-8") as f:
         json.dump(result_data, f, ensure_ascii=False, indent=2)
         
-    print(f"✅ 총 {len(all_articles)}건의 순수 토목 기사가 최종 정리되었습니다. ({NEWS_JSON_PATH})")
+    print(f"✅ 총 {len(final_articles)}건의 토픽 기사 (중복 {duplicate_count}건 묶음) 저장 완료! ({NEWS_JSON_PATH})")
     return result_data
+
+CLUSTER_STOPWORDS = {
+    '토목', '건설', '공사', '도로', '철도', '터널', '교량', '사업', '시공', '한국', 
+    '고속도로', '지하철', '인프라', '국토부', '국토교통부', '현장', '안전', '점검', 
+    '추진', '본격', '선정', '착공', '개통', '발주', '수주', '사업비', '조원', '억원', 
+    '지역', '전국', '계획', '발표', '시작', '마련', '개최', '참여', '지원', '협력', 
+    '체결', '업무협약', '대책', '확정', '회의', '논의', '개발', '조성', '구축', 
+    '도입', '확대', '운영', '관리', '실시', '진행', '완공', '연내', '내년', '올해', 
+    '기자', '뉴스', '보도', '사진', '종합', '단독', '속보', '포토', '투자', '설계',
+    '정부', '지자체', '공개', '강화', '조사', '위해', '통해', '관련', '위한',
+    '국가철도망', '구축계획', '총력', '반영', '유치', '건의', '촉구', '호재',
+    '기자회견', '간담회', '주민설명회', '설명회', '토론회', '맞손', '업무'
+}
+
+CLUSTER_BROAD_WORDS = {'서울', '경기', '부산', '대구', '인천', '광주', '대전', '울산', '스마트', '기술', '친환경', '시스템'}
+
+def extract_article_keywords(title):
+    t = re.sub(r'\[.*?\]|\(.*?\)|<.*?>', ' ', title)
+    t = re.sub(r'[^a-zA-Z0-9가-힣]', ' ', t)
+    raw_words = t.split()
+    tokens = set()
+    for w in raw_words:
+        w_lower = w.lower()
+        if len(w) >= 2 and w not in CLUSTER_STOPWORDS and w_lower not in CLUSTER_STOPWORDS:
+            tokens.add(w)
+    return tokens
+
+def is_similar_article(title_a, tokens_a, title_b, tokens_b):
+    if not tokens_a or not tokens_b:
+        return False
+    inter = tokens_a & tokens_b
+    if not inter:
+        return False
+    non_broad = [w for w in inter if w not in CLUSTER_BROAD_WORDS]
+    if not non_broad:
+        return False
+        
+    dice = (2 * len(inter)) / (len(tokens_a) + len(tokens_b))
+    
+    # 조건 1: 구체적인 공통 키워드가 2개 이상이고 Dice 계수 0.28 이상
+    if len(non_broad) >= 2 and dice >= 0.28:
+        return True
+        
+    # 조건 2: 4글자 이상의 고유 프로젝트/지명 키워드 일치 & Dice 0.35 이상
+    if len(non_broad) >= 1:
+        long_kw = [w for w in non_broad if len(w) >= 4]
+        if long_kw and dice >= 0.35:
+            return True
+        if len(inter) >= 2 and dice >= 0.38:
+            return True
+            
+    # 조건 3: 특수문자 제거 후 앞 14글자가 일치하는 경우
+    clean_a = re.sub(r'[^가-힣0-9]', '', title_a)[:14]
+    clean_b = re.sub(r'[^가-힣0-9]', '', title_b)[:14]
+    if len(clean_a) >= 10 and clean_a == clean_b:
+        return True
+        
+    return False
+
+def cluster_related_articles(articles):
+    """동일/유사 보도자료를 발행한 타 언론사 기사들을 대표 기사 하위로 묶음 (Option 2)"""
+    clusters = []
+    for art in articles:
+        tokens = extract_article_keywords(art['title'])
+        placed = False
+        for cluster in clusters:
+            primary = cluster['primary']
+            if is_similar_article(primary['title'], cluster['tokens'], art['title'], tokens):
+                cluster['related'].append({
+                    'id': art['id'],
+                    'title': art['title'],
+                    'link': art['link'],
+                    'publisher': art['publisher'],
+                    'relative_date': art.get('relative_date', '최근'),
+                    'published_at': art.get('published_at', '')
+                })
+                placed = True
+                break
+        if not placed:
+            clusters.append({
+                'primary': art,
+                'tokens': tokens,
+                'related': []
+            })
+            
+    final_articles = []
+    total_duplicates = 0
+    for c in clusters:
+        item = c['primary']
+        item['related_articles'] = c['related']
+        total_duplicates += len(c['related'])
+        final_articles.append(item)
+        
+    print(f"📊 [유사기사 군집화 완료] 대표 토픽 {len(final_articles)}건 (중복 기사 {total_duplicates}건 하위 그룹핑)")
+    return final_articles, total_duplicates
+
 
 CONTESTS_JSON_PATH = os.path.join(DATA_DIR, "contests.json")
 
