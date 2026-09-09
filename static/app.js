@@ -523,6 +523,34 @@ function renderArticleCard(article) {
 window.renderArticleCard = renderArticleCard;
 
 // 6. 메인 뉴스 렌더링
+const NEWS_CATEGORY_META = {
+  general: {
+    icon: 'newspaper',
+    iconBg: 'bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400',
+    badge: 'bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-900'
+  },
+  road_rail: {
+    icon: 'train',
+    iconBg: 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400',
+    badge: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900'
+  },
+  water_port: {
+    icon: 'droplets',
+    iconBg: 'bg-cyan-100 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400',
+    badge: 'bg-cyan-50 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-300 border-cyan-200 dark:border-cyan-900'
+  },
+  tunnel_geo: {
+    icon: 'shield-check',
+    iconBg: 'bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400',
+    badge: 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-900'
+  },
+  smart_policy: {
+    icon: 'cpu',
+    iconBg: 'bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400',
+    badge: 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-900'
+  }
+};
+
 function renderArticles() {
   const container = document.getElementById('categorySectionsContainer');
   const emptyState = document.getElementById('newsEmptyState');
@@ -552,18 +580,18 @@ function renderArticles() {
     if (notice) notice.textContent = `⭐ 마이페이지 기사 총 ${filteredBookmarks.length}건`;
 
     container.innerHTML = `
-      <section class="bg-transparent sm:bg-white dark:sm:bg-slate-900/80 border-0 sm:border border-amber-200 dark:border-amber-900/60 rounded-none sm:rounded-3xl p-0 sm:p-7 shadow-none sm:shadow-xs">
-        <div class="flex items-center justify-between pb-3 sm:pb-4 mb-4 sm:mb-5 border-b border-amber-200/70 sm:border-amber-100 dark:border-amber-900/40 px-1 sm:px-0">
+      <section class="scroll-mt-16 sm:scroll-mt-36">
+        <div class="flex items-center justify-between pb-3.5 mb-5 border-b border-slate-200/80 dark:border-slate-800 px-1">
           <div class="flex items-center gap-2.5">
             <span class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 flex items-center justify-center font-bold">
               <i data-lucide="bookmark" class="w-4 h-4 fill-amber-500 text-amber-500"></i>
             </span>
             <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               마이페이지 · 저장한 기사
-              <span class="text-xs px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 font-semibold border border-amber-200 dark:border-amber-900">
-                ${filteredBookmarks.length}건
-              </span>
             </h3>
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 font-semibold border border-amber-200 dark:border-amber-900">
+              ${filteredBookmarks.length}건
+            </span>
           </div>
           <button onclick="activeNewsCategory='all'; window.toggleCurrentTabBookmark(false);" class="text-xs font-semibold text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 flex items-center gap-1 cursor-pointer">
             전체 기사로 돌아가기
@@ -600,15 +628,18 @@ function renderArticles() {
     if (notice) notice.textContent = `'${newsSearchQuery}' 검색 결과 총 ${searchResults.length}건`;
 
     container.innerHTML = `
-      <section class="bg-transparent sm:bg-white dark:sm:bg-slate-900 border-0 sm:border border-slate-200 dark:border-slate-800 rounded-none sm:rounded-3xl p-0 sm:p-7 shadow-none sm:shadow-xs">
-        <div class="flex items-center justify-between pb-3 sm:pb-4 mb-4 sm:mb-5 border-b border-slate-200/70 sm:border-slate-100 dark:border-slate-800 px-1 sm:px-0">
-          <div class="flex items-center gap-2">
+      <section class="scroll-mt-16 sm:scroll-mt-36">
+        <div class="flex items-center justify-between pb-3.5 mb-5 border-b border-slate-200/80 dark:border-slate-800 px-1">
+          <div class="flex items-center gap-2.5">
+            <span class="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+              <i data-lucide="search" class="w-4 h-4"></i>
+            </span>
             <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               '${newsSearchQuery}' 검색 결과
-              <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-semibold border border-blue-200 dark:border-blue-900">
-                ${searchResults.length}건
-              </span>
             </h3>
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-semibold border border-blue-200 dark:border-blue-900">
+              ${searchResults.length}건
+            </span>
           </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
@@ -634,22 +665,31 @@ function renderArticles() {
     const hasMore = catArticles.length > currentCount;
     const remainingCount = catArticles.length - currentCount;
 
+    const meta = NEWS_CATEGORY_META[cat.id] || {
+      icon: 'folder',
+      iconBg: 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300',
+      badge: 'bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800'
+    };
+
     return `
-      <section id="section-${cat.id}" class="scroll-mt-16 sm:scroll-mt-36 bg-transparent sm:bg-white dark:sm:bg-slate-900 border-0 sm:border border-slate-200/90 dark:border-slate-800 rounded-none sm:rounded-3xl p-0 sm:p-7 shadow-none sm:shadow-xs mb-8 sm:mb-0">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 sm:pb-4 mb-4 sm:mb-5 border-b border-slate-200/70 sm:border-slate-100 dark:border-slate-800 px-1 sm:px-0 gap-2">
-          <div>
-            <div class="flex items-center gap-2">
-              <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                ${cat.name}
-              </h3>
-              <span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-semibold border border-slate-200/60 dark:border-slate-700">
-                총 ${catArticles.length}건
-              </span>
-            </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 pl-0.5">
-              ${cat.description || '최신 토목 인프라 및 기술 뉴스'}
-            </p>
+      <section id="section-${cat.id}" class="scroll-mt-16 sm:scroll-mt-36">
+        <div class="flex items-center justify-between pb-3.5 mb-5 border-b border-slate-200/80 dark:border-slate-800 px-1">
+          <div class="flex items-center gap-2.5">
+            <span class="w-8 h-8 rounded-xl ${meta.iconBg} flex items-center justify-center font-bold">
+              <i data-lucide="${meta.icon}" class="w-4 h-4"></i>
+            </span>
+            <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              ${cat.name}
+            </h3>
+            <span class="text-xs px-2.5 py-0.5 rounded-full ${meta.badge} font-semibold border">
+              총 ${catArticles.length}건
+            </span>
           </div>
+          ${cat.description ? `
+            <span class="hidden sm:inline-block text-xs text-slate-500 dark:text-slate-400">
+              ${cat.description}
+            </span>
+          ` : ''}
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
