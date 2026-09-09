@@ -132,107 +132,19 @@ function getUrgentJobs() {
   });
 }
 
-// 3-2. 긴급 마감 임박 공고 배너 동적 렌더링
+// 3-2. 긴급 마감 임박 공고 배너 (알림 제거됨)
 function renderJobUrgentBanner() {
   const container = document.getElementById('jobUrgentBannerContainer');
-  const toggleBtn = document.getElementById('jobUrgentToggleBtn');
-  const countBadge = document.getElementById('jobUrgentCountBadge');
-  if (!container) return;
-
-  const urgentJobs = getUrgentJobs();
-  const count = urgentJobs.length;
-
-  // 필터 바 퀵 토글 버튼 상태 동기화
-  if (countBadge) {
-    countBadge.textContent = count;
-    if (count > 0) {
-      countBadge.classList.remove('hidden');
-    } else {
-      countBadge.classList.add('hidden');
-    }
-  }
-
-  if (toggleBtn) {
-    if (isJobUrgentFilterActive) {
-      toggleBtn.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border border-rose-600 bg-rose-600 text-white shadow-sm shadow-rose-500/30 ring-2 ring-rose-500/30 transition cursor-pointer';
-      toggleBtn.innerHTML = `
-        <i data-lucide="flame" class="w-3.5 h-3.5 text-amber-200 animate-bounce"></i>
-        <span>🚨 마감임박(D-3) 필터 해제</span>
-        <span id="jobUrgentCountBadge" class="px-1.5 py-0.2 rounded-full text-[10px] bg-white text-rose-600 font-extrabold">${count}</span>
-      `;
-    } else {
-      toggleBtn.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-rose-200 dark:border-rose-900/60 bg-white dark:bg-slate-900 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer shadow-xs';
-      toggleBtn.innerHTML = `
-        <i data-lucide="flame" class="w-3.5 h-3.5 text-rose-500"></i>
-        <span>🚨 마감임박(D-3)만 보기</span>
-        <span id="jobUrgentCountBadge" class="${count > 0 ? '' : 'hidden'} px-1.5 py-0.2 rounded-full text-[10px] bg-rose-600 text-white font-bold">${count}</span>
-      `;
-    }
-  }
-
-  // D-3 이내 항목이 1개 이상 존재할 때만 배너 표시
-  if (count === 0) {
+  if (container) {
     container.innerHTML = '';
     container.classList.add('hidden');
-    return;
   }
-
-  container.classList.remove('hidden');
-  container.innerHTML = `
-    <div 
-      onclick="toggleJobUrgentFilter()" 
-      class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-rose-500/15 via-red-500/10 to-amber-500/10 dark:from-rose-950/50 dark:via-red-950/40 dark:to-amber-950/30 border border-rose-300 dark:border-rose-800/80 p-3.5 sm:p-4 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer group"
-      role="button"
-      tabindex="0"
-      aria-label="마감 임박 긴급 채용 공고 퀵 필터"
-    >
-      <div class="flex items-center justify-between gap-3">
-        <div class="flex items-center gap-3 min-w-0">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-600 to-red-500 text-white flex items-center justify-center flex-shrink-0 shadow-md shadow-rose-500/30 animate-pulse">
-            <i data-lucide="flame" class="w-5 h-5 text-amber-200"></i>
-          </div>
-          <div class="min-w-0">
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="inline-flex items-center gap-1 text-xs font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wide">
-                🚨 마감 임박 긴급 공고
-              </span>
-              <span class="px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-rose-600 text-white shadow-xs animate-pulse">
-                D-3 이내 (${count}건)
-              </span>
-            </div>
-            <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-200 font-medium truncate mt-0.5">
-              ${isJobUrgentFilterActive 
-                ? '🔥 마감 임박 긴급 공고만 필터링 중입니다. 클릭하면 전체 공고를 다시 확인할 수 있습니다.' 
-                : `접수 마감이 3일 이내로 임박한 공고가 총 ${count}건 있습니다! 서둘러 지원해 보세요.`}
-            </p>
-          </div>
-        </div>
-        <div class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold flex-shrink-0 transition-all ${
-          isJobUrgentFilterActive 
-            ? 'bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900 shadow-sm' 
-            : 'bg-rose-600 text-white shadow-sm shadow-rose-500/25 group-hover:bg-rose-700 group-hover:scale-105'
-        }">
-          <span>${isJobUrgentFilterActive ? '전체 공고 보기' : '마감임박 모아보기'}</span>
-          <i data-lucide="${isJobUrgentFilterActive ? 'x' : 'chevron-right'}" class="w-4 h-4"></i>
-        </div>
-      </div>
-    </div>
-  `;
-
-  if (window.lucide) window.lucide.createIcons();
 }
 
-// 3-3. 퀵 필터 토글 함수
+// 3-3. 퀵 필터 토글 함수 (레거시 안전 처리)
 window.toggleJobUrgentFilter = function() {
-  isJobUrgentFilterActive = !isJobUrgentFilterActive;
-  renderJobUrgentBanner();
+  isJobUrgentFilterActive = false;
   renderJobs();
-  if (isJobUrgentFilterActive) {
-    const urgentCount = getUrgentJobs().length;
-    showJobToast(`🚨 마감 임박(D-3 이내) 공고 ${urgentCount}건만 필터링되었습니다.`);
-  } else {
-    showJobToast('모든 채용 공고를 표시합니다.');
-  }
 };
 
 // 4. 카테고리 탭 렌더링
@@ -505,13 +417,12 @@ function renderJobCard(job) {
   const isBookmarked = jobBookmarks.has(job.id);
   const ddayInfo = calculateDday(job.deadline_date);
 
-  // D-Day 배지 스타일 강화: D-3 이내 항목에는 진한 붉은색/로즈 배경, animate-pulse, 불꽃(flame) 아이콘 추가
+  // D-Day 배지 스타일: 알림/점멸(animate-pulse, flame) 없는 차분한 디자인
   let ddayBadgeHtml = '';
   if (ddayInfo.isUrgent) {
     ddayBadgeHtml = `
-      <span class="inline-flex items-center gap-1 text-xs px-2.5 py-0.5 rounded-full border border-rose-600 bg-rose-600 text-white animate-pulse font-bold flex-shrink-0 shadow-sm shadow-rose-500/30">
-        <i data-lucide="flame" class="w-3.5 h-3.5 text-amber-300 flex-shrink-0"></i>
-        <span>${ddayInfo.text}</span>
+      <span class="text-xs px-2.5 py-0.5 rounded-full border border-rose-200 dark:border-rose-900/60 bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 font-semibold flex-shrink-0">
+        ${ddayInfo.text}
       </span>
     `;
   } else if (ddayInfo.days === 999) {
@@ -682,9 +593,7 @@ function renderJobs() {
   renderJobUrgentBanner();
 
   if (notice) {
-    if (isJobUrgentFilterActive) {
-      notice.innerHTML = `<span class="inline-flex items-center gap-1.5 text-rose-600 dark:text-rose-400 font-bold"><i data-lucide="flame" class="w-4 h-4 text-rose-500 animate-pulse"></i>🚨 마감 임박(D-3 이내) 긴급 공고 총 ${filtered.length}건</span>`;
-    } else if (isJobBookmarkView) {
+    if (isJobBookmarkView) {
       notice.textContent = `⭐ 북마크한 공고 총 ${filtered.length}건`;
     } else if (jobSearchQuery) {
       notice.textContent = `'${jobSearchQuery}' 검색 결과 총 ${filtered.length}건`;
@@ -748,9 +657,8 @@ function openJobModal(jobId) {
             ${job.company}
           </span>
           ${ddayInfo.isUrgent 
-            ? `<span class="inline-flex items-center gap-1 text-xs px-2.5 py-0.5 rounded-full font-bold bg-rose-600 text-white border border-rose-600 animate-pulse shadow-xs">
-                 <i data-lucide="flame" class="w-3.5 h-3.5 text-amber-300"></i>
-                 <span>${ddayInfo.text}</span>
+            ? `<span class="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 border">
+                 ${ddayInfo.text}
                </span>`
             : `<span class="text-xs px-2.5 py-0.5 rounded-full font-bold ${ddayInfo.days <= 7 ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-blue-50 text-blue-700 border-blue-200'} border">
                  ${ddayInfo.text}

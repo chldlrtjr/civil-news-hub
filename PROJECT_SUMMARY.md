@@ -43,7 +43,7 @@ mindmap
       상단 3대 탭 제목 밑 부가 설명 문구 전면 제거 (미니멀 헤더)
     핵심 데이터 파이프라인
       초임 연봉/급여순 정렬 기능 (만원 단위 자동 환산)
-      D-3 마감 임박 공고 뱃지 강조 및 상단 긴급 배너
+      마감 임박 알림 클린업 (긴급 배너/점멸 애니메이션/토글 제거, 차분한 D-Day 유지)
       GitHub Actions 매일 아침 자동 크롤링 & Pages 자동 배포
 ```
 
@@ -80,6 +80,14 @@ mindmap
   - **필터 및 정렬 컨트롤 바**: 카테고리 탭 바로 아래 `flex justify-between` 구조로 배치 통일.
   - **카드 그리드**: 모바일 1열, 태블릿 2열, 데스크탑 3열(`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5`)로 전면 통일.
   - [`GEMINI.md`](file:///C:/Users/최익석/Desktop/goofy-borg/GEMINI.md)에 불변 원칙(규칙 ⑥)으로 영구 등록.
+
+#### 5) 마감 임박 알림 & 긴급 배너 전면 정리 (UI 클린업)
+- **요청 사항**: "마감 임박 관련된 알림들 다 지워줘"
+- **조치 내역**:
+  - 채용 및 공모전 상단의 🚨 마감 임박 긴급 배너(`jobUrgentBannerContainer`, `contestUrgentBannerContainer`) 전면 삭제.
+  - 필터 바의 `🚨 마감임박(D-3)만 보기` 퀵 토글 버튼 전면 제거 (정렬 드롭다운의 표준 마감순 정렬은 정상 유지).
+  - 카드 및 상세 모달의 D-Day 배지에서 시각적 불안감을 주던 점멸(`animate-pulse`)과 불꽃(`flame`) 아이콘 제거, 차분하고 일관된 정적 D-Day 배지로 변경.
+
 
 ---
 
