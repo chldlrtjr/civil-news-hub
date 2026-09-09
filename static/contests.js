@@ -27,6 +27,7 @@ function loadContestBookmarks() {
   } catch (e) {
     contestBookmarks = new Set();
   }
+  window.contestBookmarks = contestBookmarks;
   updateContestBookmarkCount();
 }
 
@@ -40,6 +41,7 @@ function toggleContestBookmark(contestId, e) {
     showContestToast('🏆 공모전이 북마크에 저장되었습니다.');
   }
   localStorage.setItem('civil_contest_bookmarks', JSON.stringify(Array.from(contestBookmarks)));
+  window.contestBookmarks = contestBookmarks;
   updateContestBookmarkCount();
   updateModalBookmarkState();
   renderContests();
@@ -75,6 +77,7 @@ async function loadContestsData() {
       const ddayInfo = parseDdayFromPeriod(c.period, c.status);
       return !ddayInfo.isClosed;
     });
+    window.allContests = allContests;
 
     // 메타데이터 표시
     const updatedEl = document.getElementById('contestLastUpdatedTime');
@@ -95,6 +98,7 @@ async function loadContestsData() {
 
     updateContestCategoryCounts();
     renderContests();
+    if (window.updateGlobalBookmarkCount) window.updateGlobalBookmarkCount();
   } catch (err) {
     console.error('공모전 데이터 로드 실패:', err);
     showContestToast('공모전 데이터를 불러오지 못했습니다.');
@@ -307,156 +311,160 @@ function renderContests() {
   emptyState.classList.remove('flex');
   grid.classList.remove('hidden');
 
-  grid.innerHTML = filtered.map(contest => {
-    const isBookmarked = contestBookmarks.has(contest.id);
-    const ddayInfo = parseDdayFromPeriod(contest.period, contest.status);
-
-    // 상태 뱃지 스타일
-    let statusBadgeClass = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
-    if (contest.status === '접수예정') {
-      statusBadgeClass = 'bg-blue-100 text-blue-800 dark:bg-blue-950/70 dark:text-blue-300 border-blue-200 dark:border-blue-800';
-    } else if (contest.status === '상시접수') {
-      statusBadgeClass = 'bg-purple-100 text-purple-800 dark:bg-purple-950/70 dark:text-purple-300 border-purple-200 dark:border-purple-800';
-    }
-
-    // 카테고리 뱃지 색상
-    let catBadgeClass = 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800';
-    if (contest.category === '스마트·기술') {
-      catBadgeClass = 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800';
-    } else if (contest.category === '도로·디자인') {
-      catBadgeClass = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
-    } else if (contest.category === '수자원·환경') {
-      catBadgeClass = 'bg-cyan-100 text-cyan-800 dark:bg-cyan-950/60 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800';
-    } else if (contest.category === '지반·안전') {
-      catBadgeClass = 'bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border-rose-200 dark:border-rose-800';
-    }
-
-    // D-Day 뱃지 스타일: 알림/점멸(animate-pulse, flame) 없는 차분한 디자인
-    let ddayBadgeHtml = '';
-    if (ddayInfo.isUrgent) {
-      ddayBadgeHtml = `
-        <span class="inline-flex items-center text-xs sm:text-sm px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-lg font-semibold bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200 dark:border-rose-800 flex-shrink-0">
-          ${ddayInfo.text}
-        </span>
-      `;
-    } else {
-      let ddayBadgeClass = 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300';
-      if (contest.status === '접수중') {
-        if (ddayInfo.days <= 7) {
-          ddayBadgeClass = 'bg-amber-500 text-white font-bold';
-        } else {
-          ddayBadgeClass = 'bg-blue-600 text-white font-bold';
-        }
-      }
-      ddayBadgeHtml = `
-        <span class="text-xs sm:text-sm px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-lg font-semibold ${ddayBadgeClass} flex-shrink-0">
-          ${ddayInfo.text}
-        </span>
-      `;
-    }
-
-    /*
-      [GEMINI.md 핵심 레이아웃 규칙 준수]
-      1행: 좌측 카테고리 뱃지, 우측 최상단 상태 뱃지 고정 (flex justify-between)
-      2행: [📅 접수기간: YYYY.MM.DD ~ MM.DD (상세시간 마감)] 독립 행 배치
-    */
-    return `
-      <div 
-        class="contest-card bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-slate-200 dark:border-slate-800 hover:border-amber-400/60 dark:hover:border-amber-500/50 hover:shadow-lg transition-all duration-200 flex flex-col justify-between cursor-pointer group"
-        onclick="openContestModal('${contest.id}')"
-      >
-        <div>
-          <!-- 1행 (상단 헤더): 좌측 카테고리 뱃지, 우측 최상단 상태 뱃지 고정 (flex justify-between) -->
-          <div class="flex items-center justify-between gap-2 pb-3">
-            <div class="flex items-center gap-2 min-w-0">
-              <span class="text-xs sm:text-sm px-3 py-1 rounded-full font-semibold border ${catBadgeClass} flex-shrink-0">
-                ${contest.category || '공모전'}
-              </span>
-              ${ddayBadgeHtml}
-            </div>
-            <div class="flex items-center gap-2 flex-shrink-0">
-              <span class="text-xs sm:text-sm px-3 py-1 rounded-full font-semibold border ${statusBadgeClass}">
-                ${contest.status}
-              </span>
-            </div>
-          </div>
-
-          <!-- 2행 (접수 기간): 독립된 전용 행으로 배치하여 줄바꿈 밀림 방지 -->
-          <div class="mb-3.5">
-            <span class="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100/80 dark:bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
-              <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
-              <span>접수: ${contest.period || '공식 공고문 참조'}</span>
-            </span>
-          </div>
-
-          <!-- 공모전 제목 -->
-          <h3 class="text-base sm:text-xl font-bold text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition leading-snug line-clamp-2 mb-2">
-            ${contest.title}
-          </h3>
-
-          <!-- 주최 기관 & 대상 -->
-          <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-3.5">
-            <span class="font-medium text-slate-700 dark:text-slate-300">${contest.organizer}</span>
-            <span class="text-slate-300 dark:text-slate-700">•</span>
-            <span>${contest.target || '전국민'}</span>
-          </div>
-
-          <!-- 요약 설명 -->
-          <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed mb-4">
-            ${contest.description || ''}
-          </p>
-        </div>
-
-        <!-- 카드 하단 버튼 영역 -->
-        <div class="pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
-          <!-- 공모전 보상 (상금 / 혜택 뱃지) -->
-          <div class="flex items-center min-w-0 pr-1" title="공모전 보상: ${contest.prize || '공식 공고문 확인'}">
-            <span class="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-amber-800 dark:text-amber-300 bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-900/60 px-3 py-1.5 rounded-xl truncate shadow-2xs">
-              <i data-lucide="award" class="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0"></i>
-              <span class="truncate">${contest.prize || '공식 공고문 확인'}</span>
-            </span>
-          </div>
-
-          <div class="flex items-center gap-1.5 sm:gap-2" onclick="event.stopPropagation();">
-            <!-- 공유 버튼 -->
-            <button 
-              type="button"
-              onclick="shareContest('${contest.id}', event)"
-              class="p-2 sm:p-2.5 rounded-xl text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
-              title="공모전 공유하기"
-            >
-              <i data-lucide="share-2" class="w-4 h-4 sm:w-4.5 sm:h-4.5"></i>
-            </button>
-            <!-- 북마크 버튼 -->
-            <button 
-              type="button"
-              onclick="toggleContestBookmark('${contest.id}', event)" 
-              class="p-2 sm:p-2.5 rounded-xl text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
-              title="${isBookmarked ? '북마크 해제' : '북마크 저장'}"
-            >
-              <i data-lucide="bookmark" class="w-4 h-4 sm:w-4.5 sm:h-4.5 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}"></i>
-            </button>
-            <!-- 공식 원문 접수 사이트 링크 -->
-            <a 
-              href="${contest.link}" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              class="inline-flex items-center gap-1 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 hover:bg-amber-500 text-slate-700 hover:text-white dark:bg-slate-800 dark:text-slate-300 dark:hover:text-white transition shadow-2xs"
-              title="공식 접수처 바로가기"
-            >
-              <span>바로가기</span>
-              <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-            </a>
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
+  grid.innerHTML = filtered.map(renderContestCard).join('');
 
   if (window.lucide) {
     lucide.createIcons();
   }
 }
+
+// 공모전 단일 카드 렌더링 (마이페이지 및 메인 그리드 공용)
+function renderContestCard(contest) {
+  const isBookmarked = contestBookmarks.has(contest.id);
+  const ddayInfo = parseDdayFromPeriod(contest.period, contest.status);
+
+  // 상태 뱃지 스타일
+  let statusBadgeClass = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
+  if (contest.status === '접수예정') {
+    statusBadgeClass = 'bg-blue-100 text-blue-800 dark:bg-blue-950/70 dark:text-blue-300 border-blue-200 dark:border-blue-800';
+  } else if (contest.status === '상시접수') {
+    statusBadgeClass = 'bg-purple-100 text-purple-800 dark:bg-purple-950/70 dark:text-purple-300 border-purple-200 dark:border-purple-800';
+  }
+
+  // 카테고리 뱃지 색상
+  let catBadgeClass = 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800';
+  if (contest.category === '스마트·기술') {
+    catBadgeClass = 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800';
+  } else if (contest.category === '도로·디자인') {
+    catBadgeClass = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
+  } else if (contest.category === '수자원·환경') {
+    catBadgeClass = 'bg-cyan-100 text-cyan-800 dark:bg-cyan-950/60 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800';
+  } else if (contest.category === '지반·안전') {
+    catBadgeClass = 'bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border-rose-200 dark:border-rose-800';
+  }
+
+  // D-Day 뱃지 스타일: 알림/점멸(animate-pulse, flame) 없는 차분한 디자인
+  let ddayBadgeHtml = '';
+  if (ddayInfo.isUrgent) {
+    ddayBadgeHtml = `
+      <span class="inline-flex items-center text-xs sm:text-sm px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-lg font-semibold bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200 dark:border-rose-800 flex-shrink-0">
+        ${ddayInfo.text}
+      </span>
+    `;
+  } else {
+    let ddayBadgeClass = 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300';
+    if (contest.status === '접수중') {
+      if (ddayInfo.days <= 7) {
+        ddayBadgeClass = 'bg-amber-500 text-white font-bold';
+      } else {
+        ddayBadgeClass = 'bg-blue-600 text-white font-bold';
+      }
+    }
+    ddayBadgeHtml = `
+      <span class="text-xs sm:text-sm px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-lg font-semibold ${ddayBadgeClass} flex-shrink-0">
+        ${ddayInfo.text}
+      </span>
+    `;
+  }
+
+  /*
+    [GEMINI.md 핵심 레이아웃 규칙 준수]
+    1행: 좌측 카테고리 뱃지, 우측 최상단 상태 뱃지 고정 (flex justify-between)
+    2행: [📅 접수기간: YYYY.MM.DD ~ MM.DD (상세시간 마감)] 독립 행 배치
+  */
+  return `
+    <div 
+      class="contest-card bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-slate-200 dark:border-slate-800 hover:border-amber-400/60 dark:hover:border-amber-500/50 hover:shadow-lg transition-all duration-200 flex flex-col justify-between cursor-pointer group"
+      onclick="openContestModal('${contest.id}')"
+    >
+      <div>
+        <!-- 1행 (상단 헤더): 좌측 카테고리 뱃지, 우측 최상단 상태 뱃지 고정 (flex justify-between) -->
+        <div class="flex items-center justify-between gap-2 pb-3">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="text-xs sm:text-sm px-3 py-1 rounded-full font-semibold border ${catBadgeClass} flex-shrink-0">
+              ${contest.category || '공모전'}
+            </span>
+            ${ddayBadgeHtml}
+          </div>
+          <div class="flex items-center gap-2 flex-shrink-0">
+            <span class="text-xs sm:text-sm px-3 py-1 rounded-full font-semibold border ${statusBadgeClass}">
+              ${contest.status}
+            </span>
+          </div>
+        </div>
+
+        <!-- 2행 (접수 기간): 독립된 전용 행으로 배치하여 줄바꿈 밀림 방지 -->
+        <div class="mb-3.5">
+          <span class="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100/80 dark:bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
+            <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+            <span>접수: ${contest.period || '공식 공고문 참조'}</span>
+          </span>
+        </div>
+
+        <!-- 공모전 제목 -->
+        <h3 class="text-base sm:text-xl font-bold text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition leading-snug line-clamp-2 mb-2">
+          ${contest.title}
+        </h3>
+
+        <!-- 주최 기관 & 대상 -->
+        <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-3.5">
+          <span class="font-medium text-slate-700 dark:text-slate-300">${contest.organizer}</span>
+          <span class="text-slate-300 dark:text-slate-700">•</span>
+          <span>${contest.target || '전국민'}</span>
+        </div>
+
+        <!-- 요약 설명 -->
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed mb-4">
+          ${contest.description || ''}
+        </p>
+      </div>
+
+      <!-- 카드 하단 버튼 영역 -->
+      <div class="pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
+        <!-- 공모전 보상 (상금 / 혜택 뱃지) -->
+        <div class="flex items-center min-w-0 pr-1" title="공모전 보상: ${contest.prize || '공식 공고문 확인'}">
+          <span class="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-amber-800 dark:text-amber-300 bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-900/60 px-3 py-1.5 rounded-xl truncate shadow-2xs">
+            <i data-lucide="award" class="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0"></i>
+            <span class="truncate">${contest.prize || '공식 공고문 확인'}</span>
+          </span>
+        </div>
+
+        <div class="flex items-center gap-1.5 sm:gap-2" onclick="event.stopPropagation();">
+          <!-- 공유 버튼 -->
+          <button 
+            type="button"
+            onclick="shareContest('${contest.id}', event)"
+            class="p-2 sm:p-2.5 rounded-xl text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+            title="공모전 공유하기"
+          >
+            <i data-lucide="share-2" class="w-4 h-4 sm:w-4.5 sm:h-4.5"></i>
+          </button>
+          <!-- 북마크 버튼 -->
+          <button 
+            type="button"
+            onclick="toggleContestBookmark('${contest.id}', event)" 
+            class="p-2 sm:p-2.5 rounded-xl text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+            title="${isBookmarked ? '북마크 해제' : '북마크 저장'}"
+          >
+            <i data-lucide="bookmark" class="w-4 h-4 sm:w-4.5 sm:h-4.5 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}"></i>
+          </button>
+          <!-- 공식 원문 접수 사이트 링크 -->
+          <a 
+            href="${contest.link}" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="inline-flex items-center gap-1 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 hover:bg-amber-500 text-slate-700 hover:text-white dark:bg-slate-800 dark:text-slate-300 dark:hover:text-white transition shadow-2xs"
+            title="공식 접수처 바로가기"
+          >
+            <span>바로가기</span>
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  `;
+}
+window.renderContestCard = renderContestCard;
 
 // 6. 상세 모달 팝업
 function openContestModal(contestId) {

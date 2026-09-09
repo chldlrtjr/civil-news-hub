@@ -82,6 +82,7 @@ function loadNewsBookmarks() {
   } catch (e) {
     newsBookmarks = new Set();
   }
+  window.newsBookmarks = newsBookmarks;
   updateGlobalBookmarkCount();
 }
 
@@ -95,6 +96,7 @@ function toggleBookmark(articleId, e) {
     showToast('🔖 기사가 북마크에 저장되었습니다.');
   }
   localStorage.setItem('civil_bookmarks', JSON.stringify(Array.from(newsBookmarks)));
+  window.newsBookmarks = newsBookmarks;
   updateGlobalBookmarkCount();
   renderArticles();
 }
@@ -116,6 +118,7 @@ async function loadNewsData() {
 
     const data = await res.json();
     allArticles = data.articles || [];
+    window.allArticles = allArticles;
     categories = data.categories || [];
     
     // 메타데이터 업데이트
@@ -517,6 +520,7 @@ function renderArticleCard(article) {
     </article>
   `;
 }
+window.renderArticleCard = renderArticleCard;
 
 // 6. 메인 뉴스 렌더링
 function renderArticles() {
@@ -800,27 +804,34 @@ function showNewsLoading(show) {
 }
 
 // 9. SPA 탭 전환 마스터 라우팅
+let lastActiveTab = 'news';
+
 window.switchMainTab = function(tabName, updateHash = true) {
+  if (currentMainTab !== tabName && currentMainTab !== 'mypage') {
+    lastActiveTab = currentMainTab;
+  }
   currentMainTab = tabName;
 
   const panelNews = document.getElementById('tabPanelNews');
   const panelJobs = document.getElementById('tabPanelJobs');
   const panelContests = document.getElementById('tabPanelContests');
+  const panelMyPage = document.getElementById('tabPanelMyPage');
 
   if (panelNews) panelNews.classList.toggle('hidden', tabName !== 'news');
   if (panelJobs) panelJobs.classList.toggle('hidden', tabName !== 'jobs');
   if (panelContests) panelContests.classList.toggle('hidden', tabName !== 'contests');
+  if (panelMyPage) panelMyPage.classList.toggle('hidden', tabName !== 'mypage');
 
-  // 전역 북마크 상태 동기화: 활성화되어 있으면 전환된 탭도 북마크 필터링 상태로 렌더링
-  const isBookmark = !!window.isGlobalBookmarkMode;
   if (tabName === 'news') {
-    isNewsBookmarkView = isBookmark;
+    isNewsBookmarkView = false;
     renderCategoryTabs();
     renderArticles();
   } else if (tabName === 'jobs' && typeof window.toggleJobBookmarkFilter === 'function') {
-    window.toggleJobBookmarkFilter(isBookmark);
+    window.toggleJobBookmarkFilter(false);
   } else if (tabName === 'contests' && typeof window.toggleContestBookmarkFilter === 'function') {
-    window.toggleContestBookmarkFilter(isBookmark);
+    window.toggleContestBookmarkFilter(false);
+  } else if (tabName === 'mypage') {
+    renderMyPage();
   }
 
   // GNB 버튼 스타일 갱신
@@ -869,7 +880,8 @@ function updateMobileNavStyles(activeTab) {
   const tabs = [
     { id: 'mobileTabNews', key: 'news', activeColor: 'text-blue-600 dark:text-blue-400' },
     { id: 'mobileTabJobs', key: 'jobs', activeColor: 'text-blue-600 dark:text-blue-400' },
-    { id: 'mobileTabContests', key: 'contests', activeColor: 'text-amber-500' }
+    { id: 'mobileTabContests', key: 'contests', activeColor: 'text-amber-500' },
+    { id: 'mobileBookmarkBtn', key: 'mypage', activeColor: 'text-amber-500' }
   ];
 
   tabs.forEach(t => {
@@ -877,30 +889,26 @@ function updateMobileNavStyles(activeTab) {
     if (!el) return;
     const isActive = t.key === activeTab;
     if (isActive) {
-      el.className = `flex flex-col items-center justify-center py-1 px-3 ${t.activeColor} font-bold transition cursor-pointer`;
+      el.className = `relative flex flex-col items-center justify-center py-1 px-3 ${t.activeColor} font-bold transition cursor-pointer`;
     } else {
-      el.className = 'flex flex-col items-center justify-center py-1 px-3 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition cursor-pointer';
+      el.className = 'relative flex flex-col items-center justify-center py-1 px-3 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition cursor-pointer';
     }
   });
 }
 
 // 통합 북마크 뱃지 카운터
 window.updateGlobalBookmarkCount = function() {
-  let count = 0;
-  if (currentMainTab === 'news') {
-    count = newsBookmarks.size;
-  } else if (currentMainTab === 'jobs') {
-    count = (typeof jobBookmarks !== 'undefined') ? jobBookmarks.size : 0;
-  } else if (currentMainTab === 'contests') {
-    count = (typeof contestBookmarks !== 'undefined') ? contestBookmarks.size : 0;
-  }
+  const nBookmarks = window.newsBookmarks || (typeof newsBookmarks !== 'undefined' ? newsBookmarks : null);
+  const jBookmarks = window.jobBookmarks || (typeof jobBookmarks !== 'undefined' ? jobBookmarks : null);
+  const cBookmarks = window.contestBookmarks || (typeof contestBookmarks !== 'undefined' ? contestBookmarks : null);
 
-  const totalCount = (newsBookmarks ? newsBookmarks.size : 0) +
-    ((typeof jobBookmarks !== 'undefined' && jobBookmarks) ? jobBookmarks.size : 0) +
-    ((typeof contestBookmarks !== 'undefined' && contestBookmarks) ? contestBookmarks.size : 0);
+  const newsCount = nBookmarks ? nBookmarks.size : 0;
+  const jobsCount = jBookmarks ? jBookmarks.size : 0;
+  const contestsCount = cBookmarks ? cBookmarks.size : 0;
+  const totalCount = newsCount + jobsCount + contestsCount;
 
   const countEl = document.getElementById('bookmarkCount');
-  if (countEl) countEl.textContent = count;
+  if (countEl) countEl.textContent = totalCount;
 
   const mobileBadge = document.getElementById('mobileBookmarkBadge');
   if (mobileBadge) {
@@ -912,16 +920,21 @@ window.updateGlobalBookmarkCount = function() {
     }
   }
 
+  // 마이페이지가 열려있다면 즉시 재렌더링
+  if (currentMainTab === 'mypage') {
+    renderMyPage();
+  }
+
   updateBookmarkTabStyle();
 };
 
 // 북마크 탭 버튼 스타일 갱신
 function updateBookmarkTabStyle() {
-  const isCurrentBookmarkActive = !!window.isGlobalBookmarkMode;
+  const isMyPage = (currentMainTab === 'mypage');
 
   const bookmarkBtn = document.getElementById('bookmarkTabBtn');
   if (bookmarkBtn) {
-    if (isCurrentBookmarkActive) {
+    if (isMyPage) {
       bookmarkBtn.className = 'flex-shrink-0 flex items-center px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-bold transition bg-amber-500 text-white shadow-sm shadow-amber-500/20 cursor-pointer border border-amber-500';
     } else {
       bookmarkBtn.className = 'flex-shrink-0 flex items-center px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium transition border border-amber-300/90 dark:border-amber-700/60 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40 cursor-pointer shadow-xs';
@@ -930,14 +943,9 @@ function updateBookmarkTabStyle() {
 
   const mobileBtn = document.getElementById('mobileBookmarkBtn');
   if (mobileBtn) {
-    if (isCurrentBookmarkActive) {
-      mobileBtn.className = 'relative flex flex-col items-center justify-center py-1 px-3 text-amber-500 font-bold transition cursor-pointer';
-    } else {
-      mobileBtn.className = 'relative flex flex-col items-center justify-center py-1 px-3 text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 font-medium transition cursor-pointer';
-    }
     const icon = mobileBtn.querySelector('i, svg');
     if (icon) {
-      if (isCurrentBookmarkActive) {
+      if (isMyPage) {
         icon.classList.add('fill-amber-500');
       } else {
         icon.classList.remove('fill-amber-500');
@@ -946,7 +954,7 @@ function updateBookmarkTabStyle() {
   }
 }
 
-// 통합 북마크 토글 (뉴스·채용·공모전 전역 북마크 모드 전환)
+// 통합 북마크 토글 (마이페이지 모드 전환)
 let lastBookmarkToggleTime = 0;
 window.toggleCurrentTabBookmark = function(forceState, e) {
   if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
@@ -958,39 +966,14 @@ window.toggleCurrentTabBookmark = function(forceState, e) {
   }
   lastBookmarkToggleTime = now;
 
-  if (typeof forceState === 'boolean') {
-    window.isGlobalBookmarkMode = forceState;
-  } else {
-    window.isGlobalBookmarkMode = !window.isGlobalBookmarkMode;
-  }
-  const state = window.isGlobalBookmarkMode;
-
-  // 1. 뉴스 탭 북마크 상태 동기화
-  isNewsBookmarkView = state;
-  renderCategoryTabs();
-  renderArticles();
-
-  // 2. 채용 탭 북마크 상태 동기화
-  if (typeof window.toggleJobBookmarkFilter === 'function') {
-    window.toggleJobBookmarkFilter(state);
-  }
-
-  // 3. 공모전 탭 북마크 상태 동기화
-  if (typeof window.toggleContestBookmarkFilter === 'function') {
-    window.toggleContestBookmarkFilter(state);
-  }
-
-  updateGlobalBookmarkCount();
-  updateBookmarkTabStyle();
-
-  // 사용자 토스트 피드백
-  if (state) {
-    showToast('🔖 마이페이지로 이동했습니다. (저장한 항목 모아보기)');
-  } else {
+  if (currentMainTab === 'mypage') {
+    switchMainTab(lastActiveTab || 'news');
     showToast('전체 목록으로 돌아갑니다.');
+  } else {
+    lastActiveTab = currentMainTab;
+    switchMainTab('mypage');
+    showToast('🔖 마이페이지로 이동했습니다. (저장한 항목 모아보기)');
   }
-
-  window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 // URL 해시 라우팅 초기화
@@ -1000,6 +983,8 @@ function initTabRouting() {
     switchMainTab('jobs', false);
   } else if (hash === 'contests') {
     switchMainTab('contests', false);
+  } else if (hash === 'mypage') {
+    switchMainTab('mypage', false);
   } else {
     switchMainTab('news', false);
   }
@@ -1008,9 +993,121 @@ function initTabRouting() {
     const newHash = (window.location.hash || '').replace('#', '').toLowerCase();
     if (newHash === 'jobs') switchMainTab('jobs', false);
     else if (newHash === 'contests') switchMainTab('contests', false);
+    else if (newHash === 'mypage') switchMainTab('mypage', false);
     else switchMainTab('news', false);
   });
 }
+
+// 10. 통합 마이페이지 (저장한 뉴스, 채용 공고, 공모전 전체를 섹션별로 렌더링)
+function renderMyPage() {
+  const panelMyPage = document.getElementById('tabPanelMyPage');
+  if (!panelMyPage) return;
+
+  const articlesList = window.allArticles || (typeof allArticles !== 'undefined' ? allArticles : []);
+  const nBookmarks = window.newsBookmarks || (typeof newsBookmarks !== 'undefined' ? newsBookmarks : new Set());
+  const jobsList = window.allJobs || (typeof allJobs !== 'undefined' ? allJobs : []);
+  const jBookmarks = window.jobBookmarks || (typeof jobBookmarks !== 'undefined' ? jobBookmarks : new Set());
+  const contestsList = window.allContests || (typeof allContests !== 'undefined' ? allContests : []);
+  const cBookmarks = window.contestBookmarks || (typeof contestBookmarks !== 'undefined' ? contestBookmarks : new Set());
+
+  const bookmarkedArticles = articlesList.filter(a => nBookmarks && nBookmarks.has(a.id));
+  const bookmarkedJobs = jobsList.filter(j => jBookmarks && jBookmarks.has(j.id));
+  const bookmarkedContests = contestsList.filter(c => cBookmarks && cBookmarks.has(c.id));
+
+  const totalCount = bookmarkedArticles.length + bookmarkedJobs.length + bookmarkedContests.length;
+
+  // 통계 뱃지 갱신
+  const statNews = document.getElementById('myPageNewsStat');
+  const statJobs = document.getElementById('myPageJobsStat');
+  const statContests = document.getElementById('myPageContestsStat');
+  const statTotal = document.getElementById('myPageTotalStat');
+  if (statNews) statNews.textContent = bookmarkedArticles.length;
+  if (statJobs) statJobs.textContent = bookmarkedJobs.length;
+  if (statContests) statContests.textContent = bookmarkedContests.length;
+  if (statTotal) statTotal.textContent = totalCount;
+
+  const overallEmpty = document.getElementById('myPageOverallEmpty');
+  const sectionsWrapper = document.getElementById('myPageSectionsWrapper');
+
+  if (totalCount === 0) {
+    if (overallEmpty) overallEmpty.classList.remove('hidden');
+    if (sectionsWrapper) sectionsWrapper.classList.add('hidden');
+    if (window.lucide) window.lucide.createIcons();
+    return;
+  }
+
+  if (overallEmpty) overallEmpty.classList.add('hidden');
+  if (sectionsWrapper) sectionsWrapper.classList.remove('hidden');
+
+  // 1. 저장한 토목 뉴스 섹션
+  const newsGrid = document.getElementById('myPageNewsGrid');
+  const newsEmpty = document.getElementById('myPageNewsEmpty');
+  const newsBadge = document.getElementById('myPageNewsCountBadge');
+  if (newsBadge) newsBadge.textContent = `${bookmarkedArticles.length}건`;
+
+  if (bookmarkedArticles.length === 0) {
+    if (newsGrid) {
+      newsGrid.innerHTML = '';
+      newsGrid.classList.add('hidden');
+    }
+    if (newsEmpty) newsEmpty.classList.remove('hidden');
+  } else {
+    if (newsEmpty) newsEmpty.classList.add('hidden');
+    if (newsGrid) {
+      newsGrid.classList.remove('hidden');
+      newsGrid.innerHTML = bookmarkedArticles.map(renderArticleCard).join('');
+    }
+  }
+
+  // 2. 저장한 채용 공고 섹션
+  const jobsGrid = document.getElementById('myPageJobsGrid');
+  const jobsEmpty = document.getElementById('myPageJobsEmpty');
+  const jobsBadge = document.getElementById('myPageJobsCountBadge');
+  if (jobsBadge) jobsBadge.textContent = `${bookmarkedJobs.length}건`;
+
+  if (bookmarkedJobs.length === 0) {
+    if (jobsGrid) {
+      jobsGrid.innerHTML = '';
+      jobsGrid.classList.add('hidden');
+    }
+    if (jobsEmpty) jobsEmpty.classList.remove('hidden');
+  } else {
+    if (jobsEmpty) jobsEmpty.classList.add('hidden');
+    if (jobsGrid) {
+      jobsGrid.classList.remove('hidden');
+      const jobRenderer = window.renderJobCard || (typeof renderJobCard === 'function' ? renderJobCard : null);
+      if (jobRenderer) {
+        jobsGrid.innerHTML = bookmarkedJobs.map(jobRenderer).join('');
+      }
+    }
+  }
+
+  // 3. 저장한 공모전 섹션
+  const contestsGrid = document.getElementById('myPageContestsGrid');
+  const contestsEmpty = document.getElementById('myPageContestsEmpty');
+  const contestsBadge = document.getElementById('myPageContestsCountBadge');
+  if (contestsBadge) contestsBadge.textContent = `${bookmarkedContests.length}건`;
+
+  if (bookmarkedContests.length === 0) {
+    if (contestsGrid) {
+      contestsGrid.innerHTML = '';
+      contestsGrid.classList.add('hidden');
+    }
+    if (contestsEmpty) contestsEmpty.classList.remove('hidden');
+  } else {
+    if (contestsEmpty) contestsEmpty.classList.add('hidden');
+    if (contestsGrid) {
+      contestsGrid.classList.remove('hidden');
+      const contestRenderer = window.renderContestCard || (typeof renderContestCard === 'function' ? renderContestCard : null);
+      if (contestRenderer) {
+        contestsGrid.innerHTML = bookmarkedContests.map(contestRenderer).join('');
+      }
+    }
+  }
+
+  if (window.lucide) window.lucide.createIcons();
+}
+window.renderMyPage = renderMyPage;
 
 // 10. 뉴스 이벤트 리스너 설정
 function setupNewsEventListeners() {

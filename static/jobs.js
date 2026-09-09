@@ -27,6 +27,7 @@ function loadJobBookmarks() {
   } catch (e) {
     jobBookmarks = new Set();
   }
+  window.jobBookmarks = jobBookmarks;
   updateJobBookmarkCount();
 }
 
@@ -40,6 +41,7 @@ function toggleJobBookmark(jobId, e) {
     showJobToast('🔖 채용 공고가 북마크에 저장되었습니다.');
   }
   localStorage.setItem('civil_job_bookmarks', JSON.stringify(Array.from(jobBookmarks)));
+  window.jobBookmarks = jobBookmarks;
   updateJobBookmarkCount();
   renderJobs();
 }
@@ -67,6 +69,7 @@ async function loadJobsData() {
 
     const data = await res.json();
     allJobs = data.jobs || [];
+    window.allJobs = allJobs;
 
     // 메타데이터 업데이트
     const lastUpdatedEl = document.getElementById('jobLastUpdated');
@@ -87,6 +90,7 @@ async function loadJobsData() {
 
     renderJobCategoryTabs();
     renderJobs();
+    if (window.updateGlobalBookmarkCount) window.updateGlobalBookmarkCount();
   } catch (err) {
     console.error('채용 공고 데이터 로드 실패:', err);
     const noticeEl = document.getElementById('jobResultCountNotice');
@@ -579,6 +583,7 @@ function renderJobCard(job) {
     </article>
   `;
 }
+window.renderJobCard = renderJobCard;
 
 // 7. 메인 렌더링
 function renderJobs() {
