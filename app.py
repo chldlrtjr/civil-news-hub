@@ -50,6 +50,18 @@ class CivilNewsHandler(SimpleHTTPRequestHandler):
                 self.wfile.write(f.read())
             return
 
+        # 1-2. 공모전 페이지 요청
+        if clean_path in ["/contests", "/contests.html", "/contest", "/contest.html"]:
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.end_headers()
+            contests_path = os.path.join(BASE_DIR, "contests.html")
+            if not os.path.exists(contests_path):
+                contests_path = os.path.join(STATIC_DIR, "contests.html")
+            with open(contests_path, "rb") as f:
+                self.wfile.write(f.read())
+            return
+
         # 2. 뉴스 데이터 API 요청
         if clean_path in ["/api/news", "/data/news.json"]:
             if not os.path.exists(NEWS_JSON_PATH):
