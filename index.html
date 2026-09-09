@@ -175,7 +175,7 @@
 
     <!-- 카테고리 탭 (상단 고정 Sticky Navigation - 시안 B: 미니멀 언더라인 바) -->
     <div id="categoryTabsSticky" class="sticky top-0 sm:top-16 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-0 mt-0 mb-4 sm:my-4 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 shadow-xs transition-colors">
-      <div class="max-w-7xl mx-auto flex items-center overflow-x-auto scrollbar-none category-scroll-container" style="touch-action: pan-x; overscroll-behavior-x: contain;">
+      <div class="max-w-7xl mx-auto flex items-center overflow-x-auto scrollbar-none category-scroll-container" style="touch-action: pan-x; overscroll-behavior: none; overscroll-behavior-x: none;">
         <div id="newsCategoryTabs" class="flex items-center gap-1 sm:gap-3 min-w-max h-full" style="touch-action: pan-x;">
           <!-- JS에서 동적 탭 렌더링 -->
         </div>
@@ -267,7 +267,7 @@
 
     <!-- 카테고리 탭 (상단 고정 Sticky Navigation - 시안 B: 미니멀 언더라인 바) -->
     <div class="sticky top-0 sm:top-16 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-0 mt-0 mb-4 sm:my-4 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 shadow-xs transition-colors">
-      <div class="max-w-7xl mx-auto flex items-center overflow-x-auto scrollbar-none category-scroll-container" style="touch-action: pan-x; overscroll-behavior-x: contain;">
+      <div class="max-w-7xl mx-auto flex items-center overflow-x-auto scrollbar-none category-scroll-container" style="touch-action: pan-x; overscroll-behavior: none; overscroll-behavior-x: none;">
         <div id="jobCategoryTabs" class="flex items-center gap-1 sm:gap-3 min-w-max h-full" style="touch-action: pan-x;">
           <!-- JS에서 동적 탭 렌더링 -->
         </div>
@@ -321,7 +321,7 @@
     </div>
 
     <!-- 근무지역 필터 칩 바 -->
-    <div class="mb-5 overflow-x-auto pb-1 scrollbar-none" style="touch-action: pan-x; overscroll-behavior-x: contain;">
+    <div class="mb-5 overflow-x-auto pb-1 scrollbar-none" style="touch-action: pan-x; overscroll-behavior: none; overscroll-behavior-x: none;">
       <div id="regionFilterGroup" class="flex items-center gap-1.5 text-xs" style="touch-action: pan-x;">
         <span class="text-slate-400 dark:text-slate-500 font-medium flex items-center gap-1 pr-1 flex-shrink-0">
           <i data-lucide="map-pin" class="w-3.5 h-3.5 text-blue-500"></i>
@@ -449,31 +449,31 @@
     </div>
 
     <!-- 분야(카테고리) 탭 바 (시안 B: 미니멀 언더라인 & 볼드 인디케이터) -->
-    <div class="mb-6 border-b border-slate-200/80 dark:border-slate-800 overflow-x-auto scrollbar-none category-scroll-container" style="touch-action: pan-x; overscroll-behavior-x: contain;">
+    <div class="mb-6 border-b border-slate-200/80 dark:border-slate-800 overflow-x-auto scrollbar-none category-scroll-container" style="touch-action: pan-x; overscroll-behavior: none; overscroll-behavior-x: none;">
       <div id="contestCategoryTabs" class="flex items-center gap-1 sm:gap-3 min-w-max h-full" style="touch-action: pan-x;">
-        <button data-category="ALL" class="cat-pill active category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-extrabold text-amber-600 dark:text-amber-400 border-b-2 border-amber-500 -mb-px cursor-pointer whitespace-nowrap select-none">
+        <button data-category="ALL" class="cat-pill active category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-amber-600 dark:text-amber-400 border-b-2 border-amber-500 -mb-px cursor-pointer whitespace-nowrap select-none">
           <span>전체</span>
-          <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-bold bg-amber-100 text-amber-700 dark:bg-amber-950/70 dark:text-amber-300 shadow-xs transition-colors">0</span>
+          <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-semibold bg-amber-100 text-amber-700 dark:bg-amber-950/70 dark:text-amber-300 shadow-xs transition-colors">0</span>
         </button>
         <button data-category="스마트·기술" class="cat-pill category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 border-b-2 border-transparent -mb-px cursor-pointer whitespace-nowrap select-none">
           <span>스마트·기술</span>
-          <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 transition-colors">0</span>
+          <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 transition-colors">0</span>
         </button>
         <button data-category="도로·디자인" class="cat-pill category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 border-b-2 border-transparent -mb-px cursor-pointer whitespace-nowrap select-none">
           <span>도로·디자인</span>
-          <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 transition-colors">0</span>
+          <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 transition-colors">0</span>
         </button>
         <button data-category="수자원·환경" class="cat-pill category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 border-b-2 border-transparent -mb-px cursor-pointer whitespace-nowrap select-none">
           <span>수자원·환경</span>
-          <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 transition-colors">0</span>
+          <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 transition-colors">0</span>
         </button>
         <button data-category="지반·안전" class="cat-pill category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 border-b-2 border-transparent -mb-px cursor-pointer whitespace-nowrap select-none">
           <span>지반·안전</span>
-          <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 transition-colors">0</span>
+          <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 transition-colors">0</span>
         </button>
         <button data-category="철도·인프라" class="cat-pill category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 border-b-2 border-transparent -mb-px cursor-pointer whitespace-nowrap select-none">
           <span>철도·인프라</span>
-          <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 transition-colors">0</span>
+          <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 transition-colors">0</span>
         </button>
       </div>
     </div>
@@ -731,8 +731,8 @@
   </div>
 
   <!-- 프론트엔드 스크립트 로드 (SPA 마스터 컨트롤러 & 채용 & 공모전) -->
-  <script src="./static/app.js?v=20260910_0058"></script>
-  <script src="./static/jobs.js?v=20260910_0058"></script>
-  <script src="./static/contests.js?v=20260910_0058"></script>
+  <script src="./static/app.js?v=20260910_0108"></script>
+  <script src="./static/jobs.js?v=20260910_0108"></script>
+  <script src="./static/contests.js?v=20260910_0108"></script>
 </body>
 </html>

@@ -113,10 +113,12 @@
   animation: spin 0.7s linear infinite;
 }
 
-/* 카테고리 탭 수평 스크롤 컨테이너 안정화 (모바일 터치 스와이프 시 수직 떨림 및 크기 변동 원천 차단) */
+/* 카테고리 탭 수평 스크롤 컨테이너 안정화 (모바일 터치 스와이프 시 스트레치 늘어남 및 수직 떨림 원천 차단) */
 .category-scroll-container {
   touch-action: pan-x !important;
-  overscroll-behavior-x: contain !important;
+  overscroll-behavior: none !important;
+  overscroll-behavior-x: none !important;
+  overscroll-behavior-y: none !important;
   -webkit-overflow-scrolling: touch;
   height: 44px !important; /* 모바일 높이 완전 고정 */
   box-sizing: border-box;
@@ -128,7 +130,7 @@
   }
 }
 
-/* 카테고리 탭 버튼 규격 완전 고정 (사이즈 줄었다 커졌다 현상 방지: width/height transition 배제, color/border만 전이) */
+/* 카테고리 탭 버튼 규격 완전 고정 (좌우 이동 시 글씨 늘어남 현상 방지: font-weight 600 단일 고정) */
 .category-tab-btn {
   height: 100% !important;
   box-sizing: border-box;
@@ -138,5 +140,11 @@
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
   white-space: nowrap !important;
   flex-shrink: 0 !important;
+  font-weight: 600 !important; /* 탭 변경 시 글자 폭 늘어남 원천 방지 */
 }
+
+.category-tab-btn .count-badge {
+  font-weight: 600 !important; /* 뱃지 폰트 폭 동일 고정 */
+}
+
 
