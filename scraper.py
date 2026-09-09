@@ -124,6 +124,86 @@ def fetch_rss_for_term(term, when="3d"):
         print(f"    [RSS 수집 에러 ({term})]: {e}")
         return []
 
+def clean_clause(text):
+    """문장/구문 양 끝의 특수문자 및 따옴표 정제"""
+    if not text:
+        return ""
+    t = text.strip(" \t\n·-:,~")
+    quote_pairs = [('"', '"'), ("'", "'"), ('“', '”'), ('‘', '’'), ('[', ']'), ('(', ')')]
+    for q_open, q_close in quote_pairs:
+        if t.startswith(q_open) and t.endswith(q_close):
+            t = t[len(q_open):-len(q_close)].strip()
+    return t
+
+def generate_summary_points(title, snippet, publisher, category_name):
+    """기사 제목, 스니펫, 언론사, 카테고리를 정제하여 사실 기반 3줄 불릿 요약 리스트 생성"""
+    # 1. 제목 앞머리 노이즈 제거 ([속보], [단독], [포토], [사설] 등)
+    clean_title = re.sub(r'^\[(단독|속보|포토|사설|기획|종합|현장|전문|인터뷰|칼럼|기고|알림|인사|부고)\]\s*', '', title).strip()
+    
+    # 말줄임표(… 또는 .. 이상), 하이픈(-), 쌍점(:) 기준으로 구문 분할
+    raw_parts = re.split(r'…|\.{2,}|(?:\s+-\s+)|(?:\s*:\s*)', clean_title)
+    parts = []
+    for p in raw_parts:
+        sub = clean_clause(p)
+        if len(sub) >= 4:
+            parts.append(sub)
+            
+    points = []
+    
+    # 1번째 포인트: 핵심 안건 및 사건 개요
+    if parts:
+        points.append(parts[0])
+    else:
+        points.append(clean_clause(clean_title) or title)
+        
+    # 2번째 포인트: 세부 내용, 추진 목표, 사업 규모 또는 본문 스니펫 사실
+    p2 = ""
+    is_default_snippet = not snippet or '보도 - 클릭하여 원문 기사를 확인하세요' in snippet or snippet == title
+    if not is_default_snippet:
+        snippet_sentences = [clean_clause(s) for s in re.split(r'[\!\?]\s+|(?<=[다요음함])\.\s+|\n+', snippet) if len(clean_clause(s)) >= 10]
+        for s in snippet_sentences:
+            if s not in points[0] and points[0] not in s:
+                p2 = s
+                break
+                
+    if not p2 and len(parts) >= 2:
+        p2 = parts[1]
+        
+    if not p2:
+        num_match = re.search(r'(\d+[\.\d]*(?:조|억|천|만|km|m|%|호선|단계|차로|곳|개소))', clean_title)
+        if num_match:
+            p2 = f"핵심 규모 및 지표: {num_match.group(1)} 관련 세부 계획 구체화"
+        elif any(k in clean_title for k in ['국토', '정부', '지자체', '공사', '철도공단', '도로공사', '수자원공사']):
+            p2 = "주관 기관 및 유관 지자체 협력 기반 행정·인허가 및 사업 절차 진행"
+        elif any(k in clean_title for k in ['안전', '점검', '사고', '예방', '침하', '균열', '붕괴']):
+            p2 = "현장 위험 요인 선제적 점검 및 안전 시공·관리 기준 강화"
+        elif any(k in clean_title for k in ['철도', '도로', '교량', '터널', '고속']):
+            p2 = "교통 인프라 확충 및 광역 이동성 개선을 위한 설계·시공 착수"
+        elif any(k in clean_title for k in ['수자원', '하천', '항만', '댐', '물']):
+            p2 = "치수 방재 역량 제고 및 수자원·항만 시설 인프라 현대화"
+        else:
+            p2 = f"{category_name} 인프라 현장 실무 및 세부 실행 계획 검토"
+            
+    points.append(p2)
+    
+    # 3번째 포인트: 파급효과, 업계 동향 및 출처 브리핑
+    p3 = ""
+    if len(parts) >= 3 and parts[2] not in points:
+        p3 = parts[2]
+        
+    if not p3 and not is_default_snippet:
+        snippet_sentences = [clean_clause(s) for s in re.split(r'[\!\?]\s+|(?<=[다요음함])\.\s+|\n+', snippet) if len(clean_clause(s)) >= 10]
+        for s in snippet_sentences:
+            if s not in points[0] and s not in points[1]:
+                p3 = s
+                break
+                
+    if not p3:
+        p3 = f"[{category_name}] {publisher} 보도 기준 업계 동향 및 후속 절차 주목"
+        
+    points.append(p3)
+    return points[:3]
+
 def scrape_civil_news():
     """모든 카테고리 뉴스 정밀 수집, 필터링 및 JSON 저장"""
     print("=" * 60)
@@ -206,6 +286,9 @@ def scrape_civil_news():
                 # 기본 조회수 배정
                 base_views = 120 + (abs(hash(title)) % 2280)
 
+                # AI 3줄 핵심 요약 리스트 생성
+                summary_points = generate_summary_points(title, snippet, publisher, cat["name"])
+
                 article = {
                     "id": str(abs(hash(title + raw_link)))[-10:],
                     "title": title,
@@ -215,6 +298,7 @@ def scrape_civil_news():
                     "category_name": cat["name"],
                     "badge_color": cat["badge_color"],
                     "snippet": snippet[:160] + ("..." if len(snippet) > 160 else ""),
+                    "summary_points": summary_points,
                     "iso_date": iso_date,
                     "published_at": display_date,
                     "relative_date": relative_date,

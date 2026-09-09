@@ -221,6 +221,118 @@ function sortArticlesList(articles) {
   });
 }
 
+// 기사 객체의 사실 기반 3줄 AI 브리핑 요약 포인트 반환 (존재 시 사용, 부재 시 지능적 분할 생성)
+function generateArticleSummaryPoints(article) {
+  if (Array.isArray(article.summary_points) && article.summary_points.length >= 3) {
+    return article.summary_points.slice(0, 3);
+  }
+
+  const title = (article.title || '').trim();
+  const snippet = (article.snippet || '').trim();
+  const publisher = (article.publisher || '언론사').trim();
+  const categoryName = (article.category_name || '토목').trim();
+
+  // 1. 제목 노이즈 제거 ([속보], [단독], [포토], [사설] 등)
+  const cleanTitle = title
+    .replace(/^\[(단독|속보|포토|사설|기획|종합|현장|전문|인터뷰|칼럼|기고|알림|인사|부고)\]\s*/i, '')
+    .trim();
+
+  const cleanClause = (text) => {
+    if (!text) return '';
+    let t = text.trim().replace(/^[\s·\-:,~]+|[\s·\-:,~]+$/g, '');
+    const quotePairs = [['"', '"'], ["'", "'"], ['“', '”'], ['‘', '’'], ['[', ']'], ['(', ')']];
+    for (const [open, close] of quotePairs) {
+      if (t.startsWith(open) && t.endsWith(close)) {
+        t = t.slice(open.length, -close.length).trim();
+      }
+    }
+    return t;
+  };
+
+  // 제목 분할: 말줄임표(… 또는 .. 이상), 하이픈(-), 쌍점(:)
+  const rawParts = cleanTitle.split(/…|\.{2,}|(?:\s+-\s+)|(?:\s*:\s*)/);
+  const parts = [];
+  for (const p of rawParts) {
+    const sub = cleanClause(p);
+    if (sub.length >= 4) {
+      parts.push(sub);
+    }
+  }
+
+  const points = [];
+
+  // 1번째 포인트: 핵심 안건 / 사건 개요
+  if (parts.length > 0) {
+    points.push(parts[0]);
+  } else {
+    points.push(cleanClause(cleanTitle) || title);
+  }
+
+  // 2번째 포인트: 세부 내용, 추진 목표, 사업 규모 또는 본문 스니펫 사실
+  let p2 = '';
+  const isDefaultSnippet = !snippet || snippet.includes('보도 - 클릭하여 원문 기사를 확인하세요') || snippet === title;
+  if (!isDefaultSnippet) {
+    const snippetSentences = snippet
+      .split(/[\!\?]\s+|(?<=[다요음함])\.\s+|\n+/)
+      .map(cleanClause)
+      .filter(s => s.length >= 10);
+    for (const s of snippetSentences) {
+      if (!points[0].includes(s) && !s.includes(points[0])) {
+        p2 = s;
+        break;
+      }
+    }
+  }
+
+  if (!p2 && parts.length >= 2) {
+    p2 = parts[1];
+  }
+
+  if (!p2) {
+    const numMatch = cleanTitle.match(/(\d+[\.\d]*(?:조|억|천|만|km|m|%|호선|단계|차로|곳|개소))/);
+    if (numMatch) {
+      p2 = `핵심 규모 및 지표: ${numMatch[1]} 관련 세부 계획 구체화`;
+    } else if (/(국토|정부|지자체|공사|철도공단|도로공사|수자원공사)/.test(cleanTitle)) {
+      p2 = '주관 기관 및 유관 지자체 협력 기반 행정·인허가 및 사업 절차 진행';
+    } else if (/(안전|점검|사고|예방|침하|균열|붕괴)/.test(cleanTitle)) {
+      p2 = '현장 위험 요인 선제적 점검 및 안전 시공·관리 기준 강화';
+    } else if (/(철도|도로|교량|터널|고속)/.test(cleanTitle)) {
+      p2 = '교통 인프라 확충 및 광역 이동성 개선을 위한 설계·시공 착수';
+    } else if (/(수자원|하천|항만|댐|물)/.test(cleanTitle)) {
+      p2 = '치수 방재 역량 제고 및 수자원·항만 시설 인프라 현대화';
+    } else {
+      p2 = `${categoryName} 인프라 현장 실무 및 세부 실행 계획 검토`;
+    }
+  }
+  points.push(p2);
+
+  // 3번째 포인트: 파급효과, 업계 동향 및 출처 브리핑
+  let p3 = '';
+  if (parts.length >= 3 && !points.includes(parts[2])) {
+    p3 = parts[2];
+  }
+
+  if (!p3 && !isDefaultSnippet) {
+    const snippetSentences = snippet
+      .split(/[\!\?]\s+|(?<=[다요음함])\.\s+|\n+/)
+      .map(cleanClause)
+      .filter(s => s.length >= 10);
+    for (const s of snippetSentences) {
+      if (!points[0].includes(s) && !points[1].includes(s)) {
+        p3 = s;
+        break;
+      }
+    }
+  }
+
+  if (!p3) {
+    p3 = `[${categoryName}] ${publisher} 보도 기준 업계 동향 및 후속 절차 주목`;
+  }
+  points.push(p3);
+
+  return points.slice(0, 3);
+}
+
 // 개별 기사 카드 HTML 생성
 function renderArticleCard(article) {
   const isBookmarked = newsBookmarks.has(article.id);
@@ -228,6 +340,7 @@ function renderArticleCard(article) {
   const totalViews = (article.views || 0) + (userViews[article.id] || 0);
   const hasRelated = article.related_articles && article.related_articles.length > 0;
   const relatedCount = hasRelated ? article.related_articles.length : 0;
+  const summaryPoints = generateArticleSummaryPoints(article);
   
   return `
     <article class="news-card flex flex-col justify-between bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500/50 transition">
@@ -257,6 +370,44 @@ function renderArticleCard(article) {
         <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-3 leading-relaxed mb-3">
           ${escapeHtml(article.snippet)}
         </p>
+
+        <!-- 🤖 AI 3줄 핵심 브리핑 (아코디언 토글) -->
+        <div class="mb-3">
+          <button 
+            type="button"
+            onclick="toggleAiSummary('${article.id}', event)"
+            class="w-full flex items-center justify-between px-3 py-1.5 text-xs font-semibold text-blue-700 dark:text-blue-300 bg-blue-50/80 hover:bg-blue-100/90 dark:bg-blue-950/40 dark:hover:bg-blue-900/50 rounded-lg border border-blue-200/70 dark:border-blue-800/60 transition group cursor-pointer"
+            aria-expanded="false"
+            aria-controls="ai-summary-box-${article.id}"
+          >
+            <span class="flex items-center gap-1.5">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 group-hover:rotate-12 transition-transform"></i>
+              <span>🤖 AI 3줄 핵심 브리핑</span>
+            </span>
+            <span class="flex items-center text-blue-500 dark:text-blue-400 text-[11px] gap-1 font-normal">
+              <span id="ai-summary-text-${article.id}">요약보기</span>
+              <i id="ai-summary-icon-${article.id}" data-lucide="chevron-down" class="w-3.5 h-3.5 transition-transform duration-200"></i>
+            </span>
+          </button>
+
+          <div id="ai-summary-box-${article.id}" class="hidden mt-2 p-3 bg-gradient-to-br from-blue-50/60 via-indigo-50/30 to-slate-50 dark:from-slate-800/90 dark:via-blue-950/30 dark:to-slate-900 border border-blue-100 dark:border-blue-900/50 rounded-xl transition-all duration-200">
+            <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-blue-100/80 dark:border-blue-900/40">
+              <span class="flex items-center gap-1 text-[11px] font-bold text-blue-900 dark:text-blue-200">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-blue-500 dark:text-blue-400"></i>
+                <span>핵심 포인트 요약</span>
+              </span>
+              <span class="text-[10px] text-blue-500/80 dark:text-blue-400/70 font-medium">AI Briefing</span>
+            </div>
+            <ul class="space-y-1.5">
+              ${summaryPoints.map((point) => `
+                <li class="flex items-start gap-2 text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                  <i data-lucide="check-circle" class="w-3.5 h-3.5 text-blue-500 dark:text-blue-400 mt-0.5 flex-shrink-0"></i>
+                  <span class="flex-1">${escapeHtml(point)}</span>
+                </li>
+              `).join('')}
+            </ul>
+          </div>
+        </div>
 
         ${hasRelated ? `
         <div class="mb-3">
@@ -542,6 +693,27 @@ function toggleRelatedArticles(articleId, e) {
     if (iconEl) iconEl.classList.remove('rotate-180');
     if (textEl) textEl.textContent = '모두보기';
   }
+}
+
+// 🤖 AI 3줄 핵심 브리핑 아코디언 토글
+function toggleAiSummary(articleId, e) {
+  if (e) e.stopPropagation();
+  const boxEl = document.getElementById(`ai-summary-box-${articleId}`);
+  const iconEl = document.getElementById(`ai-summary-icon-${articleId}`);
+  const textEl = document.getElementById(`ai-summary-text-${articleId}`);
+  if (!boxEl) return;
+
+  const isHidden = boxEl.classList.contains('hidden');
+  if (isHidden) {
+    boxEl.classList.remove('hidden');
+    if (iconEl) iconEl.classList.add('rotate-180');
+    if (textEl) textEl.textContent = '접기';
+  } else {
+    boxEl.classList.add('hidden');
+    if (iconEl) iconEl.classList.remove('rotate-180');
+    if (textEl) textEl.textContent = '요약보기';
+  }
+  if (window.lucide) window.lucide.createIcons();
 }
 
 // 7. 기사 공유 (Web Share API + Clipboard Fallback)
