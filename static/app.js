@@ -355,7 +355,7 @@ function renderArticleCard(article) {
   const cleanSnippet = getArticleCleanSnippet(article);
   
   return `
-    <article class="news-card flex flex-col justify-between bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500/50 transition">
+    <article class="news-card flex flex-col justify-between bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-xs hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500/50 transition">
       <div>
         <div class="flex items-center justify-between gap-2 mb-3">
           <span class="inline-block px-2.5 py-1 text-xs font-semibold rounded-md border ${badgeColorClass}">
@@ -373,19 +373,19 @@ function renderArticleCard(article) {
           </div>
         </div>
 
-        <h3 class="font-bold text-base text-slate-900 dark:text-slate-100 hover:text-blue-600 dark:hover:text-blue-400 leading-snug line-clamp-2 mb-2 transition">
+        <h3 class="font-extrabold text-lg sm:text-xl text-slate-900 dark:text-slate-100 hover:text-blue-600 dark:hover:text-blue-400 leading-snug sm:leading-snug line-clamp-2 mb-3 transition tracking-tight">
           <a href="${article.link}" target="_blank" rel="noopener noreferrer" onclick="recordView('${article.id}')">
             ${escapeHtml(article.title)}
           </a>
         </h3>
 
         <!-- 3줄 핵심 브리핑 리스트 (상시 노출) -->
-        <div class="mb-3.5 p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-800">
-          <ul class="space-y-1.5 text-xs text-slate-700 dark:text-slate-300">
+        <div class="mb-4 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-blue-50/40 dark:bg-slate-800/60 border border-blue-100/70 dark:border-slate-700/60">
+          <ul class="space-y-2 text-[13px] sm:text-sm text-slate-700 dark:text-slate-200">
             ${summaryPoints.map((point) => `
-              <li class="flex items-start gap-2 leading-relaxed">
-                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 dark:bg-blue-400 mt-1.5 flex-shrink-0"></span>
-                <span class="flex-1 line-clamp-2">${escapeHtml(point)}</span>
+              <li class="flex items-start gap-2.5 leading-relaxed">
+                <span class="w-2 h-2 rounded-full bg-blue-500 dark:bg-blue-400 mt-1.5 flex-shrink-0 shadow-xs"></span>
+                <span class="flex-1">${escapeHtml(point)}</span>
               </li>
             `).join('')}
           </ul>
@@ -432,18 +432,18 @@ function renderArticleCard(article) {
         ` : ''}
       </div>
 
-      <div class="pt-3 mt-auto border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
-        <span class="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1 truncate max-w-[120px] sm:max-w-[140px]">
-          <i data-lucide="building" class="w-3.5 h-3.5 flex-shrink-0 text-slate-400"></i>
+      <div class="pt-3.5 mt-auto border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+        <span class="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5 truncate max-w-[130px] sm:max-w-[160px]">
+          <i data-lucide="building" class="w-4 h-4 flex-shrink-0 text-slate-400"></i>
           <span class="truncate">${escapeHtml(article.publisher)}</span>
         </span>
 
-        <div class="flex items-center gap-1.5">
+        <div class="flex items-center gap-1 sm:gap-1.5">
           <!-- 기사 공유 버튼 -->
           <button 
             onclick="shareArticle('${article.id}', event)"
             title="기사 공유하기"
-            class="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+            class="p-2 rounded-xl text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
           >
             <i data-lucide="share-2" class="w-4 h-4"></i>
           </button>
@@ -452,7 +452,7 @@ function renderArticleCard(article) {
           <button 
             onclick="toggleBookmark('${article.id}', event)"
             title="${isBookmarked ? '북마크 해제' : '북마크 추가'}"
-            class="p-1.5 rounded-lg transition cursor-pointer ${
+            class="p-2 rounded-xl transition cursor-pointer ${
               isBookmarked 
                 ? 'text-amber-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/40' 
                 : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
@@ -467,7 +467,7 @@ function renderArticleCard(article) {
             target="_blank" 
             rel="noopener noreferrer"
             onclick="recordView('${article.id}')"
-            class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white dark:bg-blue-950/40 dark:text-blue-300 dark:hover:bg-blue-600 dark:hover:text-white transition"
+            class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white dark:bg-blue-950/40 dark:text-blue-300 dark:hover:bg-blue-600 dark:hover:text-white transition"
           >
             <span>원문</span>
             <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
@@ -508,20 +508,20 @@ function renderArticles() {
     if (notice) notice.textContent = `⭐ 북마크 기사 총 ${filteredBookmarks.length}건`;
 
     container.innerHTML = `
-      <section class="bg-white dark:bg-slate-900/80 border border-amber-200 dark:border-amber-900/60 rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-xs">
-        <div class="flex items-center justify-between pb-4 mb-5 border-b border-amber-100 dark:border-amber-900/40">
+      <section class="bg-transparent sm:bg-white dark:sm:bg-slate-900/80 border-0 sm:border border-amber-200 dark:border-amber-900/60 rounded-none sm:rounded-3xl p-0 sm:p-7 shadow-none sm:shadow-xs">
+        <div class="flex items-center justify-between pb-3 sm:pb-4 mb-4 sm:mb-5 border-b border-amber-200/70 sm:border-amber-100 dark:border-amber-900/40 px-1 sm:px-0">
           <div class="flex items-center gap-2.5">
             <span class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 flex items-center justify-center font-bold">
               <i data-lucide="bookmark" class="w-4 h-4 fill-amber-500 text-amber-500"></i>
             </span>
-            <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+            <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               저장한 북마크 기사
               <span class="text-xs px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 font-semibold border border-amber-200 dark:border-amber-900">
                 ${filteredBookmarks.length}건
               </span>
             </h3>
           </div>
-          <button onclick="activeNewsCategory='all'; window.toggleCurrentTabBookmark(false);" class="text-xs text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 flex items-center gap-1 cursor-pointer">
+          <button onclick="activeNewsCategory='all'; window.toggleCurrentTabBookmark(false);" class="text-xs font-semibold text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 flex items-center gap-1 cursor-pointer">
             전체 기사로 돌아가기
           </button>
         </div>
@@ -556,12 +556,12 @@ function renderArticles() {
     if (notice) notice.textContent = `'${newsSearchQuery}' 검색 결과 총 ${searchResults.length}건`;
 
     container.innerHTML = `
-      <section class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-xs">
-        <div class="flex items-center justify-between pb-4 mb-5 border-b border-slate-100 dark:border-slate-800">
+      <section class="bg-transparent sm:bg-white dark:sm:bg-slate-900 border-0 sm:border border-slate-200 dark:border-slate-800 rounded-none sm:rounded-3xl p-0 sm:p-7 shadow-none sm:shadow-xs">
+        <div class="flex items-center justify-between pb-3 sm:pb-4 mb-4 sm:mb-5 border-b border-slate-200/70 sm:border-slate-100 dark:border-slate-800 px-1 sm:px-0">
           <div class="flex items-center gap-2">
-            <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+            <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               '${newsSearchQuery}' 검색 결과
-              <span class="text-xs px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-semibold border border-blue-200 dark:border-blue-900">
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-semibold border border-blue-200 dark:border-blue-900">
                 ${searchResults.length}건
               </span>
             </h3>
@@ -591,21 +591,21 @@ function renderArticles() {
     const remainingCount = catArticles.length - currentCount;
 
     return `
-      <section id="section-${cat.id}" class="scroll-mt-16 sm:scroll-mt-36 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-xs">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-5 border-b border-slate-100 dark:border-slate-800 gap-2">
+      <section id="section-${cat.id}" class="scroll-mt-16 sm:scroll-mt-36 bg-transparent sm:bg-white dark:sm:bg-slate-900 border-0 sm:border border-slate-200/90 dark:border-slate-800 rounded-none sm:rounded-3xl p-0 sm:p-7 shadow-none sm:shadow-xs mb-8 sm:mb-0">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 sm:pb-4 mb-4 sm:mb-5 border-b border-slate-200/70 sm:border-slate-100 dark:border-slate-800 px-1 sm:px-0 gap-2">
           <div>
             <div class="flex items-center gap-2">
-              <span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+              <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                 ${cat.code || '섹션'}
               </span>
-              <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+              <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                 ${cat.name}
               </h3>
-              <span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-semibold border border-slate-200 dark:border-slate-700">
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-semibold border border-slate-200/60 dark:border-slate-700">
                 총 ${catArticles.length}건
               </span>
             </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 pl-0.5">
               ${cat.description || '최신 토목 인프라 및 기술 뉴스'}
             </p>
           </div>
@@ -616,10 +616,10 @@ function renderArticles() {
         </div>
 
         ${hasMore ? `
-          <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 text-center">
+          <div class="mt-5 sm:mt-6 pt-3.5 sm:pt-4 border-t border-slate-200/60 sm:border-slate-100 dark:border-slate-800 text-center">
             <button 
               onclick="loadMoreCategoryArticles('${cat.id}')"
-              class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 hover:bg-blue-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold border border-slate-200 dark:border-slate-700 transition group shadow-xs cursor-pointer active:scale-95"
+              class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-blue-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold border border-slate-200 dark:border-slate-700 transition group shadow-xs cursor-pointer active:scale-95"
             >
               <span>${cat.name} 기사 더보기 (+${Math.min(remainingCount, CATEGORY_PAGE_SIZE)}개)</span>
               <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-hover:text-blue-500 transition-transform group-hover:translate-y-0.5"></i>
