@@ -4,7 +4,7 @@ title Civil News Hub Server
 
 echo ======================================================
 echo    Civil News Hub - Server Starting...
-echo    Opening: http://localhost:8000
+echo    Opening in Orca Browser: http://localhost:8000/#news
 echo    To stop the server, press Ctrl + C or close this window.
 echo ======================================================
 echo.

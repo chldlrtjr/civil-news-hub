@@ -2,6 +2,8 @@ import os
 import json
 import webbrowser
 import urllib.parse
+import subprocess
+import threading
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 import scraper
 import job_scraper
@@ -193,6 +195,34 @@ class CivilNewsHandler(SimpleHTTPRequestHandler):
 
         self.send_error(404, "Endpoint not found")
 
+def open_in_browser(url):
+    """오르카(Orca) 브라우저를 우선 탐색하여 실행하고, 없으면 기본 브라우저로 오픈"""
+    local_app_data = os.environ.get("LOCALAPPDATA", "")
+    user_profile = os.environ.get("USERPROFILE", "")
+    
+    orca_candidates = [
+        os.path.join(local_app_data, r"Programs\orca\Orca.exe"),
+        os.path.join(user_profile, r"AppData\Local\Programs\orca\Orca.exe"),
+        r"C:\Program Files\orca\Orca.exe",
+        r"C:\Program Files (x86)\orca\Orca.exe",
+    ]
+
+    for candidate in orca_candidates:
+        if candidate and os.path.isfile(candidate):
+            try:
+                subprocess.Popen([candidate, url])
+                print(f"🐬 [오르카 브라우저]에서 사이트를 엽니다: {candidate}")
+                return
+            except Exception as e:
+                print(f"⚠️ 오르카 브라우저 실행 시도 중 오류: {e}")
+                break
+
+    # 오르카 브라우저가 없는 환경일 경우 시스템 기본 웹 브라우저로 오픈
+    try:
+        webbrowser.open(url)
+    except Exception:
+        pass
+
 def start_server():
     # 데이터 디렉토리가 없거나 news.json이 없으면 최초 1회 수집
     if not os.path.exists(NEWS_JSON_PATH):
@@ -201,7 +231,7 @@ def start_server():
 
     server_address = ("", PORT)
     httpd = HTTPServer(server_address, CivilNewsHandler)
-    url = f"http://localhost:{PORT}"
+    url = f"http://localhost:{PORT}/#news"
     
     print("\n" + "=" * 60)
     print(f"🏗️  [토목 뉴스 대시보드 웹 서버가 실행되었습니다!]")
@@ -209,11 +239,8 @@ def start_server():
     print(f"📌  종료하려면 터미널에서 Ctrl + C 를 누르세요.")
     print("=" * 60 + "\n")
     
-    # 웹 브라우저 자동 오픈
-    try:
-        webbrowser.open(url)
-    except Exception:
-        pass
+    # 서버 준비 후 0.5초 뒤 브라우저 비동기 자동 오픈 (오르카 브라우저 우선)
+    threading.Timer(0.5, open_in_browser, args=[url]).start()
         
     try:
         httpd.serve_forever()
