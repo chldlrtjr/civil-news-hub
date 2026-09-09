@@ -148,14 +148,15 @@ function renderCategoryTabs() {
     const catCount = allArticles.filter(a => a.category_id === cat.id).length;
 
     const btn = document.createElement('button');
-    btn.className = `flex-shrink-0 flex items-center gap-1.5 py-2.5 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap select-none -mb-px ${
+    btn.setAttribute('data-cat-id', cat.id);
+    btn.className = `category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm cursor-pointer whitespace-nowrap select-none border-b-2 -mb-px ${
       isCatActive 
-        ? 'font-extrabold text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-500' 
-        : 'font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 border-b-2 border-transparent'
+        ? 'font-extrabold text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-500' 
+        : 'font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 border-transparent'
     }`;
     btn.innerHTML = `
       <span>${cat.name}</span>
-      <span class="text-[11px] px-2 py-0.5 rounded-full transition-colors ${
+      <span class="count-badge text-[11px] px-2 py-0.5 rounded-full transition-colors ${
         isCatActive 
           ? 'font-bold bg-blue-100 text-blue-700 dark:bg-blue-950/70 dark:text-blue-300 shadow-xs' 
           : 'font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
@@ -165,7 +166,7 @@ function renderCategoryTabs() {
       if (window.isGlobalBookmarkMode) {
         // 전역 북마크 상태에서는 해당 카테고리로 부드럽게 스크롤
         activeNewsCategory = cat.id;
-        renderCategoryTabs();
+        updateNewsCategoryTabStyles(cat.id);
         scrollToCategory(cat.id);
         return;
       }
@@ -176,12 +177,41 @@ function renderCategoryTabs() {
         renderArticles();
       }
       activeNewsCategory = cat.id;
-      renderCategoryTabs();
+      updateNewsCategoryTabStyles(cat.id);
       scrollToCategory(cat.id);
     });
     container.appendChild(btn);
   });
 }
+
+// 카테고리 탭 활성 상태 즉시 갱신 (DOM 재생성 없이 클래스만 교체하여 스크롤/터치 떨림 및 크기 변동 방지)
+function updateNewsCategoryTabStyles(activeCatId) {
+  const container = document.getElementById('newsCategoryTabs');
+  if (!container) return;
+  const buttons = container.querySelectorAll('button[data-cat-id]');
+  if (buttons.length === 0) {
+    renderCategoryTabs();
+    return;
+  }
+  buttons.forEach(btn => {
+    const catId = btn.getAttribute('data-cat-id');
+    const isCatActive = !isNewsBookmarkView && (catId === activeCatId);
+    btn.className = `category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm cursor-pointer whitespace-nowrap select-none border-b-2 -mb-px ${
+      isCatActive 
+        ? 'font-extrabold text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-500' 
+        : 'font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 border-transparent'
+    }`;
+    const badge = btn.querySelector('.count-badge');
+    if (badge) {
+      badge.className = `count-badge text-[11px] px-2 py-0.5 rounded-full transition-colors ${
+        isCatActive 
+          ? 'font-bold bg-blue-100 text-blue-700 dark:bg-blue-950/70 dark:text-blue-300 shadow-xs' 
+          : 'font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
+      }`;
+    }
+  });
+}
+
 
 function scrollToCategory(catId) {
   const target = document.getElementById(`section-${catId}`);
@@ -1095,7 +1125,7 @@ function setupScrollSpy() {
           if (section && section.offsetTop <= scrollPosition) {
             if (activeNewsCategory !== cat.id) {
               activeNewsCategory = cat.id;
-              renderCategoryTabs();
+              updateNewsCategoryTabStyles(activeNewsCategory);
             }
             break;
           }
