@@ -1,5 +1,11 @@
 /* Custom styles for Civil News Hub */
 
+/* 전역 수직 스크롤바 유무에 따른 좌우 너비 출렁임 및 레이아웃 시프트(Layout Shift) 원천 방지 */
+html {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
 /* 가로 스크롤바 숨기기 */
 .scrollbar-none::-webkit-scrollbar {
   display: none;
