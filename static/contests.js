@@ -442,9 +442,9 @@ function renderContests() {
               target="_blank" 
               rel="noopener noreferrer" 
               class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-amber-500 text-slate-700 hover:text-white dark:bg-slate-800 dark:text-slate-300 dark:hover:text-white transition shadow-xs"
-              title="공식 공고 사이트로 이동"
+              title="공식 접수처 바로가기"
             >
-              <span>공식 접수처</span>
+              <span>바로가기</span>
               <i data-lucide="external-link" class="w-3 h-3"></i>
             </a>
           </div>
