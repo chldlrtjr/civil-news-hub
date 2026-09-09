@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Civil News Hub · 모바일 뷰 시뮬레이터</title>
+  <title>Civil News Hub · 갤럭시 모바일 뷰 시뮬레이터</title>
   
   <!-- Tailwind CSS & Lucide Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -27,25 +27,48 @@
     }
   </script>
   <style>
-    /* 스마트폰 스크롤바 숨김 및 부드러운 스크롤 */
     iframe {
       border: none;
       width: 100%;
       height: 100%;
       background: #0f172a;
     }
-    .device-shadow {
-      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 0 12px #1e293b, 0 0 0 14px #334155;
+    /* 갤럭시 티타늄 메탈 베젤 그림자 */
+    .galaxy-frame {
+      box-shadow: 
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        0 0 0 10px #1e293b,
+        0 0 0 12px #334155,
+        0 25px 60px -10px rgba(0, 0, 0, 0.85);
+    }
+    /* 펀치홀 카메라 */
+    .punch-hole {
+      width: 11px;
+      height: 11px;
+      background: #020617;
+      border-radius: 9999px;
+      box-shadow: inset 0 0 2px 1px rgba(255, 255, 255, 0.15), 0 0 1px 1px rgba(0,0,0,0.6);
+      position: relative;
+    }
+    .punch-hole::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2.5px;
+      width: 3px;
+      height: 3px;
+      background: rgba(59, 130, 246, 0.6);
+      border-radius: 50%;
     }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans select-none overflow-x-hidden">
 
   <!-- 상단 컨트롤 툴바 -->
-  <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3 sticky top-0 z-50">
+  <header class="bg-slate-900/95 backdrop-blur-md border-b border-slate-800 px-4 py-3 sticky top-0 z-50">
     <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
       
-      <!-- 좌측 타이틀 & 브랜딩 -->
+      <!-- 좌측 타이틀 & 갤럭시 브랜딩 -->
       <div class="flex items-center gap-3">
         <a href="./index.html" class="flex items-center gap-2 text-white font-bold text-sm sm:text-base hover:text-blue-400 transition" title="데스크탑 버전으로 이동">
           <span class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow">
@@ -53,44 +76,44 @@
           </span>
           <span class="tracking-tight">Civil News Hub</span>
         </a>
-        <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center gap-1">
-          <i data-lucide="smartphone" class="w-3 h-3"></i>
-          모바일 뷰
+        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+          Galaxy S24 모바일 뷰
         </span>
       </div>
 
       <!-- 중앙 탭 바로가기 스위처 -->
       <div class="flex items-center bg-slate-800/90 rounded-xl p-1 border border-slate-700/60 text-xs font-semibold">
-        <button onclick="setTab('news')" id="tabBtnNews" class="px-3 py-1.5 rounded-lg transition bg-blue-600 text-white shadow-sm flex items-center gap-1.5">
+        <button onclick="setTab('news')" id="tabBtnNews" class="px-3.5 py-1.5 rounded-lg transition bg-blue-600 text-white shadow-sm flex items-center gap-1.5 cursor-pointer">
           <i data-lucide="newspaper" class="w-3.5 h-3.5"></i>
-          <span>뉴스</span>
+          <span>토목 뉴스</span>
         </button>
-        <button onclick="setTab('jobs')" id="tabBtnJobs" class="px-3 py-1.5 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5">
+        <button onclick="setTab('jobs')" id="tabBtnJobs" class="px-3.5 py-1.5 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer">
           <i data-lucide="briefcase" class="w-3.5 h-3.5"></i>
-          <span>채용</span>
+          <span>채용 공고</span>
         </button>
-        <button onclick="setTab('contests')" id="tabBtnContests" class="px-3 py-1.5 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5">
+        <button onclick="setTab('contests')" id="tabBtnContests" class="px-3.5 py-1.5 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer">
           <i data-lucide="trophy" class="w-3.5 h-3.5"></i>
           <span>공모전</span>
         </button>
       </div>
 
-      <!-- 우측 디바이스 프리셋 & 데스크탑 복귀 -->
+      <!-- 우측 디바이스 프리셋 & 제어 -->
       <div class="flex items-center gap-2">
-        <!-- 디바이스 크기 변경 -->
+        <!-- 갤럭시 모델 선택 프리셋 -->
         <div class="flex items-center bg-slate-800 rounded-lg p-0.5 border border-slate-700 text-xs">
-          <button onclick="setDeviceSize(375, 812, 'iPhone mini')" id="sizeBtnMini" class="px-2.5 py-1 rounded text-slate-400 hover:text-white transition">375</button>
-          <button onclick="setDeviceSize(393, 852, 'iPhone 15')" id="sizeBtnDefault" class="px-2.5 py-1 rounded bg-slate-700 text-white font-bold transition">393</button>
-          <button onclick="setDeviceSize(428, 926, 'iPhone Max')" id="sizeBtnMax" class="px-2.5 py-1 rounded text-slate-400 hover:text-white transition">428</button>
+          <button onclick="setDeviceSize(384, 854, 'Galaxy Z Flip 5')" id="sizeBtnFlip" class="px-2.5 py-1 rounded text-slate-400 hover:text-white transition cursor-pointer">Z Flip</button>
+          <button onclick="setDeviceSize(412, 915, 'Galaxy S24')" id="sizeBtnS24" class="px-2.5 py-1 rounded bg-blue-600 text-white font-bold transition shadow-xs cursor-pointer">Galaxy S24</button>
+          <button onclick="setDeviceSize(432, 956, 'Galaxy S24 Ultra')" id="sizeBtnUltra" class="px-2.5 py-1 rounded text-slate-400 hover:text-white transition cursor-pointer">S24 Ultra</button>
         </div>
 
         <!-- 프레임 새로고침 -->
-        <button onclick="reloadFrame()" title="모바일 창 새로고침" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">
+        <button onclick="reloadFrame()" title="모바일 창 새로고침" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition cursor-pointer">
           <i data-lucide="rotate-cw" id="reloadIcon" class="w-4 h-4"></i>
         </button>
 
         <!-- 원본 데스크탑 버전으로 열기 -->
-        <a href="./index.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-medium border border-slate-700 transition">
+        <a href="./index.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-medium border border-slate-700 transition" title="PC 데스크탑 화면으로 복귀">
           <i data-lucide="monitor" class="w-3.5 h-3.5"></i>
           <span class="hidden sm:inline">데스크탑 뷰</span>
         </a>
@@ -99,49 +122,62 @@
     </div>
   </header>
 
-  <!-- 메인 스마트폰 디바이스 뷰어 컨테이너 -->
+  <!-- 메인 갤럭시 디바이스 뷰어 컨테이너 -->
   <main class="flex-1 flex items-center justify-center p-4 sm:p-8 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-    <div id="phoneWrapper" class="relative transition-all duration-300 flex flex-col items-center" style="width: 393px;">
+    <div id="phoneWrapper" class="relative transition-all duration-300 flex flex-col items-center galaxy-frame rounded-[40px] bg-slate-900 overflow-hidden" style="width: 412px;">
       
-      <!-- 스마트폰 상단 스피커 & 다이내믹 아일랜드 -->
-      <div class="w-full bg-[#1e293b] rounded-t-[44px] pt-3 pb-2 px-6 flex items-center justify-between border-t border-x border-slate-700/80">
-        <!-- 시계 -->
-        <span id="statusBarTime" class="text-[11px] font-semibold tracking-tight text-slate-300">09:41</span>
-        <!-- 다이내믹 아일랜드 캡슐 -->
-        <div class="w-24 h-4.5 bg-black rounded-full flex items-center justify-center gap-1.5 px-2">
-          <div class="w-2.5 h-2.5 rounded-full bg-slate-900 border border-slate-800"></div>
-          <div class="w-1.5 h-1.5 rounded-full bg-blue-950/80"></div>
+      <!-- 갤럭시 One UI 상단 상태 표시줄 & 인피니티-O 펀치홀 카메라 -->
+      <div class="w-full bg-[#0f172a] pt-3 pb-2 px-6 flex items-center justify-between border-b border-slate-800/80 select-none">
+        <!-- 좌측: One UI 시계 및 알림 -->
+        <div class="flex items-center gap-2 text-slate-200">
+          <span id="statusBarTime" class="text-xs font-bold tracking-tight">12:30</span>
+          <span class="text-[10px] text-slate-500 font-medium">LTE</span>
         </div>
-        <!-- 상태 아이콘 -->
-        <div class="flex items-center gap-1.5 text-slate-300 text-[10px]">
-          <i data-lucide="wifi" class="w-3 h-3"></i>
-          <i data-lucide="battery" class="w-3.5 h-3.5"></i>
+
+        <!-- 중앙: 갤럭시 시그니처 인피니티-O 펀치홀 카메라 -->
+        <div class="flex items-center justify-center">
+          <div class="punch-hole" title="Galaxy Front Camera"></div>
+        </div>
+
+        <!-- 우측: One UI 네트워크, 5G, 배터리 잔량 아이콘 -->
+        <div class="flex items-center gap-2 text-slate-300 text-[11px] font-medium">
+          <i data-lucide="wifi" class="w-3.5 h-3.5 text-slate-300"></i>
+          <span class="text-[10px] font-bold tracking-wider text-slate-300">5G</span>
+          <div class="flex items-center gap-1">
+            <span class="text-[10px]">98%</span>
+            <i data-lucide="battery" class="w-4 h-4 text-emerald-400"></i>
+          </div>
         </div>
       </div>
 
-      <!-- 스마트폰 화면 (iframe) -->
-      <div class="w-full bg-slate-950 overflow-hidden relative border-x border-slate-700/80 shadow-2xl" style="height: 780px;">
-        <iframe id="mobileFrame" src="./index.html#news" title="Civil News Hub Mobile View"></iframe>
+      <!-- 갤럭시 화면 본체 (iframe) -->
+      <div id="screenContainer" class="w-full bg-slate-950 overflow-hidden relative shadow-inner" style="height: 800px;">
+        <iframe id="mobileFrame" src="./index.html#news" title="Civil News Hub Galaxy Mobile View"></iframe>
       </div>
 
-      <!-- 스마트폰 하단 홈 바 -->
-      <div class="w-full bg-[#1e293b] rounded-b-[44px] py-3.5 flex items-center justify-center border-b border-x border-slate-700/80">
-        <div class="w-32 h-1 bg-slate-500/80 rounded-full"></div>
+      <!-- 갤럭시 One UI 하단 네비게이션 제스처 바 -->
+      <div class="w-full bg-[#0f172a] py-2.5 flex items-center justify-center border-t border-slate-800/80">
+        <!-- One UI 제스처 힌트 라인 -->
+        <div class="w-36 h-1 bg-slate-400/70 rounded-full"></div>
       </div>
-
-      <!-- 디바이스 안내 캡션 -->
-      <p id="deviceLabel" class="text-xs text-slate-400 mt-4 text-center">
-        📱 iPhone 15 규격 (393 × 852px) · 모바일 하단 네비게이션 적용
-      </p>
 
     </div>
   </main>
 
+  <!-- 하단 디바이스 안내 라벨 -->
+  <footer class="pb-6 text-center text-xs text-slate-400 space-y-1">
+    <p id="deviceLabel" class="font-medium text-slate-300">
+      📱 Samsung Galaxy S24 (412 × 915px) · One UI 6 모바일 화면 규격
+    </p>
+    <p class="text-slate-500 text-[11px]">
+      실제 갤럭시 스마트폰과 100% 동일한 해상도 및 모바일 하단 네비게이션 바가 적용되어 있습니다.
+    </p>
+  </footer>
+
   <script>
-    // 현재 활성 탭 및 기기 크기 제어
     let currentTab = 'news';
 
-    // 초기 해시 확인
+    // URL 해시 확인
     const initialHash = (window.location.hash || '').replace('#', '').toLowerCase();
     if (['jobs', 'contests', 'news'].includes(initialHash)) {
       currentTab = initialHash;
@@ -149,25 +185,24 @@
 
     const frame = document.getElementById('mobileFrame');
     const phoneWrapper = document.getElementById('phoneWrapper');
+    const screenContainer = document.getElementById('screenContainer');
     const deviceLabel = document.getElementById('deviceLabel');
 
     function setTab(tab) {
       currentTab = tab;
       
-      // 상단 탭 버튼 UI 갱신
       const tabs = ['news', 'jobs', 'contests'];
       tabs.forEach(t => {
         const btn = document.getElementById(`tabBtn${t.charAt(0).toUpperCase() + t.slice(1)}`);
         if (btn) {
           if (t === tab) {
-            btn.className = 'px-3 py-1.5 rounded-lg transition bg-blue-600 text-white shadow-sm flex items-center gap-1.5';
+            btn.className = 'px-3.5 py-1.5 rounded-lg transition bg-blue-600 text-white shadow-sm flex items-center gap-1.5 cursor-pointer';
           } else {
-            btn.className = 'px-3 py-1.5 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5';
+            btn.className = 'px-3.5 py-1.5 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer';
           }
         }
       });
 
-      // iframe 내부 탭 전환 또는 URL 변경
       try {
         if (frame.contentWindow && frame.contentWindow.switchMainTab) {
           frame.contentWindow.switchMainTab(tab);
@@ -183,20 +218,18 @@
 
     function setDeviceSize(width, height, name) {
       phoneWrapper.style.width = width + 'px';
-      const screenHeight = height - 72; // 상하단 베젤 차감
-      frame.parentElement.style.height = screenHeight + 'px';
-      deviceLabel.textContent = `📱 ${name} 규격 (${width} × ${height}px) · 모바일 하단 네비게이션 적용`;
+      const screenHeight = height - 70; // 상하단 베젤 및 제스처 바 차감
+      screenContainer.style.height = screenHeight + 'px';
+      deviceLabel.innerHTML = `📱 Samsung ${name} (${width} × ${height}px) · One UI 6 모바일 화면 규격`;
 
-      ['sizeBtnMini', 'sizeBtnDefault', 'sizeBtnMax'].forEach(id => {
+      ['sizeBtnFlip', 'sizeBtnS24', 'sizeBtnUltra'].forEach(id => {
         const btn = document.getElementById(id);
-        if (btn) {
-          btn.className = 'px-2.5 py-1 rounded text-slate-400 hover:text-white transition';
-        }
+        if (btn) btn.className = 'px-2.5 py-1 rounded text-slate-400 hover:text-white transition cursor-pointer';
       });
 
-      if (width === 375) document.getElementById('sizeBtnMini').className = 'px-2.5 py-1 rounded bg-slate-700 text-white font-bold transition';
-      if (width === 393) document.getElementById('sizeBtnDefault').className = 'px-2.5 py-1 rounded bg-slate-700 text-white font-bold transition';
-      if (width === 428) document.getElementById('sizeBtnMax').className = 'px-2.5 py-1 rounded bg-slate-700 text-white font-bold transition';
+      if (width === 384) document.getElementById('sizeBtnFlip').className = 'px-2.5 py-1 rounded bg-blue-600 text-white font-bold transition shadow-xs cursor-pointer';
+      if (width === 412) document.getElementById('sizeBtnS24').className = 'px-2.5 py-1 rounded bg-blue-600 text-white font-bold transition shadow-xs cursor-pointer';
+      if (width === 432) document.getElementById('sizeBtnUltra').className = 'px-2.5 py-1 rounded bg-blue-600 text-white font-bold transition shadow-xs cursor-pointer';
     }
 
     function reloadFrame() {
@@ -209,10 +242,10 @@
       }
       setTimeout(() => {
         if (icon) icon.classList.remove('animate-spin');
-      }, 600);
+      }, 500);
     }
 
-    // 스마트폰 상단 실시간 시계 업데이트
+    // 갤럭시 실시간 시계 업데이트
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
@@ -223,10 +256,10 @@
     updateClock();
     setInterval(updateClock, 30000);
 
-    // 초기 탭 세팅
+    // 기본값: Galaxy S24 (412 × 915)
+    setDeviceSize(412, 915, 'Galaxy S24');
     setTab(currentTab);
 
-    // Lucide 아이콘 렌더링
     if (window.lucide) window.lucide.createIcons();
   </script>
 </body>
