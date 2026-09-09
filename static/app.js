@@ -317,6 +317,20 @@ function generateArticleSummaryPoints(article) {
   return points.slice(0, 3);
 }
 
+// 기사 본문 스니펫 정제: '원문 기사를 확인하세요' 등 무의미한 더미 문구 원천 차단 및 정갈한 팩트 요약 제공
+function getArticleCleanSnippet(article) {
+  let snippet = (article.snippet || '').trim();
+  if (snippet.includes('원문 기사를 확인하세요') || snippet.includes('보도 - 클릭하여') || snippet.length < 10) {
+    const points = generateArticleSummaryPoints(article);
+    const p1 = (points[0] || '').trim();
+    const p2 = (points[1] || '').trim();
+    const s1 = p1 ? (p1.endsWith('.') ? p1 : p1 + '.') : '';
+    const s2 = (p2 && p2 !== p1 && !p2.includes('보도 기준')) ? (p2.endsWith('.') ? p2 : p2 + '.') : '';
+    return `${s1} ${s2}`.trim() || (article.title || '');
+  }
+  return snippet;
+}
+
 // 개별 기사 카드 HTML 생성
 function renderArticleCard(article) {
   const isBookmarked = newsBookmarks.has(article.id);
@@ -325,6 +339,7 @@ function renderArticleCard(article) {
   const hasRelated = article.related_articles && article.related_articles.length > 0;
   const relatedCount = hasRelated ? article.related_articles.length : 0;
   const summaryPoints = generateArticleSummaryPoints(article);
+  const cleanSnippet = getArticleCleanSnippet(article);
   
   return `
     <article class="news-card flex flex-col justify-between bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500/50 transition">
@@ -352,7 +367,7 @@ function renderArticleCard(article) {
         </h3>
 
         <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-3 leading-relaxed mb-3">
-          ${escapeHtml(article.snippet)}
+          ${escapeHtml(cleanSnippet)}
         </p>
 
         <!-- 🤖 AI 3줄 핵심 브리핑 (아코디언 토글) -->

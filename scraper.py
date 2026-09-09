@@ -280,14 +280,25 @@ def scrape_civil_news():
                 snippet = clean_html(raw_desc)
                 if publisher and snippet.endswith(publisher):
                     snippet = snippet[:-len(publisher)].strip()
-                if not snippet or snippet == title:
-                    snippet = f"{publisher} 보도 - 클릭하여 원문 기사를 확인하세요."
-                
+
                 # 기본 조회수 배정
                 base_views = 120 + (abs(hash(title)) % 2280)
 
                 # AI 3줄 핵심 요약 리스트 생성
                 summary_points = generate_summary_points(title, snippet, publisher, cat["name"])
+
+                # 설명(스니펫) 정제: 비어있거나 무의미한 경우 사실 기반 핵심 요약 문장으로 대체
+                if not snippet or snippet == title or "원문 기사를 확인하세요" in snippet or len(snippet) < 15:
+                    p1 = summary_points[0] if summary_points else title
+                    p2 = summary_points[1] if len(summary_points) > 1 and "보도 기준" not in summary_points[1] else ""
+                    
+                    p1_clean = clean_clause(p1)
+                    p2_clean = clean_clause(p2)
+                    
+                    p1_s = p1_clean + ("." if not p1_clean.endswith(('.', '!', '?')) else "")
+                    p2_s = (p2_clean + ("." if not p2_clean.endswith(('.', '!', '?')) else "")) if p2_clean else ""
+                    
+                    snippet = f"{p1_s} {p2_s}".strip()
 
                 article = {
                     "id": str(abs(hash(title + raw_link)))[-10:],
