@@ -199,6 +199,61 @@ function matchJobRegion(job, regionKey) {
   return true;
 }
 
+// 4-1. 급여 분석 파서 (연간 환산 만원 단위 도출)
+function parseSalaryAmount(salaryStr) {
+  if (!salaryStr || typeof salaryStr !== 'string') return 0;
+  const str = salaryStr.trim();
+  if (!str) return 0;
+  if (!/\d/.test(str)) return 0;
+
+  // 월급 여부 확인 (연/연봉/초봉/연간 등의 연단위 키워드가 없고 월/월급 키워드가 있는 경우)
+  let isMonthly = false;
+  const hasYearly = /연봉|연\s*\d|초봉|초임\s*연|연간/i.test(str);
+  if (!hasYearly && /(?:^|[^\w가-힣])(?:월|월급)\s*[\d,]/i.test(str)) {
+    isMonthly = true;
+  }
+
+  // 억 단위 체크 (예: 1억원, 1억 2,000만원)
+  const eokMatch = str.match(/(\d+)\s*억(?:\s*([\d,]+)\s*만?원?)?/);
+  if (eokMatch && !str.includes('~') && !str.includes('-')) {
+    const eok = parseInt(eokMatch[1], 10) * 10000;
+    const man = eokMatch[2] ? parseFloat(eokMatch[2].replace(/,/g, '')) : 0;
+    const total = eok + man;
+    return Math.round(isMonthly ? total * 12 : total);
+  }
+
+  // 범위 표기 파싱 (예: 4,800만원 ~ 5,200만원, 4,800 ~ 5,200만원, 3500-4000만원)
+  const rangeMatch = str.match(/([\d,]+(?:\.\d+)?)\s*(?:만원|만)?\s*[-~]\s*([\d,]+(?:\.\d+)?)\s*(?:만원|만)?/);
+  if (rangeMatch) {
+    const num1 = parseFloat(rangeMatch[1].replace(/,/g, ''));
+    const num2 = parseFloat(rangeMatch[2].replace(/,/g, ''));
+    if (!isNaN(num1) && !isNaN(num2)) {
+      const avg = (num1 + num2) / 2;
+      return Math.round(isMonthly ? avg * 12 : avg);
+    }
+  }
+
+  // 단일 금액 (예: 5,000만원 이상, 4,100만원 수준)
+  const singleMatch = str.match(/([\d,]+(?:\.\d+)?)\s*(?:만원|만)/);
+  if (singleMatch) {
+    const num = parseFloat(singleMatch[1].replace(/,/g, ''));
+    if (!isNaN(num)) {
+      return Math.round(isMonthly ? num * 12 : num);
+    }
+  }
+
+  // 폴백: 연, 초봉, 월, 연봉, 초임 뒤의 숫자
+  const fallbackMatch = str.match(/(?:연|초봉|월|연봉|초임)\s*(?:약\s*)?([\d,]+(?:\.\d+)?)/);
+  if (fallbackMatch) {
+    const num = parseFloat(fallbackMatch[1].replace(/,/g, ''));
+    if (!isNaN(num)) {
+      return Math.round(isMonthly ? num * 12 : num);
+    }
+  }
+
+  return 0;
+}
+
 // 5. 정렬 및 필터링
 function filterAndSortJobs() {
   let list = allJobs.slice();
@@ -248,6 +303,28 @@ function filterAndSortJobs() {
       const da = calculateDday(a.deadline_date).days;
       const db = calculateDday(b.deadline_date).days;
       return da - db;
+    });
+  } else if (currentJobSort === 'salary_high') {
+    // 💰 연봉/급여 높은순: 미기재/내규(0)는 최하단 정렬
+    list.sort((a, b) => {
+      const sa = parseSalaryAmount(a.salary);
+      const sb = parseSalaryAmount(b.salary);
+      if (sa === 0 && sb === 0) return (a.company || '').localeCompare(b.company || '', 'ko');
+      if (sa === 0) return 1;
+      if (sb === 0) return -1;
+      if (sb !== sa) return sb - sa;
+      return (a.company || '').localeCompare(b.company || '', 'ko');
+    });
+  } else if (currentJobSort === 'salary_low') {
+    // 💰 연봉/급여 낮은순: 미기재/내규(0)는 최하단 정렬
+    list.sort((a, b) => {
+      const sa = parseSalaryAmount(a.salary);
+      const sb = parseSalaryAmount(b.salary);
+      if (sa === 0 && sb === 0) return (a.company || '').localeCompare(b.company || '', 'ko');
+      if (sa === 0) return 1;
+      if (sb === 0) return -1;
+      if (sa !== sb) return sa - sb;
+      return (a.company || '').localeCompare(b.company || '', 'ko');
     });
   } else if (currentJobSort === 'company') {
     list.sort((a, b) => (a.company || '').localeCompare(b.company || '', 'ko'));
@@ -299,6 +376,27 @@ function renderJobCard(job) {
     </span>
   `).join(' ');
 
+  // 급여 정보 돋보이는 뱃지
+  let salaryBadgeHtml = '';
+  if (job.salary) {
+    const salaryVal = parseSalaryAmount(job.salary);
+    if (salaryVal > 0) {
+      salaryBadgeHtml = `
+        <div class="mb-2.5 flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50/80 dark:from-emerald-950/60 dark:to-teal-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 font-semibold shadow-2xs" title="예상 급여/처우: ${job.salary}">
+          <span class="flex-shrink-0 text-sm">💰</span>
+          <span class="truncate font-bold">${job.salary}</span>
+        </div>
+      `;
+    } else {
+      salaryBadgeHtml = `
+        <div class="mb-2.5 flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400" title="급여/처우: ${job.salary}">
+          <span class="flex-shrink-0 text-xs">💰</span>
+          <span class="truncate">${job.salary}</span>
+        </div>
+      `;
+    }
+  }
+
   return `
     <article 
       class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-md hover:border-blue-300 dark:hover:border-slate-700 transition flex flex-col justify-between group cursor-pointer"
@@ -321,9 +419,12 @@ function renderJobCard(job) {
         </div>
 
         <!-- 공고 제목 -->
-        <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition leading-snug line-clamp-2 mb-3">
+        <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition leading-snug line-clamp-2 mb-2">
           ${job.title}
         </h3>
+
+        <!-- 급여 정보 돋보이는 뱃지 -->
+        ${salaryBadgeHtml}
 
         <!-- 주요 정보 (근무지, 경력, 모집분야) -->
         <div class="space-y-1.5 text-xs text-slate-500 dark:text-slate-400 mb-3.5">
