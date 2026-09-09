@@ -171,7 +171,7 @@ function scrollToCategory(catId) {
   const target = document.getElementById(`section-${catId}`);
   if (target) {
     const isMobile = window.innerWidth < 640;
-    const yOffset = isMobile ? -65 : -130;
+    const yOffset = isMobile ? -55 : -130;
     const y = target.getBoundingClientRect().top + window.pageYOffset + yOffset;
     window.scrollTo({ top: y, behavior: 'smooth' });
   } else {
@@ -582,7 +582,7 @@ function renderArticles() {
     const remainingCount = catArticles.length - currentCount;
 
     return `
-      <section id="section-${cat.id}" class="scroll-mt-32 sm:scroll-mt-36 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-xs">
+      <section id="section-${cat.id}" class="scroll-mt-16 sm:scroll-mt-36 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-xs">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-5 border-b border-slate-100 dark:border-slate-800 gap-2">
           <div>
             <div class="flex items-center gap-2">
@@ -1028,7 +1028,7 @@ function setupScrollSpy() {
     if (!ticking) {
       window.requestAnimationFrame(() => {
         const targetCategories = categories.filter(c => c.id !== 'all');
-        const scrollPosition = window.pageYOffset + 180;
+        const scrollPosition = window.pageYOffset + (window.innerWidth < 640 ? 80 : 180);
         
         for (let i = targetCategories.length - 1; i >= 0; i--) {
           const cat = targetCategories[i];
