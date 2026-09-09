@@ -170,7 +170,8 @@ function renderCategoryTabs() {
 function scrollToCategory(catId) {
   const target = document.getElementById(`section-${catId}`);
   if (target) {
-    const yOffset = -130;
+    const isMobile = window.innerWidth < 640;
+    const yOffset = isMobile ? -65 : -130;
     const y = target.getBoundingClientRect().top + window.pageYOffset + yOffset;
     window.scrollTo({ top: y, behavior: 'smooth' });
   } else {
