@@ -366,46 +366,16 @@ function renderArticleCard(article) {
           </a>
         </h3>
 
-        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-3 leading-relaxed mb-3">
-          ${escapeHtml(cleanSnippet)}
-        </p>
-
-        <!-- 🤖 AI 3줄 핵심 브리핑 (아코디언 토글) -->
-        <div class="mb-3">
-          <button 
-            type="button"
-            onclick="toggleAiSummary('${article.id}', event)"
-            class="w-full flex items-center justify-between px-3 py-1.5 text-xs font-semibold text-blue-700 dark:text-blue-300 bg-blue-50/80 hover:bg-blue-100/90 dark:bg-blue-950/40 dark:hover:bg-blue-900/50 rounded-lg border border-blue-200/70 dark:border-blue-800/60 transition group cursor-pointer"
-            aria-expanded="false"
-            aria-controls="ai-summary-box-${article.id}"
-          >
-            <span class="flex items-center gap-1.5">
-              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 group-hover:rotate-12 transition-transform"></i>
-              <span>🤖 AI 3줄 핵심 브리핑</span>
-            </span>
-            <span class="flex items-center text-blue-500 dark:text-blue-400 text-[11px] gap-1 font-normal">
-              <span id="ai-summary-text-${article.id}">요약보기</span>
-              <i id="ai-summary-icon-${article.id}" data-lucide="chevron-down" class="w-3.5 h-3.5 transition-transform duration-200"></i>
-            </span>
-          </button>
-
-          <div id="ai-summary-box-${article.id}" class="hidden mt-2 p-3 bg-gradient-to-br from-blue-50/60 via-indigo-50/30 to-slate-50 dark:from-slate-800/90 dark:via-blue-950/30 dark:to-slate-900 border border-blue-100 dark:border-blue-900/50 rounded-xl transition-all duration-200">
-            <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-blue-100/80 dark:border-blue-900/40">
-              <span class="flex items-center gap-1 text-[11px] font-bold text-blue-900 dark:text-blue-200">
-                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-blue-500 dark:text-blue-400"></i>
-                <span>핵심 포인트 요약</span>
-              </span>
-              <span class="text-[10px] text-blue-500/80 dark:text-blue-400/70 font-medium">AI Briefing</span>
-            </div>
-            <ul class="space-y-1.5">
-              ${summaryPoints.map((point) => `
-                <li class="flex items-start gap-2 text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                  <i data-lucide="check-circle" class="w-3.5 h-3.5 text-blue-500 dark:text-blue-400 mt-0.5 flex-shrink-0"></i>
-                  <span class="flex-1">${escapeHtml(point)}</span>
-                </li>
-              `).join('')}
-            </ul>
-          </div>
+        <!-- 3줄 핵심 브리핑 리스트 (상시 노출) -->
+        <div class="mb-3.5 p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-800">
+          <ul class="space-y-1.5 text-xs text-slate-700 dark:text-slate-300">
+            ${summaryPoints.map((point) => `
+              <li class="flex items-start gap-2 leading-relaxed">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 dark:bg-blue-400 mt-1.5 flex-shrink-0"></span>
+                <span class="flex-1 line-clamp-2">${escapeHtml(point)}</span>
+              </li>
+            `).join('')}
+          </ul>
         </div>
 
         ${hasRelated ? `
@@ -686,26 +656,6 @@ function toggleRelatedArticles(articleId, e) {
   }
 }
 
-// 🤖 AI 3줄 핵심 브리핑 아코디언 토글
-function toggleAiSummary(articleId, e) {
-  if (e) e.stopPropagation();
-  const boxEl = document.getElementById(`ai-summary-box-${articleId}`);
-  const iconEl = document.getElementById(`ai-summary-icon-${articleId}`);
-  const textEl = document.getElementById(`ai-summary-text-${articleId}`);
-  if (!boxEl) return;
-
-  const isHidden = boxEl.classList.contains('hidden');
-  if (isHidden) {
-    boxEl.classList.remove('hidden');
-    if (iconEl) iconEl.classList.add('rotate-180');
-    if (textEl) textEl.textContent = '접기';
-  } else {
-    boxEl.classList.add('hidden');
-    if (iconEl) iconEl.classList.remove('rotate-180');
-    if (textEl) textEl.textContent = '요약보기';
-  }
-  if (window.lucide) window.lucide.createIcons();
-}
 
 // 7. 기사 공유 (Web Share API + Clipboard Fallback)
 async function shareArticle(articleId, e) {
