@@ -395,36 +395,36 @@ function renderArticleCard(article) {
   const cleanSnippet = getArticleCleanSnippet(article);
   
   return `
-    <article class="news-card flex flex-col justify-between bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-xs hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500/50 transition">
+    <article class="news-card flex flex-col justify-between bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-xs hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500/50 transition">
       <div>
-        <div class="flex items-center justify-between gap-2 mb-3">
-          <span class="inline-block px-2.5 py-1 text-xs font-semibold rounded-md border ${badgeColorClass}">
+        <div class="flex items-center justify-between gap-2 mb-3 sm:mb-3.5">
+          <span class="inline-block px-3 py-1 text-xs sm:text-sm font-semibold rounded-lg border ${badgeColorClass}">
             ${escapeHtml(article.category_name || '토목')}
           </span>
-          <div class="flex items-center text-xs text-slate-500 dark:text-slate-400 gap-2.5">
+          <div class="flex items-center text-xs sm:text-sm text-slate-500 dark:text-slate-400 gap-3">
             <span class="flex items-center">
-              <i data-lucide="clock" class="w-3.5 h-3.5 mr-1 text-slate-400"></i>
+              <i data-lucide="clock" class="w-4 h-4 mr-1 text-slate-400"></i>
               <span>${escapeHtml(article.relative_date || '최근')}</span>
             </span>
-            <span class="flex items-center text-slate-400 dark:text-slate-500 text-[11px]" title="조회수">
-              <i data-lucide="eye" class="w-3.5 h-3.5 mr-0.5"></i>
+            <span class="flex items-center text-slate-400 dark:text-slate-500 text-xs" title="조회수">
+              <i data-lucide="eye" class="w-4 h-4 mr-1"></i>
               <span id="view-count-${article.id}">${totalViews.toLocaleString()}</span>회
             </span>
           </div>
         </div>
 
-        <h3 class="font-extrabold text-lg sm:text-xl text-slate-900 dark:text-slate-100 hover:text-blue-600 dark:hover:text-blue-400 leading-snug sm:leading-snug line-clamp-2 mb-3 transition tracking-tight">
+        <h3 class="font-extrabold text-xl sm:text-2xl text-slate-900 dark:text-slate-100 hover:text-blue-600 dark:hover:text-blue-400 leading-snug sm:leading-snug line-clamp-2 mb-3.5 sm:mb-4 transition tracking-tight">
           <a href="${article.link}" target="_blank" rel="noopener noreferrer" onclick="recordView('${article.id}')">
             ${escapeHtml(article.title)}
           </a>
         </h3>
 
         <!-- 3줄 핵심 브리핑 리스트 (상시 노출) -->
-        <div class="mb-4 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-blue-50/40 dark:bg-slate-800/60 border border-blue-100/70 dark:border-slate-700/60">
-          <ul class="space-y-2 text-[13px] sm:text-sm text-slate-700 dark:text-slate-200">
+        <div class="mb-4 sm:mb-5 p-4 sm:p-5 rounded-2xl bg-blue-50/40 dark:bg-slate-800/60 border border-blue-100/70 dark:border-slate-700/60">
+          <ul class="space-y-2.5 text-sm sm:text-[15px] text-slate-700 dark:text-slate-200">
             ${summaryPoints.map((point) => `
               <li class="flex items-start gap-2.5 leading-relaxed">
-                <span class="w-2 h-2 rounded-full bg-blue-500 dark:bg-blue-400 mt-1.5 flex-shrink-0 shadow-xs"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-blue-500 dark:bg-blue-400 mt-1.5 flex-shrink-0 shadow-xs"></span>
                 <span class="flex-1">${escapeHtml(point)}</span>
               </li>
             `).join('')}
@@ -432,38 +432,38 @@ function renderArticleCard(article) {
         </div>
 
         ${hasRelated ? `
-        <div class="mb-3">
+        <div class="mb-3.5">
           <button 
             type="button"
             onclick="toggleRelatedArticles('${article.id}', event)"
-            class="w-full flex items-center justify-between px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/80 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg border border-slate-200/80 dark:border-slate-700/80 transition group cursor-pointer"
+            class="w-full flex items-center justify-between px-3.5 py-2 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/80 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-xl border border-slate-200/80 dark:border-slate-700/80 transition group cursor-pointer"
           >
             <span class="flex items-center gap-1.5 text-blue-600 dark:text-blue-400 font-semibold">
-              <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+              <i data-lucide="layers" class="w-4 h-4"></i>
               <span>같은 내용의 타 언론사 보도 <strong class="text-blue-700 dark:text-blue-300">${relatedCount}건</strong></span>
             </span>
-            <span class="flex items-center text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 text-[11px] gap-1">
+            <span class="flex items-center text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 text-xs gap-1">
               <span id="related-text-${article.id}">모두보기</span>
               <i id="related-icon-${article.id}" data-lucide="chevron-down" class="w-3.5 h-3.5 transition-transform duration-200"></i>
             </span>
           </button>
 
-          <div id="related-list-${article.id}" class="hidden space-y-1.5 mt-2 max-h-52 overflow-y-auto pr-1">
+          <div id="related-list-${article.id}" class="hidden space-y-2 mt-2.5 max-h-56 overflow-y-auto pr-1">
             ${(article.related_articles || []).slice().sort((r1, r2) => (r2.iso_date || r2.published_at || '').localeCompare(r1.iso_date || r1.published_at || '')).map(rel => `
-              <div class="flex items-start justify-between gap-2 p-2 rounded-lg bg-slate-50/90 dark:bg-slate-800/50 hover:bg-blue-50/50 dark:hover:bg-slate-800 border border-slate-100 dark:border-slate-800/90 transition">
+              <div class="flex items-start justify-between gap-2 p-2.5 rounded-xl bg-slate-50/90 dark:bg-slate-800/50 hover:bg-blue-50/50 dark:hover:bg-slate-800 border border-slate-100 dark:border-slate-800/90 transition">
                 <div class="flex-1 min-w-0">
                   <div class="flex items-center gap-1.5 mb-0.5">
-                    <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-200/80 dark:bg-slate-700 text-slate-700 dark:text-slate-200 truncate max-w-[100px]">
+                    <span class="inline-block px-2 py-0.5 rounded-md text-[11px] font-bold bg-slate-200/80 dark:bg-slate-700 text-slate-700 dark:text-slate-200 truncate max-w-[120px]">
                       ${escapeHtml(rel.publisher)}
                     </span>
-                    <span class="text-[10px] text-slate-400 dark:text-slate-500">${escapeHtml(rel.relative_date || '')}</span>
+                    <span class="text-xs text-slate-400 dark:text-slate-500">${escapeHtml(rel.relative_date || '')}</span>
                   </div>
-                  <a href="${rel.link}" target="_blank" rel="noopener noreferrer" onclick="recordView('${rel.id}')" class="text-xs text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 line-clamp-1 block transition font-normal">
+                  <a href="${rel.link}" target="_blank" rel="noopener noreferrer" onclick="recordView('${rel.id}')" class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 line-clamp-1 block transition font-normal">
                     ${escapeHtml(rel.title)}
                   </a>
                 </div>
                 <a href="${rel.link}" target="_blank" rel="noopener noreferrer" onclick="recordView('${rel.id}')" class="flex-shrink-0 p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition" title="원문 보기">
-                  <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                  <i data-lucide="external-link" class="w-4 h-4"></i>
                 </a>
               </div>
             `).join('')}
@@ -472,33 +472,33 @@ function renderArticleCard(article) {
         ` : ''}
       </div>
 
-      <div class="pt-3.5 mt-auto border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
-        <span class="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5 truncate max-w-[130px] sm:max-w-[160px]">
-          <i data-lucide="building" class="w-4 h-4 flex-shrink-0 text-slate-400"></i>
+      <div class="pt-4 mt-auto border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+        <span class="text-sm sm:text-base font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-2 truncate max-w-[160px] sm:max-w-[220px]">
+          <i data-lucide="building" class="w-4 h-4 sm:w-4.5 sm:h-4.5 flex-shrink-0 text-slate-400"></i>
           <span class="truncate">${escapeHtml(article.publisher)}</span>
         </span>
 
-        <div class="flex items-center gap-1 sm:gap-1.5">
+        <div class="flex items-center gap-1.5 sm:gap-2">
           <!-- 기사 공유 버튼 -->
           <button 
             onclick="shareArticle('${article.id}', event)"
             title="기사 공유하기"
-            class="p-2 rounded-xl text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+            class="p-2 sm:p-2.5 rounded-xl text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
           >
-            <i data-lucide="share-2" class="w-4 h-4"></i>
+            <i data-lucide="share-2" class="w-4 h-4 sm:w-4.5 sm:h-4.5"></i>
           </button>
 
           <!-- 북마크 버튼 -->
           <button 
             onclick="toggleBookmark('${article.id}', event)"
             title="${isBookmarked ? '북마크 해제' : '북마크 추가'}"
-            class="p-2 rounded-xl transition cursor-pointer ${
+            class="p-2 sm:p-2.5 rounded-xl transition cursor-pointer ${
               isBookmarked 
                 ? 'text-amber-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/40' 
                 : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
             }"
           >
-            <i data-lucide="bookmark" class="w-4 h-4 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}"></i>
+            <i data-lucide="bookmark" class="w-4 h-4 sm:w-4.5 sm:h-4.5 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}"></i>
           </button>
 
           <!-- 원문 보러가기 버튼 -->
@@ -507,7 +507,7 @@ function renderArticleCard(article) {
             target="_blank" 
             rel="noopener noreferrer"
             onclick="recordView('${article.id}')"
-            class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white dark:bg-blue-950/40 dark:text-blue-300 dark:hover:bg-blue-600 dark:hover:text-white transition"
+            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white dark:bg-blue-950/40 dark:text-blue-300 dark:hover:bg-blue-600 dark:hover:text-white transition shadow-2xs"
           >
             <span>원문</span>
             <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
@@ -565,7 +565,7 @@ function renderArticles() {
             전체 기사로 돌아가기
           </button>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
           ${filteredBookmarks.map(renderArticleCard).join('')}
         </div>
       </section>
@@ -607,7 +607,7 @@ function renderArticles() {
             </h3>
           </div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
           ${searchResults.map(renderArticleCard).join('')}
         </div>
       </section>
@@ -648,7 +648,7 @@ function renderArticles() {
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
           ${displayedArticles.map(renderArticleCard).join('')}
         </div>
 

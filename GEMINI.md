@@ -88,7 +88,7 @@
 - **검색창 규격**: `max-w-xl` 등 임의 너비 축소를 금지하고, `mt-5 mb-4 sm:mb-0` 내 `w-full pl-10 pr-10 py-3 rounded-xl` 100% 풀 와이드 규격으로 통일.
 - **상단 카테고리 탭 스티키 바**: 화면 좌우 끝까지 뻗는 풀 블리드 음수 마진(`sticky top-0 sm:top-16 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-0 mt-0 mb-4 sm:my-4 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 shadow-xs`)과 내부 `max-w-7xl mx-auto category-scroll-container` 구조를 3개 탭 모두에 100% 동일하게 고정.
 - **필터 및 정렬 컨트롤 바**: 카테고리 탭 바로 아래 `flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400 mb-4 px-1`로 통일 (좌측 건수 안내, 우측 필터/정렬 버튼군).
-- **카드 그리드 반응형 컬럼**: 모바일 1열, 태블릿 2열, 데스크탑 3열(`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5`)로 모든 카드 그리드를 동일하게 통일.
+- **카드 그리드 반응형 컬럼**: 모바일 1열, 태블릿 및 데스크탑 2열(`grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6`)로 모든 카드 그리드를 동일하게 통일 (2열 와이드 배치에 맞추어 카드 패딩 `p-5 sm:p-7`, 헤드라인 `text-lg sm:text-xl`~`text-xl sm:text-2xl`, 배지 및 버튼 여백을 비례 확대 적용).
 - **스크롤바 유무에 따른 너비 출렁임(Layout Shift) 원천 방지**: 페이지별 콘텐츠 높이 차이로 인해 세로 스크롤바가 생성/소멸되며 화면 전체 너비와 중앙 정렬이 15~17px 순간 이동하는 현상을 방지하기 위해, `html`에 `overflow-y: scroll; scrollbar-gutter: stable;`을 영구 고정한다.
 
 ---

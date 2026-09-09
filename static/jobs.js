@@ -421,25 +421,25 @@ function renderJobCard(job) {
   let ddayBadgeHtml = '';
   if (ddayInfo.isUrgent) {
     ddayBadgeHtml = `
-      <span class="text-xs px-2.5 py-0.5 rounded-full border border-rose-200 dark:border-rose-900/60 bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 font-semibold flex-shrink-0">
+      <span class="text-xs sm:text-sm px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full border border-rose-200 dark:border-rose-900/60 bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 font-semibold flex-shrink-0">
         ${ddayInfo.text}
       </span>
     `;
   } else if (ddayInfo.days === 999) {
     ddayBadgeHtml = `
-      <span class="text-xs px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 flex-shrink-0">
+      <span class="text-xs sm:text-sm px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full border border-emerald-200 dark:border-emerald-800 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 font-semibold flex-shrink-0">
         ${ddayInfo.text}
       </span>
     `;
   } else if (ddayInfo.days <= 7) {
     ddayBadgeHtml = `
-      <span class="text-xs px-2.5 py-0.5 rounded-full border border-amber-200 dark:border-amber-800 bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 font-semibold flex-shrink-0">
+      <span class="text-xs sm:text-sm px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full border border-amber-200 dark:border-amber-800 bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 font-semibold flex-shrink-0">
         ${ddayInfo.text}
       </span>
     `;
   } else {
     ddayBadgeHtml = `
-      <span class="text-xs px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-800 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 flex-shrink-0">
+      <span class="text-xs sm:text-sm px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full border border-blue-200 dark:border-blue-800 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 font-semibold flex-shrink-0">
         ${ddayInfo.text}
       </span>
     `;
@@ -459,14 +459,14 @@ function renderJobCard(job) {
 
   // 모집 분야 칩 (최대 3개)
   const fieldsHtml = (job.fields || []).slice(0, 3).map(f => `
-    <span class="inline-flex items-center text-[11px] px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700">
+    <span class="inline-flex items-center text-xs px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700 font-medium">
       ${f}
     </span>
   `).join('');
 
   // 혜택/우대 태그 (최대 2개)
   const tagsHtml = (job.tags || []).slice(0, 2).map(t => `
-    <span class="text-[10px] text-blue-600 dark:text-blue-400 font-medium">
+    <span class="text-xs text-blue-600 dark:text-blue-400 font-medium">
       #${t}
     </span>
   `).join(' ');
@@ -477,15 +477,15 @@ function renderJobCard(job) {
     const salaryVal = parseSalaryAmount(job.salary);
     if (salaryVal > 0) {
       salaryBadgeHtml = `
-        <div class="mb-2.5 flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50/80 dark:from-emerald-950/60 dark:to-teal-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 font-semibold shadow-2xs" title="예상 급여/처우: ${job.salary}">
-          <span class="flex-shrink-0 text-sm">💰</span>
+        <div class="mb-3 flex items-center gap-2 text-xs sm:text-sm px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50/80 dark:from-emerald-950/60 dark:to-teal-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 font-semibold shadow-2xs" title="예상 급여/처우: ${job.salary}">
+          <span class="flex-shrink-0 text-base">💰</span>
           <span class="truncate font-bold">${job.salary}</span>
         </div>
       `;
     } else {
       salaryBadgeHtml = `
-        <div class="mb-2.5 flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400" title="급여/처우: ${job.salary}">
-          <span class="flex-shrink-0 text-xs">💰</span>
+        <div class="mb-3 flex items-center gap-2 text-xs sm:text-sm px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-medium" title="급여/처우: ${job.salary}">
+          <span class="flex-shrink-0 text-sm">💰</span>
           <span class="truncate">${job.salary}</span>
         </div>
       `;
@@ -494,17 +494,17 @@ function renderJobCard(job) {
 
   return `
     <article 
-      class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-md hover:border-blue-300 dark:hover:border-slate-700 transition flex flex-col justify-between group cursor-pointer"
+      class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-xs hover:shadow-md hover:border-blue-300 dark:hover:border-slate-700 transition flex flex-col justify-between group cursor-pointer"
       onclick="openJobModal('${job.id}')"
     >
       <div>
         <!-- 상단: 카테고리 + 기업명 + D-Day 뱃지 -->
-        <div class="flex items-center justify-between gap-2 mb-2.5">
+        <div class="flex items-center justify-between gap-2 mb-3">
           <div class="flex items-center gap-2 min-w-0">
-            <span class="text-xs px-2 py-0.5 rounded-md font-semibold border ${catBadgeClass} flex-shrink-0">
+            <span class="text-xs sm:text-sm px-2.5 sm:px-3 py-1 rounded-lg font-semibold border ${catBadgeClass} flex-shrink-0">
               ${job.category_name || '토목'}
             </span>
-            <span class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 truncate">
+            <span class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-200 truncate">
               ${job.company}
             </span>
           </div>
@@ -512,7 +512,7 @@ function renderJobCard(job) {
         </div>
 
         <!-- 공고 제목 -->
-        <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition leading-snug line-clamp-2 mb-2">
+        <h3 class="text-base sm:text-xl font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition leading-snug line-clamp-2 mb-3">
           ${job.title}
         </h3>
 
@@ -520,59 +520,59 @@ function renderJobCard(job) {
         ${salaryBadgeHtml}
 
         <!-- 주요 정보 (근무지, 경력, 모집분야) -->
-        <div class="space-y-1.5 text-xs text-slate-500 dark:text-slate-400 mb-3.5">
-          <div class="flex items-center gap-1.5">
-            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
+        <div class="space-y-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-4">
+          <div class="flex items-center gap-2">
+            <i data-lucide="map-pin" class="w-4 h-4 text-slate-400 flex-shrink-0"></i>
             <span class="truncate">${job.location || '전국'}</span>
             <span class="text-slate-300 dark:text-slate-700">·</span>
-            <i data-lucide="briefcase" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
+            <i data-lucide="briefcase" class="w-4 h-4 text-slate-400 flex-shrink-0"></i>
             <span class="truncate">${job.career || '신입'}</span>
           </div>
-          <div class="flex flex-wrap gap-1 pt-1">
+          <div class="flex flex-wrap gap-1.5 pt-1">
             ${fieldsHtml}
           </div>
         </div>
 
         <!-- 혜택/우대 태그 -->
         ${tagsHtml ? `
-          <div class="flex flex-wrap gap-1.5 mb-3">
+          <div class="flex flex-wrap gap-2 mb-4">
             ${tagsHtml}
           </div>
         ` : ''}
       </div>
 
       <!-- 카드 하단: 접수 기간 및 버튼들 -->
-      <div class="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs text-slate-400 mt-2">
-        <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+      <div class="pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs sm:text-sm text-slate-400 mt-2">
+        <span class="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">
           📅 ${job.period}
         </span>
-        <div class="flex items-center gap-1.5" onclick="event.stopPropagation()">
+        <div class="flex items-center gap-1.5 sm:gap-2" onclick="event.stopPropagation()">
           <!-- 공유 버튼 -->
           <button 
             onclick="shareJob('${job.id}', event)"
-            class="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+            class="p-2 sm:p-2.5 rounded-xl text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
             title="채용 공고 공유하기"
           >
-            <i data-lucide="share-2" class="w-4 h-4"></i>
+            <i data-lucide="share-2" class="w-4 h-4 sm:w-4.5 sm:h-4.5"></i>
           </button>
           <!-- 북마크 버튼 -->
           <button 
             onclick="toggleJobBookmark('${job.id}', event)"
-            class="p-1.5 rounded-lg text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+            class="p-2 sm:p-2.5 rounded-xl text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
             title="${isBookmarked ? '북마크 해제' : '북마크 저장'}"
           >
-            <i data-lucide="bookmark" class="w-4 h-4 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}"></i>
+            <i data-lucide="bookmark" class="w-4 h-4 sm:w-4.5 sm:h-4.5 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}"></i>
           </button>
           <!-- 공식 원문 공고 링크 -->
           <a 
             href="${job.link}" 
             target="_blank" 
             rel="noopener noreferrer" 
-            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 border border-blue-200 dark:border-slate-700 transition"
+            class="inline-flex items-center gap-1 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 border border-blue-200 dark:border-slate-700 transition shadow-2xs"
             title="공식 채용사이트로 이동"
           >
             <span>지원</span>
-            <i data-lucide="external-link" class="w-3 h-3"></i>
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
           </a>
         </div>
       </div>
@@ -626,7 +626,7 @@ function renderJobs() {
   }
 
   container.innerHTML = `
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
       ${filtered.map(renderJobCard).join('')}
     </div>
   `;

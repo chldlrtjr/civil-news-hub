@@ -335,7 +335,7 @@ function renderContests() {
     let ddayBadgeHtml = '';
     if (ddayInfo.isUrgent) {
       ddayBadgeHtml = `
-        <span class="inline-flex items-center text-[11px] px-2.5 py-0.5 rounded-md font-semibold bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200 dark:border-rose-800 flex-shrink-0">
+        <span class="inline-flex items-center text-xs sm:text-sm px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-lg font-semibold bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200 dark:border-rose-800 flex-shrink-0">
           ${ddayInfo.text}
         </span>
       `;
@@ -349,7 +349,7 @@ function renderContests() {
         }
       }
       ddayBadgeHtml = `
-        <span class="text-[11px] px-2 py-0.5 rounded-md font-semibold ${ddayBadgeClass} flex-shrink-0">
+        <span class="text-xs sm:text-sm px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-lg font-semibold ${ddayBadgeClass} flex-shrink-0">
           ${ddayInfo.text}
         </span>
       `;
@@ -362,90 +362,90 @@ function renderContests() {
     */
     return `
       <div 
-        class="contest-card bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 hover:border-amber-400/60 dark:hover:border-amber-500/50 hover:shadow-lg transition-all duration-200 flex flex-col justify-between cursor-pointer group"
+        class="contest-card bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-slate-200 dark:border-slate-800 hover:border-amber-400/60 dark:hover:border-amber-500/50 hover:shadow-lg transition-all duration-200 flex flex-col justify-between cursor-pointer group"
         onclick="openContestModal('${contest.id}')"
       >
         <div>
           <!-- 1행 (상단 헤더): 좌측 카테고리 뱃지, 우측 최상단 상태 뱃지 고정 (flex justify-between) -->
-          <div class="flex items-center justify-between gap-2 pb-2.5">
-            <div class="flex items-center gap-1.5 min-w-0">
-              <span class="text-[11px] px-2.5 py-0.5 rounded-full font-semibold border ${catBadgeClass} flex-shrink-0">
+          <div class="flex items-center justify-between gap-2 pb-3">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="text-xs sm:text-sm px-3 py-1 rounded-full font-semibold border ${catBadgeClass} flex-shrink-0">
                 ${contest.category || '공모전'}
               </span>
               ${ddayBadgeHtml}
             </div>
-            <div class="flex items-center gap-1.5 flex-shrink-0">
-              <span class="text-[11px] px-2.5 py-0.5 rounded-full font-semibold border ${statusBadgeClass}">
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <span class="text-xs sm:text-sm px-3 py-1 rounded-full font-semibold border ${statusBadgeClass}">
                 ${contest.status}
               </span>
             </div>
           </div>
 
           <!-- 2행 (접수 기간): 독립된 전용 행으로 배치하여 줄바꿈 밀림 방지 -->
-          <div class="mb-3">
-            <span class="inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-600 dark:text-slate-300 bg-slate-100/80 dark:bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-200/60 dark:border-slate-700/60">
-              <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i>
+          <div class="mb-3.5">
+            <span class="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100/80 dark:bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
+              <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
               <span>접수: ${contest.period || '공식 공고문 참조'}</span>
             </span>
           </div>
 
           <!-- 공모전 제목 -->
-          <h3 class="text-base font-bold text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition leading-snug line-clamp-2 mb-1.5">
+          <h3 class="text-base sm:text-xl font-bold text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition leading-snug line-clamp-2 mb-2">
             ${contest.title}
           </h3>
 
           <!-- 주최 기관 & 대상 -->
-          <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500 dark:text-slate-400 mb-3">
+          <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-3.5">
             <span class="font-medium text-slate-700 dark:text-slate-300">${contest.organizer}</span>
             <span class="text-slate-300 dark:text-slate-700">•</span>
             <span>${contest.target || '전국민'}</span>
           </div>
 
           <!-- 요약 설명 -->
-          <p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed mb-4">
+          <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed mb-4">
             ${contest.description || ''}
           </p>
         </div>
 
         <!-- 카드 하단 버튼 영역 -->
-        <div class="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
+        <div class="pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
           <!-- 공모전 보상 (상금 / 혜택 뱃지) -->
           <div class="flex items-center min-w-0 pr-1" title="공모전 보상: ${contest.prize || '공식 공고문 확인'}">
-            <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-amber-800 dark:text-amber-300 bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-900/60 px-2.5 py-1 rounded-lg truncate shadow-2xs">
-              <i data-lucide="award" class="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 flex-shrink-0"></i>
+            <span class="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-amber-800 dark:text-amber-300 bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-900/60 px-3 py-1.5 rounded-xl truncate shadow-2xs">
+              <i data-lucide="award" class="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0"></i>
               <span class="truncate">${contest.prize || '공식 공고문 확인'}</span>
             </span>
           </div>
 
-          <div class="flex items-center gap-1.5" onclick="event.stopPropagation();">
+          <div class="flex items-center gap-1.5 sm:gap-2" onclick="event.stopPropagation();">
             <!-- 공유 버튼 -->
             <button 
               type="button"
               onclick="shareContest('${contest.id}', event)"
-              class="p-1.5 rounded-lg text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+              class="p-2 sm:p-2.5 rounded-xl text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
               title="공모전 공유하기"
             >
-              <i data-lucide="share-2" class="w-4 h-4"></i>
+              <i data-lucide="share-2" class="w-4 h-4 sm:w-4.5 sm:h-4.5"></i>
             </button>
             <!-- 북마크 버튼 -->
             <button 
               type="button"
               onclick="toggleContestBookmark('${contest.id}', event)" 
-              class="p-1.5 rounded-lg text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+              class="p-2 sm:p-2.5 rounded-xl text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
               title="${isBookmarked ? '북마크 해제' : '북마크 저장'}"
             >
-              <i data-lucide="bookmark" class="w-4 h-4 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}"></i>
+              <i data-lucide="bookmark" class="w-4 h-4 sm:w-4.5 sm:h-4.5 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}"></i>
             </button>
             <!-- 공식 원문 접수 사이트 링크 -->
             <a 
               href="${contest.link}" 
               target="_blank" 
               rel="noopener noreferrer" 
-              class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-amber-500 text-slate-700 hover:text-white dark:bg-slate-800 dark:text-slate-300 dark:hover:text-white transition shadow-xs"
+              class="inline-flex items-center gap-1 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 hover:bg-amber-500 text-slate-700 hover:text-white dark:bg-slate-800 dark:text-slate-300 dark:hover:text-white transition shadow-2xs"
               title="공식 접수처 바로가기"
             >
               <span>바로가기</span>
-              <i data-lucide="external-link" class="w-3 h-3"></i>
+              <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
             </a>
           </div>
         </div>
