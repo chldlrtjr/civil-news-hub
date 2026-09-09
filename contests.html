@@ -315,11 +315,47 @@
       </div>
 
       <!-- 모달 푸터 버튼 -->
-      <div class="px-5 sm:px-6 py-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-900/50">
-        <button id="modalBookmarkBtn" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer">
-          <i data-lucide="bookmark" class="w-4 h-4 text-amber-500"></i>
-          <span>북마크 저장</span>
-        </button>
+      <div class="px-5 sm:px-6 py-4 border-t border-slate-200 dark:border-slate-800 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-900/50">
+        <div class="flex items-center gap-2">
+          <button id="modalBookmarkBtn" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer shadow-xs">
+            <i data-lucide="bookmark" class="w-4 h-4 text-amber-500"></i>
+            <span>북마크</span>
+          </button>
+
+          <!-- 캘린더 등록 드롭다운 -->
+          <div class="relative inline-block text-left" id="contestCalendarDropdown">
+            <button 
+              type="button"
+              onclick="toggleContestCalendarMenu(event)"
+              class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium border border-amber-300/80 dark:border-amber-700/80 bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition cursor-pointer shadow-xs"
+              title="공모전 마감 일정을 캘린더에 저장"
+            >
+              <i data-lucide="calendar-plus" class="w-4 h-4 text-amber-600 dark:text-amber-400"></i>
+              <span>캘린더 등록</span>
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5 opacity-70"></i>
+            </button>
+
+            <!-- 캘린더 팝오버 메뉴 -->
+            <div id="contestCalendarMenu" class="hidden absolute left-0 bottom-full mb-2 w-48 rounded-xl bg-white dark:bg-slate-800 shadow-xl border border-slate-200 dark:border-slate-700 py-1.5 z-30 transition-all">
+              <button 
+                type="button"
+                onclick="addContestToGoogleCalendar(); event.stopPropagation();"
+                class="w-full text-left px-3.5 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-amber-50 dark:hover:bg-slate-700 flex items-center gap-2 transition"
+              >
+                <i data-lucide="calendar" class="w-4 h-4 text-blue-500"></i>
+                <span>Google 캘린더 추가 ↗</span>
+              </button>
+              <button 
+                type="button"
+                onclick="downloadContestIcs(); event.stopPropagation();"
+                class="w-full text-left px-3.5 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-amber-50 dark:hover:bg-slate-700 flex items-center gap-2 transition"
+              >
+                <i data-lucide="download" class="w-4 h-4 text-emerald-500"></i>
+                <span>iCal / 갤럭시 (.ics) 저장</span>
+              </button>
+            </div>
+          </div>
+        </div>
 
         <a id="modalOfficialLink" href="#" target="_blank" rel="noopener noreferrer" class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs sm:text-sm shadow-md shadow-amber-500/20 transition">
           <span>공식 접수처 바로가기</span>
@@ -372,6 +408,6 @@
   </div>
 
   <!-- 프론트엔드 스크립트 -->
-  <script src="./static/contests.js?v=20260909_1720"></script>
+  <script src="./static/contests.js?v=20260909_1725"></script>
 </body>
 </html>

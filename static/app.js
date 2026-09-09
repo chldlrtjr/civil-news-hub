@@ -1055,16 +1055,26 @@ function renderContests() {
             <i data-lucide="gift" class="w-3 h-3 inline mr-1"></i>${escapeHtml(c.prize)}
           </div>
 
-          <!-- 공고 바로가기 버튼 -->
-          <a 
-            href="${c.link}" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-sm transition active:scale-95"
-          >
-            <span>공고문</span>
-            <i data-lucide="external-link" class="w-3 h-3"></i>
-          </a>
+          <!-- 공고 액션 버튼들 (캘린더 추가 & 바로가기) -->
+          <div class="flex items-center gap-1.5">
+            <button 
+              type="button"
+              onclick="addContestToGoogleCalendarDirect('${c.id}'); event.stopPropagation();"
+              class="p-1.5 rounded-lg text-slate-500 hover:text-amber-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer border border-slate-200 dark:border-slate-700"
+              title="Google 캘린더에 마감 일정 추가"
+            >
+              <i data-lucide="calendar-plus" class="w-3.5 h-3.5"></i>
+            </button>
+            <a 
+              href="${c.link}" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-sm transition active:scale-95"
+            >
+              <span>공고문</span>
+              <i data-lucide="external-link" class="w-3 h-3"></i>
+            </a>
+          </div>
         </div>
       </div>
     `;
@@ -1082,4 +1092,39 @@ function escapeHtml(text) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
+}
+
+// 14. 공모전 Google 캘린더 등록 헬퍼
+function addContestToGoogleCalendarDirect(contestId) {
+  const contest = allContests.find(c => c.id === contestId);
+  if (!contest) return;
+
+  let dateStr = '';
+  const match = (contest.period || '').match(/~\s*(?:(\d{4})[.\-/])?(\d{1,2})[.\-/](\d{1,2})/);
+  if (match) {
+    const year = match[1] ? match[1] : new Date().getFullYear();
+    const m = match[2].padStart(2, '0');
+    const d = match[3].padStart(2, '0');
+    dateStr = `${year}-${m}-${d}`;
+  } else {
+    const today = new Date();
+    dateStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+  }
+
+  const clean = dateStr.replace(/-/g, '');
+  const d = new Date(dateStr);
+  d.setDate(d.getDate() + 1);
+  const nextClean = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+
+  const title = `[공모전마감] ${contest.organizer} - ${contest.title}`;
+  const details = `[Civil News Hub 공모전 마감 알림]\n\n공모전명: ${contest.title}\n주최/주관: ${contest.organizer}\n분야: ${contest.category}\n접수기간: ${contest.period}\n총 상금/포상: ${contest.prize || '공식 공고 확인'}\n\n🔗 공식 접수처: ${contest.link}`;
+
+  const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE` +
+    `&text=${encodeURIComponent(title)}` +
+    `&dates=${clean}/${nextClean}` +
+    `&details=${encodeURIComponent(details)}` +
+    `&location=${encodeURIComponent(contest.organizer || '온라인 접수')}`;
+
+  window.open(gcalUrl, '_blank', 'noopener,noreferrer');
+  showToast('Google 캘린더 등록 창이 열렸습니다.');
 }

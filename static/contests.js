@@ -422,9 +422,105 @@ function updateModalBookmarkState() {
   const isBookmarked = contestBookmarks.has(currentModalContest.id);
   btn.innerHTML = `
     <i data-lucide="bookmark" class="w-4 h-4 text-amber-500 ${isBookmarked ? 'fill-amber-500' : ''}"></i>
-    <span>${isBookmarked ? '북마크 해제' : '북마크 저장'}</span>
+    <span>${isBookmarked ? '북마크됨' : '북마크'}</span>
   `;
   if (window.lucide) lucide.createIcons();
+}
+
+// 6-1. 공모전 캘린더 등록 헬퍼
+function toggleContestCalendarMenu(e) {
+  if (e) e.stopPropagation();
+  const menu = document.getElementById('contestCalendarMenu');
+  if (!menu) return;
+  menu.classList.toggle('hidden');
+}
+
+// 외부 클릭 시 공모전 캘린더 메뉴 닫기
+document.addEventListener('click', () => {
+  const menu = document.getElementById('contestCalendarMenu');
+  if (menu && !menu.classList.contains('hidden')) {
+    menu.classList.add('hidden');
+  }
+});
+
+function getContestDateStrings(contest) {
+  let dateStr = '';
+  const match = (contest.period || '').match(/~\s*(?:(\d{4})[.\-/])?(\d{1,2})[.\-/](\d{1,2})/);
+  if (match) {
+    const year = match[1] ? match[1] : new Date().getFullYear();
+    const m = match[2].padStart(2, '0');
+    const d = match[3].padStart(2, '0');
+    dateStr = `${year}-${m}-${d}`;
+  } else {
+    const today = new Date();
+    dateStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+  }
+
+  const clean = dateStr.replace(/-/g, '');
+  const d = new Date(dateStr);
+  d.setDate(d.getDate() + 1);
+  const nextClean = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+  return { start: clean, end: nextClean };
+}
+
+function addContestToGoogleCalendar() {
+  if (!currentModalContest) return;
+  const contest = currentModalContest;
+
+  const dates = getContestDateStrings(contest);
+  const title = `[공모전마감] ${contest.organizer} - ${contest.title}`;
+  const details = `[Civil News Hub 공모전 마감 알림]\n\n공모전명: ${contest.title}\n주최/주관: ${contest.organizer}\n분야: ${contest.category}\n접수기간: ${contest.period}\n총 상금/포상: ${contest.prize || '공식 공고 확인'}\n\n🔗 공식 접수처: ${contest.link}`;
+
+  const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE` +
+    `&text=${encodeURIComponent(title)}` +
+    `&dates=${dates.start}/${dates.end}` +
+    `&details=${encodeURIComponent(details)}` +
+    `&location=${encodeURIComponent(contest.organizer || '온라인 접수')}`;
+
+  window.open(gcalUrl, '_blank', 'noopener,noreferrer');
+  showToast('Google 캘린더 등록 창이 열렸습니다.');
+}
+
+function downloadContestIcs() {
+  if (!currentModalContest) return;
+  const contest = currentModalContest;
+
+  const dates = getContestDateStrings(contest);
+  const title = `[공모전마감] ${contest.organizer} - ${contest.title}`;
+  const details = `[Civil News Hub 공모전 마감 알림]\\n공모전: ${contest.title}\\n주최: ${contest.organizer}\\n접수기간: ${contest.period}\\n상금: ${contest.prize || '공식 공고 확인'}\\n\\n공식 링크: ${contest.link}`;
+  const dtstamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+
+  const icsData = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Civil News Hub//Contest Calendar//KO',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'BEGIN:VEVENT',
+    `UID:contest-${contest.id}@civilnewshub.com`,
+    `DTSTAMP:${dtstamp}`,
+    `DTSTART;VALUE=DATE:${dates.start}`,
+    `DTEND;VALUE=DATE:${dates.end}`,
+    `SUMMARY:${title}`,
+    `DESCRIPTION:${details}`,
+    `LOCATION:${contest.organizer || '온라인 접수'}`,
+    'STATUS:CONFIRMED',
+    'TRANSP:TRANSPARENT',
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].join('\r\n');
+
+  const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8;' });
+  const blobUrl = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = blobUrl;
+  link.setAttribute('download', `${contest.title.replace(/[\/\\:*?"<>|]/g, '_')}_마감일정.ics`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(blobUrl);
+
+  showToast('📅 캘린더 파일(.ics)이 다운로드되었습니다.');
 }
 
 // 7. 이벤트 리스너 설정
