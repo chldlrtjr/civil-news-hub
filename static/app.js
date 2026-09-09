@@ -458,7 +458,7 @@ function renderArticleCard(article) {
                 : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
             }"
           >
-            <i data-lucide="star" class="w-4 h-4 ${isBookmarked ? 'fill-amber-400' : ''}"></i>
+            <i data-lucide="bookmark" class="w-4 h-4 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}"></i>
           </button>
 
           <!-- 원문 보러가기 버튼 -->
@@ -512,7 +512,7 @@ function renderArticles() {
         <div class="flex items-center justify-between pb-4 mb-5 border-b border-amber-100 dark:border-amber-900/40">
           <div class="flex items-center gap-2.5">
             <span class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 flex items-center justify-center font-bold">
-              <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+              <i data-lucide="bookmark" class="w-4 h-4 fill-amber-500 text-amber-500"></i>
             </span>
             <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
               저장한 북마크 기사
@@ -521,7 +521,7 @@ function renderArticles() {
               </span>
             </h3>
           </div>
-          <button onclick="activeNewsCategory='all'; isNewsBookmarkView=false; renderCategoryTabs(); updateBookmarkTabStyle(); renderArticles();" class="text-xs text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 flex items-center gap-1 cursor-pointer">
+          <button onclick="activeNewsCategory='all'; window.toggleCurrentTabBookmark(false);" class="text-xs text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 flex items-center gap-1 cursor-pointer">
             전체 기사로 돌아가기
           </button>
         </div>

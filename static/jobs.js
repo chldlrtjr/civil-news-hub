@@ -611,7 +611,7 @@ function renderJobCard(job) {
             class="p-1.5 rounded-lg text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
             title="${isBookmarked ? '북마크 해제' : '북마크 저장'}"
           >
-            <i data-lucide="star" class="w-4 h-4 ${isBookmarked ? 'fill-amber-400 text-amber-500' : ''}"></i>
+            <i data-lucide="bookmark" class="w-4 h-4 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}"></i>
           </button>
           <!-- 공식 원문 공고 링크 -->
           <a 
@@ -814,7 +814,7 @@ function openJobModal(jobId) {
           onclick="toggleJobBookmark('${job.id}'); openJobModal('${job.id}');"
           class="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer shadow-xs"
         >
-          <i data-lucide="star" class="w-4 h-4 ${jobBookmarks.has(job.id) ? 'fill-amber-400 text-amber-500' : 'text-slate-400'}"></i>
+          <i data-lucide="bookmark" class="w-4 h-4 ${jobBookmarks.has(job.id) ? 'fill-amber-500 text-amber-500' : 'text-slate-400'}"></i>
           <span>${jobBookmarks.has(job.id) ? '북마크됨' : '북마크'}</span>
         </button>
 

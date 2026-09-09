@@ -423,13 +423,6 @@ function renderContests() {
               <span class="text-[11px] px-2.5 py-0.5 rounded-full font-semibold border ${statusBadgeClass}">
                 ${contest.status}
               </span>
-              <button 
-                onclick="toggleContestBookmark('${contest.id}', event)" 
-                class="p-1 rounded-lg text-slate-400 hover:text-amber-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
-                title="${isBookmarked ? '북마크 해제' : '북마크 저장'}"
-              >
-                <i data-lucide="bookmark" class="w-4 h-4 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}"></i>
-              </button>
             </div>
           </div>
 
@@ -479,6 +472,7 @@ function renderContests() {
           </button>
 
           <div class="flex items-center gap-1.5" onclick="event.stopPropagation();">
+            <!-- 공유 버튼 -->
             <button 
               type="button"
               onclick="shareContest('${contest.id}', event)"
@@ -487,6 +481,16 @@ function renderContests() {
             >
               <i data-lucide="share-2" class="w-4 h-4"></i>
             </button>
+            <!-- 북마크 버튼 -->
+            <button 
+              type="button"
+              onclick="toggleContestBookmark('${contest.id}', event)" 
+              class="p-1.5 rounded-lg text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+              title="${isBookmarked ? '북마크 해제' : '북마크 저장'}"
+            >
+              <i data-lucide="bookmark" class="w-4 h-4 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}"></i>
+            </button>
+            <!-- 공식 원문 접수 사이트 링크 -->
             <a 
               href="${contest.link}" 
               target="_blank" 
