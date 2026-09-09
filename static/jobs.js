@@ -398,6 +398,14 @@ function renderJobCard(job) {
           📅 ${job.period}
         </span>
         <div class="flex items-center gap-1.5" onclick="event.stopPropagation()">
+          <!-- 공유 버튼 -->
+          <button 
+            onclick="shareJob('${job.id}', event)"
+            class="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+            title="채용 공고 공유하기"
+          >
+            <i data-lucide="share-2" class="w-4 h-4"></i>
+          </button>
           <!-- 북마크 버튼 -->
           <button 
             onclick="toggleJobBookmark('${job.id}', event)"
@@ -625,6 +633,17 @@ function openJobModal(jobId) {
             </button>
           </div>
         </div>
+
+        <!-- 공유 버튼 -->
+        <button 
+          type="button"
+          onclick="shareJob('${job.id}', event)"
+          class="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer shadow-xs"
+          title="공고 링크 및 요약 정보 공유"
+        >
+          <i data-lucide="share-2" class="w-4 h-4 text-blue-500"></i>
+          <span>공유</span>
+        </button>
       </div>
 
       <!-- 우측: 닫기 & 공식 지원처 바로가기 -->
@@ -758,6 +777,54 @@ function downloadJobIcs(jobId) {
   URL.revokeObjectURL(blobUrl);
 
   showJobToast('📅 캘린더 파일(.ics)이 다운로드되었습니다.');
+}
+
+// 8-2. 채용 공고 SNS 및 링크 공유 (Web Share API + Clipboard Fallback)
+async function shareJob(jobId, e) {
+  if (e) e.stopPropagation();
+  const job = allJobs.find(j => j.id === jobId);
+  if (!job) return;
+
+  const shareTitle = `[토목 채용] ${job.company} - ${job.title}`;
+  const shareText = `[토목 채용] ${job.company} - ${job.title}\n📅 접수기간: ${job.period}\n📍 근무지역: ${job.location || '전국'}\n🔗 공식링크: ${job.link}\n출처: Civil News Hub`;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: shareTitle,
+        text: shareText,
+        url: job.link
+      });
+      return;
+    } catch (err) {
+      if (err.name === 'AbortError') return; // 취소한 경우
+    }
+  }
+
+  // Web Share API 미지원 또는 데스크톱 Fallback: 클립보드 복사
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(shareText).then(() => {
+      showJobToast('📋 채용 공고 공유 문구가 복사되었습니다.');
+    }).catch(() => {
+      copyJobPromptFallback(shareText);
+    });
+  } else {
+    copyJobPromptFallback(shareText);
+  }
+}
+
+function copyJobPromptFallback(text) {
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  document.body.appendChild(textarea);
+  textarea.select();
+  try {
+    document.execCommand('copy');
+    showJobToast('📋 채용 공고 공유 문구가 복사되었습니다.');
+  } catch (err) {
+    prompt('채용 공고 내용 복사:', text);
+  }
+  document.body.removeChild(textarea);
 }
 
 // 9. 토스트 메시지

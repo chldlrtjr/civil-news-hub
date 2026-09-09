@@ -352,17 +352,26 @@ function renderContests() {
             <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
           </button>
 
-          <a 
-            href="${contest.link}" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            onclick="event.stopPropagation();"
-            class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-amber-500 text-slate-700 hover:text-white dark:bg-slate-800 dark:text-slate-300 dark:hover:text-white transition shadow-xs"
-            title="공식 공고 사이트로 이동"
-          >
-            <span>공식 접수처</span>
-            <i data-lucide="external-link" class="w-3 h-3"></i>
-          </a>
+          <div class="flex items-center gap-1.5" onclick="event.stopPropagation();">
+            <button 
+              type="button"
+              onclick="shareContest('${contest.id}', event)"
+              class="p-1.5 rounded-lg text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+              title="공모전 공유하기"
+            >
+              <i data-lucide="share-2" class="w-4 h-4"></i>
+            </button>
+            <a 
+              href="${contest.link}" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-amber-500 text-slate-700 hover:text-white dark:bg-slate-800 dark:text-slate-300 dark:hover:text-white transition shadow-xs"
+              title="공식 공고 사이트로 이동"
+            >
+              <span>공식 접수처</span>
+              <i data-lucide="external-link" class="w-3 h-3"></i>
+            </a>
+          </div>
         </div>
       </div>
     `;
@@ -521,6 +530,59 @@ function downloadContestIcs() {
   URL.revokeObjectURL(blobUrl);
 
   showToast('📅 캘린더 파일(.ics)이 다운로드되었습니다.');
+}
+
+// 6-2. 공모전 SNS 및 링크 공유 (Web Share API + Clipboard Fallback)
+async function shareContest(contestId, e) {
+  if (e) e.stopPropagation();
+  const contest = allContests.find(c => c.id === contestId);
+  if (!contest) return;
+
+  const shareTitle = `[토목 공모전] ${contest.organizer} - ${contest.title}`;
+  const shareText = `[토목 공모전] ${contest.organizer} - ${contest.title}\n📅 접수기간: ${contest.period || '공고문 참조'}\n🎁 시상내역: ${contest.prize || '공고문 참조'}\n🔗 공식접수처: ${contest.link}\n출처: Civil News Hub`;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: shareTitle,
+        text: shareText,
+        url: contest.link
+      });
+      return;
+    } catch (err) {
+      if (err.name === 'AbortError') return;
+    }
+  }
+
+  // Web Share 미지원 환경: 클립보드 복사
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(shareText).then(() => {
+      showToast('📋 공모전 요강 공유 문구가 복사되었습니다.');
+    }).catch(() => {
+      copyContestPromptFallback(shareText);
+    });
+  } else {
+    copyContestPromptFallback(shareText);
+  }
+}
+
+function shareCurrentModalContest() {
+  if (!currentModalContest) return;
+  shareContest(currentModalContest.id);
+}
+
+function copyContestPromptFallback(text) {
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  document.body.appendChild(textarea);
+  textarea.select();
+  try {
+    document.execCommand('copy');
+    showToast('📋 공모전 요강 공유 문구가 복사되었습니다.');
+  } catch (err) {
+    prompt('공모전 정보 복사하기:', text);
+  }
+  document.body.removeChild(textarea);
 }
 
 // 7. 이벤트 리스너 설정

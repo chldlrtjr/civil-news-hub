@@ -412,11 +412,11 @@ function renderArticleCard(article) {
 
         <!-- 액션 버튼들 -->
         <div class="flex items-center gap-1.5">
-          <!-- 링크 복사 버튼 -->
+          <!-- 기사 공유 버튼 -->
           <button 
-            onclick="copyArticleLink('${encodeURIComponent(article.link)}', event)"
-            title="기사 링크 복사"
-            class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+            onclick="shareArticle('${article.id}', event)"
+            title="기사 공유하기"
+            class="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
           >
             <i data-lucide="share-2" class="w-4 h-4"></i>
           </button>
@@ -695,15 +695,67 @@ async function triggerRefresh() {
   }
 }
 
-// 8. 링크 복사
+// 8. 기사 공유 (Web Share API + Clipboard Fallback)
+async function shareArticle(articleId, e) {
+  if (e) e.stopPropagation();
+  const article = allArticles.find(a => a.id === articleId);
+  if (!article) return;
+
+  const shareTitle = `[토목 뉴스] ${article.title}`;
+  const shareText = `[토목 뉴스] ${article.title}\n📰 언론사: ${article.publisher} (${article.relative_date || '최근'})\n🔗 기사링크: ${article.link}\n출처: Civil News Hub`;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: shareTitle,
+        text: shareText,
+        url: article.link
+      });
+      return;
+    } catch (err) {
+      if (err.name === 'AbortError') return;
+    }
+  }
+
+  // Web Share 미지원 시 클립보드 복사
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(shareText).then(() => {
+      showToast('📋 기사 요약 및 링크가 복사되었습니다.');
+    }).catch(() => {
+      copyNewsPromptFallback(shareText);
+    });
+  } else {
+    copyNewsPromptFallback(shareText);
+  }
+}
+
+// 하위 호환용 단순 링크 복사
 function copyArticleLink(encodedUrl, e) {
   if (e) e.stopPropagation();
   const url = decodeURIComponent(encodedUrl);
-  navigator.clipboard.writeText(url).then(() => {
-    showToast('📋 기사 링크가 복사되었습니다.');
-  }).catch(() => {
-    prompt('기사 링크:', url);
-  });
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(() => {
+      showToast('📋 기사 링크가 복사되었습니다.');
+    }).catch(() => {
+      copyNewsPromptFallback(url);
+    });
+  } else {
+    copyNewsPromptFallback(url);
+  }
+}
+
+function copyNewsPromptFallback(text) {
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  document.body.appendChild(textarea);
+  textarea.select();
+  try {
+    document.execCommand('copy');
+    showToast('📋 클립보드에 복사되었습니다.');
+  } catch (err) {
+    prompt('복사하기:', text);
+  }
+  document.body.removeChild(textarea);
 }
 
 // 9. 토스트 메시지
@@ -1055,8 +1107,16 @@ function renderContests() {
             <i data-lucide="gift" class="w-3 h-3 inline mr-1"></i>${escapeHtml(c.prize)}
           </div>
 
-          <!-- 공고 액션 버튼들 (캘린더 추가 & 바로가기) -->
+          <!-- 공고 액션 버튼들 (공유 & 캘린더 추가 & 바로가기) -->
           <div class="flex items-center gap-1.5">
+            <button 
+              type="button"
+              onclick="shareContestDirect('${c.id}', event)"
+              class="p-1.5 rounded-lg text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer border border-slate-200 dark:border-slate-700"
+              title="공모전 정보 공유"
+            >
+              <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+            </button>
             <button 
               type="button"
               onclick="addContestToGoogleCalendarDirect('${c.id}'); event.stopPropagation();"
@@ -1127,4 +1187,37 @@ function addContestToGoogleCalendarDirect(contestId) {
 
   window.open(gcalUrl, '_blank', 'noopener,noreferrer');
   showToast('Google 캘린더 등록 창이 열렸습니다.');
+}
+
+// 15. 공모전 정보 SNS 및 링크 공유 (공모전 레이어용)
+async function shareContestDirect(contestId, e) {
+  if (e) e.stopPropagation();
+  const contest = allContests.find(c => c.id === contestId);
+  if (!contest) return;
+
+  const shareTitle = `[토목 공모전] ${contest.organizer} - ${contest.title}`;
+  const shareText = `[토목 공모전] ${contest.organizer} - ${contest.title}\n📅 접수기간: ${contest.period || '공고문 참조'}\n🎁 시상내역: ${contest.prize || '공고문 참조'}\n🔗 공식접수처: ${contest.link}\n출처: Civil News Hub`;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: shareTitle,
+        text: shareText,
+        url: contest.link
+      });
+      return;
+    } catch (err) {
+      if (err.name === 'AbortError') return;
+    }
+  }
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(shareText).then(() => {
+      showToast('📋 공모전 요강 공유 문구가 복사되었습니다.');
+    }).catch(() => {
+      copyNewsPromptFallback(shareText);
+    });
+  } else {
+    copyNewsPromptFallback(shareText);
+  }
 }
