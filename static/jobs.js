@@ -37,7 +37,7 @@ function toggleJobBookmark(jobId, e) {
     showJobToast('북마크에서 제거되었습니다.');
   } else {
     jobBookmarks.add(jobId);
-    showJobToast('⭐ 채용 공고가 북마크에 저장되었습니다.');
+    showJobToast('🔖 채용 공고가 북마크에 저장되었습니다.');
   }
   localStorage.setItem('civil_job_bookmarks', JSON.stringify(Array.from(jobBookmarks)));
   updateJobBookmarkCount();
@@ -74,6 +74,11 @@ async function loadJobsData() {
 
     const totalCountEl = document.getElementById('jobTotalCount');
     if (totalCountEl) totalCountEl.textContent = `${allJobs.length}건`;
+
+    // 전역 북마크 모드 동기화
+    if (window.isGlobalBookmarkMode) {
+      isJobBookmarkView = true;
+    }
 
     renderJobCategoryTabs();
     renderJobs();

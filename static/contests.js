@@ -83,6 +83,11 @@ async function loadContestsData() {
     const activeCountBadge = document.getElementById('contestActiveCountBadge');
     if (activeCountBadge) activeCountBadge.textContent = allContests.length;
 
+    // 전역 북마크 모드 동기화
+    if (window.isGlobalBookmarkMode) {
+      isContestBookmarkView = true;
+    }
+
     updateContestCategoryCounts();
     renderContests();
   } catch (err) {

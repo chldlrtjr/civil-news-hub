@@ -92,7 +92,7 @@ function toggleBookmark(articleId, e) {
     showToast('북마크에서 제거되었습니다.');
   } else {
     newsBookmarks.add(articleId);
-    showToast('⭐ 기사가 북마크에 저장되었습니다.');
+    showToast('🔖 기사가 북마크에 저장되었습니다.');
   }
   localStorage.setItem('civil_bookmarks', JSON.stringify(Array.from(newsBookmarks)));
   updateGlobalBookmarkCount();
@@ -898,11 +898,29 @@ function updateBookmarkTabStyle() {
     } else {
       mobileBtn.className = 'relative flex flex-col items-center justify-center py-1 px-3 text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 font-medium transition cursor-pointer';
     }
+    const icon = mobileBtn.querySelector('i, svg');
+    if (icon) {
+      if (isCurrentBookmarkActive) {
+        icon.classList.add('fill-amber-500');
+      } else {
+        icon.classList.remove('fill-amber-500');
+      }
+    }
   }
 }
 
 // 통합 북마크 토글 (뉴스·채용·공모전 전역 북마크 모드 전환)
-window.toggleCurrentTabBookmark = function(forceState) {
+let lastBookmarkToggleTime = 0;
+window.toggleCurrentTabBookmark = function(forceState, e) {
+  if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+
+  // 모바일 터치 합성 이벤트 및 빠른 연타 방지 (250ms 쓰로틀 가드)
+  const now = Date.now();
+  if (typeof forceState !== 'boolean' && now - lastBookmarkToggleTime < 250) {
+    return;
+  }
+  lastBookmarkToggleTime = now;
+
   if (typeof forceState === 'boolean') {
     window.isGlobalBookmarkMode = forceState;
   } else {
@@ -927,6 +945,14 @@ window.toggleCurrentTabBookmark = function(forceState) {
 
   updateGlobalBookmarkCount();
   updateBookmarkTabStyle();
+
+  // 사용자 토스트 피드백
+  if (state) {
+    showToast('🔖 북마크 모드가 켜졌습니다. (저장한 항목 모아보기)');
+  } else {
+    showToast('전체 목록으로 돌아갑니다.');
+  }
+
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
@@ -985,12 +1011,8 @@ function setupNewsEventListeners() {
     });
   }
 
-  // 북마크 탭 버튼 (헤더 및 모바일 하단바)
-  const bookmarkTabBtn = document.getElementById('bookmarkTabBtn');
-  if (bookmarkTabBtn) bookmarkTabBtn.addEventListener('click', window.toggleCurrentTabBookmark);
-
-  const mobileBookmarkBtn = document.getElementById('mobileBookmarkBtn');
-  if (mobileBookmarkBtn) mobileBookmarkBtn.addEventListener('click', window.toggleCurrentTabBookmark);
+  // 북마크 탭 버튼 스타일 초기화
+  updateBookmarkTabStyle();
 
   // 뉴스 검색창
   const searchInput = document.getElementById('newsSearchInput');
