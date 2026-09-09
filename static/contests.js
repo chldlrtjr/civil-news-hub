@@ -1,39 +1,23 @@
 // Civil News Hub - Civil Engineering Contests & Competitions Dashboard (토목 공모전 허브)
 
 let allContests = [];
-let activeCategory = 'ALL';
-let activeStatus = 'ALL';
-let searchQuery = '';
-let sortOption = 'closingSoon'; // closingSoon | latest
+let contestActiveCategory = 'ALL';
+let contestActiveStatus = 'ALL';
+let contestSearchQuery = '';
+let contestSortOption = 'closingSoon'; // closingSoon | latest
 let contestBookmarks = new Set();
-let isBookmarkView = false;
+let isContestBookmarkView = false;
 let currentModalContest = null;
 
 // 1. 초기화
 document.addEventListener('DOMContentLoaded', () => {
-  initTheme();
-  loadBookmarks();
-  setupEventListeners();
+  loadContestBookmarks();
+  setupContestEventListeners();
   loadContestsData();
 });
 
-// 테마 관리 (다크모드)
-function initTheme() {
-  const saved = localStorage.getItem('civil_theme');
-  if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-    document.documentElement.classList.add('dark');
-  } else {
-    document.documentElement.classList.remove('dark');
-  }
-}
-
-function toggleTheme() {
-  const isDark = document.documentElement.classList.toggle('dark');
-  localStorage.setItem('civil_theme', isDark ? 'dark' : 'light');
-}
-
 // 북마크 로컬 스토리지
-function loadBookmarks() {
+function loadContestBookmarks() {
   try {
     const saved = localStorage.getItem('civil_contest_bookmarks');
     if (saved) {
@@ -42,41 +26,33 @@ function loadBookmarks() {
   } catch (e) {
     contestBookmarks = new Set();
   }
-  updateBookmarkCount();
+  updateContestBookmarkCount();
 }
 
 function toggleContestBookmark(contestId, e) {
   if (e) e.stopPropagation();
   if (contestBookmarks.has(contestId)) {
     contestBookmarks.delete(contestId);
-    showToast('북마크에서 제거되었습니다.');
+    showContestToast('북마크에서 제거되었습니다.');
   } else {
     contestBookmarks.add(contestId);
-    showToast('🏆 공모전이 북마크에 저장되었습니다.');
+    showContestToast('🏆 공모전이 북마크에 저장되었습니다.');
   }
   localStorage.setItem('civil_contest_bookmarks', JSON.stringify(Array.from(contestBookmarks)));
-  updateBookmarkCount();
+  updateContestBookmarkCount();
   updateModalBookmarkState();
   renderContests();
 }
 
-function updateBookmarkCount() {
-  const countEl = document.getElementById('bookmarkCount');
-  if (countEl) countEl.textContent = contestBookmarks.size;
-  const mobileBadge = document.getElementById('mobileBookmarkBadge');
-  if (mobileBadge) {
-    mobileBadge.textContent = contestBookmarks.size;
-    if (contestBookmarks.size > 0) {
-      mobileBadge.classList.remove('hidden');
-    } else {
-      mobileBadge.classList.add('hidden');
-    }
+function updateContestBookmarkCount() {
+  if (window.updateGlobalBookmarkCount) {
+    window.updateGlobalBookmarkCount();
   }
 }
 
 // 2. 공모전 데이터 로드
 async function loadContestsData() {
-  showLoading(true);
+  showContestLoading(true);
   try {
     let res;
     try {
@@ -97,19 +73,19 @@ async function loadContestsData() {
     });
 
     // 메타데이터 표시
-    const updatedEl = document.getElementById('lastUpdatedTime');
+    const updatedEl = document.getElementById('contestLastUpdatedTime');
     if (updatedEl) updatedEl.textContent = `업데이트: ${data.last_updated_display || '실시간'}`;
 
-    const activeCountBadge = document.getElementById('activeCountBadge');
+    const activeCountBadge = document.getElementById('contestActiveCountBadge');
     if (activeCountBadge) activeCountBadge.textContent = allContests.length;
 
-    updateCategoryCounts();
+    updateContestCategoryCounts();
     renderContests();
   } catch (err) {
     console.error('공모전 데이터 로드 실패:', err);
-    showToast('공모전 데이터를 불러오지 못했습니다.');
+    showContestToast('공모전 데이터를 불러오지 못했습니다.');
   } finally {
-    showLoading(false);
+    showContestLoading(false);
   }
 }
 
@@ -161,23 +137,23 @@ function getFilteredContests() {
   let list = [...allContests];
 
   // 북마크 뷰 필터
-  if (isBookmarkView) {
+  if (isContestBookmarkView) {
     list = list.filter(c => contestBookmarks.has(c.id));
   }
 
   // 분야(카테고리) 필터
-  if (activeCategory !== 'ALL') {
-    list = list.filter(c => c.category === activeCategory);
+  if (contestActiveCategory !== 'ALL') {
+    list = list.filter(c => c.category === contestActiveCategory);
   }
 
   // 상태 필터 (접수중 / 접수예정 / 상시접수)
-  if (activeStatus !== 'ALL') {
-    list = list.filter(c => c.status === activeStatus);
+  if (contestActiveStatus !== 'ALL') {
+    list = list.filter(c => c.status === contestActiveStatus);
   }
 
   // 검색어 필터
-  if (searchQuery.trim()) {
-    const q = searchQuery.trim().toLowerCase();
+  if (contestSearchQuery.trim()) {
+    const q = contestSearchQuery.trim().toLowerCase();
     list = list.filter(c => 
       (c.title && c.title.toLowerCase().includes(q)) ||
       (c.organizer && c.organizer.toLowerCase().includes(q)) ||
@@ -192,11 +168,9 @@ function getFilteredContests() {
     const aDday = parseDdayFromPeriod(a.period, a.status);
     const bDday = parseDdayFromPeriod(b.period, b.status);
 
-    if (sortOption === 'closingSoon') {
-      // 마감임박순: 접수중(D-Day 오름차순) -> 상시접수 -> 접수예정
+    if (contestSortOption === 'closingSoon') {
       return aDday.days - bDday.days;
     } else {
-      // 최신등록순
       return (b.id || '').localeCompare(a.id || '');
     }
   });
@@ -205,8 +179,8 @@ function getFilteredContests() {
 }
 
 // 카테고리 탭 뱃지 카운트 갱신
-function updateCategoryCounts() {
-  const tabs = document.querySelectorAll('#categoryTabs .cat-pill');
+function updateContestCategoryCounts() {
+  const tabs = document.querySelectorAll('#contestCategoryTabs .cat-pill');
   tabs.forEach(tab => {
     const cat = tab.getAttribute('data-category');
     const badge = tab.querySelector('.count-badge');
@@ -224,7 +198,7 @@ function updateCategoryCounts() {
 // 5. 공모전 카드 렌더링
 function renderContests() {
   const grid = document.getElementById('contestCardGrid');
-  const emptyState = document.getElementById('emptyState');
+  const emptyState = document.getElementById('contestEmptyState');
   if (!grid || !emptyState) return;
 
   const filtered = getFilteredContests();
@@ -393,15 +367,24 @@ function openContestModal(contestId) {
 
   const ddayInfo = parseDdayFromPeriod(contest.period, contest.status);
 
-  document.getElementById('modalCategoryBadge').textContent = contest.category || '공모전';
-  document.getElementById('modalStatusBadge').textContent = contest.status;
-  document.getElementById('modalDdayBadge').textContent = ddayInfo.text;
-  document.getElementById('modalTitle').textContent = contest.title;
-  document.getElementById('modalOrganizer').textContent = `주최/주관: ${contest.organizer}`;
-  document.getElementById('modalPeriod').textContent = contest.period || '공식 공고문 확인';
-  document.getElementById('modalPrize').textContent = contest.prize || '공식 공고문 확인';
-  document.getElementById('modalTarget').textContent = contest.target || '전국민 누구나 / 관련 분야 전공자 및 기업';
-  document.getElementById('modalDescription').textContent = contest.description || '세부 요강 및 제출 양식은 공식 접수처 웹사이트를 참조하시기 바랍니다.';
+  const catEl = document.getElementById('modalCategoryBadge');
+  if (catEl) catEl.textContent = contest.category || '공모전';
+  const statusEl = document.getElementById('modalStatusBadge');
+  if (statusEl) statusEl.textContent = contest.status;
+  const ddayEl = document.getElementById('modalDdayBadge');
+  if (ddayEl) ddayEl.textContent = ddayInfo.text;
+  const titleEl = document.getElementById('modalTitle');
+  if (titleEl) titleEl.textContent = contest.title;
+  const orgEl = document.getElementById('modalOrganizer');
+  if (orgEl) orgEl.textContent = `주최/주관: ${contest.organizer}`;
+  const periodEl = document.getElementById('modalPeriod');
+  if (periodEl) periodEl.textContent = contest.period || '공식 공고문 확인';
+  const prizeEl = document.getElementById('modalPrize');
+  if (prizeEl) prizeEl.textContent = contest.prize || '공식 공고문 확인';
+  const targetEl = document.getElementById('modalTarget');
+  if (targetEl) targetEl.textContent = contest.target || '전국민 누구나 / 관련 분야 전공자 및 기업';
+  const descEl = document.getElementById('modalDescription');
+  if (descEl) descEl.textContent = contest.description || '세부 요강 및 제출 양식은 공식 접수처 웹사이트를 참조하시기 바랍니다.';
 
   const officialLink = document.getElementById('modalOfficialLink');
   if (officialLink) {
@@ -412,7 +395,9 @@ function openContestModal(contestId) {
 
   // 모달 표시
   modal.classList.remove('invisible', 'opacity-0');
-  modal.querySelector('#contestModalBackdrop').classList.remove('opacity-0');
+  const backdrop = modal.querySelector('#contestModalBackdrop');
+  if (backdrop) backdrop.classList.remove('opacity-0');
+  document.body.style.overflow = 'hidden';
   if (window.lucide) lucide.createIcons();
 }
 
@@ -420,6 +405,7 @@ function closeContestModal() {
   const modal = document.getElementById('contestDetailModal');
   if (!modal) return;
   modal.classList.add('invisible', 'opacity-0');
+  document.body.style.overflow = '';
   currentModalContest = null;
 }
 
@@ -487,7 +473,7 @@ function addContestToGoogleCalendar() {
     `&location=${encodeURIComponent(contest.organizer || '온라인 접수')}`;
 
   window.open(gcalUrl, '_blank', 'noopener,noreferrer');
-  showToast('Google 캘린더 등록 창이 열렸습니다.');
+  showContestToast('Google 캘린더 등록 창이 열렸습니다.');
 }
 
 function downloadContestIcs() {
@@ -529,7 +515,7 @@ function downloadContestIcs() {
   document.body.removeChild(link);
   URL.revokeObjectURL(blobUrl);
 
-  showToast('📅 캘린더 파일(.ics)이 다운로드되었습니다.');
+  showContestToast('📅 캘린더 파일(.ics)이 다운로드되었습니다.');
 }
 
 // 6-2. 공모전 SNS 및 링크 공유 (Web Share API + Clipboard Fallback)
@@ -557,7 +543,7 @@ async function shareContest(contestId, e) {
   // Web Share 미지원 환경: 클립보드 복사
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(shareText).then(() => {
-      showToast('📋 공모전 요강 공유 문구가 복사되었습니다.');
+      showContestToast('📋 공모전 요강 공유 문구가 복사되었습니다.');
     }).catch(() => {
       copyContestPromptFallback(shareText);
     });
@@ -578,7 +564,7 @@ function copyContestPromptFallback(text) {
   textarea.select();
   try {
     document.execCommand('copy');
-    showToast('📋 공모전 요강 공유 문구가 복사되었습니다.');
+    showContestToast('📋 공모전 요강 공유 문구가 복사되었습니다.');
   } catch (err) {
     prompt('공모전 정보 복사하기:', text);
   }
@@ -586,65 +572,15 @@ function copyContestPromptFallback(text) {
 }
 
 // 7. 이벤트 리스너 설정
-function setupEventListeners() {
-  // 테마 토글
-  const themeToggle = document.getElementById('themeToggle');
-  if (themeToggle) {
-    themeToggle.addEventListener('click', toggleTheme);
-  }
-
-  // 새로고침 버튼
-  const refreshBtn = document.getElementById('refreshBtn');
-  if (refreshBtn) {
-    refreshBtn.addEventListener('click', () => {
-      const icon = document.getElementById('refreshIcon');
-      if (icon) icon.classList.add('animate-spin');
-      loadContestsData().then(() => {
-        setTimeout(() => {
-          if (icon) icon.classList.remove('animate-spin');
-        }, 500);
-      });
-    });
-  }
-
-  // 북마크 탭 토글 버튼 (헤더 및 모바일 하단바)
-  const bookmarkTabBtn = document.getElementById('bookmarkTabBtn');
-  const mobileBookmarkBtn = document.getElementById('mobileBookmarkBtn');
-  
-  const handleContestBookmarkToggle = () => {
-    isBookmarkView = !isBookmarkView;
-    if (bookmarkTabBtn) {
-      if (isBookmarkView) {
-        bookmarkTabBtn.classList.add('ring-2', 'ring-amber-500', 'bg-amber-100', 'dark:bg-amber-900/60');
-      } else {
-        bookmarkTabBtn.classList.remove('ring-2', 'ring-amber-500', 'bg-amber-100', 'dark:bg-amber-900/60');
-      }
-    }
-    if (mobileBookmarkBtn) {
-      if (isBookmarkView) {
-        mobileBookmarkBtn.className = 'relative flex flex-col items-center justify-center py-1 px-3 text-amber-500 font-bold transition cursor-pointer';
-      } else {
-        mobileBookmarkBtn.className = 'relative flex flex-col items-center justify-center py-1 px-3 text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 font-medium transition cursor-pointer';
-      }
-    }
-    renderContests();
-  };
-
-  if (bookmarkTabBtn) {
-    bookmarkTabBtn.addEventListener('click', handleContestBookmarkToggle);
-  }
-  if (mobileBookmarkBtn) {
-    mobileBookmarkBtn.addEventListener('click', handleContestBookmarkToggle);
-  }
-
+function setupContestEventListeners() {
   // 검색창 입력
-  const searchInput = document.getElementById('searchInput');
-  const clearSearchBtn = document.getElementById('clearSearchBtn');
+  const searchInput = document.getElementById('contestSearchInput');
+  const clearSearchBtn = document.getElementById('clearContestSearchBtn');
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
-      searchQuery = e.target.value;
+      contestSearchQuery = e.target.value;
       if (clearSearchBtn) {
-        if (searchQuery.trim()) {
+        if (contestSearchQuery.trim()) {
           clearSearchBtn.classList.remove('hidden');
         } else {
           clearSearchBtn.classList.add('hidden');
@@ -657,14 +593,14 @@ function setupEventListeners() {
   if (clearSearchBtn) {
     clearSearchBtn.addEventListener('click', () => {
       if (searchInput) searchInput.value = '';
-      searchQuery = '';
+      contestSearchQuery = '';
       clearSearchBtn.classList.add('hidden');
       renderContests();
     });
   }
 
   // 상태 필터 버튼 그룹 (전체, 접수중, 접수예정, 상시)
-  const statusGroup = document.getElementById('statusFilterGroup');
+  const statusGroup = document.getElementById('contestStatusFilterGroup');
   if (statusGroup) {
     statusGroup.addEventListener('click', (e) => {
       const btn = e.target.closest('.status-pill');
@@ -675,7 +611,7 @@ function setupEventListeners() {
       });
       btn.classList.add('bg-white', 'dark:bg-slate-900', 'shadow-xs', 'text-slate-900', 'dark:text-white', 'font-semibold');
 
-      activeStatus = btn.getAttribute('data-status');
+      contestActiveStatus = btn.getAttribute('data-status');
       renderContests();
     });
     // 기본 활성 상태 스타일 지정
@@ -686,16 +622,16 @@ function setupEventListeners() {
   }
 
   // 정렬 셀렉트
-  const sortSelect = document.getElementById('sortSelect');
+  const sortSelect = document.getElementById('contestSortSelect');
   if (sortSelect) {
     sortSelect.addEventListener('change', (e) => {
-      sortOption = e.target.value;
+      contestSortOption = e.target.value;
       renderContests();
     });
   }
 
   // 분야(카테고리) 탭
-  const categoryTabs = document.getElementById('categoryTabs');
+  const categoryTabs = document.getElementById('contestCategoryTabs');
   if (categoryTabs) {
     categoryTabs.addEventListener('click', (e) => {
       const btn = e.target.closest('.cat-pill');
@@ -709,7 +645,7 @@ function setupEventListeners() {
       btn.classList.add('bg-amber-500', 'text-white', 'font-semibold', 'shadow-sm');
       btn.classList.remove('text-slate-600', 'dark:text-slate-300');
 
-      activeCategory = btn.getAttribute('data-category');
+      contestActiveCategory = btn.getAttribute('data-category');
       renderContests();
     });
     // 기본 ALL 탭 스타일
@@ -721,83 +657,97 @@ function setupEventListeners() {
   }
 
   // 필터 초기화 버튼
-  const resetBtn = document.getElementById('resetFilterBtn');
+  const resetBtn = document.getElementById('contestResetFilterBtn');
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
-      activeCategory = 'ALL';
-      activeStatus = 'ALL';
-      searchQuery = '';
-      isBookmarkView = false;
+      contestActiveCategory = 'ALL';
+      contestActiveStatus = 'ALL';
+      contestSearchQuery = '';
+      isContestBookmarkView = false;
       if (searchInput) searchInput.value = '';
       if (clearSearchBtn) clearSearchBtn.classList.add('hidden');
-      if (bookmarkTabBtn) bookmarkTabBtn.classList.remove('ring-2', 'ring-amber-500', 'bg-amber-100', 'dark:bg-amber-900/60');
 
-      // 탭 스타일 초기화
       if (categoryTabs) {
-        categoryTabs.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('bg-amber-500', 'text-white', 'font-semibold'));
+        categoryTabs.querySelectorAll('.cat-pill').forEach(b => {
+          b.classList.remove('bg-amber-500', 'text-white', 'font-semibold', 'shadow-sm');
+          b.classList.add('text-slate-600', 'dark:text-slate-300');
+        });
         const allTab = categoryTabs.querySelector('[data-category="ALL"]');
-        if (allTab) allTab.classList.add('bg-amber-500', 'text-white', 'font-semibold');
+        if (allTab) {
+          allTab.classList.add('bg-amber-500', 'text-white', 'font-semibold', 'shadow-sm');
+          allTab.classList.remove('text-slate-600', 'dark:text-slate-300');
+        }
       }
 
       if (statusGroup) {
-        statusGroup.querySelectorAll('.status-pill').forEach(b => b.classList.remove('bg-white', 'dark:bg-slate-900', 'shadow-xs', 'text-slate-900', 'dark:text-white'));
+        statusGroup.querySelectorAll('.status-pill').forEach(b => {
+          b.classList.remove('bg-white', 'dark:bg-slate-900', 'shadow-xs', 'text-slate-900', 'dark:text-white', 'font-semibold');
+        });
         const allStatus = statusGroup.querySelector('[data-status="ALL"]');
-        if (allStatus) allStatus.classList.add('bg-white', 'dark:bg-slate-900', 'shadow-xs', 'text-slate-900', 'dark:text-white');
+        if (allStatus) {
+          allStatus.classList.add('bg-white', 'dark:bg-slate-900', 'shadow-xs', 'text-slate-900', 'dark:text-white', 'font-semibold');
+        }
       }
 
       renderContests();
     });
   }
 
-  // 모달 닫기
-  const closeBtn = document.getElementById('closeContestModalBtn');
-  const backdrop = document.getElementById('contestModalBackdrop');
+  // 모달 닫기 이벤트
+  const closeBtn = document.getElementById('closeModalBtn');
   if (closeBtn) closeBtn.addEventListener('click', closeContestModal);
+
+  const backdrop = document.getElementById('contestModalBackdrop');
   if (backdrop) backdrop.addEventListener('click', closeContestModal);
 
-  // 모달 내부 북마크 버튼
-  const modalBookmarkBtn = document.getElementById('modalBookmarkBtn');
-  if (modalBookmarkBtn) {
-    modalBookmarkBtn.addEventListener('click', () => {
+  const modalBookmark = document.getElementById('modalBookmarkBtn');
+  if (modalBookmark) {
+    modalBookmark.addEventListener('click', () => {
       if (currentModalContest) {
         toggleContestBookmark(currentModalContest.id);
       }
     });
   }
-
-  // ESC 키로 모달 닫기
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeContestModal();
-  });
 }
 
-// 8. 유틸리티 (로딩, 토스트)
-function showLoading(isLoading) {
-  const loading = document.getElementById('loadingState');
+// 8. 로딩 및 토스트
+function showContestLoading(show) {
+  const loading = document.getElementById('contestLoadingState');
   const grid = document.getElementById('contestCardGrid');
-  if (loading && grid) {
-    if (isLoading) {
+  if (loading) {
+    if (show) {
       loading.classList.remove('hidden');
       loading.classList.add('flex');
-      grid.classList.add('hidden');
     } else {
       loading.classList.add('hidden');
       loading.classList.remove('flex');
     }
   }
+  if (grid && show) {
+    grid.classList.add('hidden');
+  }
 }
 
-function showToast(msg) {
-  const toast = document.getElementById('toast');
-  const msgEl = document.getElementById('toastMessage');
-  if (!toast || !msgEl) return;
-
-  msgEl.textContent = msg;
-  toast.classList.remove('translate-y-20', 'opacity-0');
-  toast.classList.add('translate-y-0', 'opacity-100');
-
-  setTimeout(() => {
-    toast.classList.add('translate-y-20', 'opacity-0');
-    toast.classList.remove('translate-y-0', 'opacity-100');
-  }, 2500);
+function showContestToast(msg) {
+  if (window.showToast) {
+    window.showToast(msg);
+  } else {
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMessage');
+    if (!toast || !toastMsg) return;
+    toastMsg.textContent = msg;
+    toast.classList.remove('translate-y-20', 'opacity-0');
+    toast.classList.add('translate-y-0', 'opacity-100');
+    setTimeout(() => {
+      toast.classList.remove('translate-y-0', 'opacity-100');
+      toast.classList.add('translate-y-20', 'opacity-0');
+    }, 2500);
+  }
 }
+
+// 외부에서 호출 가능한 북마크 토글 함수
+window.toggleContestBookmarkFilter = function() {
+  isContestBookmarkView = !isContestBookmarkView;
+  renderContests();
+  return isContestBookmarkView;
+};

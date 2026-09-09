@@ -1,31 +1,30 @@
-// Civil News Hub Frontend Application
+// Civil News Hub Frontend Application (SPA Master Controller & News Dashboard)
 
+// 1. 상태 변수
+let currentMainTab = 'news'; // 'news' | 'jobs' | 'contests'
+
+// 뉴스 데이터 상태
 let allArticles = [];
 let categories = [];
-let activeCategory = 'general';
-let isBookmarkView = false;
-let searchQuery = '';
-let currentSort = 'newest'; // 기본 정렬: 최신순 복원
-let bookmarks = new Set();
+let activeNewsCategory = 'general';
+let isNewsBookmarkView = false;
+let newsSearchQuery = '';
+let currentNewsSort = 'newest';
+let newsBookmarks = new Set();
 let userViews = {};
 
-// 페이징 (카테고리별 분할: 기본 6개씩 표시 및 개별 더보기)
+// 페이징 (카테고리별 초기 6개 표시)
 const CATEGORY_PAGE_SIZE = 6;
 let categoryDisplayedCount = {};
 
-// 공모전 상태
-let allContests = [];
-let activeContestCategory = 'all';
-let contestSearchQuery = '';
-
-// 1. 초기화
+// 2. 초기화
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
-  loadBookmarks();
+  loadNewsBookmarks();
   loadUserViews();
-  setupEventListeners();
+  setupNewsEventListeners();
   loadNewsData();
-  loadContestsData();
+  initTabRouting();
 });
 
 // 조회수 로컬 스토리지 관리
@@ -47,7 +46,6 @@ function recordView(articleId) {
   userViews[articleId] += 1;
   localStorage.setItem('civil_user_views', JSON.stringify(userViews));
   
-  // UI의 조회수 엘리먼트 즉시 업데이트
   const viewEl = document.getElementById(`view-count-${articleId}`);
   if (viewEl) {
     const article = allArticles.find(a => a.id === articleId);
@@ -56,7 +54,7 @@ function recordView(articleId) {
   }
 }
 
-// 2. 테마 설정 (다크/라이트 모드)
+// 3. 테마 설정 (다크/라이트 모드)
 function initTheme() {
   const savedTheme = localStorage.getItem('civil_theme');
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -73,242 +71,146 @@ function toggleTheme() {
   localStorage.setItem('civil_theme', isDark ? 'dark' : 'light');
 }
 
-// 3. 북마크 로컬 스토리지 관리
-function loadBookmarks() {
+// 4. 뉴스 북마크 관리
+function loadNewsBookmarks() {
   try {
     const saved = localStorage.getItem('civil_bookmarks');
     if (saved) {
-      bookmarks = new Set(JSON.parse(saved));
+      newsBookmarks = new Set(JSON.parse(saved));
     }
   } catch (e) {
-    bookmarks = new Set();
+    newsBookmarks = new Set();
   }
-  updateBookmarkCount();
+  updateGlobalBookmarkCount();
 }
 
 function toggleBookmark(articleId, e) {
   if (e) e.stopPropagation();
-  if (bookmarks.has(articleId)) {
-    bookmarks.delete(articleId);
+  if (newsBookmarks.has(articleId)) {
+    newsBookmarks.delete(articleId);
     showToast('북마크에서 제거되었습니다.');
   } else {
-    bookmarks.add(articleId);
+    newsBookmarks.add(articleId);
     showToast('⭐ 기사가 북마크에 저장되었습니다.');
   }
-  localStorage.setItem('civil_bookmarks', JSON.stringify(Array.from(bookmarks)));
-  updateBookmarkCount();
+  localStorage.setItem('civil_bookmarks', JSON.stringify(Array.from(newsBookmarks)));
+  updateGlobalBookmarkCount();
   renderArticles();
 }
 
-function updateBookmarkCount() {
-  const countEl = document.getElementById('bookmarkCount');
-  if (countEl) {
-    countEl.textContent = bookmarks.size;
-  }
-  const mobileBadge = document.getElementById('mobileBookmarkBadge');
-  if (mobileBadge) {
-    mobileBadge.textContent = bookmarks.size;
-    if (bookmarks.size > 0) {
-      mobileBadge.classList.remove('hidden');
-    } else {
-      mobileBadge.classList.add('hidden');
-    }
-  }
-}
-
-// 4. 뉴스 데이터 로드 (API 우선, 실패 시 정적 파일 폴백)
+// 5. 뉴스 데이터 로드
 async function loadNewsData() {
-  showLoading(true);
+  showNewsLoading(true);
   try {
-    let response = await fetch('/api/news').catch(() => null);
-    if (!response || !response.ok) {
-      // 정적 호스팅(GitHub Pages 등) 환경 대응 (캐시 방지 타임스탬프 추가)
-      response = await fetch('./data/news.json?t=' + Date.now());
+    let res;
+    try {
+      res = await fetch('/api/news');
+      if (!res.ok) throw new Error('API failed');
+    } catch (e) {
+      res = await fetch('./data/news.json?t=' + Date.now());
     }
-    
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-    
-    const data = await response.json();
+
+    const data = await res.json();
     allArticles = data.articles || [];
+    categories = data.categories || [];
     
-    // 카테고리 01 -> 05 순차 정렬 (토목 종합 -> 도로·교량·철도 -> 수자원 -> 터널 -> 스마트건설·정책)
-    categories = (data.categories || [])
-      .filter(c => c.id !== 'all')
-      .slice()
-      .sort((a, b) => (CATEGORY_ORDER[a.id] ?? 99) - (CATEGORY_ORDER[b.id] ?? 99));
+    // 메타데이터 업데이트
+    const updatedEl = document.getElementById('newsLastUpdated');
+    if (updatedEl) updatedEl.textContent = data.last_updated_display || '방금 전';
     
-    // 마지막 업데이트 및 총 건수 표시
-    const lastUpEl = document.getElementById('lastUpdated');
-    if (lastUpEl) lastUpEl.textContent = data.last_updated_display || data.last_updated || '방금 전';
-    const totalCountEl = document.getElementById('totalCount');
-    if (totalCountEl) totalCountEl.textContent = `${allArticles.length}건`;
-    
+    const countEl = document.getElementById('newsTotalCount');
+    if (countEl) countEl.textContent = `${allArticles.length}건`;
+
     renderCategoryTabs();
     renderArticles();
-  } catch (error) {
-    console.error('뉴스 데이터 로딩 실패:', error);
-    const noticeEl = document.getElementById('resultCountNotice');
-    if (noticeEl) noticeEl.textContent = '데이터를 불러오지 못했습니다. 새로고침을 시도해 보세요.';
+  } catch (err) {
+    console.error('뉴스 데이터 로드 실패:', err);
+    showToast('⚠️ 뉴스 데이터를 불러오지 못했습니다.');
   } finally {
-    showLoading(false);
+    showNewsLoading(false);
   }
 }
 
-// 카테고리 순서: 1위 토목 종합, 2위 도로·교량·철도, 3위 수자원·하천·항만, 4위 터널·지반·안전, 5위 스마트건설·정책
-const CATEGORY_ORDER = {
-  'general': 1,
-  'road_rail': 2,
-  'water_port': 3,
-  'tunnel_geo': 4,
-  'smart_policy': 5
-};
+// 카테고리 탭 렌더링
+function renderCategoryTabs() {
+  const container = document.getElementById('newsCategoryTabs');
+  if (!container) return;
+  container.innerHTML = '';
 
-const CATEGORY_META = {
-  'general': {
-    num: '01',
-    icon: 'layout-grid',
-    badgeClass: 'bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800'
-  },
-  'road_rail': {
-    num: '02',
-    icon: 'route',
-    badgeClass: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
-  },
-  'water_port': {
-    num: '03',
-    icon: 'waves',
-    badgeClass: 'bg-cyan-100 text-cyan-700 dark:bg-cyan-950/60 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800'
-  },
-  'tunnel_geo': {
-    num: '04',
-    icon: 'shield-alert',
-    badgeClass: 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800'
-  },
-  'smart_policy': {
-    num: '05',
-    icon: 'cpu',
-    badgeClass: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800'
-  }
-};
+  const allTab = document.createElement('button');
+  const isAllActive = !isNewsBookmarkView && activeNewsCategory === 'all';
+  allTab.className = `flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition cursor-pointer ${
+    isAllActive 
+      ? 'bg-blue-600 text-white shadow-sm ring-2 ring-blue-500/30' 
+      : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800'
+  }`;
+  allTab.innerHTML = `<span>전체 기사</span><span class="text-[10px] px-1.5 py-0.2 rounded-full ${isAllActive ? 'bg-blue-800/60 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'}">${allArticles.length}</span>`;
+  allTab.addEventListener('click', () => {
+    isNewsBookmarkView = false;
+    activeNewsCategory = 'all';
+    categoryDisplayedCount = {};
+    renderCategoryTabs();
+    updateBookmarkTabStyle();
+    renderArticles();
+    scrollToCategory('all');
+  });
+  container.appendChild(allTab);
 
-function getCategoryDisplayLimit(catId) {
-  return categoryDisplayedCount[catId] || CATEGORY_PAGE_SIZE;
-}
+  categories.forEach(cat => {
+    const isCatActive = !isNewsBookmarkView && activeNewsCategory === cat.id;
+    const catCount = allArticles.filter(a => a.category_id === cat.id).length;
 
-function loadMoreCategory(catId) {
-  categoryDisplayedCount[catId] = getCategoryDisplayLimit(catId) + CATEGORY_PAGE_SIZE;
-  renderArticles();
+    const btn = document.createElement('button');
+    btn.className = `flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition cursor-pointer ${
+      isCatActive 
+        ? 'bg-blue-600 text-white shadow-sm ring-2 ring-blue-500/30' 
+        : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800'
+    }`;
+    btn.innerHTML = `<span>${cat.name}</span><span class="text-[10px] px-1.5 py-0.2 rounded-full ${isCatActive ? 'bg-blue-800/60 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'}">${catCount}</span>`;
+    btn.addEventListener('click', () => {
+      isNewsBookmarkView = false;
+      activeNewsCategory = cat.id;
+      categoryDisplayedCount = {};
+      renderCategoryTabs();
+      updateBookmarkTabStyle();
+      renderArticles();
+      scrollToCategory(cat.id);
+    });
+    container.appendChild(btn);
+  });
 }
 
 function scrollToCategory(catId) {
-  if (catId === 'all' || catId === 'top') {
-    if (isBookmarkView) {
-      isBookmarkView = false;
-      updateBookmarkTabStyle();
-      renderCategoryTabs();
-      renderArticles();
-    }
+  const target = document.getElementById(`section-${catId}`);
+  if (target) {
+    const yOffset = -130;
+    const y = target.getBoundingClientRect().top + window.pageYOffset + yOffset;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  } else {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    return;
-  }
-
-  if (isBookmarkView) {
-    isBookmarkView = false;
-    updateBookmarkTabStyle();
-    renderArticles();
-  }
-
-  activeCategory = catId;
-  renderCategoryTabs();
-
-  const targetSection = document.getElementById(`category-section-${catId}`);
-  if (targetSection) {
-    targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 }
 
-// 5. 카테고리 탭 렌더링
-function renderCategoryTabs() {
-  const tabsContainer = document.getElementById('categoryTabs');
-  if (!tabsContainer) return;
-  tabsContainer.innerHTML = '';
-  
-  categories.filter(c => c.id !== 'all').forEach(cat => {
-    // 해당 카테고리 기사 수 계산
-    const count = allArticles.filter(a => a.category_id === cat.id).length;
-    
-    const isActive = !isBookmarkView && activeCategory === cat.id;
-    
-    const btn = document.createElement('button');
-    btn.className = `flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition cursor-pointer ${
-      isActive
-        ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20 ring-2 ring-blue-500/30'
-        : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800'
-    }`;
-    
-    btn.innerHTML = `
-      <span>${cat.name}</span>
-      <span class="text-[10px] px-1.5 py-0.2 rounded-full ${
-        isActive
-          ? 'bg-blue-800/60 text-white'
-          : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
-      }">${count}</span>
-    `;
-    
-    btn.addEventListener('click', () => {
-      scrollToCategory(cat.id);
-    });
-    
-    tabsContainer.appendChild(btn);
-  });
-}
-
-function updateBookmarkTabStyle() {
-  const bookmarkBtn = document.getElementById('bookmarkTabBtn');
-  if (bookmarkBtn) {
-    if (isBookmarkView) {
-      bookmarkBtn.className = 'flex-shrink-0 flex items-center px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition bg-amber-500 text-white shadow-sm shadow-amber-500/20 cursor-pointer border border-amber-500';
-    } else {
-      bookmarkBtn.className = 'flex-shrink-0 flex items-center px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition border border-amber-300/90 dark:border-amber-700/60 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40 cursor-pointer shadow-xs';
-    }
-  }
-
-  const mobileBtn = document.getElementById('mobileBookmarkBtn');
-  if (mobileBtn) {
-    if (isBookmarkView) {
-      mobileBtn.className = 'relative flex flex-col items-center justify-center py-1 px-3 text-amber-500 font-bold transition cursor-pointer';
-    } else {
-      mobileBtn.className = 'relative flex flex-col items-center justify-center py-1 px-3 text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 font-medium transition cursor-pointer';
-    }
-  }
-}
-
-// 검색어 필터링 헬퍼
+// 검색 및 필터 헬퍼
 function filterBySearch(articles) {
-  if (!searchQuery) return articles;
-  const q = searchQuery.toLowerCase();
-  return articles.filter(article => {
-    const matchTitle = (article.title || '').toLowerCase().includes(q);
-    const matchSnippet = (article.snippet || '').toLowerCase().includes(q);
-    const matchPub = (article.publisher || '').toLowerCase().includes(q);
-    const matchRelated = (article.related_articles || []).some(rel =>
-      (rel.title || '').toLowerCase().includes(q) || (rel.publisher || '').toLowerCase().includes(q)
-    );
-    return matchTitle || matchSnippet || matchPub || matchRelated;
+  if (!newsSearchQuery) return articles;
+  const q = newsSearchQuery.toLowerCase();
+  return articles.filter(a => {
+    const titleMatch = (a.title || '').toLowerCase().includes(q);
+    const snipMatch = (a.snippet || '').toLowerCase().includes(q);
+    const pubMatch = (a.publisher || '').toLowerCase().includes(q);
+    return titleMatch || snipMatch || pubMatch;
   });
 }
 
-// 정렬 헬퍼
 function sortArticlesList(articles) {
   articles.sort((a, b) => {
-    if (currentSort === 'views') {
+    if (currentNewsSort === 'views') {
       const viewsA = (a.views || 0) + (userViews[a.id] || 0);
       const viewsB = (b.views || 0) + (userViews[b.id] || 0);
       return viewsB - viewsA;
     }
-    if (currentSort === 'oldest') {
+    if (currentNewsSort === 'oldest') {
       const dateA = a.latest_iso_date || a.iso_date || '';
       const dateB = b.latest_iso_date || b.iso_date || '';
       return dateA.localeCompare(dateB);
@@ -319,9 +221,9 @@ function sortArticlesList(articles) {
   });
 }
 
-// 개별 기사 카드 렌더링 헬퍼
+// 개별 기사 카드 HTML 생성
 function renderArticleCard(article) {
-  const isBookmarked = bookmarks.has(article.id);
+  const isBookmarked = newsBookmarks.has(article.id);
   const badgeColorClass = `badge-${article.badge_color || 'slate'}`;
   const totalViews = (article.views || 0) + (userViews[article.id] || 0);
   const hasRelated = article.related_articles && article.related_articles.length > 0;
@@ -330,7 +232,6 @@ function renderArticleCard(article) {
   return `
     <article class="news-card flex flex-col justify-between bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500/50 transition">
       <div>
-        <!-- 상단 메타: 카테고리 뱃지 & 발행일 & 조회수 -->
         <div class="flex items-center justify-between gap-2 mb-3">
           <span class="inline-block px-2.5 py-1 text-xs font-semibold rounded-md border ${badgeColorClass}">
             ${escapeHtml(article.category_name || '토목')}
@@ -347,20 +248,17 @@ function renderArticleCard(article) {
           </div>
         </div>
 
-        <!-- 기사 제목 (클릭 시 새 탭으로 원문 이동 및 조회수 증가) -->
         <h3 class="font-bold text-base text-slate-900 dark:text-slate-100 hover:text-blue-600 dark:hover:text-blue-400 leading-snug line-clamp-2 mb-2 transition">
           <a href="${article.link}" target="_blank" rel="noopener noreferrer" onclick="recordView('${article.id}')">
             ${escapeHtml(article.title)}
           </a>
         </h3>
 
-        <!-- 기사 요약 -->
         <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-3 leading-relaxed mb-3">
           ${escapeHtml(article.snippet)}
         </p>
 
         ${hasRelated ? `
-        <!-- 중복/관련 보도자료 아코디언 버튼 (조회수 1등 기사가 메인 타이틀) -->
         <div class="mb-3">
           <button 
             type="button"
@@ -377,7 +275,6 @@ function renderArticleCard(article) {
             </span>
           </button>
 
-          <!-- 펼쳐지는 타 언론사 기사 목록 (최신순 정렬) -->
           <div id="related-list-${article.id}" class="hidden space-y-1.5 mt-2 max-h-52 overflow-y-auto pr-1">
             ${(article.related_articles || []).slice().sort((r1, r2) => (r2.iso_date || r2.published_at || '').localeCompare(r1.iso_date || r1.published_at || '')).map(rel => `
               <div class="flex items-start justify-between gap-2 p-2 rounded-lg bg-slate-50/90 dark:bg-slate-800/50 hover:bg-blue-50/50 dark:hover:bg-slate-800 border border-slate-100 dark:border-slate-800/90 transition">
@@ -402,15 +299,12 @@ function renderArticleCard(article) {
         ` : ''}
       </div>
 
-      <!-- 하단 액션 영역 -->
       <div class="pt-3 mt-auto border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
-        <!-- 언론사 정보 -->
         <span class="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1 truncate max-w-[120px] sm:max-w-[140px]">
           <i data-lucide="building" class="w-3.5 h-3.5 flex-shrink-0 text-slate-400"></i>
           <span class="truncate">${escapeHtml(article.publisher)}</span>
         </span>
 
-        <!-- 액션 버튼들 -->
         <div class="flex items-center gap-1.5">
           <!-- 기사 공유 버튼 -->
           <button 
@@ -434,7 +328,7 @@ function renderArticleCard(article) {
             <i data-lucide="star" class="w-4 h-4 ${isBookmarked ? 'fill-amber-400' : ''}"></i>
           </button>
 
-          <!-- 원문 보러가기 버튼 (클릭 시 조회수 증가) -->
+          <!-- 원문 보러가기 버튼 -->
           <a 
             href="${article.link}" 
             target="_blank" 
@@ -451,29 +345,33 @@ function renderArticleCard(article) {
   `;
 }
 
-// 6. 카테고리별 섹션 분할 및 12개씩 렌더링 (1, 2, 3 분할 뷰)
+// 6. 메인 뉴스 렌더링
 function renderArticles() {
   const container = document.getElementById('categorySectionsContainer');
-  const emptyState = document.getElementById('emptyState');
-  const notice = document.getElementById('resultCountNotice');
+  const emptyState = document.getElementById('newsEmptyState');
+  const notice = document.getElementById('newsResultCountNotice');
   if (!container) return;
 
-  // 1. 북마크 모드
-  if (isBookmarkView) {
-    const bookmarkedArticles = allArticles.filter(a => bookmarks.has(a.id));
+  // 북마크 모드
+  if (isNewsBookmarkView) {
+    const bookmarkedArticles = allArticles.filter(a => newsBookmarks.has(a.id));
     const filteredBookmarks = filterBySearch(bookmarkedArticles);
     sortArticlesList(filteredBookmarks);
 
     if (filteredBookmarks.length === 0) {
       container.innerHTML = '';
-      emptyState.classList.remove('hidden');
-      emptyState.classList.add('flex');
+      if (emptyState) {
+        emptyState.classList.remove('hidden');
+        emptyState.classList.add('flex');
+      }
       if (notice) notice.textContent = '북마크된 기사가 없습니다.';
       return;
     }
 
-    emptyState.classList.add('hidden');
-    emptyState.classList.remove('flex');
+    if (emptyState) {
+      emptyState.classList.add('hidden');
+      emptyState.classList.remove('flex');
+    }
     if (notice) notice.textContent = `⭐ 북마크 기사 총 ${filteredBookmarks.length}건`;
 
     container.innerHTML = `
@@ -490,7 +388,7 @@ function renderArticles() {
               </span>
             </h3>
           </div>
-          <button onclick="scrollToCategory('all')" class="text-xs text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 flex items-center gap-1 cursor-pointer">
+          <button onclick="activeNewsCategory='all'; isNewsBookmarkView=false; renderCategoryTabs(); updateBookmarkTabStyle(); renderArticles();" class="text-xs text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 flex items-center gap-1 cursor-pointer">
             전체 기사로 돌아가기
           </button>
         </div>
@@ -503,125 +401,116 @@ function renderArticles() {
     return;
   }
 
-  // 2. 카테고리별 섹션 분할 렌더링 (1, 2, 3... 분할 뷰)
-  const targetCategories = categories.filter(c => c.id !== 'all');
-  let totalMatchingCount = 0;
-  let totalWithDupsCount = 0;
-  let sectionsHtml = '';
+  // 검색어가 있을 때
+  if (newsSearchQuery) {
+    const searchResults = filterBySearch(allArticles);
+    sortArticlesList(searchResults);
 
-  targetCategories.forEach((cat, idx) => {
-    // 해당 카테고리 기사 가져오기
-    let catArticles = allArticles.filter(a => a.category_id === cat.id);
-    catArticles = filterBySearch(catArticles);
-    sortArticlesList(catArticles);
+    if (searchResults.length === 0) {
+      container.innerHTML = '';
+      if (emptyState) {
+        emptyState.classList.remove('hidden');
+        emptyState.classList.add('flex');
+      }
+      if (notice) notice.textContent = `'${newsSearchQuery}' 검색 결과가 없습니다.`;
+      return;
+    }
 
-    const catCount = catArticles.length;
-    if (catCount === 0) return;
+    if (emptyState) {
+      emptyState.classList.add('hidden');
+      emptyState.classList.remove('flex');
+    }
+    if (notice) notice.textContent = `'${newsSearchQuery}' 검색 결과 총 ${searchResults.length}건`;
 
-    totalMatchingCount += catCount;
-    totalWithDupsCount += catArticles.reduce((acc, a) => acc + 1 + (a.related_articles ? a.related_articles.length : 0), 0);
-
-    // 6개 단위 페이징
-    const limit = getCategoryDisplayLimit(cat.id);
-    const visibleArticles = catArticles.slice(0, limit);
-    const hasMore = catCount > limit;
-    const remaining = catCount - limit;
-
-    const meta = CATEGORY_META[cat.id] || {
-      num: String(idx + 1).padStart(2, '0'),
-      icon: 'newspaper',
-      badgeClass: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-300 dark:border-slate-700'
-    };
-
-    sectionsHtml += `
-      <section 
-        id="category-section-${cat.id}" 
-        class="scroll-mt-32 sm:scroll-mt-36 bg-white dark:bg-slate-900/60 border border-slate-200/90 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-xs hover:border-slate-300 dark:hover:border-slate-700/80 transition-colors"
-      >
-        <!-- 섹션 헤더 (1, 2, 3 구분) -->
-        <div class="flex items-center justify-between pb-3.5 sm:pb-4 mb-5 border-b border-slate-100 dark:border-slate-800">
-          <div class="flex items-center gap-2.5 sm:gap-3">
-            <span class="flex-shrink-0 flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl font-bold text-xs sm:text-sm ${meta.badgeClass} border">
-              ${meta.num}
-            </span>
-            <div class="flex items-center gap-2">
-              <i data-lucide="${meta.icon}" class="w-4 h-4 text-slate-500 dark:text-slate-400"></i>
-              <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
-                ${cat.name}
-              </h3>
-              <span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold border border-slate-200/80 dark:border-slate-700">
-                ${catCount}건
+    container.innerHTML = `
+      <section class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-xs">
+        <div class="flex items-center justify-between pb-4 mb-5 border-b border-slate-100 dark:border-slate-800">
+          <div class="flex items-center gap-2">
+            <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+              '${newsSearchQuery}' 검색 결과
+              <span class="text-xs px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-semibold border border-blue-200 dark:border-blue-900">
+                ${searchResults.length}건
               </span>
-            </div>
+            </h3>
           </div>
         </div>
-
-        <!-- 6개 기사 카드 그리드 -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-          ${visibleArticles.map(renderArticleCard).join('')}
-        </div>
-
-        <!-- 섹션 하단 영역 (더보기 버튼 중앙 + 상단으로 퀵버튼 오른쪽 아래 배치) -->
-        <div class="relative pt-6 sm:pt-7 mt-3 border-t border-slate-100 dark:border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <!-- 좌측 여백 균형용 빈 영역 -->
-          <div class="hidden sm:block w-28 flex-shrink-0"></div>
-
-          <!-- 중앙 영역 (기사 더보기 버튼) -->
-          <div class="flex flex-col items-center justify-center text-center flex-1">
-            ${hasMore ? `
-              <button 
-                onclick="loadMoreCategory('${cat.id}')"
-                class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-blue-600 dark:text-blue-400 font-semibold text-xs sm:text-sm border border-slate-200 dark:border-slate-700 shadow-sm transition active:scale-95 cursor-pointer"
-              >
-                <i data-lucide="chevron-down" class="w-4 h-4"></i>
-                <span>${cat.name} 기사 더보기 (+${Math.min(CATEGORY_PAGE_SIZE, remaining)}개)</span>
-              </button>
-              <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1.5">
-                ${catCount}개 중 ${visibleArticles.length}개 표시 중
-              </p>
-            ` : (catCount > CATEGORY_PAGE_SIZE ? `
-              <p class="text-xs text-slate-400 dark:text-slate-500">
-                모든 ${catCount}개의 기사를 불러왔습니다.
-              </p>
-            ` : `
-              <p class="text-[11px] text-slate-400 dark:text-slate-500">
-                총 ${catCount}개의 기사
-              </p>
-            `)}
-          </div>
-
-          <!-- 우측 영역: 상단으로 버튼 (오른쪽 아래 배치) -->
-          <div class="w-full sm:w-28 flex justify-end flex-shrink-0">
-            <button 
-              onclick="scrollToCategory('top')" 
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-300 bg-slate-50 dark:bg-slate-800/90 hover:bg-blue-50 dark:hover:bg-slate-700 border border-slate-200/90 dark:border-slate-700/80 shadow-xs transition active:scale-95 cursor-pointer"
-              title="상단 카테고리로 이동"
-            >
-              <i data-lucide="arrow-up" class="w-3.5 h-3.5"></i>
-              <span>상단으로</span>
-            </button>
-          </div>
+          ${searchResults.map(renderArticleCard).join('')}
         </div>
       </section>
     `;
-  });
-
-  if (totalMatchingCount === 0) {
-    container.innerHTML = '';
-    emptyState.classList.remove('hidden');
-    emptyState.classList.add('flex');
-    if (notice) notice.textContent = '검색된 기사가 없습니다.';
+    if (window.lucide) window.lucide.createIcons();
     return;
   }
 
-  emptyState.classList.add('hidden');
-  emptyState.classList.remove('flex');
+  // 기본 상태: 카테고리별 섹션 분할
+  let renderedCategories = categories;
+  if (activeNewsCategory !== 'all') {
+    renderedCategories = categories.filter(c => c.id === activeNewsCategory);
+  }
+
+  const sectionsHtml = renderedCategories.map(cat => {
+    let catArticles = allArticles.filter(a => a.category_id === cat.id);
+    sortArticlesList(catArticles);
+
+    if (catArticles.length === 0) return '';
+
+    const currentCount = categoryDisplayedCount[cat.id] || CATEGORY_PAGE_SIZE;
+    const displayedArticles = catArticles.slice(0, currentCount);
+    const hasMore = catArticles.length > currentCount;
+    const remainingCount = catArticles.length - currentCount;
+
+    return `
+      <section id="section-${cat.id}" class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-xs">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-5 border-b border-slate-100 dark:border-slate-800 gap-2">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                ${cat.code || '섹션'}
+              </span>
+              <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                ${cat.name}
+              </h3>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-semibold border border-slate-200 dark:border-slate-700">
+                총 ${catArticles.length}건
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              ${cat.description || '최신 토목 인프라 및 기술 뉴스'}
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+          ${displayedArticles.map(renderArticleCard).join('')}
+        </div>
+
+        ${hasMore ? `
+          <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 text-center">
+            <button 
+              onclick="loadMoreCategoryArticles('${cat.id}')"
+              class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 hover:bg-blue-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold border border-slate-200 dark:border-slate-700 transition group shadow-xs cursor-pointer active:scale-95"
+            >
+              <span>${cat.name} 기사 더보기 (+${Math.min(remainingCount, CATEGORY_PAGE_SIZE)}개)</span>
+              <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-hover:text-blue-500 transition-transform group-hover:translate-y-0.5"></i>
+            </button>
+          </div>
+        ` : ''}
+      </section>
+    `;
+  }).filter(Boolean).join('');
+
+  if (emptyState) {
+    emptyState.classList.add('hidden');
+    emptyState.classList.remove('flex');
+  }
 
   if (notice) {
-    if (totalWithDupsCount > totalMatchingCount) {
-      notice.textContent = `주요 토픽 ${totalMatchingCount}개 (타 언론사 중복 보도 포함 총 ${totalWithDupsCount}건)`;
+    if (activeNewsCategory === 'all') {
+      notice.textContent = `주요 토목 분야별 브리핑 (총 ${allArticles.length}건)`;
     } else {
-      notice.textContent = `총 ${totalMatchingCount}개의 기사가 준비되어 있습니다.`;
+      const activeCatObj = categories.find(c => c.id === activeNewsCategory);
+      notice.textContent = `${activeCatObj ? activeCatObj.name : '카테고리'} 뉴스 브리핑`;
     }
   }
 
@@ -629,73 +518,33 @@ function renderArticles() {
   if (window.lucide) window.lucide.createIcons();
 }
 
-// 중복/관련 기사 아코디언 토글 함수
-function toggleRelatedArticles(articleId, event) {
-  if (event) {
-    event.stopPropagation();
-    event.preventDefault();
-  }
-  const list = document.getElementById(`related-list-${articleId}`);
-  const icon = document.getElementById(`related-icon-${articleId}`);
-  const text = document.getElementById(`related-text-${articleId}`);
-  if (!list) return;
+function loadMoreCategoryArticles(catId) {
+  const currentCount = categoryDisplayedCount[catId] || CATEGORY_PAGE_SIZE;
+  categoryDisplayedCount[catId] = currentCount + CATEGORY_PAGE_SIZE;
+  renderArticles();
+}
 
-  const isHidden = list.classList.contains('hidden');
+// 관련 기사 아코디언 토글
+function toggleRelatedArticles(articleId, e) {
+  if (e) e.stopPropagation();
+  const listEl = document.getElementById(`related-list-${articleId}`);
+  const iconEl = document.getElementById(`related-icon-${articleId}`);
+  const textEl = document.getElementById(`related-text-${articleId}`);
+  if (!listEl) return;
+
+  const isHidden = listEl.classList.contains('hidden');
   if (isHidden) {
-    list.classList.remove('hidden');
-    if (icon) icon.classList.add('rotate-180');
-    if (text) text.textContent = '접기';
+    listEl.classList.remove('hidden');
+    if (iconEl) iconEl.classList.add('rotate-180');
+    if (textEl) textEl.textContent = '접기';
   } else {
-    list.classList.add('hidden');
-    if (icon) icon.classList.remove('rotate-180');
-    if (text) text.textContent = '모두보기';
-  }
-  if (window.lucide) {
-    window.lucide.createIcons();
+    listEl.classList.add('hidden');
+    if (iconEl) iconEl.classList.remove('rotate-180');
+    if (textEl) textEl.textContent = '모두보기';
   }
 }
 
-
-// 7. 실시간 기사 재수집 (새로고침 버튼)
-async function triggerRefresh() {
-  const btn = document.getElementById('refreshBtn');
-  const icon = document.getElementById('refreshIcon');
-  
-  btn.disabled = true;
-  btn.classList.add('opacity-70');
-  icon.classList.add('animate-spin-fast');
-  showToast('🔄 최신 토목 기사를 수집하고 있습니다...');
-  
-  try {
-    const res = await fetch('/api/refresh', { method: 'POST' });
-    const data = await res.json();
-    
-    if (data.success && data.data) {
-      allArticles = data.data.articles || [];
-      categories = (data.data.categories || [])
-        .filter(c => c.id !== 'all')
-        .slice()
-        .sort((a, b) => (CATEGORY_ORDER[a.id] ?? 99) - (CATEGORY_ORDER[b.id] ?? 99));
-      document.getElementById('lastUpdated').textContent = data.data.last_updated_display || '방금 전';
-      document.getElementById('totalCount').textContent = `${allArticles.length}건`;
-      
-      renderCategoryTabs();
-      renderArticles();
-      showToast('✅ 최신 기사 수집이 완료되었습니다!');
-    } else {
-      throw new Error(data.error || '수집 실패');
-    }
-  } catch (err) {
-    console.error('새로고침 실패:', err);
-    showToast('⚠️ 새로고침 중 오류가 발생했습니다.');
-  } finally {
-    btn.disabled = false;
-    btn.classList.remove('opacity-70');
-    icon.classList.remove('animate-spin-fast');
-  }
-}
-
-// 8. 기사 공유 (Web Share API + Clipboard Fallback)
+// 7. 기사 공유 (Web Share API + Clipboard Fallback)
 async function shareArticle(articleId, e) {
   if (e) e.stopPropagation();
   const article = allArticles.find(a => a.id === articleId);
@@ -717,34 +566,19 @@ async function shareArticle(articleId, e) {
     }
   }
 
-  // Web Share 미지원 시 클립보드 복사
+  // Clipboard Fallback
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(shareText).then(() => {
       showToast('📋 기사 요약 및 링크가 복사되었습니다.');
     }).catch(() => {
-      copyNewsPromptFallback(shareText);
+      copyPromptFallback(shareText);
     });
   } else {
-    copyNewsPromptFallback(shareText);
+    copyPromptFallback(shareText);
   }
 }
 
-// 하위 호환용 단순 링크 복사
-function copyArticleLink(encodedUrl, e) {
-  if (e) e.stopPropagation();
-  const url = decodeURIComponent(encodedUrl);
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(url).then(() => {
-      showToast('📋 기사 링크가 복사되었습니다.');
-    }).catch(() => {
-      copyNewsPromptFallback(url);
-    });
-  } else {
-    copyNewsPromptFallback(url);
-  }
-}
-
-function copyNewsPromptFallback(text) {
+function copyPromptFallback(text) {
   const textarea = document.createElement('textarea');
   textarea.value = text;
   document.body.appendChild(textarea);
@@ -753,16 +587,17 @@ function copyNewsPromptFallback(text) {
     document.execCommand('copy');
     showToast('📋 클립보드에 복사되었습니다.');
   } catch (err) {
-    prompt('복사하기:', text);
+    prompt('내용 복사하기:', text);
   }
   document.body.removeChild(textarea);
 }
 
-// 9. 토스트 메시지
+// 8. 로딩 및 토스트 메시지
 let toastTimer = null;
 function showToast(message) {
   const toast = document.getElementById('toast');
   const toastMsg = document.getElementById('toastMessage');
+  if (!toast || !toastMsg) return;
   toastMsg.textContent = message;
   
   toast.classList.remove('translate-y-20', 'opacity-0');
@@ -774,10 +609,10 @@ function showToast(message) {
     toast.classList.add('translate-y-20', 'opacity-0');
   }, 2500);
 }
+window.showToast = showToast;
 
-// 10. 로딩 상태 제어
-function showLoading(show) {
-  const loading = document.getElementById('loadingIndicator');
+function showNewsLoading(show) {
+  const loading = document.getElementById('newsLoadingIndicator');
   const container = document.getElementById('categorySectionsContainer');
   if (loading) {
     if (show) {
@@ -801,82 +636,270 @@ function showLoading(show) {
   }
 }
 
-// 11. 이벤트 리스너 등록
-function setupEventListeners() {
-  // 테마 토글
-  const themeToggle = document.getElementById('themeToggle');
-  if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
-  
-  // 새로고침 버튼
-  const refreshBtn = document.getElementById('refreshBtn');
-  if (refreshBtn) refreshBtn.addEventListener('click', triggerRefresh);
-  
-  // 북마크 탭 버튼 (헤더 및 모바일 하단바)
-  const bookmarkTabBtn = document.getElementById('bookmarkTabBtn');
-  const handleBookmarkToggle = () => {
-    isBookmarkView = !isBookmarkView;
-    categoryDisplayedCount = {};
+// 9. SPA 탭 전환 마스터 라우팅
+window.switchMainTab = function(tabName, updateHash = true) {
+  currentMainTab = tabName;
+
+  const panelNews = document.getElementById('tabPanelNews');
+  const panelJobs = document.getElementById('tabPanelJobs');
+  const panelContests = document.getElementById('tabPanelContests');
+
+  if (panelNews) panelNews.classList.toggle('hidden', tabName !== 'news');
+  if (panelJobs) panelJobs.classList.toggle('hidden', tabName !== 'jobs');
+  if (panelContests) panelContests.classList.toggle('hidden', tabName !== 'contests');
+
+  // GNB 버튼 스타일 갱신
+  updateGnbTabStyles(tabName);
+
+  // 모바일 하단바 탭 스타일 갱신
+  updateMobileNavStyles(tabName);
+
+  // 헤더 및 모바일 북마크 카운트 동기화
+  updateGlobalBookmarkCount();
+
+  // URL 해시 업데이트
+  if (updateHash) {
+    history.replaceState(null, null, '#' + tabName);
+  }
+
+  // 상단 스크롤
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+function updateGnbTabStyles(activeTab) {
+  const tabs = [
+    { id: 'gnbTabNews', key: 'news', badge: 'DAILY' },
+    { id: 'gnbTabJobs', key: 'jobs', badge: 'RECRUIT' },
+    { id: 'gnbTabContests', key: 'contests', badge: 'CONTEST' }
+  ];
+
+  tabs.forEach(t => {
+    const el = document.getElementById(t.id);
+    if (!el) return;
+    const isActive = t.key === activeTab;
+    if (isActive) {
+      el.className = 'flex items-center gap-1 sm:gap-1.5 font-bold text-xs sm:text-base text-slate-900 dark:text-white transition tracking-tight flex-shrink-0 cursor-pointer';
+      const badge = el.querySelector('.gnb-badge');
+      if (badge) {
+        badge.className = 'gnb-badge text-[8px] sm:text-xs px-1.5 py-0.2 sm:py-0.5 rounded-full font-semibold border ' + 
+          (t.key === 'news' ? 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800' :
+           t.key === 'jobs' ? 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800' :
+           'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800');
+      }
+    } else {
+      el.className = 'flex items-center gap-1 font-medium text-xs sm:text-sm text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition tracking-tight flex-shrink-0 cursor-pointer';
+      const badge = el.querySelector('.gnb-badge');
+      if (badge) {
+        badge.className = 'gnb-badge hidden';
+      }
+    }
+  });
+}
+
+function updateMobileNavStyles(activeTab) {
+  const tabs = [
+    { id: 'mobileTabNews', key: 'news', activeColor: 'text-blue-600 dark:text-blue-400' },
+    { id: 'mobileTabJobs', key: 'jobs', activeColor: 'text-blue-600 dark:text-blue-400' },
+    { id: 'mobileTabContests', key: 'contests', activeColor: 'text-amber-500' }
+  ];
+
+  tabs.forEach(t => {
+    const el = document.getElementById(t.id);
+    if (!el) return;
+    const isActive = t.key === activeTab;
+    if (isActive) {
+      el.className = `flex flex-col items-center justify-center py-1 px-3 ${t.activeColor} font-bold transition cursor-pointer`;
+    } else {
+      el.className = 'flex flex-col items-center justify-center py-1 px-3 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition cursor-pointer';
+    }
+  });
+}
+
+// 통합 북마크 뱃지 카운터
+window.updateGlobalBookmarkCount = function() {
+  let count = 0;
+  if (currentMainTab === 'news') {
+    count = newsBookmarks.size;
+  } else if (currentMainTab === 'jobs') {
+    count = (typeof jobBookmarks !== 'undefined') ? jobBookmarks.size : 0;
+  } else if (currentMainTab === 'contests') {
+    count = (typeof contestBookmarks !== 'undefined') ? contestBookmarks.size : 0;
+  }
+
+  const countEl = document.getElementById('bookmarkCount');
+  if (countEl) countEl.textContent = count;
+
+  const mobileBadge = document.getElementById('mobileBookmarkBadge');
+  if (mobileBadge) {
+    mobileBadge.textContent = count;
+    if (count > 0) {
+      mobileBadge.classList.remove('hidden');
+    } else {
+      mobileBadge.classList.add('hidden');
+    }
+  }
+
+  updateBookmarkTabStyle();
+};
+
+// 북마크 탭 버튼 스타일 갱신
+function updateBookmarkTabStyle() {
+  let isCurrentBookmarkActive = false;
+  if (currentMainTab === 'news') {
+    isCurrentBookmarkActive = isNewsBookmarkView;
+  } else if (currentMainTab === 'jobs') {
+    isCurrentBookmarkActive = (typeof isJobBookmarkView !== 'undefined') ? isJobBookmarkView : false;
+  } else if (currentMainTab === 'contests') {
+    isCurrentBookmarkActive = (typeof isContestBookmarkView !== 'undefined') ? isContestBookmarkView : false;
+  }
+
+  const bookmarkBtn = document.getElementById('bookmarkTabBtn');
+  if (bookmarkBtn) {
+    if (isCurrentBookmarkActive) {
+      bookmarkBtn.className = 'flex-shrink-0 flex items-center px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium transition bg-amber-500 text-white shadow-sm shadow-amber-500/20 cursor-pointer border border-amber-500';
+    } else {
+      bookmarkBtn.className = 'flex-shrink-0 flex items-center px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium transition border border-amber-300/90 dark:border-amber-700/60 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40 cursor-pointer shadow-xs';
+    }
+  }
+
+  const mobileBtn = document.getElementById('mobileBookmarkBtn');
+  if (mobileBtn) {
+    if (isCurrentBookmarkActive) {
+      mobileBtn.className = 'relative flex flex-col items-center justify-center py-1 px-3 text-amber-500 font-bold transition cursor-pointer';
+    } else {
+      mobileBtn.className = 'relative flex flex-col items-center justify-center py-1 px-3 text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 font-medium transition cursor-pointer';
+    }
+  }
+}
+
+// 통합 북마크 토글
+window.toggleCurrentTabBookmark = function() {
+  if (currentMainTab === 'news') {
+    isNewsBookmarkView = !isNewsBookmarkView;
     renderCategoryTabs();
     updateBookmarkTabStyle();
     renderArticles();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  if (bookmarkTabBtn) {
-    bookmarkTabBtn.addEventListener('click', handleBookmarkToggle);
+  } else if (currentMainTab === 'jobs') {
+    if (window.toggleJobBookmarkFilter) {
+      window.toggleJobBookmarkFilter();
+    }
+  } else if (currentMainTab === 'contests') {
+    if (window.toggleContestBookmarkFilter) {
+      window.toggleContestBookmarkFilter();
+    }
   }
+  updateBookmarkTabStyle();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+// URL 해시 라우팅 초기화
+function initTabRouting() {
+  const hash = (window.location.hash || '').replace('#', '').toLowerCase();
+  if (hash === 'jobs') {
+    switchMainTab('jobs', false);
+  } else if (hash === 'contests') {
+    switchMainTab('contests', false);
+  } else {
+    switchMainTab('news', false);
+  }
+
+  window.addEventListener('hashchange', () => {
+    const newHash = (window.location.hash || '').replace('#', '').toLowerCase();
+    if (newHash === 'jobs') switchMainTab('jobs', false);
+    else if (newHash === 'contests') switchMainTab('contests', false);
+    else switchMainTab('news', false);
+  });
+}
+
+// 10. 뉴스 이벤트 리스너 설정
+function setupNewsEventListeners() {
+  // 테마 토글
+  const themeToggle = document.getElementById('themeToggle');
+  if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
+
+  // 새로고침 버튼
+  const refreshBtn = document.getElementById('refreshBtn');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', () => {
+      const icon = document.getElementById('refreshIcon');
+      if (icon) icon.classList.add('animate-spin');
+      
+      if (currentMainTab === 'news') {
+        loadNewsData().then(() => {
+          showToast('최신 뉴스를 갱신했습니다.');
+          setTimeout(() => { if (icon) icon.classList.remove('animate-spin'); }, 500);
+        });
+      } else if (currentMainTab === 'jobs') {
+        if (typeof loadJobsData === 'function') {
+          loadJobsData().then(() => {
+            showToast('최신 채용 공고를 갱신했습니다.');
+            setTimeout(() => { if (icon) icon.classList.remove('animate-spin'); }, 500);
+          });
+        }
+      } else if (currentMainTab === 'contests') {
+        if (typeof loadContestsData === 'function') {
+          loadContestsData().then(() => {
+            showToast('최신 공모전을 갱신했습니다.');
+            setTimeout(() => { if (icon) icon.classList.remove('animate-spin'); }, 500);
+          });
+        }
+      }
+    });
+  }
+
+  // 북마크 탭 버튼 (헤더 및 모바일 하단바)
+  const bookmarkTabBtn = document.getElementById('bookmarkTabBtn');
+  if (bookmarkTabBtn) bookmarkTabBtn.addEventListener('click', window.toggleCurrentTabBookmark);
 
   const mobileBookmarkBtn = document.getElementById('mobileBookmarkBtn');
-  if (mobileBookmarkBtn) {
-    mobileBookmarkBtn.addEventListener('click', handleBookmarkToggle);
-  }
-  
-  // 검색어 입력
-  const searchInput = document.getElementById('searchInput');
-  const clearBtn = document.getElementById('clearSearchBtn');
-  
+  if (mobileBookmarkBtn) mobileBookmarkBtn.addEventListener('click', window.toggleCurrentTabBookmark);
+
+  // 뉴스 검색창
+  const searchInput = document.getElementById('newsSearchInput');
+  const clearBtn = document.getElementById('clearNewsSearchBtn');
   if (searchInput && clearBtn) {
     searchInput.addEventListener('input', (e) => {
-      searchQuery = e.target.value.trim();
+      newsSearchQuery = e.target.value.trim();
       categoryDisplayedCount = {};
-      if (searchQuery) {
+      if (newsSearchQuery) {
         clearBtn.classList.remove('hidden');
       } else {
         clearBtn.classList.add('hidden');
       }
       renderArticles();
     });
-    
+
     clearBtn.addEventListener('click', () => {
       searchInput.value = '';
-      searchQuery = '';
+      newsSearchQuery = '';
       categoryDisplayedCount = {};
       clearBtn.classList.add('hidden');
       searchInput.focus();
       renderArticles();
     });
   }
-  
-  // 정렬 셀렉트
-  const sortSelect = document.getElementById('sortSelect');
+
+  // 뉴스 정렬
+  const sortSelect = document.getElementById('newsSortSelect');
   if (sortSelect) {
-    sortSelect.value = currentSort;
     sortSelect.addEventListener('change', (e) => {
-      currentSort = e.target.value;
+      currentNewsSort = e.target.value;
       categoryDisplayedCount = {};
       renderArticles();
     });
   }
-  
-  // 빈 상태 리셋 버튼
-  const resetFilterBtn = document.getElementById('resetFilterBtn');
-  if (resetFilterBtn) {
-    resetFilterBtn.addEventListener('click', () => {
-      isBookmarkView = false;
-      activeCategory = 'general';
-      searchQuery = '';
+
+  // 뉴스 빈 상태 리셋 버튼
+  const resetBtn = document.getElementById('newsResetFilterBtn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      isNewsBookmarkView = false;
+      activeNewsCategory = 'all';
+      newsSearchQuery = '';
       if (searchInput) searchInput.value = '';
-      currentSort = 'newest';
+      currentNewsSort = 'newest';
       if (sortSelect) sortSelect.value = 'newest';
       categoryDisplayedCount = {};
       if (clearBtn) clearBtn.classList.add('hidden');
@@ -885,265 +908,9 @@ function setupEventListeners() {
       renderArticles();
     });
   }
-
-  // 공모전 레이어 이벤트 리스너
-  const openContestBtn = document.getElementById('openContestBtn');
-  if (openContestBtn) {
-    openContestBtn.addEventListener('click', openContestLayer);
-  }
-
-  const closeContestBtn = document.getElementById('closeContestBtn');
-  if (closeContestBtn) {
-    closeContestBtn.addEventListener('click', closeContestLayer);
-  }
-
-  const closeContestBottomBtn = document.getElementById('closeContestBottomBtn');
-  if (closeContestBottomBtn) {
-    closeContestBottomBtn.addEventListener('click', closeContestLayer);
-  }
-
-  const contestBackdrop = document.getElementById('contestBackdrop');
-  if (contestBackdrop) {
-    contestBackdrop.addEventListener('click', closeContestLayer);
-  }
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      closeContestLayer();
-    }
-  });
-
-  const contestSearchInput = document.getElementById('contestSearchInput');
-  if (contestSearchInput) {
-    contestSearchInput.addEventListener('input', (e) => {
-      contestSearchQuery = e.target.value.trim();
-      renderContests();
-    });
-  }
 }
 
-// 12. 공모전 데이터 로드 및 레이어 인터랙션
-async function loadContestsData() {
-  try {
-    let res = await fetch('/api/contests').catch(() => null);
-    if (!res || !res.ok) {
-      res = await fetch('./data/contests.json?t=' + Date.now());
-    }
-    if (!res.ok) return;
-    const data = await res.json();
-    // 접수마감된 공모전은 서비스에서 즉시 내림(제외) 처리
-    allContests = (data.contests || []).filter(c => c.status !== '접수마감');
-    
-    // 버튼 뱃지 업데이트
-    const countBadge = document.getElementById('contestBtnCount');
-    if (countBadge) {
-      countBadge.textContent = `${allContests.length}건`;
-    }
-    const lastUp = document.getElementById('contestLastUpdated');
-    if (lastUp) {
-      lastUp.textContent = `최근 업데이트: ${data.last_updated_display || '실시간'}`;
-    }
-  } catch (err) {
-    console.error('공모전 데이터 로드 실패:', err);
-  }
-}
-
-function openContestLayer() {
-  const layer = document.getElementById('contestLayer');
-  const content = document.getElementById('contestContent');
-  if (!layer || !content) return;
-
-  layer.classList.remove('invisible', 'opacity-0');
-  layer.classList.add('visible', 'opacity-100');
-  
-  content.classList.remove('translate-y-full', 'sm:translate-y-8', 'sm:scale-95');
-  content.classList.add('translate-y-0', 'sm:translate-y-0', 'sm:scale-100');
-  document.body.style.overflow = 'hidden';
-
-  renderContestCategories();
-  renderContests();
-  if (window.lucide) window.lucide.createIcons();
-}
-
-function closeContestLayer() {
-  const layer = document.getElementById('contestLayer');
-  const content = document.getElementById('contestContent');
-  if (!layer || !content) return;
-
-  content.classList.remove('translate-y-0', 'sm:translate-y-0', 'sm:scale-100');
-  content.classList.add('translate-y-full', 'sm:translate-y-8', 'sm:scale-95');
-  
-  layer.classList.remove('visible', 'opacity-100');
-  layer.classList.add('invisible', 'opacity-0');
-  document.body.style.overflow = '';
-}
-
-function renderContestCategories() {
-  const container = document.getElementById('contestCategoryFilter');
-  if (!container) return;
-
-  const categories = [
-    { id: 'all', name: '전체' },
-    { id: '스마트·기술', name: '스마트·기술' },
-    { id: '도로·디자인', name: '도로·디자인' },
-    { id: '수자원·환경', name: '수자원·환경' },
-    { id: '지반·안전', name: '지반·안전' },
-    { id: '학회·대학생', name: '학회·대학생' }
-  ];
-
-  container.innerHTML = categories.map(cat => {
-    const isActive = activeContestCategory === cat.id;
-    const count = cat.id === 'all' 
-      ? allContests.length 
-      : allContests.filter(c => c.category === cat.id).length;
-
-    return `
-      <button 
-        onclick="selectContestCategory('${cat.id}')"
-        class="flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
-          isActive 
-            ? 'bg-blue-600 text-white shadow-sm' 
-            : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
-        }"
-      >
-        <span>${cat.name}</span>
-        <span class="text-[10px] px-1.5 py-0.2 rounded-full ${
-          isActive ? 'bg-blue-800 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
-        }">${count}</span>
-      </button>
-    `;
-  }).join('');
-}
-
-function selectContestCategory(catId) {
-  activeContestCategory = catId;
-  renderContestCategories();
-  renderContests();
-}
-
-function renderContests() {
-  const grid = document.getElementById('contestGrid');
-  const emptyState = document.getElementById('contestEmptyState');
-  if (!grid) return;
-
-  let filtered = allContests.filter(contest => {
-    if (activeContestCategory !== 'all' && contest.category !== activeContestCategory) {
-      return false;
-    }
-    if (contestSearchQuery) {
-      const q = contestSearchQuery.toLowerCase();
-      const matchTitle = (contest.title || '').toLowerCase().includes(q);
-      const matchOrg = (contest.organizer || '').toLowerCase().includes(q);
-      const matchDesc = (contest.description || '').toLowerCase().includes(q);
-      if (!matchTitle && !matchOrg && !matchDesc) return false;
-    }
-    return true;
-  });
-
-  if (filtered.length === 0) {
-    grid.innerHTML = '';
-    emptyState.classList.remove('hidden');
-    emptyState.classList.add('flex');
-    return;
-  }
-
-  emptyState.classList.add('hidden');
-  emptyState.classList.remove('flex');
-
-  grid.innerHTML = filtered.map(c => {
-    const badgeColor = `badge-${c.badge_color || 'blue'}`;
-    const statusColor = c.status === '접수중' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800'
-      : c.status === '상시접수' ? 'bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border-purple-300 dark:border-purple-800'
-      : c.status === '접수마감' ? 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border-slate-300 dark:border-slate-700'
-      : 'bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border-blue-300 dark:border-blue-800';
-
-    return `
-      <div class="bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 sm:p-5 flex flex-col justify-between hover:border-blue-400 dark:hover:border-blue-500 transition shadow-sm hover:shadow-md">
-        <div>
-          <!-- 상단 헤더: 카테고리 (좌) & 접수 상태 (우측 상단 고정) -->
-          <div class="flex items-center justify-between gap-2 mb-2">
-            <span class="inline-block px-2.5 py-0.5 text-[11px] font-semibold rounded-md border ${badgeColor} flex-shrink-0">
-              ${escapeHtml(c.category || '토목·일반')}
-            </span>
-            <span class="inline-block px-2.5 py-0.5 text-[10.5px] sm:text-[11px] font-bold rounded-full border ${statusColor} flex-shrink-0">
-              ${escapeHtml(c.status || '진행중')}
-            </span>
-          </div>
-
-          <!-- 접수 기간 안내 -->
-          ${c.period ? `
-            <div class="mb-2.5">
-              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-[10.5px] sm:text-[11px] font-medium border border-slate-200 dark:border-slate-700" title="접수기간: ${escapeHtml(c.period)}">
-                <i data-lucide="calendar" class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 flex-shrink-0"></i>
-                <span class="text-slate-500 dark:text-slate-400 font-normal">접수기간:</span>
-                <span class="font-bold text-slate-800 dark:text-slate-100">${escapeHtml(c.period)}</span>
-              </span>
-            </div>
-          ` : ''}
-
-          <!-- 공모전 제목 -->
-          <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 leading-snug mb-2 line-clamp-2 transition">
-            <a href="${c.link}" target="_blank" rel="noopener noreferrer">
-              ${escapeHtml(c.title)}
-            </a>
-          </h3>
-
-          <!-- 주관기관 -->
-          <div class="flex items-center text-xs text-slate-500 dark:text-slate-400 mb-2 gap-1">
-            <i data-lucide="building-2" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
-            <span class="font-medium truncate">${escapeHtml(c.organizer)}</span>
-          </div>
-
-          <!-- 요약 설명 -->
-          <p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 mb-3 leading-relaxed">
-            ${escapeHtml(c.description || '')}
-          </p>
-        </div>
-
-        <!-- 하단 정보 & 액션 버튼 -->
-        <div class="pt-3 mt-auto border-t border-slate-100 dark:border-slate-700/80 flex items-center justify-between gap-2">
-          <!-- 상금/혜택 정보 -->
-          <div class="text-[11px] font-semibold text-amber-600 dark:text-amber-400 truncate max-w-[170px] sm:max-w-[200px]" title="${escapeHtml(c.prize)}">
-            <i data-lucide="gift" class="w-3 h-3 inline mr-1"></i>${escapeHtml(c.prize)}
-          </div>
-
-          <!-- 공고 액션 버튼들 (공유 & 캘린더 추가 & 바로가기) -->
-          <div class="flex items-center gap-1.5">
-            <button 
-              type="button"
-              onclick="shareContestDirect('${c.id}', event)"
-              class="p-1.5 rounded-lg text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer border border-slate-200 dark:border-slate-700"
-              title="공모전 정보 공유"
-            >
-              <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
-            </button>
-            <button 
-              type="button"
-              onclick="addContestToGoogleCalendarDirect('${c.id}'); event.stopPropagation();"
-              class="p-1.5 rounded-lg text-slate-500 hover:text-amber-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer border border-slate-200 dark:border-slate-700"
-              title="Google 캘린더에 마감 일정 추가"
-            >
-              <i data-lucide="calendar-plus" class="w-3.5 h-3.5"></i>
-            </button>
-            <a 
-              href="${c.link}" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-sm transition active:scale-95"
-            >
-              <span>공고문</span>
-              <i data-lucide="external-link" class="w-3 h-3"></i>
-            </a>
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
-
-  if (window.lucide) window.lucide.createIcons();
-}
-
-// 13. 유틸리티: HTML 이스케이프
+// 11. 유틸리티
 function escapeHtml(text) {
   if (!text) return '';
   return text
@@ -1152,72 +919,4 @@ function escapeHtml(text) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
-}
-
-// 14. 공모전 Google 캘린더 등록 헬퍼
-function addContestToGoogleCalendarDirect(contestId) {
-  const contest = allContests.find(c => c.id === contestId);
-  if (!contest) return;
-
-  let dateStr = '';
-  const match = (contest.period || '').match(/~\s*(?:(\d{4})[.\-/])?(\d{1,2})[.\-/](\d{1,2})/);
-  if (match) {
-    const year = match[1] ? match[1] : new Date().getFullYear();
-    const m = match[2].padStart(2, '0');
-    const d = match[3].padStart(2, '0');
-    dateStr = `${year}-${m}-${d}`;
-  } else {
-    const today = new Date();
-    dateStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
-  }
-
-  const clean = dateStr.replace(/-/g, '');
-  const d = new Date(dateStr);
-  d.setDate(d.getDate() + 1);
-  const nextClean = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
-
-  const title = `[공모전마감] ${contest.organizer} - ${contest.title}`;
-  const details = `[Civil News Hub 공모전 마감 알림]\n\n공모전명: ${contest.title}\n주최/주관: ${contest.organizer}\n분야: ${contest.category}\n접수기간: ${contest.period}\n총 상금/포상: ${contest.prize || '공식 공고 확인'}\n\n🔗 공식 접수처: ${contest.link}`;
-
-  const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE` +
-    `&text=${encodeURIComponent(title)}` +
-    `&dates=${clean}/${nextClean}` +
-    `&details=${encodeURIComponent(details)}` +
-    `&location=${encodeURIComponent(contest.organizer || '온라인 접수')}`;
-
-  window.open(gcalUrl, '_blank', 'noopener,noreferrer');
-  showToast('Google 캘린더 등록 창이 열렸습니다.');
-}
-
-// 15. 공모전 정보 SNS 및 링크 공유 (공모전 레이어용)
-async function shareContestDirect(contestId, e) {
-  if (e) e.stopPropagation();
-  const contest = allContests.find(c => c.id === contestId);
-  if (!contest) return;
-
-  const shareTitle = `[토목 공모전] ${contest.organizer} - ${contest.title}`;
-  const shareText = `[토목 공모전] ${contest.organizer} - ${contest.title}\n📅 접수기간: ${contest.period || '공고문 참조'}\n🎁 시상내역: ${contest.prize || '공고문 참조'}\n🔗 공식접수처: ${contest.link}\n출처: Civil News Hub`;
-
-  if (navigator.share) {
-    try {
-      await navigator.share({
-        title: shareTitle,
-        text: shareText,
-        url: contest.link
-      });
-      return;
-    } catch (err) {
-      if (err.name === 'AbortError') return;
-    }
-  }
-
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(shareText).then(() => {
-      showToast('📋 공모전 요강 공유 문구가 복사되었습니다.');
-    }).catch(() => {
-      copyNewsPromptFallback(shareText);
-    });
-  } else {
-    copyNewsPromptFallback(shareText);
-  }
 }

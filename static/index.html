@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>토목 뉴스 브리핑 | Civil News Hub</title>
+  <title>Civil News Hub | 토목 뉴스 브리핑 & 채용·공모전 올인원 허브</title>
   
   <!-- 모바일 웹앱 메타 태그 -->
   <meta name="theme-color" content="#0f172a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="description" content="매일 아침 업데이트되는 토목·인프라·건설 최신 기사 큐레이션">
+  <meta name="description" content="토목·인프라·건설 엔지니어링 최신 뉴스 브리핑, 실시간 채용 공고문 및 팩트 검증된 공모전 대시보드">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -50,62 +50,78 @@
 </head>
 <body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
 
-  <!-- 상단 네비게이션 헤더 -->
+  <!-- 상단 네비게이션 헤더 (SPA 탭 전환: 토목 뉴스 | 채용 공고문 | 공모전) -->
   <header class="sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 transition-colors shadow-sm">
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-14 sm:h-16 gap-1">
         
-        <!-- 로고 및 서비스 네비게이션 (네이버 스타일 3원화: 토목 뉴스 | 채용 공고문 | 공모전) -->
-        <div class="flex items-center space-x-1.5 sm:space-x-2.5 min-w-0">
-          <a href="./index.html" class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 flex-shrink-0 hover:scale-105 transition" title="홈으로">
+        <!-- 로고 및 서비스 네비게이션 (SPA 3원 GNB 버튼) -->
+        <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
+          <button onclick="switchMainTab('news')" class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 flex-shrink-0 hover:scale-105 transition cursor-pointer" title="홈(뉴스)으로">
             <i data-lucide="hard-hat" class="w-4 h-4 sm:w-6 sm:h-6"></i>
-          </a>
+          </button>
+          
           <nav class="flex items-center space-x-1 sm:space-x-2 min-w-0" aria-label="메인 네비게이션">
-            <!-- 토목 뉴스 (활성) -->
-            <a href="./index.html" class="flex items-center gap-1 font-bold text-xs sm:text-base text-slate-900 dark:text-white transition tracking-tight flex-shrink-0">
+            <!-- 1. 토목 뉴스 탭 -->
+            <button 
+              id="gnbTabNews" 
+              onclick="switchMainTab('news')" 
+              class="flex items-center gap-1 sm:gap-1.5 font-bold text-xs sm:text-base text-slate-900 dark:text-white transition tracking-tight flex-shrink-0 cursor-pointer"
+            >
               <span>토목 뉴스</span>
-              <span class="text-[8px] sm:text-xs px-1.5 py-0.2 sm:py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-semibold border border-blue-200 dark:border-blue-800">
+              <span class="gnb-badge text-[8px] sm:text-xs px-1.5 py-0.2 sm:py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-semibold border border-blue-200 dark:border-blue-800">
                 DAILY
               </span>
-            </a>
+            </button>
 
             <!-- 구분선 -->
             <span class="text-slate-300 dark:text-slate-700 text-xs select-none font-light">|</span>
 
-            <!-- 채용 공고문 (새 페이지 링크) -->
-            <a href="./jobs.html" class="flex items-center gap-1 font-medium text-xs sm:text-sm text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition tracking-tight flex-shrink-0" title="토목·건설 채용 공고문 보기">
+            <!-- 2. 채용 공고문 탭 -->
+            <button 
+              id="gnbTabJobs" 
+              onclick="switchMainTab('jobs')" 
+              class="flex items-center gap-1 font-medium text-xs sm:text-sm text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition tracking-tight flex-shrink-0 cursor-pointer"
+            >
               <span>채용 공고문</span>
-            </a>
+              <span class="gnb-badge hidden text-[8px] sm:text-xs px-1.5 py-0.2 sm:py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-semibold border border-indigo-200 dark:border-indigo-800">
+                RECRUIT
+              </span>
+            </button>
 
             <!-- 구분선 -->
             <span class="text-slate-300 dark:text-slate-700 text-xs select-none font-light">|</span>
 
-            <!-- 공모전 (새 페이지 링크) -->
-            <a href="./contests.html" class="flex items-center gap-1 font-medium text-xs sm:text-sm text-slate-500 hover:text-amber-600 dark:text-slate-400 dark:hover:text-amber-400 transition tracking-tight flex-shrink-0" title="토목 공모전 & 경진대회 보기">
+            <!-- 3. 공모전 탭 -->
+            <button 
+              id="gnbTabContests" 
+              onclick="switchMainTab('contests')" 
+              class="flex items-center gap-1 font-medium text-xs sm:text-sm text-slate-500 hover:text-amber-600 dark:text-slate-400 dark:hover:text-amber-400 transition tracking-tight flex-shrink-0 cursor-pointer"
+            >
               <span>공모전</span>
-              <span class="text-[8px] sm:text-[10px] px-1 sm:px-1.5 py-0.2 rounded-full bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 font-semibold border border-amber-200 dark:border-amber-800">
-                대회
+              <span class="gnb-badge hidden text-[8px] sm:text-xs px-1.5 py-0.2 sm:py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 font-semibold border border-amber-200 dark:border-amber-800">
+                CONTEST
               </span>
-            </a>
+            </button>
           </nav>
         </div>
 
         <!-- 우측 액션 버튼들 -->
         <div class="flex items-center gap-1 sm:gap-2 flex-shrink-0">
           
-          <!-- 북마크 필터 버튼 (상단 네비게이션 헤더로 이동, 별 아이콘 제외) -->
-          <button id="bookmarkTabBtn" class="flex-shrink-0 flex items-center px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium transition border border-amber-300/90 dark:border-amber-700/60 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40 cursor-pointer shadow-xs" title="북마크 기사 모아보기">
+          <!-- 북마크 필터 버튼 -->
+          <button id="bookmarkTabBtn" class="flex-shrink-0 flex items-center px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium transition border border-amber-300/90 dark:border-amber-700/60 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40 cursor-pointer shadow-xs" title="북마크 모아보기">
             <span>북마크 (<span id="bookmarkCount">0</span>)</span>
           </button>
 
           <!-- 새로고침(수집) 버튼 -->
-          <button id="refreshBtn" class="flex items-center space-x-1 sm:space-x-1.5 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-blue-400 border border-blue-200 dark:border-slate-700 transition flex-shrink-0" title="최신 뉴스 새로고침">
+          <button id="refreshBtn" class="flex items-center space-x-1 sm:space-x-1.5 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-blue-400 border border-blue-200 dark:border-slate-700 transition flex-shrink-0 cursor-pointer" title="최신 데이터 새로고침">
             <i data-lucide="refresh-cw" id="refreshIcon" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
             <span class="hidden sm:inline">최신 수집</span>
           </button>
 
           <!-- 다크 모드 토글 -->
-          <button id="themeToggle" aria-label="테마 전환" class="p-1.5 sm:p-2 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex-shrink-0">
+          <button id="themeToggle" aria-label="테마 전환" class="p-1.5 sm:p-2 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex-shrink-0 cursor-pointer">
             <i data-lucide="sun" class="w-4 h-4 sm:w-5 sm:h-5 hidden dark:block"></i>
             <i data-lucide="moon" class="w-4 h-4 sm:w-5 sm:h-5 block dark:hidden"></i>
           </button>
@@ -115,9 +131,10 @@
     </div>
   </header>
 
-  <!-- 메인 본문 -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    
+  <!-- ========================================== -->
+  <!-- 1. 토목 뉴스 탭 패널 (#tabPanelNews)       -->
+  <!-- ========================================== -->
+  <section id="tabPanelNews" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
     <!-- 서브 배너 & 업데이트 시각 정보 -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-5 border-b border-slate-200 dark:border-slate-800/80">
       <div>
@@ -133,10 +150,10 @@
       <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          마지막 업데이트: <strong id="lastUpdated" class="text-slate-700 dark:text-slate-300 ml-1">확인 중...</strong>
+          마지막 업데이트: <strong id="newsLastUpdated" class="text-slate-700 dark:text-slate-300 ml-1">확인 중...</strong>
         </span>
         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
-          수집 기사: <strong id="totalCount" class="text-blue-600 dark:text-blue-400 ml-1">0건</strong>
+          수집 기사: <strong id="newsTotalCount" class="text-blue-600 dark:text-blue-400 ml-1">0건</strong>
         </span>
       </div>
     </div>
@@ -149,20 +166,20 @@
         </div>
         <input
           type="text"
-          id="searchInput"
+          id="newsSearchInput"
           placeholder="기사 제목, 내용 또는 언론사명으로 검색 (예: GTX, 싱크홀, 교량, 시공사 등)"
           class="w-full pl-10 pr-10 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition shadow-sm"
         />
-        <button id="clearSearchBtn" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hidden">
+        <button id="clearNewsSearchBtn" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hidden cursor-pointer">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
     </div>
 
-    <!-- 카테고리 탭 (상단 고정 Sticky Navigation - 스크롤 시 상단에 항상 고정 노출) -->
-    <div id="categoryTabsSticky" class="sticky top-16 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-3 my-4 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-y border-slate-200/80 dark:border-slate-800/80 shadow-sm transition-all">
+    <!-- 카테고리 탭 (상단 고정 Sticky Navigation) -->
+    <div id="categoryTabsSticky" class="sticky top-14 sm:top-16 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-3 my-4 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-y border-slate-200/80 dark:border-slate-800/80 shadow-sm transition-all">
       <div class="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto pb-0.5 scrollbar-none">
-        <div id="categoryTabs" class="flex items-center gap-2 flex-nowrap">
+        <div id="newsCategoryTabs" class="flex items-center gap-2 flex-nowrap">
           <!-- JS에서 동적 탭 렌더링 -->
         </div>
       </div>
@@ -172,9 +189,9 @@
     <div class="mt-6">
       <!-- 검색/필터 결과 안내 -->
       <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-4 px-1">
-        <span id="resultCountNotice">기사를 불러오는 중입니다...</span>
+        <span id="newsResultCountNotice">기사를 불러오는 중입니다...</span>
         <div class="flex items-center space-x-2">
-          <select id="sortSelect" class="bg-white dark:bg-slate-900 text-xs text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm cursor-pointer">
+          <select id="newsSortSelect" class="bg-white dark:bg-slate-900 text-xs text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm cursor-pointer">
             <option value="newest" selected>최신순</option>
             <option value="views">🔥 조회순 (인기순)</option>
             <option value="oldest">오래된순</option>
@@ -182,61 +199,450 @@
         </div>
       </div>
 
-      <!-- 카테고리별 분할 섹션 컨테이너 (1, 2, 3... 분할 렌더링) -->
+      <!-- 카테고리별 분할 섹션 컨테이너 -->
       <div id="categorySectionsContainer" class="space-y-10 sm:space-y-14">
         <!-- JS로 각 카테고리별 섹션 박스 및 6개씩 카드 렌더링 -->
       </div>
 
       <!-- 빈 상태 (기사 없음) -->
-      <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-center">
+      <div id="newsEmptyState" class="hidden flex-col items-center justify-center py-20 text-center">
         <div class="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-4">
           <i data-lucide="inbox" class="w-8 h-8"></i>
         </div>
         <h3 class="text-base font-semibold text-slate-700 dark:text-slate-300">검색된 기사가 없습니다</h3>
         <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">다른 검색어를 입력하시거나 카테고리 필터를 변경해 보세요.</p>
-        <button id="resetFilterBtn" class="mt-4 px-4 py-2 text-xs font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+        <button id="newsResetFilterBtn" class="mt-4 px-4 py-2 text-xs font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition cursor-pointer">
           전체 기사 보기
         </button>
       </div>
 
       <!-- 로딩 인디케이터 -->
-      <div id="loadingIndicator" class="flex flex-col items-center justify-center py-24 text-center">
+      <div id="newsLoadingIndicator" class="flex flex-col items-center justify-center py-24 text-center">
         <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-3"></div>
         <p class="text-sm text-slate-500 dark:text-slate-400">토목 기사를 정리하고 있습니다...</p>
       </div>
     </div>
+  </section>
 
-  </main>
+  <!-- ========================================== -->
+  <!-- 2. 채용 공고문 탭 패널 (#tabPanelJobs)     -->
+  <!-- ========================================== -->
+  <section id="tabPanelJobs" class="hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <!-- 서브 배너 & 업데이트 정보 -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-5 border-b border-slate-200 dark:border-slate-800/80">
+      <div>
+        <h2 class="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+          <i data-lucide="briefcase" class="w-5 h-5 text-blue-500"></i>
+          토목·건설 채용 공고문
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+          공기업, 1군 대형 건설사, 종합 엔지니어링사 및 공공기관 실시간 채용 정보
+        </p>
+      </div>
 
-  <!-- 토스트 알림 (링크 복사 완료 등) -->
-  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 flex items-center space-x-2 px-4 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl shadow-xl text-xs sm:text-sm font-medium">
-    <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400 dark:text-emerald-600"></i>
-    <span id="toastMessage">링크가 클립보드에 복사되었습니다.</span>
+      <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          마지막 업데이트: <strong id="jobLastUpdated" class="text-slate-700 dark:text-slate-300 ml-1">확인 중...</strong>
+        </span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+          진행 공고: <strong id="jobTotalCount" class="text-blue-600 dark:text-blue-400 ml-1">0건</strong>
+        </span>
+      </div>
+    </div>
+
+    <!-- 검색 입력창 -->
+    <div class="mt-5">
+      <div class="relative w-full">
+        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+          <i data-lucide="search" class="w-5 h-5"></i>
+        </div>
+        <input
+          type="text"
+          id="jobSearchInput"
+          placeholder="기업명, 직무(토목시공, 구조설계, 지반, 철도 등), 근무지, 우대조건 검색"
+          class="w-full pl-10 pr-10 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition shadow-sm"
+        />
+        <button id="clearJobSearchBtn" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hidden cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- 카테고리 탭 (상단 고정 Sticky Navigation) -->
+    <div class="sticky top-14 sm:top-16 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-3 my-4 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-y border-slate-200/80 dark:border-slate-800/80 shadow-sm transition-all">
+      <div class="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto pb-0.5 scrollbar-none">
+        <div id="jobCategoryTabs" class="flex items-center gap-2 flex-nowrap">
+          <!-- JS에서 동적 탭 렌더링 -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 필터 및 정렬 옵션 바 -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400 mb-4 px-1">
+      <div class="flex items-center gap-2">
+        <span id="jobResultCountNotice" class="font-medium text-slate-700 dark:text-slate-300">
+          채용 공고를 불러오는 중입니다...
+        </span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <!-- 경력 구분 필터 버튼 그룹 -->
+        <div class="inline-flex rounded-lg border border-slate-200 dark:border-slate-800 p-0.5 bg-slate-100 dark:bg-slate-900">
+          <button data-career="all" class="career-filter-btn px-2.5 py-1 text-xs font-semibold rounded-md bg-blue-600 text-white transition cursor-pointer">
+            전체
+          </button>
+          <button data-career="entry" class="career-filter-btn px-2.5 py-1 text-xs font-medium rounded-md bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 transition cursor-pointer">
+            신입/인턴
+          </button>
+          <button data-career="experienced" class="career-filter-btn px-2.5 py-1 text-xs font-medium rounded-md bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 transition cursor-pointer">
+            경력직
+          </button>
+        </div>
+
+        <!-- 정렬 드롭다운 -->
+        <select id="jobSortSelect" class="bg-white dark:bg-slate-900 text-xs text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm cursor-pointer">
+          <option value="deadline" selected>⏱️ 마감임박순 (D-Day순)</option>
+          <option value="newest">최근 등록순</option>
+          <option value="company">기업명 가나다순</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 근무지역 필터 칩 바 -->
+    <div class="mb-5 overflow-x-auto pb-1 scrollbar-none">
+      <div id="regionFilterGroup" class="flex items-center gap-1.5 text-xs">
+        <span class="text-slate-400 dark:text-slate-500 font-medium flex items-center gap-1 pr-1 flex-shrink-0">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5 text-blue-500"></i>
+          <span>지역:</span>
+        </span>
+        <button data-region="ALL" class="region-pill active px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-600 text-white transition flex-shrink-0 cursor-pointer">
+          전체
+        </button>
+        <button data-region="capital" class="region-pill px-2.5 py-1 rounded-lg text-xs font-medium bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex-shrink-0 cursor-pointer">
+          서울·수도권
+        </button>
+        <button data-region="chungcheong" class="region-pill px-2.5 py-1 rounded-lg text-xs font-medium bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex-shrink-0 cursor-pointer">
+          충청·대전
+        </button>
+        <button data-region="yeongnam" class="region-pill px-2.5 py-1 rounded-lg text-xs font-medium bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex-shrink-0 cursor-pointer">
+          영남·대구·부산
+        </button>
+        <button data-region="honam" class="region-pill px-2.5 py-1 rounded-lg text-xs font-medium bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex-shrink-0 cursor-pointer">
+          호남·광주
+        </button>
+        <button data-region="nationwide" class="region-pill px-2.5 py-1 rounded-lg text-xs font-medium bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex-shrink-0 cursor-pointer">
+          전국·현장
+        </button>
+        <button data-region="overseas" class="region-pill px-2.5 py-1 rounded-lg text-xs font-medium bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex-shrink-0 cursor-pointer">
+          해외
+        </button>
+      </div>
+    </div>
+
+    <!-- 채용 로딩 인디케이터 -->
+    <div id="jobLoadingIndicator" class="flex flex-col items-center justify-center py-20">
+      <div class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">최신 채용 공고를 불러오는 중입니다...</p>
+    </div>
+
+    <!-- 채용 검색 결과 없음 상태 -->
+    <div id="jobEmptyState" class="hidden flex-col items-center justify-center py-20 text-center">
+      <div class="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-4">
+        <i data-lucide="inbox" class="w-8 h-8"></i>
+      </div>
+      <h3 class="text-base font-semibold text-slate-700 dark:text-slate-300 mb-1">
+        검색된 채용 공고가 없습니다
+      </h3>
+      <p class="text-xs text-slate-400 mb-4">
+        다른 검색어를 입력하시거나 카테고리 필터를 변경해 보세요.
+      </p>
+    </div>
+
+    <!-- 채용 카드 리스트 컨테이너 -->
+    <div id="jobListContainer"></div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 3. 공모전 탭 패널 (#tabPanelContests)      -->
+  <!-- ========================================== -->
+  <section id="tabPanelContests" class="hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <!-- 서브 배너 & 업데이트 정보 -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-5 border-b border-slate-200 dark:border-slate-800/80">
+      <div>
+        <h2 class="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+          <i data-lucide="trophy" class="w-5 h-5 text-amber-500"></i>
+          토목 공모전 & 경진대회 공고
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+          국토교통부, 한국도로공사, 한국수자원공사, 국가철도공단 등 팩트 검증된 공식 공모전
+        </p>
+      </div>
+      <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 self-start sm:self-auto">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-medium border border-emerald-200 dark:border-emerald-800/80">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          유효 공모전 <span id="contestActiveCountBadge" class="font-bold">0</span>건
+        </span>
+        <span id="contestLastUpdatedTime">업데이트: 실시간</span>
+      </div>
+    </div>
+
+    <!-- 검색창 & 정렬 컨트롤 바 -->
+    <div class="my-5 flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <!-- 검색 입력창 -->
+      <div class="relative flex-1 max-w-xl">
+        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+        <input 
+          type="text" 
+          id="contestSearchInput" 
+          placeholder="공모전 제목, 주최기관, 키워드 검색 (예: 도로공사, 수자원, BIM, 안전)" 
+          class="w-full pl-10 pr-10 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 shadow-sm transition"
+        />
+        <button id="clearContestSearchBtn" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer" title="검색어 지우기">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- 상태 필터 & 정렬 드롭다운 -->
+      <div class="flex items-center gap-2 self-end md:self-auto flex-wrap sm:flex-nowrap">
+        <!-- 상태 필터 칩 (접수중, 접수예정, 상시접수) -->
+        <div class="inline-flex p-1 rounded-xl bg-slate-200/70 dark:bg-slate-800/80 text-xs font-medium text-slate-600 dark:text-slate-300" id="contestStatusFilterGroup">
+          <button data-status="ALL" class="status-pill active px-2.5 py-1 rounded-lg transition cursor-pointer">전체</button>
+          <button data-status="접수중" class="status-pill px-2.5 py-1 rounded-lg transition cursor-pointer">접수중</button>
+          <button data-status="접수예정" class="status-pill px-2.5 py-1 rounded-lg transition cursor-pointer">접수예정</button>
+          <button data-status="상시접수" class="status-pill px-2.5 py-1 rounded-lg transition cursor-pointer">상시</button>
+        </div>
+
+        <!-- 정렬 선택 -->
+        <select id="contestSortSelect" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs sm:text-sm px-3 py-2 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50 shadow-sm cursor-pointer">
+          <option value="closingSoon">마감임박순</option>
+          <option value="latest">최신등록순</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 분야(카테고리) 탭 바 -->
+    <div class="mb-6 overflow-x-auto pb-1 scrollbar-none">
+      <div id="contestCategoryTabs" class="flex items-center gap-1.5 sm:gap-2">
+        <button data-category="ALL" class="cat-pill active flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition border border-transparent shadow-xs cursor-pointer">
+          <span>전체 공모전</span>
+          <span class="count-badge text-[10px] px-1.5 py-0.2 rounded-full">0</span>
+        </button>
+        <button data-category="스마트·기술" class="cat-pill flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition border border-transparent cursor-pointer">
+          <span>스마트·기술</span>
+          <span class="count-badge text-[10px] px-1.5 py-0.2 rounded-full">0</span>
+        </button>
+        <button data-category="도로·디자인" class="cat-pill flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition border border-transparent cursor-pointer">
+          <span>도로·디자인</span>
+          <span class="count-badge text-[10px] px-1.5 py-0.2 rounded-full">0</span>
+        </button>
+        <button data-category="수자원·환경" class="cat-pill flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition border border-transparent cursor-pointer">
+          <span>수자원·환경</span>
+          <span class="count-badge text-[10px] px-1.5 py-0.2 rounded-full">0</span>
+        </button>
+        <button data-category="지반·안전" class="cat-pill flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition border border-transparent cursor-pointer">
+          <span>지반·안전</span>
+          <span class="count-badge text-[10px] px-1.5 py-0.2 rounded-full">0</span>
+        </button>
+        <button data-category="철도·인프라" class="cat-pill flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition border border-transparent cursor-pointer">
+          <span>철도·인프라</span>
+          <span class="count-badge text-[10px] px-1.5 py-0.2 rounded-full">0</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 공모전 로딩 인디케이터 -->
+    <div id="contestLoadingState" class="py-20 flex flex-col items-center justify-center">
+      <div class="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+      <p class="mt-4 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium">검증된 토목 공모전 목록을 불러오는 중입니다...</p>
+    </div>
+
+    <!-- 공모전 결과 없음 상태 -->
+    <div id="contestEmptyState" class="hidden py-24 flex-col items-center justify-center text-center">
+      <div class="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500 mb-3">
+        <i data-lucide="trophy" class="w-7 h-7"></i>
+      </div>
+      <h3 class="text-sm sm:text-base font-semibold text-slate-700 dark:text-slate-300">해당 조건에 맞는 공모전이 없습니다.</h3>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-md">검색어를 변경하거나 필터를 초기화해 보세요.</p>
+      <button id="contestResetFilterBtn" class="mt-4 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-semibold shadow transition cursor-pointer">
+        필터 초기화
+      </button>
+    </div>
+
+    <!-- 공모전 카드 그리드 (2열 데스크탑 / 1열 모바일) -->
+    <div id="contestCardGrid" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+      <!-- contests.js에 의해 동적으로 렌더링 -->
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 팝업 모달 영역 (채용 & 공모전 상세)        -->
+  <!-- ========================================== -->
+
+  <!-- 1. 채용 공고 상세 모달 -->
+  <div id="jobDetailModal" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl shadow-2xl p-5 sm:p-6 transition-all transform animate-in fade-in zoom-in-95 duration-200">
+      <div id="jobModalContent">
+        <!-- JS 동적 주입 -->
+      </div>
+    </div>
   </div>
 
+  <!-- 2. 공모전 상세 모달 -->
+  <div id="contestDetailModal" class="fixed inset-0 z-50 invisible opacity-0 transition-all duration-300 flex items-center justify-center p-3 sm:p-4">
+    <div id="contestModalBackdrop" class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm opacity-0 transition-opacity"></div>
+    <div class="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden z-10 flex flex-col max-h-[90vh]">
+      <!-- 모달 상단 헤더 -->
+      <div class="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex items-start justify-between gap-4">
+        <div class="space-y-1.5 min-w-0">
+          <div class="flex items-center gap-2">
+            <span id="modalCategoryBadge" class="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300">
+              공모전
+            </span>
+            <span id="modalStatusBadge" class="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">
+              접수중
+            </span>
+            <span id="modalDdayBadge" class="text-xs px-2.5 py-0.5 rounded-md font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+              D-Day
+            </span>
+          </div>
+          <h3 id="modalTitle" class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white leading-snug">
+            공모전 제목
+          </h3>
+          <p id="modalOrganizer" class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+            주최/주관 기관
+          </p>
+        </div>
+        <button id="closeModalBtn" onclick="closeContestModal()" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer flex-shrink-0" title="닫기">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
 
+      <!-- 모달 상세 정보 본문 (스크롤) -->
+      <div class="p-5 sm:p-6 overflow-y-auto space-y-4 text-xs sm:text-sm">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+          <div>
+            <span class="text-slate-400 dark:text-slate-500 block text-[11px]">접수 기간</span>
+            <strong id="modalPeriod" class="text-slate-800 dark:text-slate-200 font-semibold">-</strong>
+          </div>
+          <div>
+            <span class="text-slate-400 dark:text-slate-500 block text-[11px]">시상 규모 / 혜택</span>
+            <strong id="modalPrize" class="text-amber-600 dark:text-amber-400 font-semibold">-</strong>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+            <i data-lucide="users" class="w-3.5 h-3.5"></i>
+            참가 대상
+          </h4>
+          <p id="modalTarget" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300 font-medium">
+            -
+          </p>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+            <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+            상세 요강 및 공모 개요
+          </h4>
+          <div id="modalDescription" class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed">
+            -
+          </div>
+        </div>
+      </div>
+
+      <!-- 모달 푸터 버튼 -->
+      <div class="px-5 sm:px-6 py-4 border-t border-slate-200 dark:border-slate-800 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-900/50">
+        <div class="flex items-center gap-2">
+          <button id="modalBookmarkBtn" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer shadow-xs">
+            <i data-lucide="bookmark" class="w-4 h-4 text-amber-500"></i>
+            <span>북마크</span>
+          </button>
+
+          <!-- 캘린더 등록 드롭다운 -->
+          <div class="relative inline-block text-left" id="contestCalendarDropdown">
+            <button 
+              type="button" 
+              onclick="toggleContestCalendarMenu(event)"
+              class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium border border-amber-300/80 dark:border-amber-700/80 bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition cursor-pointer shadow-xs"
+              title="공모전 마감 일정을 캘린더에 저장"
+            >
+              <i data-lucide="calendar-plus" class="w-4 h-4 text-amber-600 dark:text-amber-400"></i>
+              <span>캘린더 등록</span>
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5 opacity-70"></i>
+            </button>
+
+            <!-- 캘린더 팝오버 메뉴 -->
+            <div id="contestCalendarMenu" class="hidden absolute left-0 bottom-full mb-2 w-48 rounded-xl bg-white dark:bg-slate-800 shadow-xl border border-slate-200 dark:border-slate-700 py-1.5 z-30 transition-all">
+              <button 
+                type="button" 
+                onclick="addContestToGoogleCalendar(); event.stopPropagation();"
+                class="w-full text-left px-3.5 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-amber-50 dark:hover:bg-slate-700 flex items-center gap-2 transition"
+              >
+                <i data-lucide="calendar" class="w-4 h-4 text-blue-500"></i>
+                <span>Google 캘린더 추가 ↗</span>
+              </button>
+              <button 
+                type="button" 
+                onclick="downloadContestIcs(); event.stopPropagation();"
+                class="w-full text-left px-3.5 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-amber-50 dark:hover:bg-slate-700 flex items-center gap-2 transition"
+              >
+                <i data-lucide="download" class="w-4 h-4 text-emerald-500"></i>
+                <span>iCal / 갤럭시 (.ics) 저장</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 공유 버튼 -->
+          <button 
+            type="button" 
+            onclick="shareCurrentModalContest()" 
+            class="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer shadow-xs"
+            title="공모전 요강 공유"
+          >
+            <i data-lucide="share-2" class="w-4 h-4 text-blue-500"></i>
+            <span>공유</span>
+          </button>
+        </div>
+
+        <a id="modalOfficialLink" href="#" target="_blank" rel="noopener noreferrer" class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs sm:text-sm shadow-md shadow-amber-500/20 transition">
+          <span>공식 접수처 바로가기</span>
+          <i data-lucide="external-link" class="w-4 h-4"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 푸터 -->
+  <footer class="mt-12 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-6 transition-colors pb-24 sm:pb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-500 dark:text-slate-400 space-y-1">
+      <p>토목 뉴스 브리핑 & 채용·공모전 올인원 허브 · Civil News Hub</p>
+      <p>매일 아침 주요 포털, 공공기관 채용 및 공식 공모전 요강을 자동으로 수집 및 정제합니다.</p>
+    </div>
+  </footer>
 
   <!-- 모바일 전용 하단 고정 네비게이션 바 (Mobile Bottom Navigation Bar) -->
   <nav class="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800/80 px-2 py-1 flex items-center justify-around shadow-lg transition-colors" aria-label="모바일 하단 네비게이션">
-    <!-- 토목 뉴스 (활성) -->
-    <a href="./index.html" class="flex flex-col items-center justify-center py-1 px-3 text-blue-600 dark:text-blue-400 font-bold transition" title="토목 뉴스 브리핑">
+    <!-- 1. 토목 뉴스 -->
+    <button id="mobileTabNews" type="button" onclick="switchMainTab('news')" class="flex flex-col items-center justify-center py-1 px-3 text-blue-600 dark:text-blue-400 font-bold transition cursor-pointer" title="토목 뉴스 브리핑">
       <i data-lucide="newspaper" class="w-5 h-5 mb-0.5"></i>
       <span class="text-[10px] tracking-tight">뉴스</span>
-    </a>
+    </button>
 
-    <!-- 채용 공고문 -->
-    <a href="./jobs.html" class="flex flex-col items-center justify-center py-1 px-3 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition" title="채용 공고문">
+    <!-- 2. 채용 공고문 -->
+    <button id="mobileTabJobs" type="button" onclick="switchMainTab('jobs')" class="flex flex-col items-center justify-center py-1 px-3 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition cursor-pointer" title="채용 공고문">
       <i data-lucide="briefcase" class="w-5 h-5 mb-0.5"></i>
       <span class="text-[10px] tracking-tight">채용</span>
-    </a>
+    </button>
 
-    <!-- 공모전 -->
-    <a href="./contests.html" class="flex flex-col items-center justify-center py-1 px-3 text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 font-medium transition" title="토목 공모전 & 경진대회">
+    <!-- 3. 공모전 -->
+    <button id="mobileTabContests" type="button" onclick="switchMainTab('contests')" class="flex flex-col items-center justify-center py-1 px-3 text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 font-medium transition cursor-pointer" title="토목 공모전 & 경진대회">
       <i data-lucide="trophy" class="w-5 h-5 mb-0.5"></i>
       <span class="text-[10px] tracking-tight">공모전</span>
-    </a>
+    </button>
 
-    <!-- 북마크 필터 -->
+    <!-- 4. 북마크 필터 -->
     <button id="mobileBookmarkBtn" type="button" class="relative flex flex-col items-center justify-center py-1 px-3 text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 font-medium transition cursor-pointer" title="북마크 모아보기">
       <i data-lucide="bookmark" class="w-5 h-5 mb-0.5"></i>
       <span class="text-[10px] tracking-tight">북마크</span>
@@ -244,96 +650,15 @@
     </button>
   </nav>
 
-  <!-- 토목 공모전 슬라이드업 레이어 (Bottom Sheet / Overlay Modal) -->
-  <div id="contestLayer" class="fixed inset-0 z-50 invisible opacity-0 transition-all duration-300 flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <!-- 배경 어둡게 -->
-    <div id="contestBackdrop" class="absolute inset-0 bg-slate-950/75 transition-opacity"></div>
-
-    <!-- 레이어 본문 컨테이너 -->
-    <div id="contestContent" class="relative w-full max-w-4xl bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[92vh] sm:max-h-[85vh] transform translate-y-full sm:translate-y-8 sm:scale-95 transition-all duration-300 ease-out z-10">
-      
-      <!-- 모바일 상단 드래그 바 -->
-      <div class="sm:hidden flex justify-center pt-3 pb-1">
-        <div class="w-12 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700"></div>
-      </div>
-
-      <!-- 모달 헤더 -->
-      <div class="px-5 sm:px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-500/20">
-            <i data-lucide="trophy" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">토목 공모전 & 경진대회 공고</h2>
-              <span id="contestHeaderBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-semibold">진행중</span>
-            </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              국토부, 도로공사, 수자원공사, 토목학회 등 주요 공모전 모아보기
-            </p>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-2">
-          <a href="./contests.html" class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition" title="공모전 전용 페이지로 이동">
-            <span>전용 대시보드 ↗</span>
-          </a>
-          <button id="closeContestBtn" class="p-2 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition" aria-label="닫기">
-            <i data-lucide="x" class="w-5 h-5"></i>
-          </button>
-        </div>
-      </div>
-
-      <!-- 모달 내부 필터 및 검색창 -->
-      <div class="px-5 sm:px-6 py-3 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/50 space-y-2.5">
-        <!-- 검색창 -->
-        <div class="relative">
-          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
-          <input 
-            type="text" 
-            id="contestSearchInput" 
-            placeholder="공모전 제목, 주관기관, 분야 검색 (예: 도로공사, BIM, 챌린지 등)" 
-            class="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <!-- 카테고리 필터 칩 -->
-        <div id="contestCategoryFilter" class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
-          <!-- 동적 필터 칩 렌더링 -->
-        </div>
-      </div>
-
-      <!-- 모달 스크롤 본문 (공모전 카드 그리드) -->
-      <div class="flex-1 overflow-y-auto p-5 sm:p-6">
-        <div id="contestGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- JS로 공모전 카드 렌더링 -->
-        </div>
-        <div id="contestEmptyState" class="hidden flex-col items-center justify-center py-16 text-center">
-          <i data-lucide="folder-search" class="w-12 h-12 text-slate-300 dark:text-slate-600 mb-2"></i>
-          <p class="text-sm font-semibold text-slate-600 dark:text-slate-300">해당 조건의 공모전이 없습니다.</p>
-        </div>
-      </div>
-
-      <!-- 모달 푸터 -->
-      <div class="px-5 sm:px-6 py-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-        <span id="contestLastUpdated">최근 업데이트: 실시간</span>
-        <button id="closeContestBottomBtn" class="px-3.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium transition cursor-pointer">
-          닫기
-        </button>
-      </div>
-
-    </div>
+  <!-- 토스트 알림 컴포넌트 -->
+  <div id="toast" class="fixed bottom-20 sm:bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 flex items-center space-x-2 px-4 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl shadow-xl text-xs sm:text-sm font-medium pointer-events-none">
+    <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400 dark:text-emerald-600"></i>
+    <span id="toastMessage">알림 메시지</span>
   </div>
 
-  <!-- 푸터 -->
-  <footer class="mt-12 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-6 transition-colors pb-24 sm:pb-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-500 dark:text-slate-400 space-y-1">
-      <p>토목 뉴스 & 공모전 큐레이션 서비스 · Civil News Hub</p>
-      <p>매일 아침 주요 포털 및 공공기관 공고를 통해 자동으로 수집 및 정제됩니다.</p>
-    </div>
-  </footer>
-
-  <!-- 스크립트 로드 -->
-  <script src="./static/app.js?v=20260909_1740"></script>
+  <!-- 프론트엔드 스크립트 로드 (SPA 마스터 컨트롤러 & 채용 & 공모전) -->
+  <script src="./static/app.js?v=20260909_1745"></script>
+  <script src="./static/jobs.js?v=20260909_1745"></script>
+  <script src="./static/contests.js?v=20260909_1745"></script>
 </body>
 </html>
