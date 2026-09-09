@@ -361,7 +361,20 @@ function renderContests() {
   // 상단 긴급 배너 동기화
   renderContestUrgentBanner();
 
+  const notice = document.getElementById('contestResultCountNotice');
   const filtered = getFilteredContests();
+
+  if (notice) {
+    if (isContestUrgentFilterActive) {
+      notice.innerHTML = `<span class="inline-flex items-center gap-1.5 text-rose-600 dark:text-rose-400 font-bold"><i data-lucide="flame" class="w-4 h-4 text-rose-500 animate-pulse"></i>🚨 마감 임박(D-3 이내) 공모전 총 ${filtered.length}건</span>`;
+    } else if (isContestBookmarkView) {
+      notice.textContent = `⭐ 북마크한 공모전 총 ${filtered.length}건`;
+    } else if (contestSearchQuery) {
+      notice.textContent = `'${contestSearchQuery}' 검색 결과 총 ${filtered.length}건`;
+    } else {
+      notice.textContent = `진행 중인 토목 공모전 총 ${filtered.length}건`;
+    }
+  }
 
   if (filtered.length === 0) {
     grid.classList.add('hidden');

@@ -82,6 +82,14 @@
 - 활성화 시 선명한 호박색(`fill-amber-500 text-amber-500`)으로 채워진다.
 - 공모전 카드를 포함한 모든 카드의 북마크 버튼은 카드 하단 푸터 영역의 **`[공유하기]` 버튼 바로 옆**에 나란히 배치한다.
 
+### ⑥ 전 페이지 좌우 너비 및 레이아웃 규격 통일 절대 원칙 (토목 뉴스 표준 고정)
+- **적용 범위**: 토목 뉴스(`tabPanelNews`), 채용 공고(`tabPanelJobs`), 공모전(`tabPanelContests`) 등 사이트 내 **모든 탭 화면에 100% 동일하게 무조건 고정 적용**한다.
+- **최외곽 컨테이너 규격**: `max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6`으로 100% 통일.
+- **검색창 규격**: `max-w-xl` 등 임의 너비 축소를 금지하고, `mt-5 mb-4 sm:mb-0` 내 `w-full pl-10 pr-10 py-3 rounded-xl` 100% 풀 와이드 규격으로 통일.
+- **상단 카테고리 탭 스티키 바**: 화면 좌우 끝까지 뻗는 풀 블리드 음수 마진(`sticky top-0 sm:top-16 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-0 mt-0 mb-4 sm:my-4 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 shadow-xs`)과 내부 `max-w-7xl mx-auto category-scroll-container` 구조를 3개 탭 모두에 100% 동일하게 고정.
+- **필터 및 정렬 컨트롤 바**: 카테고리 탭 바로 아래 `flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400 mb-4 px-1`로 통일 (좌측 건수 안내, 우측 필터/정렬 버튼군).
+- **카드 그리드 반응형 컬럼**: 모바일 1열, 태블릿 2열, 데스크탑 3열(`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5`)로 모든 카드 그리드를 동일하게 통일.
+
 ---
 
 ## 3. 크롤러 및 배포 파이프라인 유지

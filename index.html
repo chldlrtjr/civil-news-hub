@@ -368,30 +368,71 @@
     <!-- 🚨 마감 임박 긴급 공모전 배너 (#contestUrgentBannerContainer) -->
     <div id="contestUrgentBannerContainer" class="mt-4 hidden"></div>
 
-    <!-- 검색창 & 정렬 컨트롤 바 -->
-    <div class="my-5 flex flex-col md:flex-row md:items-center justify-between gap-3">
-      <!-- 검색 입력창 -->
-      <div class="relative flex-1 max-w-xl">
-        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-        <input 
-          type="text" 
-          id="contestSearchInput" 
-          placeholder="공모전 제목, 주최기관, 키워드 검색 (예: 도로공사, 수자원, BIM, 안전)" 
-          class="w-full pl-10 pr-10 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 shadow-sm transition"
+    <!-- 검색 입력창 (토목 뉴스 기반 풀 와이드 100% 통일) -->
+    <div class="mt-5 mb-4 sm:mb-0">
+      <div class="relative w-full">
+        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+          <i data-lucide="search" class="w-5 h-5"></i>
+        </div>
+        <input
+          type="text"
+          id="contestSearchInput"
+          placeholder="공모전 제목, 주최기관, 키워드 검색 (예: 도로공사, 수자원, BIM, 안전)"
+          class="w-full pl-10 pr-10 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition shadow-sm"
         />
-        <button id="clearContestSearchBtn" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer" title="검색어 지우기">
+        <button id="clearContestSearchBtn" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hidden cursor-pointer" title="검색어 지우기">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
+    </div>
 
-      <!-- 상태 필터 & 정렬 드롭다운 -->
-      <div class="flex items-center gap-2 self-end md:self-auto flex-wrap sm:flex-nowrap">
+    <!-- 분야(카테고리) 탭 (상단 고정 Sticky Navigation - 시안 B: 미니멀 언더라인 바 풀 블리드 통일) -->
+    <div class="sticky top-0 sm:top-16 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-0 mt-0 mb-4 sm:my-4 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 shadow-xs transition-colors">
+      <div class="max-w-7xl mx-auto flex items-center overflow-x-auto scrollbar-none category-scroll-container" style="touch-action: pan-x; overscroll-behavior: none; overscroll-behavior-x: none;">
+        <div id="contestCategoryTabs" class="flex items-center gap-1 sm:gap-3 min-w-max h-full" style="touch-action: pan-x;">
+          <button data-category="ALL" class="cat-pill active category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-amber-600 dark:text-amber-400 border-b-2 border-amber-500 -mb-px cursor-pointer whitespace-nowrap select-none">
+            <span>전체</span>
+            <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-semibold bg-amber-100 text-amber-700 dark:bg-amber-950/70 dark:text-amber-300 shadow-xs transition-colors">0</span>
+          </button>
+          <button data-category="스마트·기술" class="cat-pill category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 border-b-2 border-transparent -mb-px cursor-pointer whitespace-nowrap select-none">
+            <span>스마트·기술</span>
+            <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 transition-colors">0</span>
+          </button>
+          <button data-category="도로·디자인" class="cat-pill category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 border-b-2 border-transparent -mb-px cursor-pointer whitespace-nowrap select-none">
+            <span>도로·디자인</span>
+            <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 transition-colors">0</span>
+          </button>
+          <button data-category="수자원·환경" class="cat-pill category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 border-b-2 border-transparent -mb-px cursor-pointer whitespace-nowrap select-none">
+            <span>수자원·환경</span>
+            <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 transition-colors">0</span>
+          </button>
+          <button data-category="지반·안전" class="cat-pill category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 border-b-2 border-transparent -mb-px cursor-pointer whitespace-nowrap select-none">
+            <span>지반·안전</span>
+            <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 transition-colors">0</span>
+          </button>
+          <button data-category="철도·인프라" class="cat-pill category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 border-b-2 border-transparent -mb-px cursor-pointer whitespace-nowrap select-none">
+            <span>철도·인프라</span>
+            <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 transition-colors">0</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 필터 및 정렬 옵션 바 (토목 뉴스/채용 기반 위치 및 좌우 너비 통일) -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400 mb-4 px-1">
+      <div class="flex items-center gap-2">
+        <span id="contestResultCountNotice" class="font-medium text-slate-700 dark:text-slate-300">
+          공모전 목록을 불러오는 중입니다...
+        </span>
+      </div>
+
+      <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
         <!-- 🚨 마감임박(D-3)만 보기 퀵 토글 버튼 -->
         <button 
           type="button" 
           id="contestUrgentToggleBtn" 
           onclick="toggleContestUrgentFilter()" 
-          class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold border border-rose-200 dark:border-rose-900/60 bg-white dark:bg-slate-900 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer shadow-xs"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-rose-200 dark:border-rose-900/60 bg-white dark:bg-slate-900 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer shadow-xs"
           title="D-3 마감임박 공모전만 모아보기"
         >
           <i data-lucide="flame" class="w-3.5 h-3.5 text-rose-500"></i>
@@ -400,48 +441,18 @@
         </button>
 
         <!-- 상태 필터 칩 (접수중, 접수예정, 상시접수) -->
-        <div class="inline-flex p-1 rounded-xl bg-slate-200/70 dark:bg-slate-800/80 text-xs font-medium text-slate-600 dark:text-slate-300" id="contestStatusFilterGroup">
-          <button data-status="ALL" class="status-pill active px-2.5 py-1 rounded-lg transition cursor-pointer">전체</button>
-          <button data-status="접수중" class="status-pill px-2.5 py-1 rounded-lg transition cursor-pointer">접수중</button>
-          <button data-status="접수예정" class="status-pill px-2.5 py-1 rounded-lg transition cursor-pointer">접수예정</button>
-          <button data-status="상시접수" class="status-pill px-2.5 py-1 rounded-lg transition cursor-pointer">상시</button>
+        <div class="inline-flex rounded-lg border border-slate-200 dark:border-slate-800 p-0.5 bg-slate-100 dark:bg-slate-900 text-xs font-medium text-slate-600 dark:text-slate-300" id="contestStatusFilterGroup">
+          <button data-status="ALL" class="status-pill active px-2.5 py-1 rounded-md bg-white dark:bg-slate-800 font-semibold text-slate-900 dark:text-white shadow-xs transition cursor-pointer">전체</button>
+          <button data-status="접수중" class="status-pill px-2.5 py-1 rounded-md text-slate-600 dark:text-slate-300 transition cursor-pointer">접수중</button>
+          <button data-status="접수예정" class="status-pill px-2.5 py-1 rounded-md text-slate-600 dark:text-slate-300 transition cursor-pointer">접수예정</button>
+          <button data-status="상시접수" class="status-pill px-2.5 py-1 rounded-md text-slate-600 dark:text-slate-300 transition cursor-pointer">상시</button>
         </div>
 
         <!-- 정렬 선택 -->
-        <select id="contestSortSelect" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs sm:text-sm px-3 py-2 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50 shadow-sm cursor-pointer">
-          <option value="closingSoon">마감임박순</option>
+        <select id="contestSortSelect" class="bg-white dark:bg-slate-900 text-xs text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-amber-500 shadow-sm cursor-pointer">
+          <option value="closingSoon" selected>⏱️ 마감임박순 (D-Day순)</option>
           <option value="latest">최신등록순</option>
         </select>
-      </div>
-    </div>
-
-    <!-- 분야(카테고리) 탭 바 (시안 B: 미니멀 언더라인 & 볼드 인디케이터) -->
-    <div class="mb-6 border-b border-slate-200/80 dark:border-slate-800 overflow-x-auto scrollbar-none category-scroll-container" style="touch-action: pan-x; overscroll-behavior: none; overscroll-behavior-x: none;">
-      <div id="contestCategoryTabs" class="flex items-center gap-1 sm:gap-3 min-w-max h-full" style="touch-action: pan-x;">
-        <button data-category="ALL" class="cat-pill active category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-amber-600 dark:text-amber-400 border-b-2 border-amber-500 -mb-px cursor-pointer whitespace-nowrap select-none">
-          <span>전체</span>
-          <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-semibold bg-amber-100 text-amber-700 dark:bg-amber-950/70 dark:text-amber-300 shadow-xs transition-colors">0</span>
-        </button>
-        <button data-category="스마트·기술" class="cat-pill category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 border-b-2 border-transparent -mb-px cursor-pointer whitespace-nowrap select-none">
-          <span>스마트·기술</span>
-          <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 transition-colors">0</span>
-        </button>
-        <button data-category="도로·디자인" class="cat-pill category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 border-b-2 border-transparent -mb-px cursor-pointer whitespace-nowrap select-none">
-          <span>도로·디자인</span>
-          <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 transition-colors">0</span>
-        </button>
-        <button data-category="수자원·환경" class="cat-pill category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 border-b-2 border-transparent -mb-px cursor-pointer whitespace-nowrap select-none">
-          <span>수자원·환경</span>
-          <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 transition-colors">0</span>
-        </button>
-        <button data-category="지반·안전" class="cat-pill category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 border-b-2 border-transparent -mb-px cursor-pointer whitespace-nowrap select-none">
-          <span>지반·안전</span>
-          <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 transition-colors">0</span>
-        </button>
-        <button data-category="철도·인프라" class="cat-pill category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 border-b-2 border-transparent -mb-px cursor-pointer whitespace-nowrap select-none">
-          <span>철도·인프라</span>
-          <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 transition-colors">0</span>
-        </button>
       </div>
     </div>
 
@@ -463,8 +474,8 @@
       </button>
     </div>
 
-    <!-- 공모전 카드 그리드 (2열 데스크탑 / 1열 모바일) -->
-    <div id="contestCardGrid" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+    <!-- 공모전 카드 그리드 (3열 데스크탑 / 2열 태블릿 / 1열 모바일: 토목 뉴스 및 채용 규격 통일) -->
+    <div id="contestCardGrid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
       <!-- contests.js에 의해 동적으로 렌더링 -->
     </div>
   </section>
@@ -698,8 +709,8 @@
   </div>
 
   <!-- 프론트엔드 스크립트 로드 (SPA 마스터 컨트롤러 & 채용 & 공모전) -->
-  <script src="./static/app.js?v=20260910_0132"></script>
-  <script src="./static/jobs.js?v=20260910_0132"></script>
-  <script src="./static/contests.js?v=20260910_0132"></script>
+  <script src="./static/app.js?v=20260910_0140"></script>
+  <script src="./static/jobs.js?v=20260910_0140"></script>
+  <script src="./static/contests.js?v=20260910_0140"></script>
 </body>
 </html>
