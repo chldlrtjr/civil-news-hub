@@ -196,28 +196,45 @@ class CivilNewsHandler(SimpleHTTPRequestHandler):
         self.send_error(404, "Endpoint not found")
 
 def open_in_browser(url):
-    """오르카(Orca) 브라우저를 우선 탐색하여 실행하고, 없으면 기본 브라우저로 오픈"""
+    """오르카(Orca) 브라우저를 우선 탐색하여 새 탭 생성 또는 실행, 실패 시 기본 브라우저 오픈"""
     local_app_data = os.environ.get("LOCALAPPDATA", "")
     user_profile = os.environ.get("USERPROFILE", "")
     
-    orca_candidates = [
+    # 1. 오르카 CLI 도구 우선 시도 (이미 실행 중인 오르카에 single-instance 에러 없이 새 탭 생성)
+    orca_cli_candidates = [
+        os.path.join(local_app_data, r"Programs\orca\resources\bin\orca.exe"),
+        os.path.join(user_profile, r"AppData\Local\Programs\orca\resources\bin\orca.exe"),
+    ]
+
+    for cli in orca_cli_candidates:
+        if cli and os.path.isfile(cli):
+            try:
+                res = subprocess.run([cli, "tab", "create", "--url", url], capture_output=True, text=True, timeout=5)
+                if res.returncode == 0:
+                    print(f"🐬 [오르카 브라우저] 실행 중인 오르카 창에 새 탭을 열었습니다: {url}")
+                    return
+            except Exception:
+                pass
+
+    # 2. 오르카 메인 GUI 실행 파일 (오르카가 아직 켜져 있지 않은 경우 직접 실행)
+    orca_gui_candidates = [
         os.path.join(local_app_data, r"Programs\orca\Orca.exe"),
         os.path.join(user_profile, r"AppData\Local\Programs\orca\Orca.exe"),
         r"C:\Program Files\orca\Orca.exe",
         r"C:\Program Files (x86)\orca\Orca.exe",
     ]
 
-    for candidate in orca_candidates:
+    for candidate in orca_gui_candidates:
         if candidate and os.path.isfile(candidate):
             try:
                 subprocess.Popen([candidate, url])
-                print(f"🐬 [오르카 브라우저]에서 사이트를 엽니다: {candidate}")
+                print(f"🐬 [오르카 브라우저]를 실행하여 사이트를 엽니다: {candidate}")
                 return
             except Exception as e:
                 print(f"⚠️ 오르카 브라우저 실행 시도 중 오류: {e}")
                 break
 
-    # 오르카 브라우저가 없는 환경일 경우 시스템 기본 웹 브라우저로 오픈
+    # 3. 오르카 브라우저가 없는 환경일 경우 시스템 기본 웹 브라우저로 오픈
     try:
         webbrowser.open(url)
     except Exception:
