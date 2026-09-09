@@ -594,7 +594,7 @@ function renderJobs() {
 
   if (notice) {
     if (isJobBookmarkView) {
-      notice.textContent = `⭐ 북마크한 공고 총 ${filtered.length}건`;
+      notice.textContent = `⭐ 마이페이지 채용 공고 총 ${filtered.length}건`;
     } else if (jobSearchQuery) {
       notice.textContent = `'${jobSearchQuery}' 검색 결과 총 ${filtered.length}건`;
     } else {
@@ -610,8 +610,8 @@ function renderJobs() {
       const emptyTitle = emptyState.querySelector('h3');
       const emptyDesc = emptyState.querySelector('p');
       if (isJobBookmarkView) {
-        if (emptyTitle) emptyTitle.textContent = '북마크한 채용 공고가 없습니다';
-        if (emptyDesc) emptyDesc.innerHTML = '마음에 드는 공고의 북마크 아이콘을 눌러 저장해보세요.<br><button onclick="window.toggleCurrentTabBookmark(false)" class="mt-2 text-blue-600 dark:text-blue-400 font-semibold underline cursor-pointer">전체 채용 공고 보기</button>';
+        if (emptyTitle) emptyTitle.textContent = '마이페이지에 저장된 채용 공고가 없습니다';
+        if (emptyDesc) emptyDesc.innerHTML = '마음에 드는 공고의 북마크 아이콘을 눌러 마이페이지에 저장해보세요.<br><button onclick="window.toggleCurrentTabBookmark(false)" class="mt-2 text-blue-600 dark:text-blue-400 font-semibold underline cursor-pointer">전체 채용 공고 보기</button>';
       } else {
         if (emptyTitle) emptyTitle.textContent = '검색된 채용 공고가 없습니다';
         if (emptyDesc) emptyDesc.textContent = '다른 검색어를 입력하시거나 카테고리 필터를 변경해 보세요.';

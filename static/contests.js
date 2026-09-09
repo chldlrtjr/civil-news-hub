@@ -279,7 +279,7 @@ function renderContests() {
 
   if (notice) {
     if (isContestBookmarkView) {
-      notice.textContent = `⭐ 북마크한 공모전 총 ${filtered.length}건`;
+      notice.textContent = `⭐ 마이페이지 공모전 총 ${filtered.length}건`;
     } else if (contestSearchQuery) {
       notice.textContent = `'${contestSearchQuery}' 검색 결과 총 ${filtered.length}건`;
     } else {
@@ -294,8 +294,8 @@ function renderContests() {
     const emptyTitle = emptyState.querySelector('h3');
     const emptyDesc = emptyState.querySelector('p');
     if (isContestBookmarkView) {
-      if (emptyTitle) emptyTitle.textContent = '북마크한 공모전이 없습니다';
-      if (emptyDesc) emptyDesc.innerHTML = '관심 있는 공모전의 북마크 아이콘을 눌러 저장해보세요.<br><button onclick="window.toggleCurrentTabBookmark(false)" class="mt-2 text-amber-600 dark:text-amber-400 font-semibold underline cursor-pointer">전체 공모전 보기</button>';
+      if (emptyTitle) emptyTitle.textContent = '마이페이지에 저장된 공모전이 없습니다';
+      if (emptyDesc) emptyDesc.innerHTML = '관심 있는 공모전의 북마크 아이콘을 눌러 마이페이지에 저장해보세요.<br><button onclick="window.toggleCurrentTabBookmark(false)" class="mt-2 text-amber-600 dark:text-amber-400 font-semibold underline cursor-pointer">전체 공모전 보기</button>';
     } else {
       if (emptyTitle) emptyTitle.textContent = '조건에 맞는 공모전이 없습니다';
       if (emptyDesc) emptyDesc.textContent = '다른 검색어를 입력하시거나 필터 조건을 변경해 보세요.';

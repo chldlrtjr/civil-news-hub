@@ -537,7 +537,7 @@ function renderArticles() {
         emptyState.classList.remove('hidden');
         emptyState.classList.add('flex');
       }
-      if (notice) notice.textContent = '북마크된 기사가 없습니다.';
+      if (notice) notice.textContent = '마이페이지에 저장된 기사가 없습니다.';
       return;
     }
 
@@ -545,7 +545,7 @@ function renderArticles() {
       emptyState.classList.add('hidden');
       emptyState.classList.remove('flex');
     }
-    if (notice) notice.textContent = `⭐ 북마크 기사 총 ${filteredBookmarks.length}건`;
+    if (notice) notice.textContent = `⭐ 마이페이지 기사 총 ${filteredBookmarks.length}건`;
 
     container.innerHTML = `
       <section class="bg-transparent sm:bg-white dark:sm:bg-slate-900/80 border-0 sm:border border-amber-200 dark:border-amber-900/60 rounded-none sm:rounded-3xl p-0 sm:p-7 shadow-none sm:shadow-xs">
@@ -555,7 +555,7 @@ function renderArticles() {
               <i data-lucide="bookmark" class="w-4 h-4 fill-amber-500 text-amber-500"></i>
             </span>
             <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              저장한 북마크 기사
+              마이페이지 · 저장한 기사
               <span class="text-xs px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 font-semibold border border-amber-200 dark:border-amber-900">
                 ${filteredBookmarks.length}건
               </span>
@@ -985,7 +985,7 @@ window.toggleCurrentTabBookmark = function(forceState, e) {
 
   // 사용자 토스트 피드백
   if (state) {
-    showToast('🔖 북마크 모드가 켜졌습니다. (저장한 항목 모아보기)');
+    showToast('🔖 마이페이지로 이동했습니다. (저장한 항목 모아보기)');
   } else {
     showToast('전체 목록으로 돌아갑니다.');
   }
