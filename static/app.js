@@ -783,9 +783,9 @@ window.switchMainTab = function(tabName, updateHash = true) {
 
 function updateGnbTabStyles(activeTab) {
   const tabs = [
-    { id: 'gnbTabNews', key: 'news', badge: 'DAILY' },
-    { id: 'gnbTabJobs', key: 'jobs', badge: 'RECRUIT' },
-    { id: 'gnbTabContests', key: 'contests', badge: 'CONTEST' }
+    { id: 'gnbTabNews', key: 'news' },
+    { id: 'gnbTabJobs', key: 'jobs' },
+    { id: 'gnbTabContests', key: 'contests' }
   ];
 
   tabs.forEach(t => {
@@ -793,20 +793,9 @@ function updateGnbTabStyles(activeTab) {
     if (!el) return;
     const isActive = t.key === activeTab;
     if (isActive) {
-      el.className = 'flex items-center gap-1 sm:gap-1.5 font-bold text-xs sm:text-base text-slate-900 dark:text-white transition tracking-tight flex-shrink-0 cursor-pointer';
-      const badge = el.querySelector('.gnb-badge');
-      if (badge) {
-        badge.className = 'gnb-badge text-[8px] sm:text-xs px-1.5 py-0.2 sm:py-0.5 rounded-full font-semibold border ' + 
-          (t.key === 'news' ? 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800' :
-           t.key === 'jobs' ? 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800' :
-           'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800');
-      }
+      el.className = 'px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs sm:text-sm md:text-base font-bold text-blue-600 dark:text-blue-400 bg-slate-100 dark:bg-slate-800 transition flex items-center justify-center cursor-pointer flex-shrink-0 shadow-2xs';
     } else {
-      el.className = 'flex items-center gap-1 font-medium text-xs sm:text-sm text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition tracking-tight flex-shrink-0 cursor-pointer';
-      const badge = el.querySelector('.gnb-badge');
-      if (badge) {
-        badge.className = 'gnb-badge hidden';
-      }
+      el.className = 'px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs sm:text-sm md:text-base font-bold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-900/60 transition flex items-center justify-center cursor-pointer flex-shrink-0';
     }
   });
 }
