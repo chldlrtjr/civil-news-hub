@@ -266,7 +266,7 @@ function renderJobCategoryTabs() {
     `;
 
     btn.addEventListener('click', () => {
-      if (isJobBookmarkView) {
+      if (!window.isGlobalBookmarkMode && isJobBookmarkView) {
         isJobBookmarkView = false;
       }
       activeJobCategory = cat.id;
@@ -376,6 +376,9 @@ function filterAndSortJobs() {
   // (1) 북마크 모드
   if (isJobBookmarkView) {
     list = list.filter(j => jobBookmarks.has(j.id));
+    if (activeJobCategory !== 'all') {
+      list = list.filter(j => j.category_id === activeJobCategory);
+    }
   } else if (activeJobCategory !== 'all') {
     list = list.filter(j => j.category_id === activeJobCategory);
   }
@@ -656,6 +659,15 @@ function renderJobs() {
     if (emptyState) {
       emptyState.classList.remove('hidden');
       emptyState.classList.add('flex');
+      const emptyTitle = emptyState.querySelector('h3');
+      const emptyDesc = emptyState.querySelector('p');
+      if (isJobBookmarkView) {
+        if (emptyTitle) emptyTitle.textContent = '북마크한 채용 공고가 없습니다';
+        if (emptyDesc) emptyDesc.innerHTML = '마음에 드는 공고의 북마크 아이콘을 눌러 저장해보세요.<br><button onclick="window.toggleCurrentTabBookmark(false)" class="mt-2 text-blue-600 dark:text-blue-400 font-semibold underline cursor-pointer">전체 채용 공고 보기</button>';
+      } else {
+        if (emptyTitle) emptyTitle.textContent = '검색된 채용 공고가 없습니다';
+        if (emptyDesc) emptyDesc.textContent = '다른 검색어를 입력하시거나 카테고리 필터를 변경해 보세요.';
+      }
     }
     return;
   }
@@ -1163,8 +1175,12 @@ function setupJobEventListeners() {
 }
 
 // 외부 노출 북마크 토글 함수
-window.toggleJobBookmarkFilter = function() {
-  isJobBookmarkView = !isJobBookmarkView;
+window.toggleJobBookmarkFilter = function(forceState) {
+  if (typeof forceState === 'boolean') {
+    isJobBookmarkView = forceState;
+  } else {
+    isJobBookmarkView = !isJobBookmarkView;
+  }
   renderJobCategoryTabs();
   renderJobs();
   return isJobBookmarkView;

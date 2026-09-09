@@ -8,6 +8,7 @@ let allArticles = [];
 let categories = [];
 let activeNewsCategory = 'general';
 let isNewsBookmarkView = false;
+window.isGlobalBookmarkMode = false;
 let newsSearchQuery = '';
 let currentNewsSort = 'newest';
 let newsBookmarks = new Set();
@@ -154,8 +155,16 @@ function renderCategoryTabs() {
     }`;
     btn.innerHTML = `<span>${cat.name}</span><span class="text-[10px] px-1.5 py-0.2 rounded-full ${isCatActive ? 'bg-blue-800/60 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'}">${catCount}</span>`;
     btn.addEventListener('click', () => {
+      if (window.isGlobalBookmarkMode) {
+        // 전역 북마크 상태에서는 해당 카테고리로 부드럽게 스크롤
+        activeNewsCategory = cat.id;
+        renderCategoryTabs();
+        scrollToCategory(cat.id);
+        return;
+      }
       if (isNewsBookmarkView) {
         isNewsBookmarkView = false;
+        window.isGlobalBookmarkMode = false;
         updateBookmarkTabStyle();
         renderArticles();
       }
@@ -765,6 +774,18 @@ window.switchMainTab = function(tabName, updateHash = true) {
   if (panelJobs) panelJobs.classList.toggle('hidden', tabName !== 'jobs');
   if (panelContests) panelContests.classList.toggle('hidden', tabName !== 'contests');
 
+  // 전역 북마크 상태 동기화: 활성화되어 있으면 전환된 탭도 북마크 필터링 상태로 렌더링
+  const isBookmark = !!window.isGlobalBookmarkMode;
+  if (tabName === 'news') {
+    isNewsBookmarkView = isBookmark;
+    renderCategoryTabs();
+    renderArticles();
+  } else if (tabName === 'jobs' && typeof window.toggleJobBookmarkFilter === 'function') {
+    window.toggleJobBookmarkFilter(isBookmark);
+  } else if (tabName === 'contests' && typeof window.toggleContestBookmarkFilter === 'function') {
+    window.toggleContestBookmarkFilter(isBookmark);
+  }
+
   // GNB 버튼 스타일 갱신
   updateGnbTabStyles(tabName);
 
@@ -773,6 +794,9 @@ window.switchMainTab = function(tabName, updateHash = true) {
 
   // 헤더 및 모바일 북마크 카운트 동기화
   updateGlobalBookmarkCount();
+
+  // 북마크 탭 버튼 스타일 갱신
+  updateBookmarkTabStyle();
 
   // URL 해시 업데이트
   if (updateHash) {
@@ -834,13 +858,17 @@ window.updateGlobalBookmarkCount = function() {
     count = (typeof contestBookmarks !== 'undefined') ? contestBookmarks.size : 0;
   }
 
+  const totalCount = (newsBookmarks ? newsBookmarks.size : 0) +
+    ((typeof jobBookmarks !== 'undefined' && jobBookmarks) ? jobBookmarks.size : 0) +
+    ((typeof contestBookmarks !== 'undefined' && contestBookmarks) ? contestBookmarks.size : 0);
+
   const countEl = document.getElementById('bookmarkCount');
   if (countEl) countEl.textContent = count;
 
   const mobileBadge = document.getElementById('mobileBookmarkBadge');
   if (mobileBadge) {
-    mobileBadge.textContent = count;
-    if (count > 0) {
+    mobileBadge.textContent = totalCount;
+    if (totalCount > 0) {
       mobileBadge.classList.remove('hidden');
     } else {
       mobileBadge.classList.add('hidden');
@@ -852,19 +880,12 @@ window.updateGlobalBookmarkCount = function() {
 
 // 북마크 탭 버튼 스타일 갱신
 function updateBookmarkTabStyle() {
-  let isCurrentBookmarkActive = false;
-  if (currentMainTab === 'news') {
-    isCurrentBookmarkActive = isNewsBookmarkView;
-  } else if (currentMainTab === 'jobs') {
-    isCurrentBookmarkActive = (typeof isJobBookmarkView !== 'undefined') ? isJobBookmarkView : false;
-  } else if (currentMainTab === 'contests') {
-    isCurrentBookmarkActive = (typeof isContestBookmarkView !== 'undefined') ? isContestBookmarkView : false;
-  }
+  const isCurrentBookmarkActive = !!window.isGlobalBookmarkMode;
 
   const bookmarkBtn = document.getElementById('bookmarkTabBtn');
   if (bookmarkBtn) {
     if (isCurrentBookmarkActive) {
-      bookmarkBtn.className = 'flex-shrink-0 flex items-center px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium transition bg-amber-500 text-white shadow-sm shadow-amber-500/20 cursor-pointer border border-amber-500';
+      bookmarkBtn.className = 'flex-shrink-0 flex items-center px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-bold transition bg-amber-500 text-white shadow-sm shadow-amber-500/20 cursor-pointer border border-amber-500';
     } else {
       bookmarkBtn.className = 'flex-shrink-0 flex items-center px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium transition border border-amber-300/90 dark:border-amber-700/60 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40 cursor-pointer shadow-xs';
     }
@@ -880,22 +901,31 @@ function updateBookmarkTabStyle() {
   }
 }
 
-// 통합 북마크 토글
-window.toggleCurrentTabBookmark = function() {
-  if (currentMainTab === 'news') {
-    isNewsBookmarkView = !isNewsBookmarkView;
-    renderCategoryTabs();
-    updateBookmarkTabStyle();
-    renderArticles();
-  } else if (currentMainTab === 'jobs') {
-    if (window.toggleJobBookmarkFilter) {
-      window.toggleJobBookmarkFilter();
-    }
-  } else if (currentMainTab === 'contests') {
-    if (window.toggleContestBookmarkFilter) {
-      window.toggleContestBookmarkFilter();
-    }
+// 통합 북마크 토글 (뉴스·채용·공모전 전역 북마크 모드 전환)
+window.toggleCurrentTabBookmark = function(forceState) {
+  if (typeof forceState === 'boolean') {
+    window.isGlobalBookmarkMode = forceState;
+  } else {
+    window.isGlobalBookmarkMode = !window.isGlobalBookmarkMode;
   }
+  const state = window.isGlobalBookmarkMode;
+
+  // 1. 뉴스 탭 북마크 상태 동기화
+  isNewsBookmarkView = state;
+  renderCategoryTabs();
+  renderArticles();
+
+  // 2. 채용 탭 북마크 상태 동기화
+  if (typeof window.toggleJobBookmarkFilter === 'function') {
+    window.toggleJobBookmarkFilter(state);
+  }
+
+  // 3. 공모전 탭 북마크 상태 동기화
+  if (typeof window.toggleContestBookmarkFilter === 'function') {
+    window.toggleContestBookmarkFilter(state);
+  }
+
+  updateGlobalBookmarkCount();
   updateBookmarkTabStyle();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };

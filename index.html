@@ -99,7 +99,7 @@
         <div class="flex items-center gap-1 sm:gap-2 flex-shrink-0">
           
           <!-- 북마크 필터 버튼 -->
-          <button id="bookmarkTabBtn" class="flex-shrink-0 flex items-center px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium transition border border-amber-300/90 dark:border-amber-700/60 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40 cursor-pointer shadow-xs" title="북마크 모아보기">
+          <button id="bookmarkTabBtn" onclick="window.toggleCurrentTabBookmark()" class="flex-shrink-0 flex items-center px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium transition border border-amber-300/90 dark:border-amber-700/60 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40 cursor-pointer shadow-xs" title="북마크 모아보기">
             <span>북마크 (<span id="bookmarkCount">0</span>)</span>
           </button>
 
@@ -678,7 +678,7 @@
     </button>
 
     <!-- 4. 북마크 필터 -->
-    <button id="mobileBookmarkBtn" type="button" class="relative flex flex-col items-center justify-center py-1 px-3 text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 font-medium transition cursor-pointer" title="북마크 모아보기">
+    <button id="mobileBookmarkBtn" type="button" onclick="window.toggleCurrentTabBookmark()" class="relative flex flex-col items-center justify-center py-1 px-3 text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 font-medium transition cursor-pointer" title="북마크 모아보기">
       <i data-lucide="bookmark" class="w-5 h-5 mb-0.5"></i>
       <span class="text-[10px] tracking-tight">북마크</span>
       <span id="mobileBookmarkBadge" class="hidden absolute top-0.5 right-2 px-1 py-0.2 rounded-full text-[9px] font-bold bg-amber-500 text-white min-w-[14px] text-center">0</span>
@@ -733,8 +733,8 @@
   </div>
 
   <!-- 프론트엔드 스크립트 로드 (SPA 마스터 컨트롤러 & 채용 & 공모전) -->
-  <script src="./static/app.js?v=20260909_1925"></script>
-  <script src="./static/jobs.js?v=20260909_1925"></script>
-  <script src="./static/contests.js?v=20260909_1925"></script>
+  <script src="./static/app.js?v=20260909_1940"></script>
+  <script src="./static/jobs.js?v=20260909_1940"></script>
+  <script src="./static/contests.js?v=20260909_1940"></script>
 </body>
 </html>

@@ -335,6 +335,15 @@ function renderContests() {
     grid.classList.add('hidden');
     emptyState.classList.remove('hidden');
     emptyState.classList.add('flex');
+    const emptyTitle = emptyState.querySelector('h3');
+    const emptyDesc = emptyState.querySelector('p');
+    if (isContestBookmarkView) {
+      if (emptyTitle) emptyTitle.textContent = '북마크한 공모전이 없습니다';
+      if (emptyDesc) emptyDesc.innerHTML = '관심 있는 공모전의 북마크 아이콘을 눌러 저장해보세요.<br><button onclick="window.toggleCurrentTabBookmark(false)" class="mt-2 text-amber-600 dark:text-amber-400 font-semibold underline cursor-pointer">전체 공모전 보기</button>';
+    } else {
+      if (emptyTitle) emptyTitle.textContent = '조건에 맞는 공모전이 없습니다';
+      if (emptyDesc) emptyDesc.textContent = '다른 검색어를 입력하시거나 필터 조건을 변경해 보세요.';
+    }
     return;
   }
 
@@ -897,8 +906,12 @@ function showContestToast(msg) {
 }
 
 // 외부에서 호출 가능한 북마크 토글 함수
-window.toggleContestBookmarkFilter = function() {
-  isContestBookmarkView = !isContestBookmarkView;
+window.toggleContestBookmarkFilter = function(forceState) {
+  if (typeof forceState === 'boolean') {
+    isContestBookmarkView = forceState;
+  } else {
+    isContestBookmarkView = !isContestBookmarkView;
+  }
   renderContests();
   return isContestBookmarkView;
 };
