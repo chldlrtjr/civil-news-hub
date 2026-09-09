@@ -137,22 +137,15 @@
   <!-- ========================================== -->
   <section id="tabPanelNews" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
     <!-- 서브 배너 & 업데이트 시각 정보 -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-5 border-b border-slate-200 dark:border-slate-800/80">
-      <div>
-        <h2 class="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-          <i data-lucide="newspaper" class="w-5 h-5 text-blue-500"></i>
-          오늘의 토목 주요 기사 모아보기
-        </h2>
-        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-          인터넷에 올라온 토목 관련 주요 기사들을 클릭 한 번으로 확인하세요.
-        </p>
-      </div>
-
-      <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
-          수집 기사: <strong id="newsTotalCount" class="text-blue-600 dark:text-blue-400 ml-1">0건</strong>
-        </span>
-      </div>
+    <!-- 상단 타이틀 -->
+    <div class="pb-5 border-b border-slate-200 dark:border-slate-800/80">
+      <h2 class="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+        <i data-lucide="newspaper" class="w-5 h-5 text-blue-500"></i>
+        오늘의 토목 주요 기사 모아보기
+      </h2>
+      <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+        인터넷에 올라온 토목 관련 주요 기사들을 클릭 한 번으로 확인하세요.
+      </p>
     </div>
 
     <!-- 검색 입력창 -->
@@ -225,23 +218,15 @@
   <!-- 2. 채용 공고문 탭 패널 (#tabPanelJobs)     -->
   <!-- ========================================== -->
   <section id="tabPanelJobs" class="hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <!-- 서브 배너 & 업데이트 정보 -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-5 border-b border-slate-200 dark:border-slate-800/80">
-      <div>
-        <h2 class="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-          <i data-lucide="briefcase" class="w-5 h-5 text-blue-500"></i>
-          토목·건설 채용 공고문
-        </h2>
-        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-          공기업, 1군 대형 건설사, 종합 엔지니어링사 및 공공기관 실시간 채용 정보
-        </p>
-      </div>
-
-      <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
-          진행 공고: <strong id="jobTotalCount" class="text-blue-600 dark:text-blue-400 ml-1">0건</strong>
-        </span>
-      </div>
+    <!-- 상단 타이틀 -->
+    <div class="pb-5 border-b border-slate-200 dark:border-slate-800/80">
+      <h2 class="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+        <i data-lucide="briefcase" class="w-5 h-5 text-blue-500"></i>
+        토목·건설 채용 공고문
+      </h2>
+      <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+        공기업, 1군 대형 건설사, 종합 엔지니어링사 및 공공기관 실시간 채용 정보
+      </p>
     </div>
 
     <!-- 🚨 마감 임박 긴급 채용 공고 배너 (#jobUrgentBannerContainer) -->
@@ -378,24 +363,15 @@
   <!-- 3. 공모전 탭 패널 (#tabPanelContests)      -->
   <!-- ========================================== -->
   <section id="tabPanelContests" class="hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <!-- 서브 배너 & 업데이트 정보 -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-5 border-b border-slate-200 dark:border-slate-800/80">
-      <div>
-        <h2 class="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-          <i data-lucide="trophy" class="w-5 h-5 text-amber-500"></i>
-          토목 공모전 & 경진대회 공고
-        </h2>
-        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-          국토교통부, 한국도로공사, 한국수자원공사, 국가철도공단 등 팩트 검증된 공식 공모전
-        </p>
-      </div>
-      <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 self-start sm:self-auto">
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-medium border border-emerald-200 dark:border-emerald-800/80">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          유효 공모전 <span id="contestActiveCountBadge" class="font-bold">0</span>건
-        </span>
-        <span id="contestLastUpdatedTime">업데이트: 실시간</span>
-      </div>
+    <!-- 상단 타이틀 -->
+    <div class="pb-5 border-b border-slate-200 dark:border-slate-800/80">
+      <h2 class="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+        <i data-lucide="trophy" class="w-5 h-5 text-amber-500"></i>
+        토목 공모전 & 경진대회 공고
+      </h2>
+      <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+        국토교통부, 한국도로공사, 한국수자원공사, 국가철도공단 등 팩트 검증된 공식 공모전
+      </p>
     </div>
 
     <!-- 🚨 마감 임박 긴급 공모전 배너 (#contestUrgentBannerContainer) -->
@@ -731,8 +707,8 @@
   </div>
 
   <!-- 프론트엔드 스크립트 로드 (SPA 마스터 컨트롤러 & 채용 & 공모전) -->
-  <script src="./app.js?v=20260910_0108"></script>
-  <script src="./jobs.js?v=20260910_0108"></script>
-  <script src="./contests.js?v=20260910_0108"></script>
+  <script src="./app.js?v=20260910_0114"></script>
+  <script src="./jobs.js?v=20260910_0114"></script>
+  <script src="./contests.js?v=20260910_0114"></script>
 </body>
 </html>
