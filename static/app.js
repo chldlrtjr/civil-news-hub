@@ -149,17 +149,17 @@ function renderCategoryTabs() {
 
     const btn = document.createElement('button');
     btn.setAttribute('data-cat-id', cat.id);
-    btn.className = `category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm cursor-pointer whitespace-nowrap select-none border-b-2 -mb-px ${
+    btn.className = `category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold cursor-pointer whitespace-nowrap select-none border-b-2 -mb-px ${
       isCatActive 
-        ? 'font-extrabold text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-500' 
-        : 'font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 border-transparent'
+        ? 'text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-500' 
+        : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 border-transparent'
     }`;
     btn.innerHTML = `
       <span>${cat.name}</span>
-      <span class="count-badge text-[11px] px-2 py-0.5 rounded-full transition-colors ${
+      <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-semibold transition-colors ${
         isCatActive 
-          ? 'font-bold bg-blue-100 text-blue-700 dark:bg-blue-950/70 dark:text-blue-300 shadow-xs' 
-          : 'font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
+          ? 'bg-blue-100 text-blue-700 dark:bg-blue-950/70 dark:text-blue-300 shadow-xs' 
+          : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
       }">${catCount}</span>
     `;
     btn.addEventListener('click', () => {
@@ -196,17 +196,17 @@ function updateNewsCategoryTabStyles(activeCatId) {
   buttons.forEach(btn => {
     const catId = btn.getAttribute('data-cat-id');
     const isCatActive = !isNewsBookmarkView && (catId === activeCatId);
-    btn.className = `category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm cursor-pointer whitespace-nowrap select-none border-b-2 -mb-px ${
+    btn.className = `category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold cursor-pointer whitespace-nowrap select-none border-b-2 -mb-px ${
       isCatActive 
-        ? 'font-extrabold text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-500' 
-        : 'font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 border-transparent'
+        ? 'text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-500' 
+        : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 border-transparent'
     }`;
     const badge = btn.querySelector('.count-badge');
     if (badge) {
-      badge.className = `count-badge text-[11px] px-2 py-0.5 rounded-full transition-colors ${
+      badge.className = `count-badge text-[11px] px-2 py-0.5 rounded-full font-semibold transition-colors ${
         isCatActive 
-          ? 'font-bold bg-blue-100 text-blue-700 dark:bg-blue-950/70 dark:text-blue-300 shadow-xs' 
-          : 'font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
+          ? 'bg-blue-100 text-blue-700 dark:bg-blue-950/70 dark:text-blue-300 shadow-xs' 
+          : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
       }`;
     }
   });
@@ -877,9 +877,9 @@ function updateMobileNavStyles(activeTab) {
     if (!el) return;
     const isActive = t.key === activeTab;
     if (isActive) {
-      el.className = `flex flex-col items-center justify-center py-1 px-3 ${t.activeColor} font-bold transition cursor-pointer`;
+      el.className = `flex flex-col items-center justify-center py-1 px-3 ${t.activeColor} font-semibold transition cursor-pointer`;
     } else {
-      el.className = 'flex flex-col items-center justify-center py-1 px-3 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition cursor-pointer';
+      el.className = 'flex flex-col items-center justify-center py-1 px-3 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition cursor-pointer';
     }
   });
 }

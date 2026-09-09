@@ -58,16 +58,17 @@
   - `mobile.html` 및 `static/mobile.html`의 iframe `src` 파라미터 갱신.
   - `app.js`에서 `news.json` 및 `contests.json` fetch 시 `?t=' + Date.now()` 유지.
 
-### ③ 카테고리 탭 디자인 절대 원칙 (미니멀 언더라인 & 볼드 인디케이터 고정)
+### ③ 카테고리 탭 디자인 절대 원칙 (미니멀 언더라인 & 균일 폰트 인디케이터 고정)
 - **적용 범위**: 토목 뉴스(`newsCategoryTabs`), 채용 공고(`jobCategoryTabs`), 공모전(`contestCategoryTabs`) 등 사이트 내 **모든 카테고리 탭 네비게이션에 100% 동일하게 무조건 고정 적용**한다.
-- **스타일 규격 (시안 B)**:
+- **스타일 규격 (시안 B 기반 미니멀 언더라인)**:
   - 둔탁하고 두꺼운 통짜 알약 배경(Pill box)을 일절 사용하지 않는다.
-  - 바닥 베이스 라인(`border-b border-slate-200/80 dark:border-slate-800`)과 `-mb-px`로 완벽하게 맞물리는 **선명한 2px 언더라인 바(`border-b-2`)** 및 **슬림 & 엑스트라 볼드 타이포그래피**를 사용한다.
+  - 바닥 베이스 라인(`border-b border-slate-200/80 dark:border-slate-800`)과 `-mb-px`로 완벽하게 맞물리는 **선명한 2px 언더라인 바(`border-b-2`)**를 사용한다.
+  - **글씨 크기 불변 절대 원칙**: 탭 활성화 시 글자 크기나 두께가 늘어나거나 줄어드는 이질감("사이즈 변동 / 텍스트 커짐")을 원천 차단하기 위해 **활성/비활성 탭 모두 동일한 `font-semibold` 및 동일한 뱃지 `font-semibold`를 유지**한다.
   - **활성화 탭 (Active)**:
-    - 뉴스 & 채용: `border-b-2 border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-400 font-extrabold` + 블루 틴트 건수 뱃지(`bg-blue-100 text-blue-700 font-bold`)
-    - 공모전: `border-b-2 border-amber-500 text-amber-600 dark:text-amber-400 font-extrabold` + 앰버 틴트 건수 뱃지(`bg-amber-100 text-amber-700 font-bold`)
+    - 뉴스 & 채용: `border-b-2 border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-400 font-semibold` + 블루 틴트 건수 뱃지(`bg-blue-100 text-blue-700 font-semibold`)
+    - 공모전: `border-b-2 border-amber-500 text-amber-600 dark:text-amber-400 font-semibold` + 앰버 틴트 건수 뱃지(`bg-amber-100 text-amber-700 font-semibold`)
   - **비활성화 탭 (Inactive)**:
-    - 투명 언더라인(`border-b-2 border-transparent`) + 차분한 슬레이트 텍스트(`text-slate-500 hover:text-slate-800`) + 기본 건수 뱃지(`bg-slate-100 text-slate-500 font-medium`)
+    - 투명 언더라인(`border-b-2 border-transparent`) + 차분한 슬레이트 텍스트(`text-slate-500 hover:text-slate-800 font-semibold`) + 기본 건수 뱃지(`bg-slate-100 text-slate-500 font-semibold`)
 
 ### ④ 모바일 기사 화면 무경계(Borderless) 및 대형 카드화 절대 원칙
 - 모바일 환경에서 각 카테고리 기사들을 가두던 **답답한 외곽 테두리 박스(`border border-slate-200`)나 불필요한 중첩 패딩을 전면 배제(`border-0 bg-transparent p-0`)**하여 끊김 없이 스크롤할 수 있는 쾌적한 피드를 유지한다.

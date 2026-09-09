@@ -334,14 +334,14 @@ function updateContestCategoryTabStyles(activeCategory = 'ALL') {
     const isActive = (cat === activeCategory);
 
     if (isActive) {
-      tab.className = 'cat-pill active category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-extrabold text-amber-600 dark:text-amber-400 border-b-2 border-amber-500 -mb-px cursor-pointer whitespace-nowrap select-none';
+      tab.className = 'cat-pill active category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-amber-600 dark:text-amber-400 border-b-2 border-amber-500 -mb-px cursor-pointer whitespace-nowrap select-none';
       if (badge) {
-        badge.className = 'count-badge text-[11px] px-2 py-0.5 rounded-full font-bold bg-amber-100 text-amber-700 dark:bg-amber-950/70 dark:text-amber-300 shadow-xs transition-colors';
+        badge.className = 'count-badge text-[11px] px-2 py-0.5 rounded-full font-semibold bg-amber-100 text-amber-700 dark:bg-amber-950/70 dark:text-amber-300 shadow-xs transition-colors';
       }
     } else {
       tab.className = 'cat-pill category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 border-b-2 border-transparent -mb-px cursor-pointer whitespace-nowrap select-none';
       if (badge) {
-        badge.className = 'count-badge text-[11px] px-2 py-0.5 rounded-full font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 transition-colors';
+        badge.className = 'count-badge text-[11px] px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 transition-colors';
       }
     }
   });
