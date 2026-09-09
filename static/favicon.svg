@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d97706;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Background Circle -->
+  <circle cx="32" cy="32" r="30" fill="url(#grad1)" />
+  <!-- Construction Helmet / Civil Structure -->
+  <!-- Helmet Dome -->
+  <path d="M18 36 C18 22 46 22 46 36 Z" fill="url(#grad2)" />
+  <!-- Helmet Brim -->
+  <path d="M14 36 C14 34 50 34 50 36 C50 38 14 38 14 36 Z" fill="#b45309" />
+  <!-- Helmet Ridge -->
+  <path d="M30 22 C30 20 34 20 34 22 L34 35 L30 35 Z" fill="#fef3c7" />
+  <!-- Bridge Cable / Beam Accents -->
+  <path d="M22 46 L32 38 L42 46" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+  <path d="M16 50 L48 50" stroke="#ffffff" stroke-width="3" stroke-linecap="round" />
+</svg>

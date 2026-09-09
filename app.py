@@ -15,6 +15,18 @@ CONTESTS_JSON_PATH = os.path.join(DATA_DIR, "contests.json")
 JOBS_JSON_PATH = os.path.join(DATA_DIR, "jobs.json")
 
 class CivilNewsHandler(SimpleHTTPRequestHandler):
+    def handle(self):
+        try:
+            super().handle()
+        except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
+            pass
+
+    def finish(self):
+        try:
+            super().finish()
+        except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
+            pass
+
     def end_headers(self):
         # UTF-8 및 캐시 방지 헤더 추가
         self.send_header("Access-Control-Allow-Origin", "*")
@@ -22,9 +34,32 @@ class CivilNewsHandler(SimpleHTTPRequestHandler):
         super().end_headers()
 
     def do_GET(self):
+        try:
+            self._handle_get()
+        except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
+            # 사용자가 브라우저 창을 닫거나 빠르게 새로고침할 때 발생하는 클라이언트 소켓 단절 무시
+            pass
+
+    def _handle_get(self):
         # URL에서 쿼리스트링(?v=... 등)을 분리하여 순수 경로(clean_path) 추출
         parsed_url = urllib.parse.urlparse(self.path)
         clean_path = parsed_url.path
+
+        # 0. 파비콘 요청 처리 (브라우저 기본 요청 대응)
+        if clean_path in ["/favicon.ico", "/favicon.svg"]:
+            fav_path = os.path.join(STATIC_DIR, "favicon.svg")
+            if not os.path.exists(fav_path):
+                fav_path = os.path.join(BASE_DIR, "favicon.svg")
+            if os.path.exists(fav_path):
+                self.send_response(200)
+                self.send_header("Content-Type", "image/svg+xml")
+                self.end_headers()
+                with open(fav_path, "rb") as f:
+                    self.wfile.write(f.read())
+            else:
+                self.send_response(204)
+                self.end_headers()
+            return
 
         # 1. 루트 경로 요청 시 index.html 반환
         if clean_path in ["", "/", "/index.html"]:
