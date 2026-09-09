@@ -325,6 +325,28 @@ function updateContestCategoryCounts() {
   });
 }
 
+// [시안 B] 미니멀 언더라인 탭 스타일 갱신 (토스/애플 스타일 슬림 & 선명한 앰버 인디케이터)
+function updateContestCategoryTabStyles(activeCategory = 'ALL') {
+  const tabs = document.querySelectorAll('#contestCategoryTabs .cat-pill');
+  tabs.forEach(tab => {
+    const cat = tab.getAttribute('data-category');
+    const badge = tab.querySelector('.count-badge');
+    const isActive = (cat === activeCategory);
+
+    if (isActive) {
+      tab.className = 'cat-pill active flex items-center gap-1.5 py-2.5 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm font-extrabold text-amber-600 dark:text-amber-400 border-b-2 border-amber-500 -mb-px transition-all cursor-pointer whitespace-nowrap select-none';
+      if (badge) {
+        badge.className = 'count-badge text-[11px] px-2 py-0.5 rounded-full font-bold bg-amber-100 text-amber-700 dark:bg-amber-950/70 dark:text-amber-300 shadow-xs transition-colors';
+      }
+    } else {
+      tab.className = 'cat-pill flex items-center gap-1.5 py-2.5 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 border-b-2 border-transparent -mb-px transition-all cursor-pointer whitespace-nowrap select-none';
+      if (badge) {
+        badge.className = 'count-badge text-[11px] px-2 py-0.5 rounded-full font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 transition-colors';
+      }
+    }
+  });
+}
+
 // 5. 공모전 카드 렌더링
 function renderContests() {
   const grid = document.getElementById('contestCardGrid');
@@ -799,30 +821,19 @@ function setupContestEventListeners() {
     });
   }
 
-  // 분야(카테고리) 탭
+  // 분야(카테고리) 탭 (시안 B: 미니멀 언더라인 탭)
   const categoryTabs = document.getElementById('contestCategoryTabs');
   if (categoryTabs) {
     categoryTabs.addEventListener('click', (e) => {
       const btn = e.target.closest('.cat-pill');
       if (!btn) return;
 
-      categoryTabs.querySelectorAll('.cat-pill').forEach(b => {
-        b.classList.remove('bg-amber-500', 'text-white', 'font-semibold', 'shadow-sm');
-        b.classList.add('text-slate-600', 'dark:text-slate-300');
-      });
-
-      btn.classList.add('bg-amber-500', 'text-white', 'font-semibold', 'shadow-sm');
-      btn.classList.remove('text-slate-600', 'dark:text-slate-300');
-
       contestActiveCategory = btn.getAttribute('data-category');
+      updateContestCategoryTabStyles(contestActiveCategory);
       renderContests();
     });
-    // 기본 ALL 탭 스타일
-    const allCatTab = categoryTabs.querySelector('[data-category="ALL"]');
-    if (allCatTab) {
-      allCatTab.classList.add('bg-amber-500', 'text-white', 'font-semibold', 'shadow-sm');
-      allCatTab.classList.remove('text-slate-600', 'dark:text-slate-300');
-    }
+    // 기본 ALL 탭 스타일 초기화
+    updateContestCategoryTabStyles(contestActiveCategory);
   }
 
   // 필터 초기화 버튼
@@ -837,15 +848,7 @@ function setupContestEventListeners() {
       if (clearSearchBtn) clearSearchBtn.classList.add('hidden');
 
       if (categoryTabs) {
-        categoryTabs.querySelectorAll('.cat-pill').forEach(b => {
-          b.classList.remove('bg-amber-500', 'text-white', 'font-semibold', 'shadow-sm');
-          b.classList.add('text-slate-600', 'dark:text-slate-300');
-        });
-        const allTab = categoryTabs.querySelector('[data-category="ALL"]');
-        if (allTab) {
-          allTab.classList.add('bg-amber-500', 'text-white', 'font-semibold', 'shadow-sm');
-          allTab.classList.remove('text-slate-600', 'dark:text-slate-300');
-        }
+        updateContestCategoryTabStyles('ALL');
       }
 
       if (statusGroup) {
