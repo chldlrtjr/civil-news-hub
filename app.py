@@ -1,5 +1,6 @@
 import os
 import json
+import socket
 import webbrowser
 import urllib.parse
 import subprocess
@@ -7,6 +8,17 @@ import threading
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 import scraper
 import job_scraper
+
+def get_local_ip():
+    """스마트폰 등 로컬 네트워크 기기 접속을 위한 LAN IPv4 자동 조회"""
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except Exception:
+        return "127.0.0.1"
 
 PORT = 8000
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -130,6 +142,20 @@ class CivilNewsHandler(SimpleHTTPRequestHandler):
                 self.send_bytes_response(f.read(), "application/json; charset=utf-8")
             return
 
+        # 2-3. 네트워크 정보 API (스마트폰 모바일 접속용 IP 안내)
+        if clean_path == "/api/network-info":
+            local_ip = get_local_ip()
+            info_bytes = json.dumps({
+                "local_ip": local_ip,
+                "port": PORT,
+                "local_url": f"http://localhost:{PORT}/#news",
+                "mobile_url": f"http://{local_ip}:{PORT}/#news",
+                "mobile_simulator_url": f"http://{local_ip}:{PORT}/mobile#news",
+                "github_pages_url": "https://chldlrtjr.github.io/civil-news-hub/#news"
+            }, ensure_ascii=False).encode("utf-8")
+            self.send_bytes_response(info_bytes, "application/json; charset=utf-8")
+            return
+
         # 3. 정적 리소스 서빙 (/static/ 또는 루트 경로 파일)
         if clean_path.startswith("/static/"):
             rel_path = clean_path[8:]
@@ -233,16 +259,19 @@ def start_server():
 
     server_address = ("", PORT)
     httpd = ThreadingHTTPServer(server_address, CivilNewsHandler)
-    url = f"http://localhost:{PORT}/#news"
+    local_ip = get_local_ip()
+    local_url = f"http://localhost:{PORT}/#news"
+    mobile_url = f"http://{local_ip}:{PORT}/#news"
     
-    print("\n" + "=" * 60)
-    print(f"🏗️  [토목 뉴스 대시보드 웹 서버가 실행되었습니다!]")
-    print(f"🌐  접속 주소: {url}")
+    print("\n" + "=" * 65)
+    print(f"🏗️  [Civil News Hub 웹 서버가 정상 실행되었습니다!]")
+    print(f"🌐  PC 브라우저 접속:       {local_url}")
+    print(f"📱  스마트폰(모바일) 접속:   {mobile_url}")
     print(f"📌  종료하려면 터미널에서 Ctrl + C 를 누르세요.")
-    print("=" * 60 + "\n")
+    print("=" * 65 + "\n")
     
     # 서버 준비 후 0.5초 뒤 브라우저 비동기 자동 오픈 (오르카 브라우저 우선)
-    threading.Timer(0.5, open_in_browser, args=[url]).start()
+    threading.Timer(0.5, open_in_browser, args=[local_url]).start()
         
     try:
         httpd.serve_forever()

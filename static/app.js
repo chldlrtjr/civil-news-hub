@@ -1057,3 +1057,52 @@ function escapeHtml(text) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
+
+// 12. 스마트폰 모바일 접속 QR 모달 제어
+window.openQrModal = async function() {
+  const modal = document.getElementById('qrModal');
+  const qrImg = document.getElementById('qrCodeImg');
+  const urlText = document.getElementById('localIpUrlText');
+  if (!modal) return;
+
+  try {
+    const res = await fetch('/api/network-info');
+    if (res.ok) {
+      const info = await res.json();
+      if (info.mobile_url) {
+        if (urlText) urlText.textContent = info.mobile_url;
+        if (qrImg) qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(info.mobile_url)}`;
+      }
+    }
+  } catch (e) {}
+
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.toggleQrModal = function(show) {
+  const modal = document.getElementById('qrModal');
+  if (!modal) return;
+  if (show) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    if (window.lucide) window.lucide.createIcons();
+  } else {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+};
+
+window.copyLocalIpUrl = function() {
+  const urlText = document.getElementById('localIpUrlText');
+  const text = (urlText && urlText.textContent) || 'http://192.168.25.58:8000/#news';
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('📋 모바일 접속 주소가 복사되었습니다.');
+    });
+  } else {
+    prompt('모바일 접속 주소:', text);
+  }
+};
+
