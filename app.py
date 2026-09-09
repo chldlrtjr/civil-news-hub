@@ -4,6 +4,7 @@ import webbrowser
 import urllib.parse
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 import scraper
+import job_scraper
 
 PORT = 8000
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -89,8 +90,7 @@ class CivilNewsHandler(SimpleHTTPRequestHandler):
         # 2-2. 채용 공고 데이터 API 요청
         if clean_path in ["/api/jobs", "/data/jobs.json"]:
             if not os.path.exists(JOBS_JSON_PATH):
-                self.send_error(404, "Jobs data not found")
-                return
+                job_scraper.scrape_civil_jobs()
             
             self.send_response(200)
             self.send_header("Content-Type", "application/json; charset=utf-8")
@@ -103,7 +103,7 @@ class CivilNewsHandler(SimpleHTTPRequestHandler):
         if clean_path.startswith("/static/"):
             rel_path = clean_path[8:]
             target_path = os.path.join(STATIC_DIR, rel_path)
-        elif clean_path in ["/app.js", "/style.css", "/jobs.js"]:
+        elif clean_path in ["/app.js", "/style.css", "/jobs.js", "/contests.js"]:
             target_path = os.path.join(STATIC_DIR, clean_path[1:])
         else:
             target_path = os.path.join(BASE_DIR, clean_path.lstrip("/"))
