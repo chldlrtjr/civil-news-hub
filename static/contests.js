@@ -80,6 +80,11 @@ async function loadContestsData() {
     const updatedEl = document.getElementById('contestLastUpdatedTime');
     if (updatedEl) updatedEl.textContent = `업데이트: ${data.last_updated_display || '실시간'}`;
 
+    const footerUpdatedEl = document.getElementById('footerLastUpdated');
+    if (footerUpdatedEl && data.last_updated_display && (!footerUpdatedEl.textContent || footerUpdatedEl.textContent === '확인 중...')) {
+      footerUpdatedEl.textContent = data.last_updated_display;
+    }
+
     const activeCountBadge = document.getElementById('contestActiveCountBadge');
     if (activeCountBadge) activeCountBadge.textContent = allContests.length;
 

@@ -121,6 +121,9 @@ async function loadNewsData() {
     // 메타데이터 업데이트
     const updatedEl = document.getElementById('newsLastUpdated');
     if (updatedEl) updatedEl.textContent = data.last_updated_display || '방금 전';
+
+    const footerUpdatedEl = document.getElementById('footerLastUpdated');
+    if (footerUpdatedEl) footerUpdatedEl.textContent = data.last_updated_display || '방금 전';
     
     const countEl = document.getElementById('newsTotalCount');
     if (countEl) countEl.textContent = `${allArticles.length}건`;

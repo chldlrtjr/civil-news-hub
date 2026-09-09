@@ -26,7 +26,7 @@
   <link rel="alternate icon" href="../favicon.svg">
 
   <!-- 커스텀 스타일 -->
-  <link rel="stylesheet" href="./style.css?v=20260910_0045">
+  <link rel="stylesheet" href="./style.css?v=20260910_0052">
 
   <script>
     tailwind.config = {
@@ -149,10 +149,6 @@
       </div>
 
       <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          마지막 업데이트: <strong id="newsLastUpdated" class="text-slate-700 dark:text-slate-300 ml-1">확인 중...</strong>
-        </span>
         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
           수집 기사: <strong id="newsTotalCount" class="text-blue-600 dark:text-blue-400 ml-1">0건</strong>
         </span>
@@ -242,10 +238,6 @@
       </div>
 
       <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          마지막 업데이트: <strong id="jobLastUpdated" class="text-slate-700 dark:text-slate-300 ml-1">확인 중...</strong>
-        </span>
         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
           진행 공고: <strong id="jobTotalCount" class="text-blue-600 dark:text-blue-400 ml-1">0건</strong>
         </span>
@@ -651,9 +643,15 @@
 
   <!-- 푸터 -->
   <footer class="mt-12 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-6 transition-colors pb-24 sm:pb-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-500 dark:text-slate-400 space-y-1">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-500 dark:text-slate-400 space-y-2">
       <p>토목 뉴스 브리핑 & 채용·공모전 올인원 허브 · Civil News Hub</p>
       <p>매일 아침 주요 포털, 공공기관 채용 및 공식 공모전 요강을 자동으로 수집 및 정제합니다.</p>
+      <div class="pt-2 flex items-center justify-center">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          마지막 업데이트: <strong id="footerLastUpdated" class="text-slate-700 dark:text-slate-300 ml-1">확인 중...</strong>
+        </span>
+      </div>
     </div>
   </footer>
 
@@ -733,8 +731,8 @@
   </div>
 
   <!-- 프론트엔드 스크립트 로드 (SPA 마스터 컨트롤러 & 채용 & 공모전) -->
-  <script src="./app.js?v=20260910_0045"></script>
-  <script src="./jobs.js?v=20260910_0045"></script>
-  <script src="./contests.js?v=20260910_0045"></script>
+  <script src="./app.js?v=20260910_0052"></script>
+  <script src="./jobs.js?v=20260910_0052"></script>
+  <script src="./contests.js?v=20260910_0052"></script>
 </body>
 </html>

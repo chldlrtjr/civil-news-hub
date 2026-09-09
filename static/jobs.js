@@ -72,6 +72,11 @@ async function loadJobsData() {
     const lastUpdatedEl = document.getElementById('jobLastUpdated');
     if (lastUpdatedEl) lastUpdatedEl.textContent = data.last_updated_display || '방금 전';
 
+    const footerUpdatedEl = document.getElementById('footerLastUpdated');
+    if (footerUpdatedEl && data.last_updated_display && (!footerUpdatedEl.textContent || footerUpdatedEl.textContent === '확인 중...')) {
+      footerUpdatedEl.textContent = data.last_updated_display;
+    }
+
     const totalCountEl = document.getElementById('jobTotalCount');
     if (totalCountEl) totalCountEl.textContent = `${allJobs.length}건`;
 
