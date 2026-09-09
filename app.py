@@ -4,7 +4,7 @@ import webbrowser
 import urllib.parse
 import subprocess
 import threading
-from http.server import HTTPServer, SimpleHTTPRequestHandler
+from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 import scraper
 import job_scraper
 
@@ -29,11 +29,19 @@ class CivilNewsHandler(SimpleHTTPRequestHandler):
         except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
             pass
 
-    def end_headers(self):
-        # UTF-8 및 캐시 방지 헤더 추가
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
-        super().end_headers()
+    def send_bytes_response(self, content_bytes: bytes, content_type: str, status: int = 200):
+        """Content-Length 헤더를 정확히 포함하여 브라우저의 무한 로딩 및 대기 현상 방지"""
+        try:
+            self.send_response(status)
+            self.send_header("Content-Type", content_type)
+            self.send_header("Content-Length", str(len(content_bytes)))
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
+            self.send_header("Connection", "keep-alive")
+            self.end_headers()
+            self.wfile.write(content_bytes)
+        except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
+            pass
 
     def do_GET(self):
         try:
@@ -53,87 +61,64 @@ class CivilNewsHandler(SimpleHTTPRequestHandler):
             if not os.path.exists(fav_path):
                 fav_path = os.path.join(BASE_DIR, "favicon.svg")
             if os.path.exists(fav_path):
-                self.send_response(200)
-                self.send_header("Content-Type", "image/svg+xml")
-                self.end_headers()
                 with open(fav_path, "rb") as f:
-                    self.wfile.write(f.read())
+                    self.send_bytes_response(f.read(), "image/svg+xml")
             else:
                 self.send_response(204)
+                self.send_header("Content-Length", "0")
                 self.end_headers()
             return
 
         # 1. 루트 경로 요청 시 index.html 반환
         if clean_path in ["", "/", "/index.html"]:
-            self.send_response(200)
-            self.send_header("Content-Type", "text/html; charset=utf-8")
-            self.end_headers()
             # root index.html 우선 (없으면 static/index.html)
             index_path = os.path.join(BASE_DIR, "index.html")
             if not os.path.exists(index_path):
                 index_path = os.path.join(STATIC_DIR, "index.html")
             with open(index_path, "rb") as f:
-                self.wfile.write(f.read())
+                self.send_bytes_response(f.read(), "text/html; charset=utf-8")
             return
 
         # 1-1. 채용 공고문 페이지 요청
         if clean_path in ["/jobs", "/jobs.html", "/recruit", "/recruit.html"]:
-            self.send_response(200)
-            self.send_header("Content-Type", "text/html; charset=utf-8")
-            self.end_headers()
             jobs_path = os.path.join(BASE_DIR, "jobs.html")
             if not os.path.exists(jobs_path):
                 jobs_path = os.path.join(STATIC_DIR, "jobs.html")
             with open(jobs_path, "rb") as f:
-                self.wfile.write(f.read())
+                self.send_bytes_response(f.read(), "text/html; charset=utf-8")
             return
 
         # 1-2. 공모전 페이지 요청
         if clean_path in ["/contests", "/contests.html", "/contest", "/contest.html"]:
-            self.send_response(200)
-            self.send_header("Content-Type", "text/html; charset=utf-8")
-            self.end_headers()
             contests_path = os.path.join(BASE_DIR, "contests.html")
             if not os.path.exists(contests_path):
                 contests_path = os.path.join(STATIC_DIR, "contests.html")
             with open(contests_path, "rb") as f:
-                self.wfile.write(f.read())
+                self.send_bytes_response(f.read(), "text/html; charset=utf-8")
             return
 
         # 2. 뉴스 데이터 API 요청
         if clean_path in ["/api/news", "/data/news.json"]:
             if not os.path.exists(NEWS_JSON_PATH):
                 scraper.scrape_civil_news()
-            
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.end_headers()
             with open(NEWS_JSON_PATH, "rb") as f:
-                self.wfile.write(f.read())
+                self.send_bytes_response(f.read(), "application/json; charset=utf-8")
             return
 
         # 2-1. 공모전 데이터 API 요청
         if clean_path in ["/api/contests", "/data/contests.json"]:
             if not os.path.exists(CONTESTS_JSON_PATH):
                 scraper.scrape_civil_contests()
-            
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.end_headers()
             with open(CONTESTS_JSON_PATH, "rb") as f:
-                self.wfile.write(f.read())
+                self.send_bytes_response(f.read(), "application/json; charset=utf-8")
             return
 
         # 2-2. 채용 공고 데이터 API 요청
         if clean_path in ["/api/jobs", "/data/jobs.json"]:
             if not os.path.exists(JOBS_JSON_PATH):
                 job_scraper.scrape_civil_jobs()
-            
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.end_headers()
             with open(JOBS_JSON_PATH, "rb") as f:
-                self.wfile.write(f.read())
+                self.send_bytes_response(f.read(), "application/json; charset=utf-8")
             return
 
         # 3. 정적 리소스 서빙 (/static/ 또는 루트 경로 파일)
@@ -146,22 +131,21 @@ class CivilNewsHandler(SimpleHTTPRequestHandler):
             target_path = os.path.join(BASE_DIR, clean_path.lstrip("/"))
 
         if os.path.exists(target_path) and os.path.isfile(target_path):
-            self.send_response(200)
+            with open(target_path, "rb") as f:
+                content = f.read()
+            mime = "text/plain; charset=utf-8"
             if target_path.endswith(".css"):
-                self.send_header("Content-Type", "text/css; charset=utf-8")
+                mime = "text/css; charset=utf-8"
             elif target_path.endswith(".js"):
-                self.send_header("Content-Type", "application/javascript; charset=utf-8")
+                mime = "application/javascript; charset=utf-8"
             elif target_path.endswith(".json"):
-                self.send_header("Content-Type", "application/json; charset=utf-8")
+                mime = "application/json; charset=utf-8"
             elif target_path.endswith(".html"):
-                self.send_header("Content-Type", "text/html; charset=utf-8")
+                mime = "text/html; charset=utf-8"
             elif target_path.endswith((".png", ".jpg", ".jpeg", ".ico", ".svg")):
                 ext = target_path.rsplit(".", 1)[-1].lower()
                 mime = "image/svg+xml" if ext == "svg" else f"image/{ext}"
-                self.send_header("Content-Type", mime)
-            self.end_headers()
-            with open(target_path, "rb") as f:
-                self.wfile.write(f.read())
+            self.send_bytes_response(content, mime)
             return
 
         self.send_error(404, "File not found")
@@ -176,21 +160,13 @@ class CivilNewsHandler(SimpleHTTPRequestHandler):
                     "message": "최신 기사가 성공적으로 업데이트되었습니다.",
                     "data": updated_data
                 }, ensure_ascii=False).encode("utf-8")
-                
-                self.send_response(200)
-                self.send_header("Content-Type", "application/json; charset=utf-8")
-                self.end_headers()
-                self.wfile.write(response_bytes)
+                self.send_bytes_response(response_bytes, "application/json; charset=utf-8")
             except Exception as e:
                 err_bytes = json.dumps({
                     "success": False,
                     "error": str(e)
                 }, ensure_ascii=False).encode("utf-8")
-                
-                self.send_response(500)
-                self.send_header("Content-Type", "application/json; charset=utf-8")
-                self.end_headers()
-                self.wfile.write(err_bytes)
+                self.send_bytes_response(err_bytes, "application/json; charset=utf-8", status=500)
             return
 
         self.send_error(404, "Endpoint not found")
@@ -247,7 +223,7 @@ def start_server():
         scraper.scrape_civil_news()
 
     server_address = ("", PORT)
-    httpd = HTTPServer(server_address, CivilNewsHandler)
+    httpd = ThreadingHTTPServer(server_address, CivilNewsHandler)
     url = f"http://localhost:{PORT}/#news"
     
     print("\n" + "=" * 60)

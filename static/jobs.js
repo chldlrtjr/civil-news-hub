@@ -56,7 +56,10 @@ async function loadJobsData() {
   try {
     let res;
     try {
-      res = await fetch('/api/jobs');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3500);
+      res = await fetch('/api/jobs', { signal: controller.signal });
+      clearTimeout(timeoutId);
       if (!res.ok) throw new Error('API failed');
     } catch (e) {
       res = await fetch('./data/jobs.json?t=' + Date.now());

@@ -57,7 +57,10 @@ async function loadContestsData() {
   try {
     let res;
     try {
-      res = await fetch('/api/contests');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3500);
+      res = await fetch('/api/contests', { signal: controller.signal });
+      clearTimeout(timeoutId);
       if (!res.ok) throw new Error('API route failed');
     } catch (e) {
       res = await fetch('./data/contests.json?t=' + Date.now());
