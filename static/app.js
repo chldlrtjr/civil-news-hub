@@ -793,9 +793,9 @@ function updateGnbTabStyles(activeTab) {
     if (!el) return;
     const isActive = t.key === activeTab;
     if (isActive) {
-      el.className = 'px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs sm:text-sm md:text-base font-bold text-blue-600 dark:text-blue-400 bg-slate-100 dark:bg-slate-800 transition flex items-center justify-center cursor-pointer flex-shrink-0 shadow-2xs';
+      el.className = 'px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-base font-bold tracking-tight text-blue-600 dark:text-blue-400 drop-shadow-[0_0_8px_rgba(37,99,235,0.45)] dark:drop-shadow-[0_0_10px_rgba(96,165,250,0.75)] transition flex items-center justify-center cursor-pointer flex-shrink-0 bg-transparent';
     } else {
-      el.className = 'px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs sm:text-sm md:text-base font-bold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-900/60 transition flex items-center justify-center cursor-pointer flex-shrink-0';
+      el.className = 'px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-base font-bold tracking-tight text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300 transition flex items-center justify-center cursor-pointer flex-shrink-0 bg-transparent drop-shadow-none';
     }
   });
 }
