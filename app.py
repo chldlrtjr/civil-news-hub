@@ -10,8 +10,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 DATA_DIR = os.path.join(BASE_DIR, "data")
 NEWS_JSON_PATH = os.path.join(DATA_DIR, "news.json")
-
 CONTESTS_JSON_PATH = os.path.join(DATA_DIR, "contests.json")
+JOBS_JSON_PATH = os.path.join(DATA_DIR, "jobs.json")
 
 class CivilNewsHandler(SimpleHTTPRequestHandler):
     def end_headers(self):
@@ -35,6 +35,18 @@ class CivilNewsHandler(SimpleHTTPRequestHandler):
             if not os.path.exists(index_path):
                 index_path = os.path.join(STATIC_DIR, "index.html")
             with open(index_path, "rb") as f:
+                self.wfile.write(f.read())
+            return
+
+        # 1-1. 채용 공고문 페이지 요청
+        if clean_path in ["/jobs", "/jobs.html", "/recruit", "/recruit.html"]:
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.end_headers()
+            jobs_path = os.path.join(BASE_DIR, "jobs.html")
+            if not os.path.exists(jobs_path):
+                jobs_path = os.path.join(STATIC_DIR, "jobs.html")
+            with open(jobs_path, "rb") as f:
                 self.wfile.write(f.read())
             return
 
@@ -62,11 +74,24 @@ class CivilNewsHandler(SimpleHTTPRequestHandler):
                 self.wfile.write(f.read())
             return
 
+        # 2-2. 채용 공고 데이터 API 요청
+        if clean_path in ["/api/jobs", "/data/jobs.json"]:
+            if not os.path.exists(JOBS_JSON_PATH):
+                self.send_error(404, "Jobs data not found")
+                return
+            
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.end_headers()
+            with open(JOBS_JSON_PATH, "rb") as f:
+                self.wfile.write(f.read())
+            return
+
         # 3. 정적 리소스 서빙 (/static/ 또는 루트 경로 파일)
         if clean_path.startswith("/static/"):
             rel_path = clean_path[8:]
             target_path = os.path.join(STATIC_DIR, rel_path)
-        elif clean_path in ["/app.js", "/style.css"]:
+        elif clean_path in ["/app.js", "/style.css", "/jobs.js"]:
             target_path = os.path.join(STATIC_DIR, clean_path[1:])
         else:
             target_path = os.path.join(BASE_DIR, clean_path.lstrip("/"))

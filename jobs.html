@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>토목 채용 공고문 | Civil News Hub</title>
+  
+  <!-- 모바일 웹앱 메타 태그 -->
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="주요 공기업, 1군 건설사, 엔지니어링사 및 공공기관 실시간 토목 채용 공고">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <!-- Tailwind CSS & Lucide Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Pretendard Font -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  
+  <!-- 커스텀 스타일 -->
+  <link rel="stylesheet" href="./static/style.css">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
+
+  <!-- 상단 네비게이션 헤더 (네이버 스타일: 토목 뉴스 | 채용 공고문) -->
+  <header class="sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 transition-colors shadow-sm">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-14 sm:h-16 gap-1">
+        
+        <!-- 로고 및 서비스 네비게이션 (네이버 스타일: 토목 뉴스 | 채용 공고문) -->
+        <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
+          <a href="./index.html" class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 flex-shrink-0 hover:scale-105 transition" title="홈으로">
+            <i data-lucide="hard-hat" class="w-4 h-4 sm:w-6 sm:h-6"></i>
+          </a>
+          <nav class="flex items-center space-x-1.5 sm:space-x-2.5 min-w-0" aria-label="메인 네비게이션">
+            <!-- 토목 뉴스 (링크) -->
+            <a href="./index.html" class="flex items-center gap-1 sm:gap-1.5 font-medium text-xs sm:text-base text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition tracking-tight flex-shrink-0" title="토목 뉴스 브리핑으로 이동">
+              <span>토목 뉴스</span>
+            </a>
+
+            <!-- 구분선 (네이버 스타일 |) -->
+            <span class="text-slate-300 dark:text-slate-700 text-xs sm:text-sm select-none font-light">|</span>
+
+            <!-- 채용 공고문 (현재 페이지 활성) -->
+            <a href="./jobs.html" class="flex items-center gap-1 sm:gap-1.5 font-bold text-sm sm:text-lg text-slate-900 dark:text-white transition tracking-tight flex-shrink-0">
+              <span>채용 공고문</span>
+              <span class="text-[9px] sm:text-xs px-1.5 py-0.2 sm:py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-semibold border border-emerald-200 dark:border-emerald-800">
+                채용
+              </span>
+            </a>
+          </nav>
+        </div>
+
+        <!-- 우측 액션 버튼들 -->
+        <div class="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+          
+          <!-- 북마크 필터 버튼 -->
+          <button id="bookmarkTabBtn" class="flex-shrink-0 flex items-center px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium transition border border-amber-300/90 dark:border-amber-700/60 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40 cursor-pointer shadow-xs" title="북마크한 공고 모아보기">
+            <span>북마크 (<span id="bookmarkCount">0</span>)</span>
+          </button>
+
+          <!-- 새로고침(수집) 버튼 -->
+          <button id="refreshBtn" class="flex items-center space-x-1 sm:space-x-1.5 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-blue-400 border border-blue-200 dark:border-slate-700 transition flex-shrink-0" title="최신 채용공고 새로고침">
+            <i data-lucide="refresh-cw" id="refreshIcon" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
+            <span class="hidden sm:inline">최신 수집</span>
+          </button>
+
+          <!-- 다크 모드 토글 -->
+          <button id="themeToggle" aria-label="테마 전환" class="p-1.5 sm:p-2 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex-shrink-0">
+            <i data-lucide="sun" class="w-4 h-4 sm:w-5 sm:h-5 hidden dark:block"></i>
+            <i data-lucide="moon" class="w-4 h-4 sm:w-5 sm:h-5 block dark:hidden"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- 메인 본문 -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    
+    <!-- 서브 배너 & 업데이트 정보 -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-5 border-b border-slate-200 dark:border-slate-800/80">
+      <div>
+        <h2 class="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+          <i data-lucide="briefcase" class="w-5 h-5 text-blue-500"></i>
+          토목·건설 채용 공고문
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+          공기업, 1군 대형 건설사, 종합 엔지니어링사 및 공공기관 실시간 채용 정보
+        </p>
+      </div>
+
+      <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          마지막 업데이트: <strong id="lastUpdated" class="text-slate-700 dark:text-slate-300 ml-1">확인 중...</strong>
+        </span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+          진행 공고: <strong id="totalCount" class="text-blue-600 dark:text-blue-400 ml-1">0건</strong>
+        </span>
+      </div>
+    </div>
+
+    <!-- 검색 입력창 -->
+    <div class="mt-5">
+      <div class="relative w-full">
+        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+          <i data-lucide="search" class="w-5 h-5"></i>
+        </div>
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="기업명, 직무(토목시공, 구조설계, 지반, 철도 등), 근무지, 우대조건 검색"
+          class="w-full pl-10 pr-10 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition shadow-sm"
+        />
+        <button id="clearSearchBtn" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hidden">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- 카테고리 탭 (상단 고정 Sticky Navigation) -->
+    <div id="categoryTabsSticky" class="sticky top-14 sm:top-16 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-3 my-4 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-y border-slate-200/80 dark:border-slate-800/80 shadow-sm transition-all">
+      <div class="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto pb-0.5 scrollbar-none">
+        <div id="jobCategoryTabs" class="flex items-center gap-2 flex-nowrap">
+          <!-- JS에서 동적 탭 렌더링 -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 필터 및 정렬 옵션 바 -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400 mb-4 px-1">
+      <div class="flex items-center gap-2">
+        <span id="resultCountNotice" class="font-medium text-slate-700 dark:text-slate-300">
+          채용 공고를 불러오는 중입니다...
+        </span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <!-- 경력 구분 필터 버튼 그룹 -->
+        <div class="inline-flex rounded-lg border border-slate-200 dark:border-slate-800 p-0.5 bg-slate-100 dark:bg-slate-900">
+          <button data-career="all" class="career-filter-btn px-2.5 py-1 text-xs font-semibold rounded-md bg-blue-600 text-white transition">
+            전체
+          </button>
+          <button data-career="entry" class="career-filter-btn px-2.5 py-1 text-xs font-medium rounded-md bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 transition">
+            신입/인턴
+          </button>
+          <button data-career="experienced" class="career-filter-btn px-2.5 py-1 text-xs font-medium rounded-md bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 transition">
+            경력직
+          </button>
+        </div>
+
+        <!-- 정렬 드롭다운 -->
+        <select id="sortSelect" class="bg-white dark:bg-slate-900 text-xs text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm cursor-pointer">
+          <option value="deadline" selected>⏱️ 마감임박순 (D-Day순)</option>
+          <option value="newest">최근 등록순</option>
+          <option value="company">기업명 가나다순</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 로딩 인디케이터 -->
+    <div id="loadingIndicator" class="flex flex-col items-center justify-center py-20">
+      <div class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">최신 채용 공고를 불러오는 중입니다...</p>
+    </div>
+
+    <!-- 검색 결과 없음 상태 -->
+    <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-center">
+      <div class="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-4">
+        <i data-lucide="inbox" class="w-8 h-8"></i>
+      </div>
+      <h3 class="text-base font-semibold text-slate-700 dark:text-slate-300 mb-1">
+        검색된 채용 공고가 없습니다
+      </h3>
+      <p class="text-xs text-slate-400 mb-4">
+        다른 검색어를 입력하시거나 카테고리 필터를 변경해 보세요.
+      </p>
+      <button onclick="document.getElementById('searchInput').value=''; jobSearchQuery=''; isJobBookmarkView=false; activeJobCategory='all'; renderJobCategoryTabs(); renderJobs();" class="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-semibold hover:bg-blue-700 transition">
+        전체 공고 보기
+      </button>
+    </div>
+
+    <!-- 공고 카드 목록 그리드 컨테이너 -->
+    <div id="jobListContainer"></div>
+
+  </main>
+
+  <!-- 상세 팝업 모달 -->
+  <div id="jobDetailModal" class="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-xs hidden items-center justify-center p-3 sm:p-5 transition-all">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl max-w-2xl w-full p-5 sm:p-7 shadow-2xl transition-all" onclick="event.stopPropagation()">
+      <div id="jobModalContent">
+        <!-- JS에서 동적 생성 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 푸터 -->
+  <footer class="mt-12 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-6 transition-colors pb-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-500 dark:text-slate-400 space-y-1">
+      <p>토목 뉴스 & 채용 큐레이션 서비스 · Civil News Hub</p>
+      <p>주요 공공기관 및 대형 건설사, 종합 엔지니어링사 공식 채용 정보를 정제하여 제공합니다.</p>
+    </div>
+  </footer>
+
+  <!-- 토스트 알림 컴포넌트 -->
+  <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none">
+    <div class="bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-4 py-2.5 rounded-full shadow-lg flex items-center space-x-2 text-xs font-medium">
+      <span id="toastMessage">알림 메시지</span>
+    </div>
+  </div>
+
+  <!-- 스크립트 로드 -->
+  <script src="./static/jobs.js?v=20260909_1630"></script>
+</body>
+</html>
