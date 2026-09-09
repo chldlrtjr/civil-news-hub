@@ -5,6 +5,7 @@ let activeJobCategory = 'all';
 let jobSearchQuery = '';
 let currentJobSort = 'deadline'; // 기본: 마감임박순
 let selectedCareer = 'all';      // 전체, 신입, 경력
+let selectedRegion = 'ALL';      // 전체, 수도권, 충청, 영남, 호남, 전국, 해외
 let jobBookmarks = new Set();
 let isJobBookmarkView = false;
 
@@ -207,6 +208,42 @@ function updateJobBookmarkTabStyle() {
   }
 }
 
+// 근무지역 매칭 판별 헬퍼
+function matchJobRegion(job, regionKey) {
+  if (!regionKey || regionKey === 'ALL') return true;
+  const loc = (job.location || '').toLowerCase();
+  const summary = (job.summary || '').toLowerCase();
+  const title = (job.title || '').toLowerCase();
+  const combined = `${loc} ${summary} ${title}`;
+
+  if (regionKey === 'capital') { // 서울·수도권
+    return combined.includes('서울') || combined.includes('경기') || combined.includes('인천') ||
+           combined.includes('수도권') || combined.includes('안양') || combined.includes('일산') ||
+           combined.includes('역삼') || combined.includes('상일') || combined.includes('종로') ||
+           combined.includes('송도') || combined.includes('계동') || combined.includes('을지로') || combined.includes('본사');
+  }
+  if (regionKey === 'chungcheong') { // 충청·대전
+    return combined.includes('대전') || combined.includes('충청') || combined.includes('세종') ||
+           combined.includes('충남') || combined.includes('충북') || combined.includes('유역본부');
+  }
+  if (regionKey === 'yeongnam') { // 영남·대구·부산
+    return combined.includes('영남') || combined.includes('진주') || combined.includes('부산') ||
+           combined.includes('대구') || combined.includes('울산') || combined.includes('경남') ||
+           combined.includes('경북');
+  }
+  if (regionKey === 'honam') { // 호남·광주
+    return combined.includes('호남') || combined.includes('광주') || combined.includes('전남') ||
+           combined.includes('전북');
+  }
+  if (regionKey === 'nationwide') { // 전국·현장
+    return combined.includes('전국') || combined.includes('현장') || combined.includes('지역본부') || combined.includes('지사');
+  }
+  if (regionKey === 'overseas') { // 해외
+    return combined.includes('해외') || combined.includes('글로벌');
+  }
+  return true;
+}
+
 // 5. 정렬 및 필터링
 function filterAndSortJobs() {
   let list = allJobs.slice();
@@ -223,6 +260,11 @@ function filterAndSortJobs() {
     list = list.filter(j => j.career && (j.career.includes('신입') || j.career.includes('인턴')));
   } else if (selectedCareer === 'experienced') {
     list = list.filter(j => j.career && (j.career.includes('경력') || j.career.includes('석·박사')));
+  }
+
+  // (2-1) 근무지역 필터
+  if (selectedRegion !== 'ALL') {
+    list = list.filter(j => matchJobRegion(j, selectedRegion));
   }
 
   // (3) 검색어 필터
@@ -840,6 +882,26 @@ function setupJobEventListeners() {
       renderJobs();
     });
   });
+
+  // 근무지역 필터 칩 바 (전체, 수도권, 충청, 영남, 호남, 전국, 해외)
+  const regionGroup = document.getElementById('regionFilterGroup');
+  if (regionGroup) {
+    regionGroup.addEventListener('click', (e) => {
+      const btn = e.target.closest('.region-pill');
+      if (!btn) return;
+
+      regionGroup.querySelectorAll('.region-pill').forEach(b => {
+        b.classList.remove('active', 'bg-blue-600', 'text-white', 'font-semibold');
+        b.classList.add('bg-white', 'dark:bg-slate-900', 'text-slate-600', 'dark:text-slate-300', 'border', 'border-slate-200', 'dark:border-slate-800');
+      });
+
+      btn.classList.add('active', 'bg-blue-600', 'text-white', 'font-semibold');
+      btn.classList.remove('bg-white', 'dark:bg-slate-900', 'text-slate-600', 'dark:text-slate-300', 'border', 'border-slate-200', 'dark:border-slate-800');
+
+      selectedRegion = btn.getAttribute('data-region') || 'ALL';
+      renderJobs();
+    });
+  }
 
   // 모달 바깥 클릭 시 닫기
   const modal = document.getElementById('jobDetailModal');
