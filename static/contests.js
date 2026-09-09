@@ -7,6 +7,7 @@ let contestSearchQuery = '';
 let contestSortOption = 'closingSoon'; // closingSoon | latest
 let contestBookmarks = new Set();
 let isContestBookmarkView = false;
+let isContestUrgentFilterActive = false;
 let currentModalContest = null;
 
 // 1. 초기화
@@ -110,7 +111,7 @@ function parseDdayFromPeriod(periodStr, statusStr) {
       const month = parseInt(match[2], 10) - 1;
       const day = parseInt(match[3], 10);
       endDate = new Date(year, month, day);
-      endDate.setHours(23, 59, 59, 999);
+      endDate.setHours(0, 0, 0, 0);
     }
 
     if (!endDate || isNaN(endDate.getTime())) {
@@ -125,12 +126,124 @@ function parseDdayFromPeriod(periodStr, statusStr) {
     } else if (diffDays === 0) {
       return { text: '오늘마감', days: 0, isUrgent: true, isClosed: false };
     } else {
-      return { text: `D-${diffDays}`, days: diffDays, isUrgent: diffDays <= 7, isClosed: false };
+      return { text: `D-${diffDays}`, days: diffDays, isUrgent: diffDays <= 3, isClosed: false };
     }
   } catch (e) {
     return { text: statusStr || '접수중', days: 100, isUrgent: false, isClosed: false };
   }
 }
+
+// 3-1. 긴급(D-3) 마감 임박 공모전 추출
+function getUrgentContests() {
+  return allContests.filter(c => {
+    if (c.status === '접수마감') return false;
+    const dday = parseDdayFromPeriod(c.period, c.status);
+    return !dday.isClosed && dday.isUrgent;
+  });
+}
+
+// 3-2. 긴급 마감 임박 공모전 배너 동적 렌더링
+function renderContestUrgentBanner() {
+  const container = document.getElementById('contestUrgentBannerContainer');
+  const toggleBtn = document.getElementById('contestUrgentToggleBtn');
+  const countBadge = document.getElementById('contestUrgentCountBadge');
+  if (!container) return;
+
+  const urgentContests = getUrgentContests();
+  const count = urgentContests.length;
+
+  // 필터 바 퀵 토글 버튼 상태 동기화
+  if (countBadge) {
+    countBadge.textContent = count;
+    if (count > 0) {
+      countBadge.classList.remove('hidden');
+    } else {
+      countBadge.classList.add('hidden');
+    }
+  }
+
+  if (toggleBtn) {
+    if (isContestUrgentFilterActive) {
+      toggleBtn.className = 'inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold border border-rose-600 bg-rose-600 text-white shadow-sm shadow-rose-500/30 ring-2 ring-rose-500/30 transition cursor-pointer';
+      toggleBtn.innerHTML = `
+        <i data-lucide="flame" class="w-3.5 h-3.5 text-amber-200 animate-bounce"></i>
+        <span>🚨 마감임박(D-3) 필터 해제</span>
+        <span id="contestUrgentCountBadge" class="px-1.5 py-0.2 rounded-full text-[10px] bg-white text-rose-600 font-extrabold">${count}</span>
+      `;
+    } else {
+      toggleBtn.className = 'inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold border border-rose-200 dark:border-rose-900/60 bg-white dark:bg-slate-900 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer shadow-xs';
+      toggleBtn.innerHTML = `
+        <i data-lucide="flame" class="w-3.5 h-3.5 text-rose-500"></i>
+        <span>🚨 마감임박(D-3)만 보기</span>
+        <span id="contestUrgentCountBadge" class="${count > 0 ? '' : 'hidden'} px-1.5 py-0.2 rounded-full text-[10px] bg-rose-600 text-white font-bold">${count}</span>
+      `;
+    }
+  }
+
+  // D-3 이내 항목이 1개 이상 존재할 때만 배너 표시
+  if (count === 0) {
+    container.innerHTML = '';
+    container.classList.add('hidden');
+    return;
+  }
+
+  container.classList.remove('hidden');
+  container.innerHTML = `
+    <div 
+      onclick="toggleContestUrgentFilter()" 
+      class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-rose-500/15 via-red-500/10 to-amber-500/10 dark:from-rose-950/50 dark:via-red-950/40 dark:to-amber-950/30 border border-rose-300 dark:border-rose-800/80 p-3.5 sm:p-4 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer group"
+      role="button"
+      tabindex="0"
+      aria-label="마감 임박 긴급 공모전 퀵 필터"
+    >
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-600 to-amber-500 text-white flex items-center justify-center flex-shrink-0 shadow-md shadow-rose-500/30 animate-pulse">
+            <i data-lucide="flame" class="w-5 h-5 text-amber-200"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="inline-flex items-center gap-1 text-xs font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wide">
+                🚨 마감 임박 긴급 공모전
+              </span>
+              <span class="px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-rose-600 text-white shadow-xs animate-pulse">
+                D-3 이내 (${count}건)
+              </span>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-200 font-medium truncate mt-0.5">
+              ${isContestUrgentFilterActive 
+                ? '🔥 마감 임박 긴급 공모전만 필터링 중입니다. 클릭하면 전체 공모전을 다시 확인할 수 있습니다.' 
+                : `접수 마감이 3일 이내로 임박한 공모전이 총 ${count}건 있습니다! 세부 요강을 확인하고 접수해 보세요.`}
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold flex-shrink-0 transition-all ${
+          isContestUrgentFilterActive 
+            ? 'bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900 shadow-sm' 
+            : 'bg-rose-600 text-white shadow-sm shadow-rose-500/25 group-hover:bg-rose-700 group-hover:scale-105'
+        }">
+          <span>${isContestUrgentFilterActive ? '전체 공모전 보기' : '마감임박 모아보기'}</span>
+          <i data-lucide="${isContestUrgentFilterActive ? 'x' : 'chevron-right'}" class="w-4 h-4"></i>
+        </div>
+      </div>
+    </div>
+  `;
+
+  if (window.lucide) lucide.createIcons();
+}
+
+// 3-3. 퀵 필터 토글 함수
+window.toggleContestUrgentFilter = function() {
+  isContestUrgentFilterActive = !isContestUrgentFilterActive;
+  renderContestUrgentBanner();
+  renderContests();
+  if (isContestUrgentFilterActive) {
+    const urgentCount = getUrgentContests().length;
+    showContestToast(`🚨 마감 임박(D-3 이내) 공모전 ${urgentCount}건만 필터링되었습니다.`);
+  } else {
+    showContestToast('모든 공모전을 표시합니다.');
+  }
+};
 
 // 4. 필터링 및 정렬
 function getFilteredContests() {
@@ -149,6 +262,15 @@ function getFilteredContests() {
   // 상태 필터 (접수중 / 접수예정 / 상시접수)
   if (contestActiveStatus !== 'ALL') {
     list = list.filter(c => c.status === contestActiveStatus);
+  }
+
+  // 마감 임박 (D-3) 퀵 필터
+  if (isContestUrgentFilterActive) {
+    list = list.filter(c => {
+      if (c.status === '접수마감') return false;
+      const dday = parseDdayFromPeriod(c.period, c.status);
+      return !dday.isClosed && dday.isUrgent;
+    });
   }
 
   // 검색어 필터
@@ -201,6 +323,9 @@ function renderContests() {
   const emptyState = document.getElementById('contestEmptyState');
   if (!grid || !emptyState) return;
 
+  // 상단 긴급 배너 동기화
+  renderContestUrgentBanner();
+
   const filtered = getFilteredContests();
 
   if (filtered.length === 0) {
@@ -238,12 +363,29 @@ function renderContests() {
       catBadgeClass = 'bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border-rose-200 dark:border-rose-800';
     }
 
-    // D-Day 뱃지 스타일
-    let ddayBadgeClass = 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300';
+    // D-Day 뱃지 스타일 강화: D-3 이내 항목에는 진한 붉은색/로즈 배경, animate-pulse, 불꽃(flame) 아이콘 추가
+    let ddayBadgeHtml = '';
     if (ddayInfo.isUrgent) {
-      ddayBadgeClass = 'bg-rose-500 text-white font-bold animate-pulse';
-    } else if (contest.status === '접수중') {
-      ddayBadgeClass = 'bg-blue-600 text-white font-bold';
+      ddayBadgeHtml = `
+        <span class="inline-flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-md font-bold bg-rose-600 text-white border border-rose-600 animate-pulse shadow-sm shadow-rose-500/30 flex-shrink-0">
+          <i data-lucide="flame" class="w-3 h-3 text-amber-300 flex-shrink-0"></i>
+          <span>${ddayInfo.text}</span>
+        </span>
+      `;
+    } else {
+      let ddayBadgeClass = 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300';
+      if (contest.status === '접수중') {
+        if (ddayInfo.days <= 7) {
+          ddayBadgeClass = 'bg-amber-500 text-white font-bold';
+        } else {
+          ddayBadgeClass = 'bg-blue-600 text-white font-bold';
+        }
+      }
+      ddayBadgeHtml = `
+        <span class="text-[11px] px-2 py-0.5 rounded-md font-semibold ${ddayBadgeClass} flex-shrink-0">
+          ${ddayInfo.text}
+        </span>
+      `;
     }
 
     /*
@@ -263,9 +405,7 @@ function renderContests() {
               <span class="text-[11px] px-2.5 py-0.5 rounded-full font-semibold border ${catBadgeClass} flex-shrink-0">
                 ${contest.category || '공모전'}
               </span>
-              <span class="text-[11px] px-2 py-0.5 rounded-md font-semibold ${ddayBadgeClass} flex-shrink-0">
-                ${ddayInfo.text}
-              </span>
+              ${ddayBadgeHtml}
             </div>
             <div class="flex items-center gap-1.5 flex-shrink-0">
               <span class="text-[11px] px-2.5 py-0.5 rounded-full font-semibold border ${statusBadgeClass}">
@@ -372,7 +512,15 @@ function openContestModal(contestId) {
   const statusEl = document.getElementById('modalStatusBadge');
   if (statusEl) statusEl.textContent = contest.status;
   const ddayEl = document.getElementById('modalDdayBadge');
-  if (ddayEl) ddayEl.textContent = ddayInfo.text;
+  if (ddayEl) {
+    if (ddayInfo.isUrgent) {
+      ddayEl.className = 'inline-flex items-center gap-1 text-xs px-2.5 py-0.5 rounded-full font-bold bg-rose-600 text-white border border-rose-600 animate-pulse shadow-xs';
+      ddayEl.innerHTML = `<i data-lucide="flame" class="w-3.5 h-3.5 text-amber-300"></i><span>${ddayInfo.text}</span>`;
+    } else {
+      ddayEl.className = 'text-xs px-2.5 py-0.5 rounded-full font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300';
+      ddayEl.textContent = ddayInfo.text;
+    }
+  }
   const titleEl = document.getElementById('modalTitle');
   if (titleEl) titleEl.textContent = contest.title;
   const orgEl = document.getElementById('modalOrganizer');

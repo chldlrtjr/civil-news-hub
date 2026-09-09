@@ -251,6 +251,9 @@
       </div>
     </div>
 
+    <!-- 🚨 마감 임박 긴급 채용 공고 배너 (#jobUrgentBannerContainer) -->
+    <div id="jobUrgentBannerContainer" class="mt-4 hidden"></div>
+
     <!-- 검색 입력창 -->
     <div class="mt-5">
       <div class="relative w-full">
@@ -286,7 +289,20 @@
         </span>
       </div>
 
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+        <!-- 🚨 마감임박(D-3)만 보기 퀵 토글 버튼 -->
+        <button 
+          type="button" 
+          id="jobUrgentToggleBtn" 
+          onclick="toggleJobUrgentFilter()" 
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-rose-200 dark:border-rose-900/60 bg-white dark:bg-slate-900 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer shadow-xs"
+          title="D-3 마감임박 공고만 모아보기"
+        >
+          <i data-lucide="flame" class="w-3.5 h-3.5 text-rose-500"></i>
+          <span>🚨 마감임박(D-3)만 보기</span>
+          <span id="jobUrgentCountBadge" class="hidden px-1.5 py-0.2 rounded-full text-[10px] bg-rose-600 text-white font-bold">0</span>
+        </button>
+
         <!-- 경력 구분 필터 버튼 그룹 -->
         <div class="inline-flex rounded-lg border border-slate-200 dark:border-slate-800 p-0.5 bg-slate-100 dark:bg-slate-900">
           <button data-career="all" class="career-filter-btn px-2.5 py-1 text-xs font-semibold rounded-md bg-blue-600 text-white transition cursor-pointer">
@@ -387,6 +403,9 @@
       </div>
     </div>
 
+    <!-- 🚨 마감 임박 긴급 공모전 배너 (#contestUrgentBannerContainer) -->
+    <div id="contestUrgentBannerContainer" class="mt-4 hidden"></div>
+
     <!-- 검색창 & 정렬 컨트롤 바 -->
     <div class="my-5 flex flex-col md:flex-row md:items-center justify-between gap-3">
       <!-- 검색 입력창 -->
@@ -405,6 +424,19 @@
 
       <!-- 상태 필터 & 정렬 드롭다운 -->
       <div class="flex items-center gap-2 self-end md:self-auto flex-wrap sm:flex-nowrap">
+        <!-- 🚨 마감임박(D-3)만 보기 퀵 토글 버튼 -->
+        <button 
+          type="button" 
+          id="contestUrgentToggleBtn" 
+          onclick="toggleContestUrgentFilter()" 
+          class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold border border-rose-200 dark:border-rose-900/60 bg-white dark:bg-slate-900 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer shadow-xs"
+          title="D-3 마감임박 공모전만 모아보기"
+        >
+          <i data-lucide="flame" class="w-3.5 h-3.5 text-rose-500"></i>
+          <span>🚨 마감임박(D-3)만 보기</span>
+          <span id="contestUrgentCountBadge" class="hidden px-1.5 py-0.2 rounded-full text-[10px] bg-rose-600 text-white font-bold">0</span>
+        </button>
+
         <!-- 상태 필터 칩 (접수중, 접수예정, 상시접수) -->
         <div class="inline-flex p-1 rounded-xl bg-slate-200/70 dark:bg-slate-800/80 text-xs font-medium text-slate-600 dark:text-slate-300" id="contestStatusFilterGroup">
           <button data-status="ALL" class="status-pill active px-2.5 py-1 rounded-lg transition cursor-pointer">전체</button>
@@ -657,8 +689,8 @@
   </div>
 
   <!-- 프론트엔드 스크립트 로드 (SPA 마스터 컨트롤러 & 채용 & 공모전) -->
-  <script src="./static/app.js?v=20260909_1745"></script>
-  <script src="./static/jobs.js?v=20260909_1745"></script>
-  <script src="./static/contests.js?v=20260909_1745"></script>
+  <script src="./static/app.js?v=20260909_1800"></script>
+  <script src="./static/jobs.js?v=20260909_1800"></script>
+  <script src="./static/contests.js?v=20260909_1800"></script>
 </body>
 </html>
