@@ -635,9 +635,6 @@ function renderArticles() {
         <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 sm:pb-4 mb-4 sm:mb-5 border-b border-slate-200/70 sm:border-slate-100 dark:border-slate-800 px-1 sm:px-0 gap-2">
           <div>
             <div class="flex items-center gap-2">
-              <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                ${cat.code || '섹션'}
-              </span>
               <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                 ${cat.name}
               </h3>
