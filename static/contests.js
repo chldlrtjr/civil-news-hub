@@ -401,14 +401,6 @@ function renderContests() {
             <span>${contest.target || '전국민'}</span>
           </div>
 
-          <!-- 상금/포상 하이라이트 박스 -->
-          <div class="p-2.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/25 border border-amber-200/70 dark:border-amber-900/40 mb-3 flex items-start gap-2">
-            <i data-lucide="award" class="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5"></i>
-            <span class="text-xs font-semibold text-amber-800 dark:text-amber-300 line-clamp-1">
-              ${contest.prize || '공식 공고문 확인'}
-            </span>
-          </div>
-
           <!-- 요약 설명 -->
           <p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed mb-4">
             ${contest.description || ''}
@@ -417,14 +409,13 @@ function renderContests() {
 
         <!-- 카드 하단 버튼 영역 -->
         <div class="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
-          <button 
-            type="button" 
-            onclick="openContestModal('${contest.id}'); event.stopPropagation();"
-            class="text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition flex items-center gap-1"
-          >
-            <span>상세 요강 보기</span>
-            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-          </button>
+          <!-- 공모전 보상 (상금 / 혜택 뱃지) -->
+          <div class="flex items-center min-w-0 pr-1" title="공모전 보상: ${contest.prize || '공식 공고문 확인'}">
+            <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-amber-800 dark:text-amber-300 bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-900/60 px-2.5 py-1 rounded-lg truncate shadow-2xs">
+              <i data-lucide="award" class="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 flex-shrink-0"></i>
+              <span class="truncate">${contest.prize || '공식 공고문 확인'}</span>
+            </span>
+          </div>
 
           <div class="flex items-center gap-1.5" onclick="event.stopPropagation();">
             <!-- 공유 버튼 -->
