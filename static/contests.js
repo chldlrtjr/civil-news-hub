@@ -63,6 +63,15 @@ function toggleContestBookmark(contestId, e) {
 function updateBookmarkCount() {
   const countEl = document.getElementById('bookmarkCount');
   if (countEl) countEl.textContent = contestBookmarks.size;
+  const mobileBadge = document.getElementById('mobileBookmarkBadge');
+  if (mobileBadge) {
+    mobileBadge.textContent = contestBookmarks.size;
+    if (contestBookmarks.size > 0) {
+      mobileBadge.classList.remove('hidden');
+    } else {
+      mobileBadge.classList.add('hidden');
+    }
+  }
 }
 
 // 2. 공모전 데이터 로드
@@ -440,18 +449,34 @@ function setupEventListeners() {
     });
   }
 
-  // 북마크 탭 토글 버튼
+  // 북마크 탭 토글 버튼 (헤더 및 모바일 하단바)
   const bookmarkTabBtn = document.getElementById('bookmarkTabBtn');
-  if (bookmarkTabBtn) {
-    bookmarkTabBtn.addEventListener('click', () => {
-      isBookmarkView = !isBookmarkView;
+  const mobileBookmarkBtn = document.getElementById('mobileBookmarkBtn');
+  
+  const handleContestBookmarkToggle = () => {
+    isBookmarkView = !isBookmarkView;
+    if (bookmarkTabBtn) {
       if (isBookmarkView) {
         bookmarkTabBtn.classList.add('ring-2', 'ring-amber-500', 'bg-amber-100', 'dark:bg-amber-900/60');
       } else {
         bookmarkTabBtn.classList.remove('ring-2', 'ring-amber-500', 'bg-amber-100', 'dark:bg-amber-900/60');
       }
-      renderContests();
-    });
+    }
+    if (mobileBookmarkBtn) {
+      if (isBookmarkView) {
+        mobileBookmarkBtn.className = 'relative flex flex-col items-center justify-center py-1 px-3 text-amber-500 font-bold transition cursor-pointer';
+      } else {
+        mobileBookmarkBtn.className = 'relative flex flex-col items-center justify-center py-1 px-3 text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 font-medium transition cursor-pointer';
+      }
+    }
+    renderContests();
+  };
+
+  if (bookmarkTabBtn) {
+    bookmarkTabBtn.addEventListener('click', handleContestBookmarkToggle);
+  }
+  if (mobileBookmarkBtn) {
+    mobileBookmarkBtn.addEventListener('click', handleContestBookmarkToggle);
   }
 
   // 검색창 입력

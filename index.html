@@ -214,8 +214,8 @@
     <span id="toastMessage">링크가 클립보드에 복사되었습니다.</span>
   </div>
 
-  <!-- 화면 아래쪽 가운데 공모전 버튼 (Fixed Bottom Center Floating Action Button) -->
-  <div class="fixed bottom-5 inset-x-0 flex justify-center z-30 pointer-events-none px-4">
+  <!-- 화면 아래쪽 가운데 공모전 버튼 (데스크탑 전용 Fixed Bottom Center Floating Action Button) -->
+  <div class="hidden sm:flex fixed bottom-5 inset-x-0 justify-center z-30 pointer-events-none px-4">
     <button 
       id="openContestBtn" 
       class="pointer-events-auto flex items-center gap-2.5 px-5 py-3 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold text-xs sm:text-sm shadow-xl shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105 active:scale-95 transition-all duration-200 border border-white/20 cursor-pointer"
@@ -226,6 +226,34 @@
       <span id="contestBtnCount" class="text-[10px] sm:text-xs bg-white/25 px-2 py-0.5 rounded-full font-bold">공고 확인</span>
     </button>
   </div>
+
+  <!-- 모바일 전용 하단 고정 네비게이션 바 (Mobile Bottom Navigation Bar) -->
+  <nav class="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800/80 px-2 py-1 flex items-center justify-around shadow-lg transition-colors" aria-label="모바일 하단 네비게이션">
+    <!-- 토목 뉴스 (활성) -->
+    <a href="./index.html" class="flex flex-col items-center justify-center py-1 px-3 text-blue-600 dark:text-blue-400 font-bold transition" title="토목 뉴스 브리핑">
+      <i data-lucide="newspaper" class="w-5 h-5 mb-0.5"></i>
+      <span class="text-[10px] tracking-tight">뉴스</span>
+    </a>
+
+    <!-- 채용 공고문 -->
+    <a href="./jobs.html" class="flex flex-col items-center justify-center py-1 px-3 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition" title="채용 공고문">
+      <i data-lucide="briefcase" class="w-5 h-5 mb-0.5"></i>
+      <span class="text-[10px] tracking-tight">채용</span>
+    </a>
+
+    <!-- 공모전 -->
+    <a href="./contests.html" class="flex flex-col items-center justify-center py-1 px-3 text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 font-medium transition" title="토목 공모전 & 경진대회">
+      <i data-lucide="trophy" class="w-5 h-5 mb-0.5"></i>
+      <span class="text-[10px] tracking-tight">공모전</span>
+    </a>
+
+    <!-- 북마크 필터 -->
+    <button id="mobileBookmarkBtn" type="button" class="relative flex flex-col items-center justify-center py-1 px-3 text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 font-medium transition cursor-pointer" title="북마크 모아보기">
+      <i data-lucide="bookmark" class="w-5 h-5 mb-0.5"></i>
+      <span class="text-[10px] tracking-tight">북마크</span>
+      <span id="mobileBookmarkBadge" class="hidden absolute top-0.5 right-2 px-1 py-0.2 rounded-full text-[9px] font-bold bg-amber-500 text-white min-w-[14px] text-center">0</span>
+    </button>
+  </nav>
 
   <!-- 토목 공모전 슬라이드업 레이어 (Bottom Sheet / Overlay Modal) -->
   <div id="contestLayer" class="fixed inset-0 z-50 invisible opacity-0 transition-all duration-300 flex items-end sm:items-center justify-center p-0 sm:p-4">
@@ -317,6 +345,6 @@
   </footer>
 
   <!-- 스크립트 로드 -->
-  <script src="./static/app.js?v=20260909_1715"></script>
+  <script src="./static/app.js?v=20260909_1720"></script>
 </body>
 </html>

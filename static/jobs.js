@@ -61,6 +61,15 @@ function toggleJobBookmark(jobId, e) {
 function updateJobBookmarkCount() {
   const countEl = document.getElementById('bookmarkCount');
   if (countEl) countEl.textContent = jobBookmarks.size;
+  const mobileBadge = document.getElementById('mobileBookmarkBadge');
+  if (mobileBadge) {
+    mobileBadge.textContent = jobBookmarks.size;
+    if (jobBookmarks.size > 0) {
+      mobileBadge.classList.remove('hidden');
+    } else {
+      mobileBadge.classList.add('hidden');
+    }
+  }
 }
 
 // 2. 채용 공고 데이터 로드
@@ -180,11 +189,21 @@ function renderJobCategoryTabs() {
 
 function updateJobBookmarkTabStyle() {
   const bookmarkBtn = document.getElementById('bookmarkTabBtn');
-  if (!bookmarkBtn) return;
-  if (isJobBookmarkView) {
-    bookmarkBtn.className = 'flex-shrink-0 flex items-center px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium transition bg-amber-500 text-white shadow-sm shadow-amber-500/20 cursor-pointer border border-amber-500';
-  } else {
-    bookmarkBtn.className = 'flex-shrink-0 flex items-center px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium transition border border-amber-300/90 dark:border-amber-700/60 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40 cursor-pointer shadow-xs';
+  if (bookmarkBtn) {
+    if (isJobBookmarkView) {
+      bookmarkBtn.className = 'flex-shrink-0 flex items-center px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium transition bg-amber-500 text-white shadow-sm shadow-amber-500/20 cursor-pointer border border-amber-500';
+    } else {
+      bookmarkBtn.className = 'flex-shrink-0 flex items-center px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium transition border border-amber-300/90 dark:border-amber-700/60 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40 cursor-pointer shadow-xs';
+    }
+  }
+
+  const mobileBtn = document.getElementById('mobileBookmarkBtn');
+  if (mobileBtn) {
+    if (isJobBookmarkView) {
+      mobileBtn.className = 'relative flex flex-col items-center justify-center py-1 px-3 text-amber-500 font-bold transition cursor-pointer';
+    } else {
+      mobileBtn.className = 'relative flex flex-col items-center justify-center py-1 px-3 text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 font-medium transition cursor-pointer';
+    }
   }
 }
 
@@ -618,16 +637,23 @@ function setupJobEventListeners() {
     });
   }
 
-  // 북마크 탭
+  // 북마크 탭 (헤더 및 모바일 하단바)
   const bookmarkTabBtn = document.getElementById('bookmarkTabBtn');
+  const handleJobBookmarkToggle = () => {
+    isJobBookmarkView = !isJobBookmarkView;
+    renderJobCategoryTabs();
+    updateJobBookmarkTabStyle();
+    renderJobs();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   if (bookmarkTabBtn) {
-    bookmarkTabBtn.addEventListener('click', () => {
-      isJobBookmarkView = !isJobBookmarkView;
-      renderJobCategoryTabs();
-      updateJobBookmarkTabStyle();
-      renderJobs();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
+    bookmarkTabBtn.addEventListener('click', handleJobBookmarkToggle);
+  }
+
+  const mobileBookmarkBtn = document.getElementById('mobileBookmarkBtn');
+  if (mobileBookmarkBtn) {
+    mobileBookmarkBtn.addEventListener('click', handleJobBookmarkToggle);
   }
 
   // 검색어 입력
