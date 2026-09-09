@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Civil News Hub · 모바일 뷰 시뮬레이터</title>
+  
+  <!-- Tailwind CSS & Lucide Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  
+  <!-- 파비콘 -->
+  <link rel="icon" type="image/svg+xml" href="./static/favicon.svg">
+  <link rel="alternate icon" href="./favicon.svg">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* 스마트폰 스크롤바 숨김 및 부드러운 스크롤 */
+    iframe {
+      border: none;
+      width: 100%;
+      height: 100%;
+      background: #0f172a;
+    }
+    .device-shadow {
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 0 12px #1e293b, 0 0 0 14px #334155;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans select-none overflow-x-hidden">
+
+  <!-- 상단 컨트롤 툴바 -->
+  <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3 sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- 좌측 타이틀 & 브랜딩 -->
+      <div class="flex items-center gap-3">
+        <a href="./index.html" class="flex items-center gap-2 text-white font-bold text-sm sm:text-base hover:text-blue-400 transition" title="데스크탑 버전으로 이동">
+          <span class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow">
+            <i data-lucide="hard-hat" class="w-4 h-4"></i>
+          </span>
+          <span class="tracking-tight">Civil News Hub</span>
+        </a>
+        <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center gap-1">
+          <i data-lucide="smartphone" class="w-3 h-3"></i>
+          모바일 뷰
+        </span>
+      </div>
+
+      <!-- 중앙 탭 바로가기 스위처 -->
+      <div class="flex items-center bg-slate-800/90 rounded-xl p-1 border border-slate-700/60 text-xs font-semibold">
+        <button onclick="setTab('news')" id="tabBtnNews" class="px-3 py-1.5 rounded-lg transition bg-blue-600 text-white shadow-sm flex items-center gap-1.5">
+          <i data-lucide="newspaper" class="w-3.5 h-3.5"></i>
+          <span>뉴스</span>
+        </button>
+        <button onclick="setTab('jobs')" id="tabBtnJobs" class="px-3 py-1.5 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5">
+          <i data-lucide="briefcase" class="w-3.5 h-3.5"></i>
+          <span>채용</span>
+        </button>
+        <button onclick="setTab('contests')" id="tabBtnContests" class="px-3 py-1.5 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5">
+          <i data-lucide="trophy" class="w-3.5 h-3.5"></i>
+          <span>공모전</span>
+        </button>
+      </div>
+
+      <!-- 우측 디바이스 프리셋 & 데스크탑 복귀 -->
+      <div class="flex items-center gap-2">
+        <!-- 디바이스 크기 변경 -->
+        <div class="flex items-center bg-slate-800 rounded-lg p-0.5 border border-slate-700 text-xs">
+          <button onclick="setDeviceSize(375, 812, 'iPhone mini')" id="sizeBtnMini" class="px-2.5 py-1 rounded text-slate-400 hover:text-white transition">375</button>
+          <button onclick="setDeviceSize(393, 852, 'iPhone 15')" id="sizeBtnDefault" class="px-2.5 py-1 rounded bg-slate-700 text-white font-bold transition">393</button>
+          <button onclick="setDeviceSize(428, 926, 'iPhone Max')" id="sizeBtnMax" class="px-2.5 py-1 rounded text-slate-400 hover:text-white transition">428</button>
+        </div>
+
+        <!-- 프레임 새로고침 -->
+        <button onclick="reloadFrame()" title="모바일 창 새로고침" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">
+          <i data-lucide="rotate-cw" id="reloadIcon" class="w-4 h-4"></i>
+        </button>
+
+        <!-- 원본 데스크탑 버전으로 열기 -->
+        <a href="./index.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-medium border border-slate-700 transition">
+          <i data-lucide="monitor" class="w-3.5 h-3.5"></i>
+          <span class="hidden sm:inline">데스크탑 뷰</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- 메인 스마트폰 디바이스 뷰어 컨테이너 -->
+  <main class="flex-1 flex items-center justify-center p-4 sm:p-8 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+    <div id="phoneWrapper" class="relative transition-all duration-300 flex flex-col items-center" style="width: 393px;">
+      
+      <!-- 스마트폰 상단 스피커 & 다이내믹 아일랜드 -->
+      <div class="w-full bg-[#1e293b] rounded-t-[44px] pt-3 pb-2 px-6 flex items-center justify-between border-t border-x border-slate-700/80">
+        <!-- 시계 -->
+        <span id="statusBarTime" class="text-[11px] font-semibold tracking-tight text-slate-300">09:41</span>
+        <!-- 다이내믹 아일랜드 캡슐 -->
+        <div class="w-24 h-4.5 bg-black rounded-full flex items-center justify-center gap-1.5 px-2">
+          <div class="w-2.5 h-2.5 rounded-full bg-slate-900 border border-slate-800"></div>
+          <div class="w-1.5 h-1.5 rounded-full bg-blue-950/80"></div>
+        </div>
+        <!-- 상태 아이콘 -->
+        <div class="flex items-center gap-1.5 text-slate-300 text-[10px]">
+          <i data-lucide="wifi" class="w-3 h-3"></i>
+          <i data-lucide="battery" class="w-3.5 h-3.5"></i>
+        </div>
+      </div>
+
+      <!-- 스마트폰 화면 (iframe) -->
+      <div class="w-full bg-slate-950 overflow-hidden relative border-x border-slate-700/80 shadow-2xl" style="height: 780px;">
+        <iframe id="mobileFrame" src="./index.html#news" title="Civil News Hub Mobile View"></iframe>
+      </div>
+
+      <!-- 스마트폰 하단 홈 바 -->
+      <div class="w-full bg-[#1e293b] rounded-b-[44px] py-3.5 flex items-center justify-center border-b border-x border-slate-700/80">
+        <div class="w-32 h-1 bg-slate-500/80 rounded-full"></div>
+      </div>
+
+      <!-- 디바이스 안내 캡션 -->
+      <p id="deviceLabel" class="text-xs text-slate-400 mt-4 text-center">
+        📱 iPhone 15 규격 (393 × 852px) · 모바일 하단 네비게이션 적용
+      </p>
+
+    </div>
+  </main>
+
+  <script>
+    // 현재 활성 탭 및 기기 크기 제어
+    let currentTab = 'news';
+
+    // 초기 해시 확인
+    const initialHash = (window.location.hash || '').replace('#', '').toLowerCase();
+    if (['jobs', 'contests', 'news'].includes(initialHash)) {
+      currentTab = initialHash;
+    }
+
+    const frame = document.getElementById('mobileFrame');
+    const phoneWrapper = document.getElementById('phoneWrapper');
+    const deviceLabel = document.getElementById('deviceLabel');
+
+    function setTab(tab) {
+      currentTab = tab;
+      
+      // 상단 탭 버튼 UI 갱신
+      const tabs = ['news', 'jobs', 'contests'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tabBtn${t.charAt(0).toUpperCase() + t.slice(1)}`);
+        if (btn) {
+          if (t === tab) {
+            btn.className = 'px-3 py-1.5 rounded-lg transition bg-blue-600 text-white shadow-sm flex items-center gap-1.5';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5';
+          }
+        }
+      });
+
+      // iframe 내부 탭 전환 또는 URL 변경
+      try {
+        if (frame.contentWindow && frame.contentWindow.switchMainTab) {
+          frame.contentWindow.switchMainTab(tab);
+        } else {
+          frame.src = `./index.html#${tab}`;
+        }
+      } catch (e) {
+        frame.src = `./index.html#${tab}`;
+      }
+
+      history.replaceState(null, null, `#${tab}`);
+    }
+
+    function setDeviceSize(width, height, name) {
+      phoneWrapper.style.width = width + 'px';
+      const screenHeight = height - 72; // 상하단 베젤 차감
+      frame.parentElement.style.height = screenHeight + 'px';
+      deviceLabel.textContent = `📱 ${name} 규격 (${width} × ${height}px) · 모바일 하단 네비게이션 적용`;
+
+      ['sizeBtnMini', 'sizeBtnDefault', 'sizeBtnMax'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+          btn.className = 'px-2.5 py-1 rounded text-slate-400 hover:text-white transition';
+        }
+      });
+
+      if (width === 375) document.getElementById('sizeBtnMini').className = 'px-2.5 py-1 rounded bg-slate-700 text-white font-bold transition';
+      if (width === 393) document.getElementById('sizeBtnDefault').className = 'px-2.5 py-1 rounded bg-slate-700 text-white font-bold transition';
+      if (width === 428) document.getElementById('sizeBtnMax').className = 'px-2.5 py-1 rounded bg-slate-700 text-white font-bold transition';
+    }
+
+    function reloadFrame() {
+      const icon = document.getElementById('reloadIcon');
+      if (icon) icon.classList.add('animate-spin');
+      try {
+        frame.contentWindow.location.reload();
+      } catch (e) {
+        frame.src = `./index.html#${currentTab}`;
+      }
+      setTimeout(() => {
+        if (icon) icon.classList.remove('animate-spin');
+      }, 600);
+    }
+
+    // 스마트폰 상단 실시간 시계 업데이트
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const clockEl = document.getElementById('statusBarTime');
+      if (clockEl) clockEl.textContent = `${h}:${m}`;
+    }
+    updateClock();
+    setInterval(updateClock, 30000);
+
+    // 초기 탭 세팅
+    setTab(currentTab);
+
+    // Lucide 아이콘 렌더링
+    if (window.lucide) window.lucide.createIcons();
+  </script>
+</body>
+</html>

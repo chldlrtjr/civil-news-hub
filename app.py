@@ -97,6 +97,15 @@ class CivilNewsHandler(SimpleHTTPRequestHandler):
                 self.send_bytes_response(f.read(), "text/html; charset=utf-8")
             return
 
+        # 1-3. 모바일 뷰 시뮬레이터 페이지 요청
+        if clean_path in ["/mobile", "/mobile.html"]:
+            mobile_path = os.path.join(BASE_DIR, "mobile.html")
+            if not os.path.exists(mobile_path):
+                mobile_path = os.path.join(STATIC_DIR, "mobile.html")
+            with open(mobile_path, "rb") as f:
+                self.send_bytes_response(f.read(), "text/html; charset=utf-8")
+            return
+
         # 2. 뉴스 데이터 API 요청
         if clean_path in ["/api/news", "/data/news.json"]:
             if not os.path.exists(NEWS_JSON_PATH):
