@@ -6,6 +6,7 @@ import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone, timedelta
 from email.utils import parsedate_to_datetime
+from collections import Counter
 
 # 디렉토리 경로
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -325,6 +326,10 @@ def scrape_civil_news():
     
     # 유사/중복 기사 군집화 (대표 기사 하위에 타 언론사 보도자료 그룹핑)
     final_articles, duplicate_count = cluster_related_articles(all_articles)
+
+    # 당일 아침 7시 수집 기사 기반 대표 트렌딩 키워드 동적 추출
+    trending_keywords = extract_trending_keywords(final_articles, max_keywords=10)
+    print(f"🔥 [오늘의 대표 키워드 추출] {', '.join(f'#{k}' for k in trending_keywords)}")
     
     # 결과 구조체
     now_kst = datetime.now(kst)
@@ -334,6 +339,7 @@ def scrape_civil_news():
         "total_count": len(final_articles),
         "raw_total_count": len(all_articles),
         "duplicate_count": duplicate_count,
+        "trending_keywords": trending_keywords,
         "categories": [
             {"id": c["id"], "name": c["name"], "badge_color": c["badge_color"]} for c in CATEGORIES
         ],
@@ -344,7 +350,7 @@ def scrape_civil_news():
     with open(NEWS_JSON_PATH, "w", encoding="utf-8") as f:
         json.dump(result_data, f, ensure_ascii=False, indent=2)
         
-    print(f"✅ 총 {len(final_articles)}건의 토픽 기사 (중복 {duplicate_count}건 묶음) 저장 완료! ({NEWS_JSON_PATH})")
+    print(f"✅ 총 {len(final_articles)}건의 토픽 기사 (중복 {duplicate_count}건 묶음, 키워드 {len(trending_keywords)}개) 저장 완료! ({NEWS_JSON_PATH})")
     return result_data
 
 CLUSTER_STOPWORDS = {
@@ -471,6 +477,101 @@ def cluster_related_articles(articles):
     
     print(f"📊 [유사기사 군집화 완료] 대표 토픽 {len(final_articles)}건 (중복 기사 {total_duplicates}건 하위 그룹핑)")
     return final_articles, total_duplicates
+
+
+def extract_trending_keywords(articles, max_keywords=10):
+    """
+    매일 아침 수집된 전체 토목 기사들로부터 가장 화제가 되고 있는
+    대표 토픽 키워드 8~10개를 정밀 분석하여 동적으로 추출합니다.
+    고정 키워드 대신 실제 당일 보도 이슈(지천댐, 싱크홀, 태그리스, GTX 등)가 반영됩니다.
+    """
+    if not articles:
+        return ["스마트건설", "지하안전", "GTX", "수자원", "철도망", "교량·터널", "신기술", "싱크홀"]
+
+    # 1. 노이즈 및 과도하게 일반적인 단어 배제 불용어
+    GENERIC_STOPWORDS = {
+        '토목', '건설', '공사', '도로', '철도', '터널', '교량', '사업', '시공', '한국', 
+        '인프라', '현장', '안전', '점검', '추진', '본격', '선정', '착공', '개통', '발주', 
+        '수주', '사업비', '조원', '억원', '지역', '전국', '계획', '발표', '시작', '마련', 
+        '개최', '참여', '지원', '협력', '체결', '업무협약', '대책', '확정', '회의', '논의', 
+        '개발', '조성', '구축', '도입', '확대', '운영', '관리', '실시', '진행', '완공', 
+        '연내', '내년', '올해', '기자', '뉴스', '보도', '사진', '종합', '단독', '속보', 
+        '포토', '투자', '설계', '정부', '지자체', '공개', '강화', '조사', '위해', '통해', 
+        '관련', '위한', '국가철도망', '구축계획', '총력', '반영', '유치', '건의', '촉구', 
+        '호재', '기자회견', '간담회', '주민설명회', '설명회', '토론회', '맞손', '업무', 
+        '대한', '통한', '따른', '등을', '하는', '있는', '것으로', '대해', '이상', '이번', 
+        '지난', '앞서', '이날', '이후', '최근', '주요', '최대', '역대', '의원', '박수현', 
+        '피해', '필요', '노조', '논란', '주민', '대응', '반발', '통과', '추석', '사고', 
+        '시민', '적용', '문제', '요구', '주장', '확인', '예정', '우려', '방안', '개선',
+        '서울', '경기', '부산', '대구', '인천', '광주', '대전', '울산', '경기도', '4개', '4대', '1위',
+        '통합', '시스템', '투입', '지하철'
+    }
+
+    # 2. 토목 핵심 전문 분야 및 주요 프로젝트 사전 스캐너
+    DOMAIN_PATTERNS = [
+        ('지천댐', 1.5), ('태그리스', 1.5), ('싱크홀', 1.5), ('지반침하', 1.5),
+        ('무선제어', 1.3), ('스마트건설', 1.4), ('GTX', 1.4), ('도시철도', 1.2),
+        ('지하고속도로', 1.4), ('항만공사', 1.1), ('도로공사', 1.1), ('철도망', 1.2),
+        ('국토부', 1.0), ('BIM', 1.4), ('디지털트윈', 1.4), ('모듈러', 1.3),
+        ('프리팹', 1.3), ('하천정비', 1.3), ('가덕도', 1.4), ('신안산선', 1.4),
+        ('달빛철도', 1.4), ('새만금', 1.3), ('신기술', 1.2), ('대심도', 1.3),
+        ('탄소중립', 1.2), ('방파제', 1.3), ('해수담수화', 1.4), ('안전진단', 1.2),
+        ('지하안전', 1.4), ('AI', 1.3), ('수자원공사', 1.1), ('철도공단', 1.1),
+        ('LH', 1.1), ('CM직발주', 1.4), ('침수예방', 1.3), ('사면안정', 1.3)
+    ]
+
+    scores = Counter()
+
+    for a in articles:
+        title = a.get('title', '')
+        snippet = a.get('snippet', '')
+        text = f"{title} {snippet}"
+
+        for pattern, boost in DOMAIN_PATTERNS:
+            p_re = r'\b' + re.escape(pattern) + r'\b' if pattern in ['AI', 'GTX', 'BIM', 'LH'] else re.escape(pattern)
+            if re.search(p_re, title, re.IGNORECASE):
+                scores[pattern] += int(4 * boost)
+            elif re.search(p_re, text, re.IGNORECASE):
+                scores[pattern] += int(1 * boost)
+
+    # 3. 제목에서 3회 이상 등장하는 고유명사/프로젝트명 추가 탐색
+    title_token_counts = Counter()
+    for a in articles:
+        title = a.get('title', '')
+        clean = re.sub(r'\[.*?\]|\(.*?\)|<.*?>|[^\w\s]', ' ', title)
+        words = set(w for w in clean.split() if 2 <= len(w) <= 6 and w not in GENERIC_STOPWORDS)
+        for w in words:
+            title_token_counts[w] += 1
+
+    for w, count in title_token_counts.items():
+        if count >= 3 and w not in scores:
+            scores[w] += count * 2
+
+    # 4. 상위 점수 순위 추출
+    sorted_keywords = [k for k, score in scores.most_common(25) if score >= 2]
+
+    # 5. 유사/포함 키워드 중복 제거 (예: 도로공사 vs 한국도로공사)
+    final_keywords = []
+    for kw in sorted_keywords:
+        is_dup = False
+        for chosen in final_keywords:
+            if kw in chosen or chosen in kw:
+                is_dup = True
+                break
+        if not is_dup:
+            final_keywords.append(kw)
+        if len(final_keywords) >= max_keywords:
+            break
+
+    # 6. 수집된 키워드가 부족할 경우 기본 대표 키워드로 보충
+    fallback = ["스마트건설", "지하안전", "GTX", "수자원", "철도망", "싱크홀", "교량·터널", "신기술"]
+    for fb in fallback:
+        if len(final_keywords) >= max_keywords:
+            break
+        if fb not in final_keywords:
+            final_keywords.append(fb)
+
+    return final_keywords[:max_keywords]
 
 
 CONTESTS_JSON_PATH = os.path.join(DATA_DIR, "contests.json")

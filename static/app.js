@@ -31,8 +31,8 @@ let bookmarkNotes = {};
 let activeKeywordFilter = '전체';
 let currentEditingNoteItemId = null;
 
-const NEWS_KEYWORD_CHIPS = [
-  '전체', '스마트건설', '지하안전', 'GTX', '수자원', '교량·터널', '탄소중립', '해외인프라', '철도망', '신기술'
+let newsKeywordChips = [
+  '전체', '스마트건설', '지하안전', 'GTX', '수자원', '철도망', '신기술'
 ];
 
 // 페이징 (카테고리별 초기 6개 표시)
@@ -339,6 +339,15 @@ async function loadNewsData() {
     const countEl = document.getElementById('newsTotalCount');
     if (countEl) countEl.textContent = `${allArticles.length}건`;
 
+    // 매일 아침 크롤링된 당일 대표 트렌딩 키워드(#) 동적 연동
+    if (data.trending_keywords && Array.isArray(data.trending_keywords) && data.trending_keywords.length > 0) {
+      newsKeywordChips = ['전체', ...data.trending_keywords];
+      if (activeKeywordFilter !== '전체' && !newsKeywordChips.includes(activeKeywordFilter)) {
+        activeKeywordFilter = '전체';
+      }
+      renderNewsKeywordChips();
+    }
+
     renderCategoryTabs();
     renderArticles();
   } catch (err) {
@@ -446,10 +455,10 @@ function renderNewsKeywordChips() {
 
   const label = document.createElement('span');
   label.className = 'text-slate-400 dark:text-slate-500 font-medium flex items-center gap-1 pr-1 flex-shrink-0';
-  label.innerHTML = '<i data-lucide="hash" class="w-3.5 h-3.5 text-blue-500"></i><span>키워드:</span>';
+  label.innerHTML = '<i data-lucide="trending-up" class="w-3.5 h-3.5 text-blue-500"></i><span>오늘의 키워드:</span>';
   container.appendChild(label);
 
-  NEWS_KEYWORD_CHIPS.forEach(chip => {
+  newsKeywordChips.forEach(chip => {
     const isActive = activeKeywordFilter === chip;
     const btn = document.createElement('button');
     btn.type = 'button';
