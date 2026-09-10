@@ -13,6 +13,33 @@ let currentModalContest = null;
 let calendarCurrentYear = new Date().getFullYear();
 let calendarCurrentMonth = new Date().getMonth();
 
+// 가벼운 디바운스 및 Lucide 국소 렌더링 헬퍼
+function debounce(func, wait = 180) {
+  let timeout;
+  return function(...args) {
+    const context = this;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(context, args), wait);
+  };
+}
+
+function safeCreateIcons(rootEl) {
+  if (window.safeCreateIcons) {
+    window.safeCreateIcons(rootEl);
+    return;
+  }
+  if (!window.lucide) return;
+  try {
+    if (rootEl && rootEl instanceof HTMLElement) {
+      window.lucide.createIcons({ root: rootEl });
+    } else {
+      window.lucide.createIcons();
+    }
+  } catch (e) {
+    try { window.lucide.createIcons(); } catch (err) {}
+  }
+}
+
 // 1. 초기화
 document.addEventListener('DOMContentLoaded', () => {
   loadContestBookmarks();
@@ -347,9 +374,7 @@ function renderContests() {
 
   grid.innerHTML = filtered.map(renderContestCard).join('');
 
-  if (window.lucide) {
-    lucide.createIcons();
-  }
+  safeCreateIcons(grid);
 }
 
 // 공모전 단일 카드 렌더링 (마이페이지 및 메인 그리드 공용)
@@ -554,7 +579,7 @@ function openContestModal(contestId) {
   const backdrop = modal.querySelector('#contestModalBackdrop');
   if (backdrop) backdrop.classList.remove('opacity-0');
   document.body.style.overflow = 'hidden';
-  if (window.lucide) lucide.createIcons();
+  safeCreateIcons(modal);
 }
 
 function closeContestModal() {
@@ -575,7 +600,7 @@ function updateModalBookmarkState() {
     <i data-lucide="bookmark" class="w-4 h-4 text-amber-500 ${isBookmarked ? 'fill-amber-500' : ''}"></i>
     <span>${isBookmarked ? '북마크됨' : '북마크'}</span>
   `;
-  if (window.lucide) lucide.createIcons();
+  safeCreateIcons(btn);
 }
 
 // 6-1. 공모전 캘린더 등록 헬퍼
@@ -729,20 +754,25 @@ function copyContestPromptFallback(text) {
 
 // 7. 이벤트 리스너 설정
 function setupContestEventListeners() {
-  // 검색창 입력
+  // 검색창 입력 (180ms 디바운스 적용으로 타이핑 렉 원천 차단)
   const searchInput = document.getElementById('contestSearchInput');
   const clearSearchBtn = document.getElementById('clearContestSearchBtn');
   if (searchInput) {
+    const handleContestSearch = debounce((query) => {
+      contestSearchQuery = query;
+      renderContests();
+    }, 180);
+
     searchInput.addEventListener('input', (e) => {
-      contestSearchQuery = e.target.value;
+      const val = e.target.value.trim();
       if (clearSearchBtn) {
-        if (contestSearchQuery.trim()) {
+        if (val) {
           clearSearchBtn.classList.remove('hidden');
         } else {
           clearSearchBtn.classList.add('hidden');
         }
       }
-      renderContests();
+      handleContestSearch(val);
     });
   }
 
@@ -969,7 +999,7 @@ function openContestCalendarModal() {
   backdrop.classList.remove('opacity-0');
   backdrop.classList.add('opacity-100');
   document.body.classList.add('overflow-hidden');
-  if (window.lucide) lucide.createIcons();
+  safeCreateIcons(modal);
 }
 
 function closeContestCalendarModal() {
@@ -1150,7 +1180,7 @@ function renderContestCalendar(year, month) {
     }
   }
 
-  if (window.lucide) lucide.createIcons();
+  safeCreateIcons(document.getElementById('contestCalendarModal'));
 }
 
 function scrollToCalendarTimelineDay(day) {

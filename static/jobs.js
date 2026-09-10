@@ -10,6 +10,33 @@ let jobBookmarks = new Set();
 let isJobBookmarkView = false;
 let isJobUrgentFilterActive = false;
 
+// 가벼운 디바운스 및 Lucide 국소 렌더링 헬퍼
+function debounce(func, wait = 180) {
+  let timeout;
+  return function(...args) {
+    const context = this;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(context, args), wait);
+  };
+}
+
+function safeCreateIcons(rootEl) {
+  if (window.safeCreateIcons) {
+    window.safeCreateIcons(rootEl);
+    return;
+  }
+  if (!window.lucide) return;
+  try {
+    if (rootEl && rootEl instanceof HTMLElement) {
+      window.lucide.createIcons({ root: rootEl });
+    } else {
+      window.lucide.createIcons();
+    }
+  } catch (e) {
+    try { window.lucide.createIcons(); } catch (err) {}
+  }
+}
+
 // 1. 초기화
 document.addEventListener('DOMContentLoaded', () => {
   loadJobBookmarks();
@@ -673,7 +700,7 @@ function renderJobs() {
     </div>
   `;
 
-  if (window.lucide) window.lucide.createIcons();
+  safeCreateIcons(container);
 }
 
 // 8. 상세 팝업 모달
@@ -874,7 +901,7 @@ function openJobModal(jobId) {
   modal.classList.remove('hidden');
   modal.classList.add('flex');
   document.body.style.overflow = 'hidden';
-  if (window.lucide) window.lucide.createIcons();
+  safeCreateIcons(modalContent);
 }
 
 function closeJobModal() {
@@ -1079,18 +1106,23 @@ function showJobLoading(show) {
 
 // 11. 이벤트 리스너 등록
 function setupJobEventListeners() {
-  // 검색어 입력
+  // 검색어 입력 (180ms 디바운스 적용으로 타이핑 렉 원천 차단)
   const searchInput = document.getElementById('jobSearchInput');
   const clearBtn = document.getElementById('clearJobSearchBtn');
   if (searchInput && clearBtn) {
+    const handleJobSearch = debounce((query) => {
+      jobSearchQuery = query;
+      renderJobs();
+    }, 180);
+
     searchInput.addEventListener('input', (e) => {
-      jobSearchQuery = e.target.value.trim();
-      if (jobSearchQuery) {
+      const val = e.target.value.trim();
+      if (val) {
         clearBtn.classList.remove('hidden');
       } else {
         clearBtn.classList.add('hidden');
       }
-      renderJobs();
+      handleJobSearch(val);
     });
 
     clearBtn.addEventListener('click', () => {

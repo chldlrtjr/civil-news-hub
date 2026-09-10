@@ -35,9 +35,37 @@ let newsKeywordChips = [
   '전체', '스마트건설', '지하안전', 'GTX', '수자원', '철도망', '신기술'
 ];
 
-// 페이징 (카테고리별 초기 6개 표시)
+// 페이징 (카테고리별 초기 6개 표시, 검색/키워드 결과 초기 12개 표시)
 const CATEGORY_PAGE_SIZE = 6;
+const SEARCH_PAGE_SIZE = 12;
 let categoryDisplayedCount = {};
+let searchDisplayedCount = SEARCH_PAGE_SIZE;
+
+// 가벼운 디바운스 유틸리티 (입력 렉 원천 차단)
+function debounce(func, wait = 180) {
+  let timeout;
+  return function(...args) {
+    const context = this;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(context, args), wait);
+  };
+}
+window.civilDebounce = debounce;
+
+// Lucide 아이콘 국소 범위 렌더링 (전체 DOM 풀스캔 방지)
+function safeCreateIcons(rootEl) {
+  if (!window.lucide) return;
+  try {
+    if (rootEl && rootEl instanceof HTMLElement) {
+      window.lucide.createIcons({ root: rootEl });
+    } else {
+      window.lucide.createIcons();
+    }
+  } catch (e) {
+    try { window.lucide.createIcons(); } catch (err) {}
+  }
+}
+window.safeCreateIcons = safeCreateIcons;
 
 // 2. 초기화
 document.addEventListener('DOMContentLoaded', () => {
@@ -83,7 +111,7 @@ function markArticleAsRead(articleId) {
       if (readBtn) {
         readBtn.className = 'read-status-btn inline-flex items-center text-[11px] px-2 py-0.5 rounded-md font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 cursor-pointer transition hover:opacity-80';
         readBtn.innerHTML = '<i data-lucide="check" class="w-3 h-3 mr-0.5"></i>읽음';
-        if (window.lucide) window.lucide.createIcons();
+        safeCreateIcons(readBtn);
       }
     }
   }
@@ -476,6 +504,7 @@ function renderNewsKeywordChips() {
       } else {
         activeKeywordFilter = chip;
       }
+      searchDisplayedCount = SEARCH_PAGE_SIZE;
       renderNewsKeywordChips();
       renderArticles();
     });
@@ -483,13 +512,14 @@ function renderNewsKeywordChips() {
     container.appendChild(btn);
   });
 
-  if (window.lucide) window.lucide.createIcons();
+  safeCreateIcons(container);
 }
 window.renderNewsKeywordChips = renderNewsKeywordChips;
 
 function resetNewsKeywordAndSearch() {
   activeKeywordFilter = '전체';
   newsSearchQuery = '';
+  searchDisplayedCount = SEARCH_PAGE_SIZE;
   const input = document.getElementById('newsSearchInput');
   if (input) input.value = '';
   const clearBtn = document.getElementById('clearNewsSearchBtn');
@@ -889,7 +919,7 @@ function renderArticles() {
         </div>
       </section>
     `;
-    if (window.lucide) window.lucide.createIcons();
+    safeCreateIcons(container);
     return;
   }
 
@@ -923,6 +953,11 @@ function renderArticles() {
     }
     if (notice) notice.textContent = `${filterLabel} 관련 기사 총 ${searchResults.length}건`;
 
+    const currentSearchCount = searchDisplayedCount || SEARCH_PAGE_SIZE;
+    const displayedResults = searchResults.slice(0, currentSearchCount);
+    const hasMoreSearch = searchResults.length > currentSearchCount;
+    const remainingSearchCount = searchResults.length - currentSearchCount;
+
     container.innerHTML = `
       <section class="scroll-mt-16 sm:scroll-mt-36">
         <div class="flex items-center justify-between pb-3.5 mb-5 border-b border-slate-200/80 dark:border-slate-800 px-1">
@@ -942,11 +977,23 @@ function renderArticles() {
           </button>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
-          ${searchResults.map(renderArticleCard).join('')}
+          ${displayedResults.map(renderArticleCard).join('')}
         </div>
+
+        ${hasMoreSearch ? `
+          <div class="mt-5 sm:mt-6 pt-3.5 sm:pt-4 border-t border-slate-200/60 sm:border-slate-100 dark:border-slate-800 text-center">
+            <button 
+              onclick="loadMoreSearchResults()"
+              class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-blue-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold border border-slate-200 dark:border-slate-700 transition group shadow-xs cursor-pointer active:scale-95"
+            >
+              <span>검색 결과 더보기 (+${Math.min(remainingSearchCount, SEARCH_PAGE_SIZE)}개)</span>
+              <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-hover:text-blue-500 transition-transform group-hover:translate-y-0.5"></i>
+            </button>
+          </div>
+        ` : ''}
       </section>
     `;
-    if (window.lucide) window.lucide.createIcons();
+    safeCreateIcons(container);
     return;
   }
 
@@ -1020,7 +1067,7 @@ function renderArticles() {
   }
 
   container.innerHTML = sectionsHtml;
-  if (window.lucide) window.lucide.createIcons();
+  safeCreateIcons(container);
 }
 
 function loadMoreCategoryArticles(catId) {
@@ -1028,6 +1075,12 @@ function loadMoreCategoryArticles(catId) {
   categoryDisplayedCount[catId] = currentCount + CATEGORY_PAGE_SIZE;
   renderArticles();
 }
+
+function loadMoreSearchResults() {
+  searchDisplayedCount = (searchDisplayedCount || SEARCH_PAGE_SIZE) + SEARCH_PAGE_SIZE;
+  renderArticles();
+}
+window.loadMoreSearchResults = loadMoreSearchResults;
 
 // 관련 기사 아코디언 토글
 function toggleRelatedArticles(articleId, e) {
@@ -1455,7 +1508,7 @@ function renderMyPage() {
     }
   }
 
-  if (window.lucide) window.lucide.createIcons();
+  safeCreateIcons(container);
 }
 window.renderMyPage = renderMyPage;
 
@@ -1498,25 +1551,32 @@ function setupNewsEventListeners() {
   // 북마크 탭 버튼 스타일 초기화
   updateBookmarkTabStyle();
 
-  // 뉴스 검색창
+  // 뉴스 검색창 (180ms 디바운스 적용으로 타이핑 렉 원천 차단)
   const searchInput = document.getElementById('newsSearchInput');
   const clearBtn = document.getElementById('clearNewsSearchBtn');
   if (searchInput && clearBtn) {
-    searchInput.addEventListener('input', (e) => {
-      newsSearchQuery = e.target.value.trim();
+    const handleNewsSearch = debounce((query) => {
+      newsSearchQuery = query;
       categoryDisplayedCount = {};
-      if (newsSearchQuery) {
+      searchDisplayedCount = SEARCH_PAGE_SIZE;
+      renderArticles();
+    }, 180);
+
+    searchInput.addEventListener('input', (e) => {
+      const val = e.target.value.trim();
+      if (val) {
         clearBtn.classList.remove('hidden');
       } else {
         clearBtn.classList.add('hidden');
       }
-      renderArticles();
+      handleNewsSearch(val);
     });
 
     clearBtn.addEventListener('click', () => {
       searchInput.value = '';
       newsSearchQuery = '';
       categoryDisplayedCount = {};
+      searchDisplayedCount = SEARCH_PAGE_SIZE;
       clearBtn.classList.add('hidden');
       searchInput.focus();
       renderArticles();
