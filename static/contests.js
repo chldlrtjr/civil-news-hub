@@ -3,12 +3,15 @@
 let allContests = [];
 let contestActiveCategory = 'ALL';
 let contestActiveStatus = 'ALL';
+let contestActiveTarget = 'ALL';
 let contestSearchQuery = '';
 let contestSortOption = 'closingSoon'; // closingSoon | latest
 let contestBookmarks = new Set();
 let isContestBookmarkView = false;
 let isContestUrgentFilterActive = false;
 let currentModalContest = null;
+let calendarCurrentYear = new Date().getFullYear();
+let calendarCurrentMonth = new Date().getMonth();
 
 // 1. 초기화
 document.addEventListener('DOMContentLoaded', () => {
@@ -175,6 +178,32 @@ window.toggleContestUrgentFilter = function() {
 };
 
 
+// 참가대상 판별 및 매칭 헬퍼
+function matchContestTarget(contest, targetKey) {
+  if (!targetKey || targetKey === 'ALL') return true;
+  const t = (contest.target || '').toLowerCase();
+  const desc = (contest.description || '').toLowerCase();
+  const combined = `${t} ${desc}`;
+  if (targetKey === 'student') {
+    return combined.includes('대학') || combined.includes('학생') || combined.includes('청년') || combined.includes('누구나') || combined.includes('국민');
+  }
+  if (targetKey === 'startup') {
+    return combined.includes('스타트업') || combined.includes('기업') || combined.includes('중소') || combined.includes('창업') || combined.includes('벤처');
+  }
+  if (targetKey === 'general') {
+    return combined.includes('국민') || combined.includes('누구나') || combined.includes('일반') || combined.includes('근로자');
+  }
+  return true;
+}
+
+function getContestTargetBadge(contest) {
+  const t = (contest.target || '').toLowerCase();
+  if (t.includes('스타트업') || t.includes('기업') || t.includes('창업')) return '🚀 스타트업·기업';
+  if (t.includes('대학') || t.includes('학생')) return '🎓 대학(원)생';
+  if (t.includes('국민') || t.includes('누구나')) return '👥 전 국민 누구나';
+  return '💼 일반·전문가';
+}
+
 // 4. 필터링 및 정렬
 function getFilteredContests() {
   let list = [...allContests];
@@ -192,6 +221,11 @@ function getFilteredContests() {
   // 상태 필터 (접수중 / 접수예정 / 상시접수)
   if (contestActiveStatus !== 'ALL') {
     list = list.filter(c => c.status === contestActiveStatus);
+  }
+
+  // 참가대상 자격 필터
+  if (contestActiveTarget !== 'ALL') {
+    list = list.filter(c => matchContestTarget(c, contestActiveTarget));
   }
 
   // 마감 임박 (D-3) 퀵 필터
@@ -393,11 +427,14 @@ function renderContestCard(contest) {
           </div>
         </div>
 
-        <!-- 2행 (접수 기간): 독립된 전용 행으로 배치하여 줄바꿈 밀림 방지 -->
-        <div class="mb-3.5">
+        <!-- 2행 (접수 기간 & 참가 대상 뱃지) -->
+        <div class="flex items-center gap-1.5 flex-wrap mb-3.5">
           <span class="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100/80 dark:bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
             <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
             <span>접수: ${contest.period || '공식 공고문 참조'}</span>
+          </span>
+          <span class="inline-flex items-center text-xs font-semibold px-2.5 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200/80 dark:border-amber-900/60">
+            ${getContestTargetBadge(contest)}
           </span>
         </div>
 
@@ -461,6 +498,7 @@ function renderContestCard(contest) {
           </a>
         </div>
       </div>
+      ${typeof window.renderBookmarkNoteRow === 'function' ? window.renderBookmarkNoteRow(contest.id, contest.title) : ''}
     </div>
   `;
 }
@@ -763,12 +801,32 @@ function setupContestEventListeners() {
     updateContestCategoryTabStyles(contestActiveCategory);
   }
 
+  // 참가대상 자격 필터 그룹 (전체, 대학(원)생, 스타트업·기업, 전 국민 누구나)
+  const targetGroup = document.getElementById('contestTargetFilterGroup');
+  if (targetGroup) {
+    targetGroup.addEventListener('click', (e) => {
+      const btn = e.target.closest('.target-pill');
+      if (!btn) return;
+
+      targetGroup.querySelectorAll('.target-pill').forEach(b => {
+        b.classList.remove('active', 'bg-amber-500', 'text-white', 'font-semibold');
+        b.classList.add('bg-white', 'dark:bg-slate-900', 'text-slate-600', 'dark:text-slate-300', 'border', 'border-slate-200', 'dark:border-slate-800', 'font-medium');
+      });
+      btn.classList.add('active', 'bg-amber-500', 'text-white', 'font-semibold');
+      btn.classList.remove('bg-white', 'dark:bg-slate-900', 'text-slate-600', 'dark:text-slate-300', 'border', 'border-slate-200', 'dark:border-slate-800', 'font-medium');
+
+      contestActiveTarget = btn.getAttribute('data-target') || 'ALL';
+      renderContests();
+    });
+  }
+
   // 필터 초기화 버튼
   const resetBtn = document.getElementById('contestResetFilterBtn');
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
       contestActiveCategory = 'ALL';
       contestActiveStatus = 'ALL';
+      contestActiveTarget = 'ALL';
       contestSearchQuery = '';
       isContestBookmarkView = false;
       if (searchInput) searchInput.value = '';
@@ -785,6 +843,18 @@ function setupContestEventListeners() {
         const allStatus = statusGroup.querySelector('[data-status="ALL"]');
         if (allStatus) {
           allStatus.classList.add('bg-white', 'dark:bg-slate-900', 'shadow-xs', 'text-slate-900', 'dark:text-white', 'font-semibold');
+        }
+      }
+
+      if (targetGroup) {
+        targetGroup.querySelectorAll('.target-pill').forEach(b => {
+          b.classList.remove('active', 'bg-amber-500', 'text-white', 'font-semibold');
+          b.classList.add('bg-white', 'dark:bg-slate-900', 'text-slate-600', 'dark:text-slate-300', 'border', 'border-slate-200', 'dark:border-slate-800', 'font-medium');
+        });
+        const allTarget = targetGroup.querySelector('[data-target="ALL"]');
+        if (allTarget) {
+          allTarget.classList.add('active', 'bg-amber-500', 'text-white', 'font-semibold');
+          allTarget.classList.remove('bg-white', 'dark:bg-slate-900', 'text-slate-600', 'dark:text-slate-300', 'border', 'border-slate-200', 'dark:border-slate-800', 'font-medium');
         }
       }
 
@@ -854,3 +924,248 @@ window.toggleContestBookmarkFilter = function(forceState) {
   renderContests();
   return isContestBookmarkView;
 };
+
+// 9. 공모전 마감 일정 캘린더 (월간 캘린더 뷰 모달)
+function escapeContestHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function parseContestDeadlineDate(periodStr) {
+  if (!periodStr || periodStr.includes('상시')) return null;
+  const today = new Date();
+  const match = periodStr.match(/~\s*(?:(\d{4})[.\-/])?(\d{1,2})[.\-/](\d{1,2})/);
+  if (match) {
+    const year = match[1] ? parseInt(match[1], 10) : today.getFullYear();
+    const month = parseInt(match[2], 10) - 1; // 0-indexed
+    const day = parseInt(match[3], 10);
+    const dateObj = new Date(year, month, day);
+    if (!isNaN(dateObj.getTime())) {
+      return { year, month, day, dateObj };
+    }
+  }
+  return null;
+}
+
+function openContestCalendarModal() {
+  const modal = document.getElementById('contestCalendarModal');
+  const backdrop = document.getElementById('contestCalendarBackdrop');
+  if (!modal || !backdrop) return;
+
+  // 기본 현재 날짜 기준
+  const today = new Date();
+  calendarCurrentYear = today.getFullYear();
+  calendarCurrentMonth = today.getMonth();
+
+  renderContestCalendar(calendarCurrentYear, calendarCurrentMonth);
+
+  modal.classList.remove('invisible', 'opacity-0');
+  modal.classList.add('visible', 'opacity-100');
+  backdrop.classList.remove('opacity-0');
+  backdrop.classList.add('opacity-100');
+  document.body.classList.add('overflow-hidden');
+  if (window.lucide) lucide.createIcons();
+}
+
+function closeContestCalendarModal() {
+  const modal = document.getElementById('contestCalendarModal');
+  const backdrop = document.getElementById('contestCalendarBackdrop');
+  if (!modal || !backdrop) return;
+
+  modal.classList.remove('visible', 'opacity-100');
+  modal.classList.add('invisible', 'opacity-0');
+  backdrop.classList.remove('opacity-100');
+  backdrop.classList.add('opacity-0');
+  document.body.classList.remove('overflow-hidden');
+}
+
+function changeCalendarMonth(delta) {
+  calendarCurrentMonth += delta;
+  if (calendarCurrentMonth < 0) {
+    calendarCurrentMonth = 11;
+    calendarCurrentYear -= 1;
+  } else if (calendarCurrentMonth > 11) {
+    calendarCurrentMonth = 0;
+    calendarCurrentYear += 1;
+  }
+  renderContestCalendar(calendarCurrentYear, calendarCurrentMonth);
+}
+
+function renderContestCalendar(year, month) {
+  const monthDisplay = document.getElementById('calendarCurrentMonthDisplay');
+  const daysGrid = document.getElementById('calendarDaysGrid');
+  const timelineTitle = document.getElementById('calendarMonthTimelineTitle');
+  const timelineList = document.getElementById('calendarTimelineList');
+  if (!daysGrid) return;
+
+  if (monthDisplay) {
+    monthDisplay.textContent = `${year}년 ${month + 1}월`;
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // 이 달의 1일의 요일 (0: 일, 1: 월, ... 6: 토)
+  const firstDay = new Date(year, month, 1).getDay();
+  // 이 달의 총 일수
+  const totalDays = new Date(year, month + 1, 0).getDate();
+  // 지난 달의 총 일수
+  const prevMonthTotalDays = new Date(year, month, 0).getDate();
+
+  // 이 달 마감 공모전 모으기
+  const monthContests = [];
+  const dayContestMap = {};
+  allContests.forEach(c => {
+    if (c.status === '접수마감') return;
+    const dead = parseContestDeadlineDate(c.period);
+    if (dead && dead.year === year && dead.month === month) {
+      const item = { ...c, deadlineDay: dead.day, deadlineDate: dead.dateObj };
+      monthContests.push(item);
+      if (!dayContestMap[dead.day]) {
+        dayContestMap[dead.day] = [];
+      }
+      dayContestMap[dead.day].push(item);
+    }
+  });
+
+  // 캘린더 일자 그리드 생성
+  let gridHtml = '';
+
+  // 이전 달 날짜 패딩
+  for (let i = firstDay - 1; i >= 0; i--) {
+    const prevDay = prevMonthTotalDays - i;
+    gridHtml += `
+      <div class="p-1 sm:p-1.5 rounded-xl bg-slate-50/50 dark:bg-slate-900/40 text-slate-300 dark:text-slate-700 min-h-[56px] sm:min-h-[68px] flex flex-col justify-start select-none border border-transparent">
+        <span class="text-[11px] font-semibold">${prevDay}</span>
+      </div>
+    `;
+  }
+
+  // 이번 달 일자
+  for (let day = 1; day <= totalDays; day++) {
+    const currentDayDate = new Date(year, month, day);
+    const dayOfWeek = currentDayDate.getDay();
+    const isToday = (today.getFullYear() === year && today.getMonth() === month && today.getDate() === day);
+    const items = dayContestMap[day] || [];
+    const hasItems = items.length > 0;
+
+    let dayColorClass = 'text-slate-700 dark:text-slate-300';
+    if (dayOfWeek === 0) dayColorClass = 'text-rose-500';
+    if (dayOfWeek === 6) dayColorClass = 'text-blue-500';
+
+    gridHtml += `
+      <div 
+        class="relative flex flex-col items-start p-1 sm:p-1.5 rounded-xl border transition cursor-pointer min-h-[56px] sm:min-h-[68px] ${
+          isToday
+            ? 'border-amber-400 bg-amber-50/40 dark:bg-amber-950/20'
+            : hasItems
+            ? 'border-amber-200 dark:border-amber-900/60 bg-white dark:bg-slate-800 hover:border-amber-400 shadow-xs'
+            : 'border-slate-100 dark:border-slate-800/80 bg-white dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-800/40'
+        }"
+        onclick="${hasItems ? `scrollToCalendarTimelineDay(${day})` : ''}"
+        title="${hasItems ? `${day}일 마감 공모전 ${items.length}건` : ''}"
+      >
+        <div class="flex items-center justify-between w-full mb-0.5">
+          <span class="text-[11px] sm:text-xs font-bold ${dayColorClass} ${isToday ? 'px-1.5 py-0.2 rounded-md bg-amber-500 text-white' : ''}">
+            ${day}
+          </span>
+          ${hasItems ? `
+            <span class="px-1 py-0.2 rounded-full text-[9px] font-bold bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-300/80">
+              ${items.length}
+            </span>
+          ` : ''}
+        </div>
+        ${hasItems ? `
+          <div class="w-full space-y-0.5 overflow-hidden mt-0.5">
+            ${items.slice(0, 1).map(c => `
+              <div class="truncate text-[9px] sm:text-[10px] text-amber-900 dark:text-amber-200 bg-amber-50 dark:bg-amber-950/60 rounded px-1 py-0.5 font-medium leading-tight">
+                ${escapeContestHtml(c.title)}
+              </div>
+            `).join('')}
+            ${items.length > 1 ? `
+              <div class="text-[9px] text-amber-600 dark:text-amber-400 font-semibold pl-0.5">
+                +${items.length - 1}개 더보기
+              </div>
+            ` : ''}
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }
+
+  // 다음 달 날짜 패딩 (7의 배수 맞춤)
+  const remainingCells = (7 - ((firstDay + totalDays) % 7)) % 7;
+  for (let d = 1; d <= remainingCells; d++) {
+    gridHtml += `
+      <div class="p-1 sm:p-1.5 rounded-xl bg-slate-50/50 dark:bg-slate-900/40 text-slate-300 dark:text-slate-700 min-h-[56px] sm:min-h-[68px] flex flex-col justify-start select-none border border-transparent">
+        <span class="text-[11px] font-semibold">${d}</span>
+      </div>
+    `;
+  }
+
+  daysGrid.innerHTML = gridHtml;
+
+  // 타임라인 리스트 렌더링
+  if (timelineTitle) {
+    timelineTitle.textContent = `${year}년 ${month + 1}월 마감 예정 공모전 (${monthContests.length}건)`;
+  }
+
+  if (timelineList) {
+    if (monthContests.length === 0) {
+      timelineList.innerHTML = `
+        <div class="py-6 text-center text-slate-400 dark:text-slate-500 text-xs">
+          이 달에 마감 예정인 등록 공모전이 없습니다.
+        </div>
+      `;
+    } else {
+      monthContests.sort((a, b) => a.deadlineDay - b.deadlineDay);
+      timelineList.innerHTML = monthContests.map(c => {
+        const dday = parseDdayFromPeriod(c.period, c.status);
+        return `
+          <div id="calendarTimelineItem-${c.deadlineDay}" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-between gap-3 hover:border-amber-400 transition cursor-pointer" onclick="closeContestCalendarModal(); openContestModal('${c.id}');">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <span class="px-2 py-1 rounded-lg text-[11px] font-bold ${dday.isUrgent ? 'bg-rose-500 text-white' : 'bg-amber-500 text-white'} flex-shrink-0">
+                ${c.deadlineDay}일 (${dday.text})
+              </span>
+              <div class="min-w-0">
+                <h5 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
+                  ${escapeContestHtml(c.title)}
+                </h5>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                  ${escapeContestHtml(c.organizer)} · 🎁 ${escapeContestHtml(c.prize || '공고 참조')}
+                </p>
+              </div>
+            </div>
+            <button class="px-2.5 py-1 text-[11px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 rounded-lg flex-shrink-0 hover:bg-amber-100 transition">
+              상세보기
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
+  if (window.lucide) lucide.createIcons();
+}
+
+function scrollToCalendarTimelineDay(day) {
+  const el = document.getElementById(`calendarTimelineItem-${day}`);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.classList.add('ring-2', 'ring-amber-400');
+    setTimeout(() => el.classList.remove('ring-2', 'ring-amber-400'), 1500);
+  }
+}
+
+// 전역 바인딩
+window.openContestCalendarModal = openContestCalendarModal;
+window.closeContestCalendarModal = closeContestCalendarModal;
+window.changeCalendarMonth = changeCalendarMonth;
+window.renderContestCalendar = renderContestCalendar;
+window.scrollToCalendarTimelineDay = scrollToCalendarTimelineDay;
+

@@ -1,7 +1,18 @@
 // Civil News Hub Frontend Application (SPA Master Controller & News Dashboard)
 
+// PWA Service Worker 등록
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').then((reg) => {
+      // console.log('[SW] Registered successfully:', reg.scope);
+    }).catch((err) => {
+      console.warn('[SW] Registration failed:', err);
+    });
+  });
+}
+
 // 1. 상태 변수
-let currentMainTab = 'news'; // 'news' | 'jobs' | 'contests'
+let currentMainTab = 'news'; // 'news' | 'jobs' | 'contests' | 'mypage'
 
 // 뉴스 데이터 상태
 let allArticles = [];
@@ -14,6 +25,16 @@ let currentNewsSort = 'newest';
 let newsBookmarks = new Set();
 let userViews = {};
 
+// 신규 기능: 읽음 상태, 북마크 개인 메모, 키워드 칩 필터
+let readArticles = new Set();
+let bookmarkNotes = {};
+let activeKeywordFilter = '전체';
+let currentEditingNoteItemId = null;
+
+const NEWS_KEYWORD_CHIPS = [
+  '전체', '스마트건설', '지하안전', 'GTX', '수자원', '교량·터널', '탄소중립', '해외인프라', '철도망', '신기술'
+];
+
 // 페이징 (카테고리별 초기 6개 표시)
 const CATEGORY_PAGE_SIZE = 6;
 let categoryDisplayedCount = {};
@@ -22,11 +43,198 @@ let categoryDisplayedCount = {};
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   loadNewsBookmarks();
+  loadReadArticles();
+  loadBookmarkNotes();
   loadUserViews();
   setupNewsEventListeners();
+  renderNewsKeywordChips();
   loadNewsData();
   initTabRouting();
 });
+
+// 기사 읽음(Read) 상태 관리
+function loadReadArticles() {
+  try {
+    const saved = localStorage.getItem('civil_read_articles');
+    if (saved) {
+      readArticles = new Set(JSON.parse(saved));
+    }
+  } catch (e) {
+    readArticles = new Set();
+  }
+  window.readArticles = readArticles;
+}
+
+function markArticleAsRead(articleId) {
+  if (!articleId) return;
+  if (!readArticles.has(articleId)) {
+    readArticles.add(articleId);
+    localStorage.setItem('civil_read_articles', JSON.stringify(Array.from(readArticles)));
+    window.readArticles = readArticles;
+    // DOM 실시간 갱신
+    const card = document.querySelector(`article[data-article-id="${articleId}"]`);
+    if (card) {
+      const titleLink = card.querySelector('h3 a');
+      if (titleLink) {
+        titleLink.classList.remove('font-extrabold', 'text-slate-900', 'dark:text-slate-100');
+        titleLink.classList.add('font-bold', 'text-slate-600', 'dark:text-slate-400');
+      }
+      const readBtn = card.querySelector('.read-status-btn');
+      if (readBtn) {
+        readBtn.className = 'read-status-btn inline-flex items-center text-[11px] px-2 py-0.5 rounded-md font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 cursor-pointer transition hover:opacity-80';
+        readBtn.innerHTML = '<i data-lucide="check" class="w-3 h-3 mr-0.5"></i>읽음';
+        if (window.lucide) window.lucide.createIcons();
+      }
+    }
+  }
+}
+window.markArticleAsRead = markArticleAsRead;
+
+window.toggleArticleRead = function(articleId, e) {
+  if (e) e.stopPropagation();
+  if (readArticles.has(articleId)) {
+    readArticles.delete(articleId);
+    showToast('기사를 읽지 않음으로 변경했습니다.');
+  } else {
+    readArticles.add(articleId);
+    showToast('✓ 기사를 읽음으로 표시했습니다.');
+  }
+  localStorage.setItem('civil_read_articles', JSON.stringify(Array.from(readArticles)));
+  window.readArticles = readArticles;
+  renderArticles();
+  if (currentMainTab === 'mypage') renderMyPage();
+};
+
+// 북마크 개인 한 줄 메모 관리
+function loadBookmarkNotes() {
+  try {
+    const saved = localStorage.getItem('civil_bookmark_notes');
+    if (saved) {
+      bookmarkNotes = JSON.parse(saved);
+    }
+  } catch (e) {
+    bookmarkNotes = {};
+  }
+  window.bookmarkNotes = bookmarkNotes;
+}
+
+window.openBookmarkNoteModal = function(itemId, itemTitle) {
+  currentEditingNoteItemId = itemId;
+  const modal = document.getElementById('bookmarkNoteModal');
+  const titleEl = document.getElementById('noteModalItemTitle');
+  const textarea = document.getElementById('bookmarkNoteText');
+  const charCount = document.getElementById('noteCharCount');
+  const deleteBtn = document.getElementById('deleteNoteBtn');
+
+  if (titleEl) titleEl.textContent = itemTitle || '항목 제목';
+  const existingNote = (bookmarkNotes && bookmarkNotes[itemId]) || '';
+  if (textarea) {
+    textarea.value = existingNote;
+    if (charCount) charCount.textContent = `${existingNote.length}/200`;
+  }
+  if (deleteBtn) {
+    deleteBtn.classList.toggle('hidden', !existingNote);
+  }
+
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    if (textarea) {
+      setTimeout(() => textarea.focus(), 50);
+    }
+  }
+};
+
+window.closeBookmarkNoteModal = function() {
+  const modal = document.getElementById('bookmarkNoteModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+  currentEditingNoteItemId = null;
+};
+
+window.saveCurrentBookmarkNote = function() {
+  if (!currentEditingNoteItemId) return;
+  const textarea = document.getElementById('bookmarkNoteText');
+  const noteText = textarea ? textarea.value.trim() : '';
+  if (noteText) {
+    bookmarkNotes[currentEditingNoteItemId] = noteText;
+    showToast('✏️ 개인 메모가 저장되었습니다.');
+  } else {
+    delete bookmarkNotes[currentEditingNoteItemId];
+    showToast('메모가 삭제되었습니다.');
+  }
+  localStorage.setItem('civil_bookmark_notes', JSON.stringify(bookmarkNotes));
+  window.bookmarkNotes = bookmarkNotes;
+  closeBookmarkNoteModal();
+  if (currentMainTab === 'mypage') renderMyPage();
+  else renderArticles();
+};
+
+window.deleteCurrentBookmarkNote = function() {
+  if (!currentEditingNoteItemId) return;
+  delete bookmarkNotes[currentEditingNoteItemId];
+  localStorage.setItem('civil_bookmark_notes', JSON.stringify(bookmarkNotes));
+  window.bookmarkNotes = bookmarkNotes;
+  closeBookmarkNoteModal();
+  showToast('메모가 삭제되었습니다.');
+  if (currentMainTab === 'mypage') renderMyPage();
+  else renderArticles();
+};
+
+window.quickDeleteBookmarkNote = function(itemId) {
+  if (!itemId) return;
+  delete bookmarkNotes[itemId];
+  localStorage.setItem('civil_bookmark_notes', JSON.stringify(bookmarkNotes));
+  window.bookmarkNotes = bookmarkNotes;
+  showToast('메모가 삭제되었습니다.');
+  if (currentMainTab === 'mypage') renderMyPage();
+  else renderArticles();
+};
+
+// 북마크 메모 HTML 렌더러 (마이페이지 및 카드 공용)
+function renderBookmarkNoteRow(itemId, itemTitle) {
+  const note = (bookmarkNotes && bookmarkNotes[itemId]) || '';
+  const escapedTitle = (itemTitle || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+  
+  if (note) {
+    return `
+      <div class="mt-3.5 pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs gap-2" onclick="event.stopPropagation()">
+        <div class="flex items-center gap-1.5 text-slate-700 dark:text-slate-300 bg-amber-50/90 dark:bg-amber-950/40 px-3 py-1.5 rounded-xl border border-amber-200/80 dark:border-amber-900/60 flex-1 min-w-0" title="${escapeHtml(note)}">
+          <span class="text-amber-700 dark:text-amber-400 font-bold flex-shrink-0 flex items-center gap-1">
+            <i data-lucide="file-edit" class="w-3.5 h-3.5"></i>
+            <span>메모:</span>
+          </span>
+          <span class="truncate font-medium">${escapeHtml(note)}</span>
+        </div>
+        <div class="flex items-center gap-1 flex-shrink-0">
+          <button type="button" onclick="openBookmarkNoteModal('${itemId}', '${escapedTitle}')" class="px-2.5 py-1 text-slate-600 hover:text-blue-600 dark:text-slate-300 dark:hover:text-blue-400 font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg transition cursor-pointer">
+            수정
+          </button>
+          <button type="button" onclick="quickDeleteBookmarkNote('${itemId}')" class="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg transition cursor-pointer" title="메모 삭제">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  // 마이페이지에서는 항상 메모 추가 버튼 노출
+  if (currentMainTab === 'mypage') {
+    return `
+      <div class="mt-3.5 pt-2.5 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs" onclick="event.stopPropagation()">
+        <button type="button" onclick="openBookmarkNoteModal('${itemId}', '${escapedTitle}')" class="text-xs text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 flex items-center gap-1.5 font-medium transition py-1 cursor-pointer">
+          <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+          <span>나만의 한 줄 메모 추가</span>
+        </button>
+      </div>
+    `;
+  }
+
+  return '';
+}
+window.renderBookmarkNoteRow = renderBookmarkNoteRow;
 
 // 조회수 로컬 스토리지 관리
 function loadUserViews() {
@@ -231,11 +439,72 @@ function scrollToCategory(catId) {
   }
 }
 
-// 검색 및 필터 헬퍼
+function renderNewsKeywordChips() {
+  const container = document.getElementById('newsKeywordChips');
+  if (!container) return;
+  container.innerHTML = '';
+
+  const label = document.createElement('span');
+  label.className = 'text-slate-400 dark:text-slate-500 font-medium flex items-center gap-1 pr-1 flex-shrink-0';
+  label.innerHTML = '<i data-lucide="hash" class="w-3.5 h-3.5 text-blue-500"></i><span>키워드:</span>';
+  container.appendChild(label);
+
+  NEWS_KEYWORD_CHIPS.forEach(chip => {
+    const isActive = activeKeywordFilter === chip;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.setAttribute('data-keyword', chip);
+    btn.className = `keyword-pill px-2.5 py-1 rounded-lg text-xs transition flex-shrink-0 cursor-pointer ${
+      isActive
+        ? 'active bg-blue-600 text-white font-semibold shadow-xs'
+        : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium'
+    }`;
+    btn.textContent = chip === '전체' ? '전체' : `#${chip}`;
+    
+    btn.addEventListener('click', () => {
+      if (activeKeywordFilter === chip && chip !== '전체') {
+        activeKeywordFilter = '전체';
+      } else {
+        activeKeywordFilter = chip;
+      }
+      renderNewsKeywordChips();
+      renderArticles();
+    });
+
+    container.appendChild(btn);
+  });
+
+  if (window.lucide) window.lucide.createIcons();
+}
+window.renderNewsKeywordChips = renderNewsKeywordChips;
+
+function resetNewsKeywordAndSearch() {
+  activeKeywordFilter = '전체';
+  newsSearchQuery = '';
+  const input = document.getElementById('newsSearchInput');
+  if (input) input.value = '';
+  const clearBtn = document.getElementById('clearNewsSearchBtn');
+  if (clearBtn) clearBtn.classList.add('hidden');
+  renderNewsKeywordChips();
+  renderArticles();
+}
+window.resetNewsKeywordAndSearch = resetNewsKeywordAndSearch;
+
+// 검색 및 필터 헬퍼 (검색어 + 키워드 칩 동시 지원)
 function filterBySearch(articles) {
-  if (!newsSearchQuery) return articles;
+  let list = articles;
+  if (activeKeywordFilter && activeKeywordFilter !== '전체') {
+    const kw = activeKeywordFilter.toLowerCase();
+    const subKeywords = kw.split('·');
+    list = list.filter(a => {
+      const summaryText = (a.summary_points || []).join(' ');
+      const target = `${a.title || ''} ${a.snippet || ''} ${summaryText} ${a.category_name || ''}`.toLowerCase();
+      return subKeywords.some(sub => target.includes(sub));
+    });
+  }
+  if (!newsSearchQuery) return list;
   const q = newsSearchQuery.toLowerCase();
-  return articles.filter(a => {
+  return list.filter(a => {
     const titleMatch = (a.title || '').toLowerCase().includes(q);
     const snipMatch = (a.snippet || '').toLowerCase().includes(q);
     const pubMatch = (a.publisher || '').toLowerCase().includes(q);
@@ -390,20 +659,28 @@ function getArticleCleanSnippet(article) {
 // 개별 기사 카드 HTML 생성
 function renderArticleCard(article) {
   const isBookmarked = newsBookmarks.has(article.id);
+  const isRead = readArticles.has(article.id);
   const badgeColorClass = `badge-${article.badge_color || 'slate'}`;
   const totalViews = (article.views || 0) + (userViews[article.id] || 0);
   const hasRelated = article.related_articles && article.related_articles.length > 0;
   const relatedCount = hasRelated ? article.related_articles.length : 0;
   const summaryPoints = generateArticleSummaryPoints(article);
   const cleanSnippet = getArticleCleanSnippet(article);
+
+  const readBadgeHtml = isRead
+    ? `<button type="button" onclick="toggleArticleRead('${article.id}', event)" class="read-status-btn inline-flex items-center text-[11px] px-2 py-0.5 rounded-md font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 cursor-pointer transition hover:opacity-80" title="읽음 완료 (클릭 시 토글)"><i data-lucide="check" class="w-3 h-3 mr-0.5"></i>읽음</button>`
+    : `<button type="button" onclick="toggleArticleRead('${article.id}', event)" class="read-status-btn inline-flex items-center text-[11px] px-2 py-0.5 rounded-md font-medium text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 bg-slate-100/80 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 cursor-pointer transition" title="읽음 표시하기">안읽음</button>`;
   
   return `
-    <article class="news-card flex flex-col justify-between bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-xs hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500/50 transition">
+    <article data-article-id="${article.id}" class="news-card flex flex-col justify-between bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-xs hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500/50 transition">
       <div>
         <div class="flex items-center justify-between gap-2 mb-3 sm:mb-3.5">
-          <span class="inline-block px-3 py-1 text-xs sm:text-sm font-semibold rounded-lg border ${badgeColorClass}">
-            ${escapeHtml(article.category_name || '토목')}
-          </span>
+          <div class="flex items-center gap-1.5 min-w-0">
+            <span class="inline-block px-3 py-1 text-xs sm:text-sm font-semibold rounded-lg border ${badgeColorClass}">
+              ${escapeHtml(article.category_name || '토목')}
+            </span>
+            ${readBadgeHtml}
+          </div>
           <div class="flex items-center text-xs sm:text-sm text-slate-500 dark:text-slate-400 gap-3">
             <span class="flex items-center">
               <i data-lucide="clock" class="w-4 h-4 mr-1 text-slate-400"></i>
@@ -416,8 +693,8 @@ function renderArticleCard(article) {
           </div>
         </div>
 
-        <h3 class="font-extrabold text-xl sm:text-2xl text-slate-900 dark:text-slate-100 hover:text-blue-600 dark:hover:text-blue-400 leading-snug sm:leading-snug line-clamp-2 mb-3.5 sm:mb-4 transition tracking-tight">
-          <a href="${article.link}" target="_blank" rel="noopener noreferrer" onclick="recordView('${article.id}')">
+        <h3 class="${isRead ? 'font-bold text-lg sm:text-xl text-slate-600 dark:text-slate-400' : 'font-extrabold text-xl sm:text-2xl text-slate-900 dark:text-slate-100'} hover:text-blue-600 dark:hover:text-blue-400 leading-snug sm:leading-snug line-clamp-2 mb-3.5 sm:mb-4 transition tracking-tight">
+          <a href="${article.link}" target="_blank" rel="noopener noreferrer" onclick="recordView('${article.id}'); markArticleAsRead('${article.id}');">
             ${escapeHtml(article.title)}
           </a>
         </h3>
@@ -461,11 +738,11 @@ function renderArticleCard(article) {
                     </span>
                     <span class="text-xs text-slate-400 dark:text-slate-500">${escapeHtml(rel.relative_date || '')}</span>
                   </div>
-                  <a href="${rel.link}" target="_blank" rel="noopener noreferrer" onclick="recordView('${rel.id}')" class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 line-clamp-1 block transition font-normal">
+                  <a href="${rel.link}" target="_blank" rel="noopener noreferrer" onclick="recordView('${rel.id}'); markArticleAsRead('${article.id}');" class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 line-clamp-1 block transition font-normal">
                     ${escapeHtml(rel.title)}
                   </a>
                 </div>
-                <a href="${rel.link}" target="_blank" rel="noopener noreferrer" onclick="recordView('${rel.id}')" class="flex-shrink-0 p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition" title="원문 보기">
+                <a href="${rel.link}" target="_blank" rel="noopener noreferrer" onclick="recordView('${rel.id}'); markArticleAsRead('${article.id}');" class="flex-shrink-0 p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition" title="원문 보기">
                   <i data-lucide="external-link" class="w-4 h-4"></i>
                 </a>
               </div>
@@ -509,7 +786,7 @@ function renderArticleCard(article) {
             href="${article.link}" 
             target="_blank" 
             rel="noopener noreferrer"
-            onclick="recordView('${article.id}')"
+            onclick="recordView('${article.id}'); markArticleAsRead('${article.id}');"
             class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white dark:bg-blue-950/40 dark:text-blue-300 dark:hover:bg-blue-600 dark:hover:text-white transition shadow-2xs"
           >
             <span>원문</span>
@@ -517,6 +794,7 @@ function renderArticleCard(article) {
           </a>
         </div>
       </div>
+      ${renderBookmarkNoteRow(article.id, article.title)}
     </article>
   `;
 }
@@ -606,10 +884,19 @@ function renderArticles() {
     return;
   }
 
-  // 검색어가 있을 때
-  if (newsSearchQuery) {
+  // 검색어 또는 키워드 칩 필터 활성화 시
+  if (newsSearchQuery || (activeKeywordFilter && activeKeywordFilter !== '전체')) {
     const searchResults = filterBySearch(allArticles);
     sortArticlesList(searchResults);
+
+    let filterLabel = '';
+    if (newsSearchQuery && activeKeywordFilter && activeKeywordFilter !== '전체') {
+      filterLabel = `'${newsSearchQuery}' + #${activeKeywordFilter}`;
+    } else if (newsSearchQuery) {
+      filterLabel = `'${newsSearchQuery}'`;
+    } else {
+      filterLabel = `#${activeKeywordFilter}`;
+    }
 
     if (searchResults.length === 0) {
       container.innerHTML = '';
@@ -617,7 +904,7 @@ function renderArticles() {
         emptyState.classList.remove('hidden');
         emptyState.classList.add('flex');
       }
-      if (notice) notice.textContent = `'${newsSearchQuery}' 검색 결과가 없습니다.`;
+      if (notice) notice.textContent = `${filterLabel} 관련 기사가 없습니다.`;
       return;
     }
 
@@ -625,22 +912,25 @@ function renderArticles() {
       emptyState.classList.add('hidden');
       emptyState.classList.remove('flex');
     }
-    if (notice) notice.textContent = `'${newsSearchQuery}' 검색 결과 총 ${searchResults.length}건`;
+    if (notice) notice.textContent = `${filterLabel} 관련 기사 총 ${searchResults.length}건`;
 
     container.innerHTML = `
       <section class="scroll-mt-16 sm:scroll-mt-36">
         <div class="flex items-center justify-between pb-3.5 mb-5 border-b border-slate-200/80 dark:border-slate-800 px-1">
           <div class="flex items-center gap-2.5">
             <span class="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
-              <i data-lucide="search" class="w-4 h-4"></i>
+              <i data-lucide="tag" class="w-4 h-4"></i>
             </span>
             <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              '${newsSearchQuery}' 검색 결과
+              ${filterLabel} 관련 기사
             </h3>
             <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-semibold border border-blue-200 dark:border-blue-900">
               ${searchResults.length}건
             </span>
           </div>
+          <button onclick="resetNewsKeywordAndSearch()" class="text-xs font-semibold text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 flex items-center gap-1 cursor-pointer">
+            전체 분야로 돌아가기
+          </button>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
           ${searchResults.map(renderArticleCard).join('')}
@@ -851,6 +1141,9 @@ window.switchMainTab = function(tabName, updateHash = true) {
     lastActiveTab = currentMainTab;
   }
   currentMainTab = tabName;
+  try {
+    localStorage.setItem('civil_last_tab', tabName);
+  } catch (e) {}
 
   const panelNews = document.getElementById('tabPanelNews');
   const panelJobs = document.getElementById('tabPanelJobs');
@@ -1019,14 +1312,22 @@ window.toggleCurrentTabBookmark = function(forceState, e) {
 // URL 해시 라우팅 초기화
 function initTabRouting() {
   const hash = (window.location.hash || '').replace('#', '').toLowerCase();
+  let savedTab = 'news';
+  try {
+    savedTab = localStorage.getItem('civil_last_tab') || 'news';
+  } catch (e) {}
+
   if (hash === 'jobs') {
     switchMainTab('jobs', false);
   } else if (hash === 'contests') {
     switchMainTab('contests', false);
   } else if (hash === 'mypage') {
     switchMainTab('mypage', false);
-  } else {
+  } else if (hash === 'news') {
     switchMainTab('news', false);
+  } else {
+    // 저장된 마지막 선호 탭으로 복원 (PWA/재방문 최적화)
+    switchMainTab(savedTab, false);
   }
 
   window.addEventListener('hashchange', () => {
@@ -1239,6 +1540,15 @@ function setupNewsEventListeners() {
       updateBookmarkTabStyle();
       renderArticles();
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  // 북마크 개인 메모 글자수 동기화
+  const noteTextarea = document.getElementById('bookmarkNoteText');
+  const noteCharCount = document.getElementById('noteCharCount');
+  if (noteTextarea && noteCharCount) {
+    noteTextarea.addEventListener('input', (e) => {
+      noteCharCount.textContent = `${e.target.value.length}/200`;
     });
   }
 

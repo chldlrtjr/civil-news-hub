@@ -1,0 +1,31 @@
+{
+  "name": "Civil News Hub | 토목 뉴스 브리핑 & 채용·공모전 올인원 허브",
+  "short_name": "토목허브",
+  "description": "토목·인프라 최신 뉴스 브리핑, 실시간 채용 공고 및 팩트 검증된 공모전 대시보드",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f172a",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "./static/favicon.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./static/favicon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

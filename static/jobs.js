@@ -416,10 +416,31 @@ function filterAndSortJobs() {
   return list;
 }
 
+// 직무 경력 및 근무지역 뱃지 헬퍼
+function getJobCareerBadge(careerStr) {
+  const c = (careerStr || '').toLowerCase();
+  if (c.includes('인턴')) return { text: '신입·인턴', cls: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800' };
+  if (c.includes('신입')) return { text: '신입', cls: 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 border-blue-200 dark:border-blue-800' };
+  if (c.includes('경력')) return { text: '경력직', cls: 'bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300 border-purple-200 dark:border-purple-800' };
+  return { text: '경력무관', cls: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700' };
+}
+
+function getJobRegionBadge(locStr) {
+  const loc = (locStr || '').toLowerCase();
+  if (loc.includes('서울') || loc.includes('경기') || loc.includes('인천') || loc.includes('수도권')) return '수도권';
+  if (loc.includes('대전') || loc.includes('충청') || loc.includes('세종')) return '충청·대전';
+  if (loc.includes('부산') || loc.includes('대구') || loc.includes('울산') || loc.includes('경북') || loc.includes('경남') || loc.includes('영남')) return '영남권';
+  if (loc.includes('광주') || loc.includes('전북') || loc.includes('전남') || loc.includes('호남')) return '호남권';
+  if (loc.includes('해외')) return '해외';
+  return '전국·현장';
+}
+
 // 6. 공고 카드 HTML 생성
 function renderJobCard(job) {
   const isBookmarked = jobBookmarks.has(job.id);
   const ddayInfo = calculateDday(job.deadline_date);
+  const careerBadge = getJobCareerBadge(job.career);
+  const regionBadge = getJobRegionBadge(job.location);
 
   // D-Day 배지 스타일: 알림/점멸(animate-pulse, flame) 없는 차분한 디자인
   let ddayBadgeHtml = '';
@@ -503,7 +524,7 @@ function renderJobCard(job) {
     >
       <div>
         <!-- 상단: 카테고리 + 기업명 + D-Day 뱃지 -->
-        <div class="flex items-center justify-between gap-2 mb-3">
+        <div class="flex items-center justify-between gap-2 mb-2">
           <div class="flex items-center gap-2 min-w-0">
             <span class="text-xs sm:text-sm px-2.5 sm:px-3 py-1 rounded-lg font-semibold border ${catBadgeClass} flex-shrink-0">
               ${job.category_name || '토목'}
@@ -513,6 +534,21 @@ function renderJobCard(job) {
             </span>
           </div>
           ${ddayBadgeHtml}
+        </div>
+
+        <!-- 2행: 세부 자격 및 지역 뱃지 (신입/경력 + 지역 + 학력) -->
+        <div class="flex items-center gap-1.5 flex-wrap mb-3 text-xs">
+          <span class="px-2 py-0.5 rounded-md font-semibold text-[11px] border ${careerBadge.cls}">
+            ${careerBadge.text}
+          </span>
+          <span class="px-2 py-0.5 rounded-md font-medium text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+            📍 ${regionBadge}
+          </span>
+          ${job.education ? `
+            <span class="px-2 py-0.5 rounded-md text-[11px] font-medium text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60">
+              🎓 ${escapeHtml(job.education)}
+            </span>
+          ` : ''}
         </div>
 
         <!-- 공고 제목 -->
@@ -580,6 +616,7 @@ function renderJobCard(job) {
           </a>
         </div>
       </div>
+      ${typeof window.renderBookmarkNoteRow === 'function' ? window.renderBookmarkNoteRow(job.id, job.title) : ''}
     </article>
   `;
 }
