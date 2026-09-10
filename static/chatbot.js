@@ -374,6 +374,7 @@
     }
 
     if (isChatbotOpen) {
+      checkServerStatus();
       updateApiStatusBadge();
       windowEl.classList.remove('hidden');
       setTimeout(() => {
@@ -728,12 +729,14 @@ ${query}`;
             }).join('')}
           </div>
 
+          ${hasServerApiKey ? '' : `
           <div class="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40 text-[11px] text-amber-800 dark:text-amber-300 flex items-center justify-between gap-2">
             <span>✨ <strong>Gemini API 키</strong>를 등록하시면 유려한 AI 문장으로 종합 분석해 드립니다!</span>
             <button onclick="document.getElementById('chatbotConfigToggleBtn')?.click()" class="px-2 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-bold text-[10px] flex-shrink-0 cursor-pointer">
               키 등록
             </button>
           </div>
+          `}
         </div>
       `;
     }
