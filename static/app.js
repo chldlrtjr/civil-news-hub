@@ -17,7 +17,7 @@ let currentMainTab = 'news'; // 'news' | 'jobs' | 'contests' | 'mypage'
 // 뉴스 데이터 상태
 let allArticles = [];
 let categories = [];
-let activeNewsCategory = 'general';
+let activeNewsCategory = 'all';
 let isNewsBookmarkView = false;
 window.isGlobalBookmarkMode = false;
 let newsSearchQuery = '';
@@ -389,17 +389,26 @@ async function loadNewsData() {
   }
 }
 
-// 카테고리 탭 렌더링 (전체 기사 탭 없이 5개 카테고리 섹션 바로가기 네비게이션)
+// 카테고리 탭 렌더링 (채용 공고문과 동일한 '전체' + 각 카테고리 필터 탭 네비게이션)
 function renderCategoryTabs() {
   const container = document.getElementById('newsCategoryTabs');
   if (!container) return;
   container.innerHTML = '';
 
-  const targetCategories = categories.filter(c => c.id !== 'all');
+  const targetCategories = [
+    { id: 'all', name: '전체' },
+    ...categories.filter(c => c.id !== 'all')
+  ];
 
   targetCategories.forEach(cat => {
+    let catCount = 0;
+    if (cat.id === 'all') {
+      catCount = allArticles.length;
+    } else {
+      catCount = allArticles.filter(a => a.category_id === cat.id).length;
+    }
+
     const isCatActive = !isNewsBookmarkView && activeNewsCategory === cat.id;
-    const catCount = allArticles.filter(a => a.category_id === cat.id).length;
 
     const btn = document.createElement('button');
     btn.setAttribute('data-cat-id', cat.id);
@@ -416,24 +425,29 @@ function renderCategoryTabs() {
           : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
       }">${catCount}</span>
     `;
+
     btn.addEventListener('click', () => {
-      if (window.isGlobalBookmarkMode) {
-        // 전역 북마크 상태에서는 해당 카테고리로 부드럽게 스크롤
-        activeNewsCategory = cat.id;
-        updateNewsCategoryTabStyles(cat.id);
-        scrollToCategory(cat.id);
-        return;
-      }
-      if (isNewsBookmarkView) {
+      if (!window.isGlobalBookmarkMode && isNewsBookmarkView) {
         isNewsBookmarkView = false;
-        window.isGlobalBookmarkMode = false;
         updateBookmarkTabStyle();
-        renderArticles();
       }
       activeNewsCategory = cat.id;
       updateNewsCategoryTabStyles(cat.id);
-      scrollToCategory(cat.id);
+      renderArticles();
+
+      // 스크롤이 내려가 있는 경우 탭 네비게이션 상단으로 부드럽게 정렬
+      const stickyBar = document.getElementById('categoryTabsSticky');
+      if (stickyBar) {
+        const isMobile = window.innerWidth < 640;
+        const offset = isMobile ? 0 : 64;
+        const rect = stickyBar.getBoundingClientRect();
+        if (rect.top < offset) {
+          const targetY = window.pageYOffset + rect.top - offset;
+          window.scrollTo({ top: targetY, behavior: 'smooth' });
+        }
+      }
     });
+
     container.appendChild(btn);
   });
 }
@@ -465,7 +479,6 @@ function updateNewsCategoryTabStyles(activeCatId) {
     }
   });
 }
-
 
 function scrollToCategory(catId) {
   const target = document.getElementById(`section-${catId}`);
@@ -522,12 +535,14 @@ window.renderNewsKeywordChips = renderNewsKeywordChips;
 function resetNewsKeywordAndSearch() {
   activeKeywordFilter = '전체';
   newsSearchQuery = '';
+  activeNewsCategory = 'all';
   searchDisplayedCount = SEARCH_PAGE_SIZE;
   const input = document.getElementById('newsSearchInput');
   if (input) input.value = '';
   const clearBtn = document.getElementById('clearNewsSearchBtn');
   if (clearBtn) clearBtn.classList.add('hidden');
   renderNewsKeywordChips();
+  updateNewsCategoryTabStyles('all');
   renderArticles();
 }
 window.resetNewsKeywordAndSearch = resetNewsKeywordAndSearch;
@@ -928,16 +943,21 @@ function renderArticles() {
 
   // 검색어 또는 키워드 칩 필터 활성화 시
   if (newsSearchQuery || (activeKeywordFilter && activeKeywordFilter !== '전체')) {
-    const searchResults = filterBySearch(allArticles);
+    let searchResults = filterBySearch(allArticles);
+    if (activeNewsCategory !== 'all') {
+      searchResults = searchResults.filter(a => a.category_id === activeNewsCategory);
+    }
     sortArticlesList(searchResults);
 
+    const curCat = categories.find(c => c.id === activeNewsCategory);
+    const catPrefix = (activeNewsCategory !== 'all' && curCat) ? `[${curCat.name}] ` : '';
     let filterLabel = '';
     if (newsSearchQuery && activeKeywordFilter && activeKeywordFilter !== '전체') {
-      filterLabel = `'${newsSearchQuery}' + #${activeKeywordFilter}`;
+      filterLabel = `${catPrefix}'${newsSearchQuery}' + #${activeKeywordFilter}`;
     } else if (newsSearchQuery) {
-      filterLabel = `'${newsSearchQuery}'`;
+      filterLabel = `${catPrefix}'${newsSearchQuery}'`;
     } else {
-      filterLabel = `#${activeKeywordFilter}`;
+      filterLabel = `${catPrefix}#${activeKeywordFilter}`;
     }
 
     if (searchResults.length === 0) {
@@ -1000,8 +1020,10 @@ function renderArticles() {
     return;
   }
 
-  // 기본 상태: 모든 5개 카테고리 섹션을 한 페이지에 전부 순서대로 렌더링
-  const renderedCategories = categories.filter(c => c.id !== 'all');
+  // 기본 상태: 'all'이면 모든 5개 카테고리 섹션 렌더링, 특정 카테고리가 선택되었으면 해당 카테고리만 단독 렌더링
+  const renderedCategories = (activeNewsCategory === 'all')
+    ? categories.filter(c => c.id !== 'all')
+    : categories.filter(c => c.id === activeNewsCategory);
 
   const sectionsHtml = renderedCategories.map(cat => {
     let catArticles = allArticles.filter(a => a.category_id === cat.id);
@@ -1060,13 +1082,32 @@ function renderArticles() {
     `;
   }).filter(Boolean).join('');
 
+  if (!sectionsHtml.trim()) {
+    container.innerHTML = '';
+    if (emptyState) {
+      emptyState.classList.remove('hidden');
+      emptyState.classList.add('flex');
+    }
+    if (notice) {
+      notice.textContent = '해당 카테고리에 등록된 기사가 없습니다.';
+    }
+    return;
+  }
+
   if (emptyState) {
     emptyState.classList.add('hidden');
     emptyState.classList.remove('flex');
   }
 
   if (notice) {
-    notice.textContent = `주요 토목 분야별 브리핑 (총 ${allArticles.length}건)`;
+    if (activeNewsCategory === 'all') {
+      notice.textContent = `주요 토목 분야별 브리핑 (총 ${allArticles.length}건)`;
+    } else {
+      const curCat = categories.find(c => c.id === activeNewsCategory);
+      const catName = curCat ? curCat.name : '';
+      const curArticles = allArticles.filter(a => a.category_id === activeNewsCategory);
+      notice.textContent = `'${catName}' 관련 기사 총 ${curArticles.length}건`;
+    }
   }
 
   container.innerHTML = sectionsHtml;
@@ -1601,7 +1642,7 @@ function setupNewsEventListeners() {
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
       isNewsBookmarkView = false;
-      activeNewsCategory = (categories[0] && categories[0].id) || 'general';
+      activeNewsCategory = 'all';
       newsSearchQuery = '';
       if (searchInput) searchInput.value = '';
       currentNewsSort = 'newest';
@@ -1624,36 +1665,13 @@ function setupNewsEventListeners() {
     });
   }
 
-  // 스크롤 스파이 활성화
+  // 스크롤 스파이 활성화 (카테고리 필터 모드 규격 준수)
   setupScrollSpy();
 }
 
-// 스크롤 시 현재 뷰포트에 위치한 섹션을 감지하여 상단 카테고리 탭 active 동기화
+// 스크롤 스파이 (채용 공고문과 동일하게 카테고리 탭 클릭 시 해당 카테고리만 단독 필터링되므로 고정 유지)
 function setupScrollSpy() {
-  let ticking = false;
-  window.addEventListener('scroll', () => {
-    if (currentMainTab !== 'news' || isNewsBookmarkView || newsSearchQuery) return;
-    if (!ticking) {
-      window.requestAnimationFrame(() => {
-        const targetCategories = categories.filter(c => c.id !== 'all');
-        const scrollPosition = window.pageYOffset + (window.innerWidth < 640 ? 80 : 180);
-        
-        for (let i = targetCategories.length - 1; i >= 0; i--) {
-          const cat = targetCategories[i];
-          const section = document.getElementById(`section-${cat.id}`);
-          if (section && section.offsetTop <= scrollPosition) {
-            if (activeNewsCategory !== cat.id) {
-              activeNewsCategory = cat.id;
-              updateNewsCategoryTabStyles(activeNewsCategory);
-            }
-            break;
-          }
-        }
-        ticking = false;
-      });
-      ticking = true;
-    }
-  }, { passive: true });
+  // 채용 공고문 네비게이션 표준에 맞춰 스크롤 위치에 따른 탭 강제 변경을 방지하고 사용자가 선택한 카테고리를 유지합니다.
 }
 
 // 11. 유틸리티
