@@ -22,7 +22,8 @@ CONTESTS_JSON_PATH = os.path.join(DATA_DIR, "contests.json")
 JOBS_JSON_PATH = os.path.join(DATA_DIR, "jobs.json")
 
 PORT = int(os.environ.get("PORT", 5000))
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-1.5-flash")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.6-flash")
+
 
 app = Flask(__name__, static_folder=None)
 
@@ -248,87 +249,94 @@ def gemini_chat():
 
         prompt_text = f"{system_prompt}\n\n[참고 기사 데이터]\n{context_text}\n\n[사용자 질문]\n{query}"
 
-    endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent?key={api_key}"
+    model_candidates = [GEMINI_MODEL, "gemini-3.6-flash", "gemini-flash-latest"]
+    seen = set()
+    model_list = [m for m in model_candidates if m and not (m in seen or seen.add(m))]
 
-    try:
-        resp = requests.post(
-            endpoint,
-            headers={"Content-Type": "application/json"},
-            json={
-                "contents": [
-                    {
-                        "role": "user",
-                        "parts": [{"text": prompt_text}]
+    last_resp = None
+    for current_model in model_list:
+        endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{current_model}:generateContent?key={api_key}"
+        try:
+            resp = requests.post(
+                endpoint,
+                headers={"Content-Type": "application/json"},
+                json={
+                    "contents": [
+                        {
+                            "role": "user",
+                            "parts": [{"text": prompt_text}]
+                        }
+                    ],
+                    "generationConfig": {
+                        "temperature": 0.2,
+                        "maxOutputTokens": 1200
                     }
-                ],
-                "generationConfig": {
-                    "temperature": 0.2,
-                    "maxOutputTokens": 1200
-                }
-            },
-            timeout=30
-        )
+                },
+                timeout=30
+            )
+            last_resp = resp
 
-        if not resp.ok:
-            try:
-                err_data = resp.json()
-                err_msg = err_data.get("error", {}).get("message", resp.text)
-            except Exception:
-                err_msg = f"HTTP {resp.status_code}"
-
-            if resp.status_code in (400, 403):
-                return jsonify({
-                    "success": False,
-                    "error": "INVALID_API_KEY",
-                    "message": f"Gemini API 키 인증 실패 ({err_msg}). 올바른 키인지 확인해 주세요."
-                }), 400
-            elif resp.status_code == 429:
-                return jsonify({
-                    "success": False,
-                    "error": "RATE_LIMIT_EXCEEDED",
-                    "message": "Gemini API 무료 호출 한도를 초과했습니다. 잠시 후 다시 시도해 주세요."
-                }), 429
+            if resp.ok:
+                res_json = resp.json()
+                candidates = res_json.get("candidates", [])
+                if candidates:
+                    answer_text = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+                    if answer_text:
+                        return jsonify({
+                            "success": True,
+                            "answer": answer_text,
+                            "model": current_model
+                        })
+            elif resp.status_code == 404:
+                # 모델명 변경/단종 시 다음 후보로 자동 전환
+                continue
+            else:
+                break
+        except requests.exceptions.Timeout:
             return jsonify({
                 "success": False,
-                "error": f"API_ERROR_{resp.status_code}",
-                "message": f"Gemini API 호출 실패: {err_msg}"
-            }), resp.status_code
-
-        res_json = resp.json()
-        candidates = res_json.get("candidates", [])
-        if not candidates:
+                "error": "TIMEOUT",
+                "message": "Gemini API 응답 시간이 초과되었습니다(30초). 잠시 후 다시 시도해 주세요."
+            }), 504
+        except Exception as e:
             return jsonify({
                 "success": False,
-                "error": "NO_CANDIDATE",
-                "message": "AI 응답을 생성하지 못했습니다."
+                "error": "SERVER_ERROR",
+                "message": f"서버 내부 오류: {str(e)}"
             }), 500
 
-        answer_text = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
-        if not answer_text:
+    # 모든 모델 후보 호출 실패 시 오류 처리
+    if last_resp is not None:
+        try:
+            err_data = last_resp.json()
+            err_msg = err_data.get("error", {}).get("message", last_resp.text)
+        except Exception:
+            err_msg = f"HTTP {last_resp.status_code}"
+
+        if last_resp.status_code in (400, 403):
             return jsonify({
                 "success": False,
-                "error": "EMPTY_RESPONSE",
-                "message": "AI 응답 내용이 비어 있습니다."
-            }), 500
-
-        return jsonify({
-            "success": True,
-            "answer": answer_text,
-            "model": GEMINI_MODEL
-        })
-
-    except requests.exceptions.Timeout:
+                "error": "INVALID_API_KEY",
+                "message": f"Gemini API 키 인증 실패 ({err_msg}). 올바른 키인지 확인해 주세요."
+            }), 400
+        elif last_resp.status_code == 429:
+            return jsonify({
+                "success": False,
+                "error": "RATE_LIMIT_EXCEEDED",
+                "message": "Gemini API 무료 호출 한도를 초과했습니다. 잠시 후 다시 시도해 주세요."
+            }), 429
         return jsonify({
             "success": False,
-            "error": "TIMEOUT",
-            "message": "Gemini API 응답 시간이 초과되었습니다(30초). 잠시 후 다시 시도해 주세요."
-        }), 504
-    except Exception as e:
-        return jsonify({
-            "success": False,
-            "error": "SERVER_ERROR",
-            "message": f"서버 내부 오류: {str(e)}"
-        }), 500
+            "error": f"API_ERROR_{last_resp.status_code}",
+            "message": f"Gemini API 호출 실패: {err_msg}"
+        }), last_resp.status_code
+
+    return jsonify({
+        "success": False,
+        "error": "NO_CANDIDATE",
+        "message": "AI 응답을 생성하지 못했습니다."
+    }), 500
+
 
 # --- 정적 자산 라우트 ---
 @app.route("/static/<path:filename>")
