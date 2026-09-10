@@ -2,12 +2,29 @@ import os
 import json
 import socket
 import webbrowser
-import urllib.parse
 import subprocess
 import threading
-from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
+import requests
+from flask import Flask, request, jsonify, send_from_directory, send_file, Response
+from dotenv import load_dotenv
+
 import scraper
 import job_scraper
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# .env 로드 (존재 시)
+load_dotenv(os.path.join(BASE_DIR, ".env"))
+
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+DATA_DIR = os.path.join(BASE_DIR, "data")
+NEWS_JSON_PATH = os.path.join(DATA_DIR, "news.json")
+CONTESTS_JSON_PATH = os.path.join(DATA_DIR, "contests.json")
+JOBS_JSON_PATH = os.path.join(DATA_DIR, "jobs.json")
+
+PORT = int(os.environ.get("PORT", 5000))
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-1.5-flash")
+
+app = Flask(__name__, static_folder=None)
 
 def get_local_ip():
     """스마트폰 등 로컬 네트워크 기기 접속을 위한 LAN IPv4 자동 조회"""
@@ -20,191 +37,315 @@ def get_local_ip():
     except Exception:
         return "127.0.0.1"
 
-PORT = 8000
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-STATIC_DIR = os.path.join(BASE_DIR, "static")
-DATA_DIR = os.path.join(BASE_DIR, "data")
-NEWS_JSON_PATH = os.path.join(DATA_DIR, "news.json")
-CONTESTS_JSON_PATH = os.path.join(DATA_DIR, "contests.json")
-JOBS_JSON_PATH = os.path.join(DATA_DIR, "jobs.json")
+def get_gemini_api_key(custom_key=None):
+    """우선순위: 요청에서 전달된 커스텀 키 > 서버 환경변수 GEMINI_API_KEY"""
+    if custom_key and custom_key.strip():
+        return custom_key.strip()
+    return (os.environ.get("GEMINI_API_KEY") or "").strip()
 
-class CivilNewsHandler(SimpleHTTPRequestHandler):
-    def handle(self):
-        try:
-            super().handle()
-        except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
-            pass
 
-    def finish(self):
-        try:
-            super().finish()
-        except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
-            pass
+# --- CORS 및 전역 헤더 처리 ---
+@app.after_request
+def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Gemini-Key"
+    return response
 
-    def send_bytes_response(self, content_bytes: bytes, content_type: str, status: int = 200):
-        """Content-Length 헤더를 정확히 포함하여 브라우저의 무한 로딩 및 대기 현상 방지"""
-        try:
-            self.send_response(status)
-            self.send_header("Content-Type", content_type)
-            self.send_header("Content-Length", str(len(content_bytes)))
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
-            self.send_header("Connection", "keep-alive")
-            self.end_headers()
-            self.wfile.write(content_bytes)
-        except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
-            pass
+# --- 페이지 라우트 ---
+@app.route("/")
+@app.route("/index.html")
+def serve_index():
+    index_path = os.path.join(BASE_DIR, "index.html")
+    if not os.path.exists(index_path):
+        index_path = os.path.join(STATIC_DIR, "index.html")
+    return send_file(index_path)
 
-    def do_GET(self):
-        try:
-            self._handle_get()
-        except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
-            # 사용자가 브라우저 창을 닫거나 빠르게 새로고침할 때 발생하는 클라이언트 소켓 단절 무시
-            pass
+@app.route("/jobs")
+@app.route("/jobs.html")
+@app.route("/recruit")
+@app.route("/recruit.html")
+def serve_jobs():
+    jobs_path = os.path.join(BASE_DIR, "jobs.html")
+    if not os.path.exists(jobs_path):
+        jobs_path = os.path.join(STATIC_DIR, "jobs.html")
+    return send_file(jobs_path)
 
-    def _handle_get(self):
-        # URL에서 쿼리스트링(?v=... 등)을 분리하여 순수 경로(clean_path) 추출
-        parsed_url = urllib.parse.urlparse(self.path)
-        clean_path = parsed_url.path
+@app.route("/contests")
+@app.route("/contests.html")
+@app.route("/contest")
+@app.route("/contest.html")
+def serve_contests():
+    contests_path = os.path.join(BASE_DIR, "contests.html")
+    if not os.path.exists(contests_path):
+        contests_path = os.path.join(STATIC_DIR, "contests.html")
+    return send_file(contests_path)
 
-        # 0. 파비콘 요청 처리 (브라우저 기본 요청 대응)
-        if clean_path in ["/favicon.ico", "/favicon.svg"]:
-            fav_path = os.path.join(STATIC_DIR, "favicon.svg")
-            if not os.path.exists(fav_path):
-                fav_path = os.path.join(BASE_DIR, "favicon.svg")
-            if os.path.exists(fav_path):
-                with open(fav_path, "rb") as f:
-                    self.send_bytes_response(f.read(), "image/svg+xml")
-            else:
-                self.send_response(204)
-                self.send_header("Content-Length", "0")
-                self.end_headers()
-            return
+@app.route("/mobile")
+@app.route("/mobile.html")
+def serve_mobile():
+    mobile_path = os.path.join(BASE_DIR, "mobile.html")
+    if not os.path.exists(mobile_path):
+        mobile_path = os.path.join(STATIC_DIR, "mobile.html")
+    return send_file(mobile_path)
 
-        # 1. 루트 경로 요청 시 index.html 반환
-        if clean_path in ["", "/", "/index.html"]:
-            # root index.html 우선 (없으면 static/index.html)
-            index_path = os.path.join(BASE_DIR, "index.html")
-            if not os.path.exists(index_path):
-                index_path = os.path.join(STATIC_DIR, "index.html")
-            with open(index_path, "rb") as f:
-                self.send_bytes_response(f.read(), "text/html; charset=utf-8")
-            return
+# --- 파비콘 / 매니페스트 / 서비스워커 ---
+@app.route("/favicon.ico")
+@app.route("/favicon.svg")
+def serve_favicon():
+    fav_path = os.path.join(STATIC_DIR, "favicon.svg")
+    if not os.path.exists(fav_path):
+        fav_path = os.path.join(BASE_DIR, "favicon.svg")
+    if os.path.exists(fav_path):
+        return send_file(fav_path, mimetype="image/svg+xml")
+    return ("", 204)
 
-        # 1-1. 채용 공고문 페이지 요청
-        if clean_path in ["/jobs", "/jobs.html", "/recruit", "/recruit.html"]:
-            jobs_path = os.path.join(BASE_DIR, "jobs.html")
-            if not os.path.exists(jobs_path):
-                jobs_path = os.path.join(STATIC_DIR, "jobs.html")
-            with open(jobs_path, "rb") as f:
-                self.send_bytes_response(f.read(), "text/html; charset=utf-8")
-            return
+@app.route("/manifest.json")
+def serve_manifest():
+    m_path = os.path.join(BASE_DIR, "manifest.json")
+    if not os.path.exists(m_path):
+        m_path = os.path.join(STATIC_DIR, "manifest.json")
+    return send_file(m_path, mimetype="application/manifest+json")
 
-        # 1-2. 공모전 페이지 요청
-        if clean_path in ["/contests", "/contests.html", "/contest", "/contest.html"]:
-            contests_path = os.path.join(BASE_DIR, "contests.html")
-            if not os.path.exists(contests_path):
-                contests_path = os.path.join(STATIC_DIR, "contests.html")
-            with open(contests_path, "rb") as f:
-                self.send_bytes_response(f.read(), "text/html; charset=utf-8")
-            return
+@app.route("/sw.js")
+def serve_sw():
+    sw_path = os.path.join(BASE_DIR, "sw.js")
+    if not os.path.exists(sw_path):
+        sw_path = os.path.join(STATIC_DIR, "sw.js")
+    return send_file(sw_path, mimetype="application/javascript")
 
-        # 1-3. 모바일 뷰 시뮬레이터 페이지 요청
-        if clean_path in ["/mobile", "/mobile.html"]:
-            mobile_path = os.path.join(BASE_DIR, "mobile.html")
-            if not os.path.exists(mobile_path):
-                mobile_path = os.path.join(STATIC_DIR, "mobile.html")
-            with open(mobile_path, "rb") as f:
-                self.send_bytes_response(f.read(), "text/html; charset=utf-8")
-            return
+# --- 데이터 API ---
+@app.route("/api/news")
+@app.route("/data/news.json")
+def get_news():
+    if not os.path.exists(NEWS_JSON_PATH):
+        scraper.scrape_civil_news()
+    return send_file(NEWS_JSON_PATH, mimetype="application/json; charset=utf-8")
 
-        # 2. 뉴스 데이터 API 요청
-        if clean_path in ["/api/news", "/data/news.json"]:
-            if not os.path.exists(NEWS_JSON_PATH):
-                scraper.scrape_civil_news()
-            with open(NEWS_JSON_PATH, "rb") as f:
-                self.send_bytes_response(f.read(), "application/json; charset=utf-8")
-            return
+@app.route("/api/contests")
+@app.route("/data/contests.json")
+def get_contests():
+    if not os.path.exists(CONTESTS_JSON_PATH):
+        scraper.scrape_civil_contests()
+    return send_file(CONTESTS_JSON_PATH, mimetype="application/json; charset=utf-8")
 
-        # 2-1. 공모전 데이터 API 요청
-        if clean_path in ["/api/contests", "/data/contests.json"]:
-            if not os.path.exists(CONTESTS_JSON_PATH):
-                scraper.scrape_civil_contests()
-            with open(CONTESTS_JSON_PATH, "rb") as f:
-                self.send_bytes_response(f.read(), "application/json; charset=utf-8")
-            return
+@app.route("/api/jobs")
+@app.route("/data/jobs.json")
+def get_jobs():
+    if not os.path.exists(JOBS_JSON_PATH):
+        job_scraper.scrape_civil_jobs()
+    return send_file(JOBS_JSON_PATH, mimetype="application/json; charset=utf-8")
 
-        # 2-2. 채용 공고 데이터 API 요청
-        if clean_path in ["/api/jobs", "/data/jobs.json"]:
-            if not os.path.exists(JOBS_JSON_PATH):
-                job_scraper.scrape_civil_jobs()
-            with open(JOBS_JSON_PATH, "rb") as f:
-                self.send_bytes_response(f.read(), "application/json; charset=utf-8")
-            return
+@app.route("/api/network-info")
+def network_info():
+    local_ip = get_local_ip()
+    host = request.host
+    scheme = request.headers.get("X-Forwarded-Proto", "http")
+    return jsonify({
+        "local_ip": local_ip,
+        "port": PORT,
+        "server_url": f"{scheme}://{host}/#news",
+        "local_url": f"http://localhost:{PORT}/#news",
+        "mobile_url": f"http://{local_ip}/#news",
+        "mobile_simulator_url": f"http://{local_ip}/mobile#news",
+        "github_pages_url": "https://chldlrtjr.github.io/civil-news-hub/#news"
+    })
 
-        # 2-3. 네트워크 정보 API (스마트폰 모바일 접속용 IP 안내)
-        if clean_path == "/api/network-info":
-            local_ip = get_local_ip()
-            info_bytes = json.dumps({
-                "local_ip": local_ip,
-                "port": PORT,
-                "local_url": f"http://localhost:{PORT}/#news",
-                "mobile_url": f"http://{local_ip}:{PORT}/#news",
-                "mobile_simulator_url": f"http://{local_ip}:{PORT}/mobile#news",
-                "github_pages_url": "https://chldlrtjr.github.io/civil-news-hub/#news"
-            }, ensure_ascii=False).encode("utf-8")
-            self.send_bytes_response(info_bytes, "application/json; charset=utf-8")
-            return
 
-        # 3. 정적 리소스 서빙 (/static/ 또는 루트 경로 파일)
-        if clean_path.startswith("/static/"):
-            rel_path = clean_path[8:]
-            target_path = os.path.join(STATIC_DIR, rel_path)
-        elif clean_path in ["/app.js", "/style.css", "/jobs.js", "/contests.js"]:
-            target_path = os.path.join(STATIC_DIR, clean_path[1:])
+@app.route("/api/refresh", methods=["POST"])
+def refresh_data():
+    try:
+        updated_data = scraper.scrape_civil_news()
+        return jsonify({
+            "success": True,
+            "message": "최신 기사가 성공적으로 업데이트되었습니다.",
+            "data": updated_data
+        })
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+# --- Gemini 1.5 Flash API 프록시 ---
+@app.route("/api/chat/status", methods=["GET"])
+def chat_status():
+    server_key = get_gemini_api_key()
+    return jsonify({
+        "success": True,
+        "has_server_key": bool(server_key),
+        "model": GEMINI_MODEL
+    })
+
+@app.route("/api/chat", methods=["POST", "OPTIONS"])
+@app.route("/api/gemini/chat", methods=["POST", "OPTIONS"])
+def gemini_chat():
+    if request.method == "OPTIONS":
+        return ("", 204)
+
+    data = request.get_json(silent=True) or {}
+    query = data.get("query", "").strip()
+    custom_key = data.get("customApiKey", "").strip()
+
+    # Header Authorization: Bearer <key> 또는 X-Gemini-Key 지원
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        token = auth_header[7:].strip()
+        if token:
+            custom_key = token
+    header_key = request.headers.get("X-Gemini-Key", "").strip()
+    if header_key:
+        custom_key = header_key
+
+    api_key = get_gemini_api_key(custom_key)
+    if not api_key:
+        return jsonify({
+            "success": False,
+            "error": "KEY_MISSING",
+            "message": "서버에 등록된 GEMINI_API_KEY가 없습니다. 서버의 .env 설정 파일에 키를 입력하거나, 챗봇 상단 🔑 설정 버튼을 눌러 개인 API 키를 입력해 주세요."
+        }), 400
+
+    if not query:
+        return jsonify({
+            "success": False,
+            "error": "EMPTY_QUERY",
+            "message": "질문 내용을 입력해 주세요."
+        }), 400
+
+    relevant_articles = data.get("relevantArticles", [])
+    custom_prompt = data.get("prompt", "")
+
+    if custom_prompt:
+        prompt_text = custom_prompt
+    else:
+        if relevant_articles:
+            art_snippets = []
+            for idx, art in enumerate(relevant_articles[:4]):
+                summary_raw = art.get("summary", "")
+                if isinstance(summary_raw, list):
+                    sum_text = "\n• ".join(summary_raw)
+                else:
+                    sum_text = str(summary_raw)
+                art_snippets.append(
+                    f"[기사 {idx + 1}]\n"
+                    f"- 제목: {art.get('title', '')}\n"
+                    f"- 매체/일시: {art.get('media', '언론사')} ({art.get('published_at') or art.get('date') or ''})\n"
+                    f"- 주요 내용:\n• {sum_text}"
+                )
+            context_text = "\n\n".join(art_snippets)
         else:
-            target_path = os.path.join(BASE_DIR, clean_path.lstrip("/"))
+            context_text = '직접 관련된 최신 기사를 찾지 못했습니다. 일반 토목·인프라 공학 및 건설 지식을 바탕으로 설명하되, "제공된 기사 데이터베이스에는 직접 언급되지 않았습니다"라는 점을 먼저 명시하세요.'
 
-        if os.path.exists(target_path) and os.path.isfile(target_path):
-            with open(target_path, "rb") as f:
-                content = f.read()
-            mime = "text/plain; charset=utf-8"
-            if target_path.endswith(".css"):
-                mime = "text/css; charset=utf-8"
-            elif target_path.endswith(".js"):
-                mime = "application/javascript; charset=utf-8"
-            elif target_path.endswith(".json"):
-                mime = "application/json; charset=utf-8"
-            elif target_path.endswith(".html"):
-                mime = "text/html; charset=utf-8"
-            elif target_path.endswith((".png", ".jpg", ".jpeg", ".ico", ".svg")):
-                ext = target_path.rsplit(".", 1)[-1].lower()
-                mime = "image/svg+xml" if ext == "svg" else f"image/{ext}"
-            self.send_bytes_response(content, mime)
-            return
+        system_prompt = (
+            "당신은 대한민국 토목·인프라 및 건설 엔지니어링 분야 전문 AI 연구원입니다.\n"
+            "사용자의 질문에 대해 아래 제공된 [참고 기사 데이터]를 바탕으로 팩트에 입각하여 친절하고 전문적으로 답변하세요.\n\n"
+            "답변 지침:\n"
+            "1. 기사에 나온 구체적인 수치(사업비, 공사비, 노선 길이, 완공/착공 연도 등)가 있다면 명확히 밝히세요.\n"
+            "2. 읽기 편하게 불릿 기호(•)와 굵은 글씨(**)를 사용하여 핵심 위주로 일목요연하게 작성하세요.\n"
+            "3. 기사에 없는 내용은 허구로 꾸며내지 말고 솔직하게 밝히세요.\n"
+            "4. 한국어로 정중하고 격식 있는 어조(~합니다, ~입니다)로 답변하세요."
+        )
 
-        self.send_error(404, "File not found")
+        prompt_text = f"{system_prompt}\n\n[참고 기사 데이터]\n{context_text}\n\n[사용자 질문]\n{query}"
 
-    def do_POST(self):
-        # 최신 기사 즉시 새로고침(재수집) API
-        if self.path == "/api/refresh":
+    endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent?key={api_key}"
+
+    try:
+        resp = requests.post(
+            endpoint,
+            headers={"Content-Type": "application/json"},
+            json={
+                "contents": [
+                    {
+                        "role": "user",
+                        "parts": [{"text": prompt_text}]
+                    }
+                ],
+                "generationConfig": {
+                    "temperature": 0.2,
+                    "maxOutputTokens": 1200
+                }
+            },
+            timeout=30
+        )
+
+        if not resp.ok:
             try:
-                updated_data = scraper.scrape_civil_news()
-                response_bytes = json.dumps({
-                    "success": True,
-                    "message": "최신 기사가 성공적으로 업데이트되었습니다.",
-                    "data": updated_data
-                }, ensure_ascii=False).encode("utf-8")
-                self.send_bytes_response(response_bytes, "application/json; charset=utf-8")
-            except Exception as e:
-                err_bytes = json.dumps({
-                    "success": False,
-                    "error": str(e)
-                }, ensure_ascii=False).encode("utf-8")
-                self.send_bytes_response(err_bytes, "application/json; charset=utf-8", status=500)
-            return
+                err_data = resp.json()
+                err_msg = err_data.get("error", {}).get("message", resp.text)
+            except Exception:
+                err_msg = f"HTTP {resp.status_code}"
 
-        self.send_error(404, "Endpoint not found")
+            if resp.status_code in (400, 403):
+                return jsonify({
+                    "success": False,
+                    "error": "INVALID_API_KEY",
+                    "message": f"Gemini API 키 인증 실패 ({err_msg}). 올바른 키인지 확인해 주세요."
+                }), 400
+            elif resp.status_code == 429:
+                return jsonify({
+                    "success": False,
+                    "error": "RATE_LIMIT_EXCEEDED",
+                    "message": "Gemini API 무료 호출 한도를 초과했습니다. 잠시 후 다시 시도해 주세요."
+                }), 429
+            return jsonify({
+                "success": False,
+                "error": f"API_ERROR_{resp.status_code}",
+                "message": f"Gemini API 호출 실패: {err_msg}"
+            }), resp.status_code
+
+        res_json = resp.json()
+        candidates = res_json.get("candidates", [])
+        if not candidates:
+            return jsonify({
+                "success": False,
+                "error": "NO_CANDIDATE",
+                "message": "AI 응답을 생성하지 못했습니다."
+            }), 500
+
+        answer_text = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+        if not answer_text:
+            return jsonify({
+                "success": False,
+                "error": "EMPTY_RESPONSE",
+                "message": "AI 응답 내용이 비어 있습니다."
+            }), 500
+
+        return jsonify({
+            "success": True,
+            "answer": answer_text,
+            "model": GEMINI_MODEL
+        })
+
+    except requests.exceptions.Timeout:
+        return jsonify({
+            "success": False,
+            "error": "TIMEOUT",
+            "message": "Gemini API 응답 시간이 초과되었습니다(30초). 잠시 후 다시 시도해 주세요."
+        }), 504
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": "SERVER_ERROR",
+            "message": f"서버 내부 오류: {str(e)}"
+        }), 500
+
+# --- 정적 자산 라우트 ---
+@app.route("/static/<path:filename>")
+def serve_static(filename):
+    return send_from_directory(STATIC_DIR, filename)
+
+@app.route("/<path:filename>")
+def serve_root_files(filename):
+    # 정적 파일 우선 확인 (static 또는 BASE_DIR)
+    file_in_static = os.path.join(STATIC_DIR, filename)
+    if os.path.isfile(file_in_static):
+        return send_file(file_in_static)
+    file_in_base = os.path.join(BASE_DIR, filename)
+    if os.path.isfile(file_in_base):
+        return send_file(file_in_base)
+    return ("File not found", 404)
+
 
 def open_in_browser(url):
     """오르카(Orca) 브라우저를 우선 탐색하여 새 탭 생성 또는 실행, 실패 시 기본 브라우저 오픈"""
@@ -257,27 +398,24 @@ def start_server():
         print("💡 초기 뉴스 데이터를 수집합니다...")
         scraper.scrape_civil_news()
 
-    server_address = ("", PORT)
-    httpd = ThreadingHTTPServer(server_address, CivilNewsHandler)
     local_ip = get_local_ip()
     local_url = f"http://localhost:{PORT}/#news"
     mobile_url = f"http://{local_ip}:{PORT}/#news"
     
     print("\n" + "=" * 65)
-    print(f"🏗️  [Civil News Hub 웹 서버가 정상 실행되었습니다!]")
+    print(f"🏗️  [Civil News Hub Flask 웹 서버가 정상 실행되었습니다!]")
     print(f"🌐  PC 브라우저 접속:       {local_url}")
     print(f"📱  스마트폰(모바일) 접속:   {mobile_url}")
+    print(f"🤖  Gemini AI 프록시:      활성화 ({GEMINI_MODEL})")
     print(f"📌  종료하려면 터미널에서 Ctrl + C 를 누르세요.")
     print("=" * 65 + "\n")
     
-    # 서버 준비 후 0.5초 뒤 브라우저 비동기 자동 오픈 (오르카 브라우저 우선)
-    threading.Timer(0.5, open_in_browser, args=[local_url]).start()
+    # 데스크탑 GUI 환경일 때만 브라우저 자동 오픈
+    if os.name == "nt" or os.environ.get("DISPLAY"):
+        threading.Timer(0.5, open_in_browser, args=[local_url]).start()
         
-    try:
-        httpd.serve_forever()
-    except KeyboardInterrupt:
-        print("\n👋 서버를 안전하게 종료합니다.")
-        httpd.server_close()
+    app.run(host="0.0.0.0", port=PORT, debug=False)
 
 if __name__ == "__main__":
     start_server()
+

@@ -1,5 +1,5 @@
 // Civil News Hub - AI Briefing Chatbot Controller (Option 2: Gemini 1.5 Flash + Local RAG)
-// Silent Internal Version: v1.0.19
+// Silent Internal Version: v1.0.20
 
 (function () {
   let isChatbotOpen = false;
@@ -7,6 +7,8 @@
   let isConfigOpen = false;
   let chatHistory = [];
   let geminiApiKey = '';
+  let hasServerApiKey = false;
+  let serverModelName = 'gemini-1.5-flash';
 
   // 1. 초기화
   if (document.readyState === 'loading') {
@@ -20,7 +22,23 @@
     injectChatbotUI();
     setupChatbotListeners();
     initWelcomeMessage();
+    checkServerStatus();
   }
+
+  async function checkServerStatus() {
+    try {
+      const res = await fetch('/api/chat/status');
+      if (res.ok) {
+        const data = await res.json();
+        hasServerApiKey = !!data.has_server_key;
+        if (data.model) serverModelName = data.model;
+      }
+    } catch (e) {
+      hasServerApiKey = false;
+    }
+    updateApiStatusBadge();
+  }
+
 
   function loadApiKey() {
     try {
@@ -136,6 +154,7 @@
           <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-2">
             입력하신 키는 본인 브라우저(Local Storage)에만 안전히 저장되며 외부로 전송되지 않습니다.
           </p>
+          <div id="chatbotServerKeyNotice" class="hidden"></div>
           <div class="flex gap-1.5">
             <input 
               type="password" 
@@ -226,6 +245,7 @@
     const badge = document.getElementById('chatbotModeBadge');
     const input = document.getElementById('chatbotApiKeyInput');
     const subHeader = document.getElementById('chatbotSubHeader');
+    const serverNotice = document.getElementById('chatbotServerKeyNotice');
     if (input) input.value = geminiApiKey || '';
 
     const count = (window.allArticles && window.allArticles.length) || 237;
@@ -233,16 +253,41 @@
       subHeader.textContent = `${count}건 팩트 기사 기반 실시간 Q&A`;
     }
 
+    if (serverNotice) {
+      if (hasServerApiKey) {
+        serverNotice.className = 'p-2.5 mb-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-[11px] text-emerald-800 dark:text-emerald-300 flex items-center gap-2';
+        serverNotice.innerHTML = `
+          <i data-lucide="check-circle-2" class="w-4 h-4 flex-shrink-0 text-emerald-600 dark:text-emerald-400"></i>
+          <div>
+            <span class="font-bold">서버 무료 연동 활성:</span> 서버에 Gemini API가 등록되어 방문자 누구나 키 없이 바로 이용하실 수 있습니다.
+          </div>
+        `;
+      } else {
+        serverNotice.className = 'p-2.5 mb-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-[11px] text-slate-600 dark:text-slate-300 flex items-center gap-2';
+        serverNotice.innerHTML = `
+          <i data-lucide="info" class="w-4 h-4 flex-shrink-0 text-blue-500"></i>
+          <div>
+            <span class="font-bold">안내:</span> 서버 환경변수 미등록 시 아래에 개인 무료 키를 등록하면 즉시 Gemini AI 브리핑이 활성화됩니다.
+          </div>
+        `;
+      }
+      refreshIcons();
+    }
+
     if (badge) {
       if (geminiApiKey) {
         badge.className = 'text-[10px] px-2 py-0.5 rounded-full font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30';
-        badge.textContent = 'Gemini 1.5 연동';
+        badge.textContent = 'Gemini 1.5 (개인 키)';
+      } else if (hasServerApiKey) {
+        badge.className = 'text-[10px] px-2 py-0.5 rounded-full font-semibold bg-blue-500/20 text-blue-300 border border-blue-400/30';
+        badge.textContent = 'Gemini 1.5 (서버 무료 이용)';
       } else {
         badge.className = 'text-[10px] px-2 py-0.5 rounded-full font-semibold bg-amber-500/20 text-amber-300 border border-amber-400/30';
         badge.textContent = '로컬 요약 모드';
       }
     }
   }
+
 
   // 3. 이벤트 리스너 설정
   function setupChatbotListeners() {
@@ -416,21 +461,30 @@
       await ensureArticlesLoaded();
       const relevantArticles = retrieveRelevantArticles(query, 4);
 
-      if (geminiApiKey) {
-        // [방안 2]: Google Gemini 1.5 Flash API 실시간 RAG 호출
-        const aiResponseText = await callGeminiApi(query, relevantArticles);
-        removeMessage(loadingId);
-        appendAiMessage(aiResponseText, relevantArticles, true);
-      } else {
-        // [방안 2 폴백]: API 키 미등록 시 정밀 로컬 RAG 팩트 브리핑 카드 제공
+      // (4) Gemini API 호출 (서버 프록시 또는 개인 키 활용)
+      // 만약 서버 키도 없고 개인 키도 없다면 즉시 로컬 RAG 팩트 브리핑 카드로 분기
+      if (!hasServerApiKey && !geminiApiKey) {
         await new Promise(r => setTimeout(r, 600)); // 자연스러운 UX 딜레이
         removeMessage(loadingId);
         appendLocalRagFallbackMessage(query, relevantArticles);
+      } else {
+        try {
+          const aiResponseText = await callGeminiApi(query, relevantArticles);
+          removeMessage(loadingId);
+          appendAiMessage(aiResponseText, relevantArticles, true);
+        } catch (apiErr) {
+          if (apiErr.message === 'KEY_MISSING') {
+            removeMessage(loadingId);
+            appendLocalRagFallbackMessage(query, relevantArticles);
+          } else {
+            throw apiErr;
+          }
+        }
       }
     } catch (err) {
       console.error('Chatbot Generation Error:', err);
       removeMessage(loadingId);
-      appendErrorMessage(err.message);
+      appendErrorMessage(err.message || 'AI 답변 처리 중 오류가 발생했습니다.');
     } finally {
       isGenerating = false;
       updateSendBtnState(false);
@@ -475,8 +529,53 @@
     return scored.filter(s => s.score > 0).slice(0, limit).map(s => s.article);
   }
 
-  // 7. Google Gemini 1.5 Flash API 호출
+  // 7. Google Gemini API 호출 (서버 프록시 우선, 클라이언트 직접 호출 폴백)
   async function callGeminiApi(query, relevantArticles) {
+    // 1. 백엔드 서버 프록시 /api/chat 호출 시도
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(geminiApiKey ? { 'Authorization': `Bearer ${geminiApiKey}` } : {})
+        },
+        body: JSON.stringify({
+          query,
+          relevantArticles,
+          customApiKey: geminiApiKey || ''
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.answer) {
+          return data.answer;
+        }
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        if (errData.error === 'KEY_MISSING' && !geminiApiKey) {
+          throw new Error('KEY_MISSING');
+        }
+        if (errData.message) {
+          throw new Error(errData.message);
+        }
+      }
+    } catch (err) {
+      if (err.message === 'KEY_MISSING' || (err.message && err.message.includes('Gemini API'))) {
+        throw err;
+      }
+      console.warn('Backend proxy /api/chat error, trying direct Gemini client call:', err);
+    }
+
+    // 2. 서버 프록시 사용 불가 환경(GitHub Pages 등)이고 개인 키가 있는 경우 직접 호출
+    if (geminiApiKey) {
+      return await callGeminiApiDirect(query, relevantArticles);
+    }
+
+    throw new Error('KEY_MISSING');
+  }
+
+  async function callGeminiApiDirect(query, relevantArticles) {
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
 
     let contextText = '';
@@ -522,7 +621,7 @@ ${query}`;
         ],
         generationConfig: {
           temperature: 0.2,
-          maxOutputTokens: 1000
+          maxOutputTokens: 1200
         }
       })
     });
@@ -542,6 +641,7 @@ ${query}`;
     if (!text) throw new Error('AI 답변을 생성하지 못했습니다.');
     return text;
   }
+
 
   // 8. 메시지 렌더링 헬퍼들
   function appendUserMessage(text) {

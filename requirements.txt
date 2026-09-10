@@ -1,3 +1,5 @@
-# Python 표준 라이브러리(urllib, xml, json, http.server)만을 사용하여 추가 패키지 설치 없이 즉시 실행 가능합니다.
-# 선택 사항 (필요 시):
-# requests>=2.31.0
+flask>=3.0.0
+gunicorn>=21.2.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+
