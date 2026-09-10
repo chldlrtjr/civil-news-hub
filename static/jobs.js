@@ -20,20 +20,11 @@ function debounce(func, wait = 180) {
   };
 }
 
-function safeCreateIcons(rootEl) {
-  if (window.safeCreateIcons) {
-    window.safeCreateIcons(rootEl);
-    return;
-  }
-  if (!window.lucide) return;
-  try {
-    if (rootEl && rootEl instanceof HTMLElement) {
-      window.lucide.createIcons({ root: rootEl });
-    } else {
-      window.lucide.createIcons();
-    }
-  } catch (e) {
-    try { window.lucide.createIcons(); } catch (err) {}
+function renderJobIcons() {
+  if (typeof window.safeCreateIcons === 'function') {
+    window.safeCreateIcons();
+  } else if (typeof window.lucide !== 'undefined' && typeof window.lucide.createIcons === 'function') {
+    try { window.lucide.createIcons(); } catch (e) {}
   }
 }
 
@@ -700,7 +691,7 @@ function renderJobs() {
     </div>
   `;
 
-  safeCreateIcons(container);
+  renderJobIcons();
 }
 
 // 8. 상세 팝업 모달
@@ -901,7 +892,7 @@ function openJobModal(jobId) {
   modal.classList.remove('hidden');
   modal.classList.add('flex');
   document.body.style.overflow = 'hidden';
-  safeCreateIcons(modalContent);
+  renderJobIcons();
 }
 
 function closeJobModal() {

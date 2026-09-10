@@ -52,17 +52,14 @@ function debounce(func, wait = 180) {
 }
 window.civilDebounce = debounce;
 
-// Lucide 아이콘 국소 범위 렌더링 (전체 DOM 풀스캔 방지)
-function safeCreateIcons(rootEl) {
-  if (!window.lucide) return;
-  try {
-    if (rootEl && rootEl instanceof HTMLElement) {
-      window.lucide.createIcons({ root: rootEl });
-    } else {
+// Lucide 아이콘 안전 렌더링 헬퍼 (예외 방지 및 안전 처리)
+function safeCreateIcons() {
+  if (typeof window.lucide !== 'undefined' && typeof window.lucide.createIcons === 'function') {
+    try {
       window.lucide.createIcons();
+    } catch (e) {
+      console.warn('Lucide icon render error:', e);
     }
-  } catch (e) {
-    try { window.lucide.createIcons(); } catch (err) {}
   }
 }
 window.safeCreateIcons = safeCreateIcons;
@@ -350,6 +347,7 @@ async function loadNewsData() {
       if (!res.ok) throw new Error('API failed');
     } catch (e) {
       res = await fetch('./data/news.json?t=' + Date.now());
+      if (!res.ok) throw new Error('Static news.json failed with status ' + res.status);
     }
 
     const data = await res.json();
@@ -381,6 +379,11 @@ async function loadNewsData() {
   } catch (err) {
     console.error('뉴스 데이터 로드 실패:', err);
     showToast('⚠️ 뉴스 데이터를 불러오지 못했습니다.');
+    const emptyState = document.getElementById('newsEmptyState');
+    if (emptyState) {
+      emptyState.classList.remove('hidden');
+      emptyState.classList.add('flex');
+    }
   } finally {
     showNewsLoading(false);
   }

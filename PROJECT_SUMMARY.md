@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.0.16` (누적 수정 16회 반영 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.0.17` (누적 수정 17회 반영 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -223,7 +223,15 @@ mindmap
   1. **검색창 180ms 디바운스(Debounce) 전면 적용**: 뉴스(`newsSearchInput`), 채용(`jobSearchInput`), 공모전(`contestSearchInput`) 모두 디바운스를 적용하여 타이핑 중 불필요한 연산 90% 이상 차단 및 즉각적인 부드러운 입력 반응성 확보.
   2. **Lucide 아이콘 컨테이너 국소 스코핑(`safeCreateIcons`)**: 전체 DOM 풀스캔을 제거하고, 갱신된 컨테이너 내부만 타겟팅 렌더링하여 CPU 점유율 및 리플로우 80% 절감.
   3. **검색 및 키워드 결과 점진적 페이징(`SEARCH_PAGE_SIZE = 12`)**: 대량의 카드가 한 번에 DOM에 들어가는 것을 방지하고 12개 단위 페이징 및 `[결과 더보기 (+N개)]` 버튼 탑재.
-  4. **CDN 최적화 및 302 리다이렉트 제거**: `lucide@0.441.0` 버전 고정, Preconnect 힌트 추가 및 PWA 서비스 워커 캐시 버전(`civil-news-hub-v1.0.16`) 동기화.
+#### 18) 토목 뉴스 무한 로딩 해결 및 아이콘 렌더러 재귀 버그 긴급 패치 (ver 1.0.17)
+- **발생 원인 분석**:
+  1. `static/jobs.js` 및 `static/contests.js`에서 전역 `safeCreateIcons` 함수가 브라우저 전역 스코프에서 선언되면서 `window.safeCreateIcons`를 자기 자신으로 덮어씀.
+  2. 함수 내부의 `if (window.safeCreateIcons) window.safeCreateIcons(rootEl)` 조건이 무한 재귀 호출을 유발하여 `RangeError: Maximum call stack size exceeded` 발생.
+  3. 이로 인해 초기화 이벤트(DOMContentLoaded) 도중 스크립트 실행이 중단되어 `loadNewsData()`가 정상 완료되지 못하고 `newsLoadingIndicator`가 계속 화면에 잔존(무한 로딩 현상).
+- **수정 및 안정화 내역**:
+  1. **전역 아이콘 렌더러 분리 및 재귀 원천 차단**: `static/app.js`에서 안전한 단일 `window.safeCreateIcons`를 정의하고, `jobs.js`(`renderJobIcons`) 및 `contests.js`(`renderContestIcons`)는 독립적인 네임스페이스 함수로 분리하여 상호 충돌 및 자기 재귀 원천 방지.
+  2. **뉴스 로딩 예외 안전성 강화**: `loadNewsData` 내 정적 파일 폴백(`/data/news.json`) 시 응답 상태 검증 추가 및 예외 발생 시에도 `finally` 블록에서 로딩 스피너를 무조건 내리고 빈 상태(Empty State)로 안전 전환되도록 보강.
+  3. **Lucide UMD 직접 로드**: `https://unpkg.com/lucide@0.441.0/dist/umd/lucide.min.js` 직접 로드로 불필요한 301 리다이렉트 완전 제거 및 캐시 버스터(`?v=20260911_0245`) 일괄 갱신.
 
 ---
 

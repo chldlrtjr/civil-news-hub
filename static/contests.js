@@ -23,20 +23,11 @@ function debounce(func, wait = 180) {
   };
 }
 
-function safeCreateIcons(rootEl) {
-  if (window.safeCreateIcons) {
-    window.safeCreateIcons(rootEl);
-    return;
-  }
-  if (!window.lucide) return;
-  try {
-    if (rootEl && rootEl instanceof HTMLElement) {
-      window.lucide.createIcons({ root: rootEl });
-    } else {
-      window.lucide.createIcons();
-    }
-  } catch (e) {
-    try { window.lucide.createIcons(); } catch (err) {}
+function renderContestIcons() {
+  if (typeof window.safeCreateIcons === 'function') {
+    window.safeCreateIcons();
+  } else if (typeof window.lucide !== 'undefined' && typeof window.lucide.createIcons === 'function') {
+    try { window.lucide.createIcons(); } catch (e) {}
   }
 }
 
@@ -374,7 +365,7 @@ function renderContests() {
 
   grid.innerHTML = filtered.map(renderContestCard).join('');
 
-  safeCreateIcons(grid);
+  renderContestIcons();
 }
 
 // 공모전 단일 카드 렌더링 (마이페이지 및 메인 그리드 공용)
@@ -579,7 +570,7 @@ function openContestModal(contestId) {
   const backdrop = modal.querySelector('#contestModalBackdrop');
   if (backdrop) backdrop.classList.remove('opacity-0');
   document.body.style.overflow = 'hidden';
-  safeCreateIcons(modal);
+  renderContestIcons();
 }
 
 function closeContestModal() {
@@ -600,7 +591,7 @@ function updateModalBookmarkState() {
     <i data-lucide="bookmark" class="w-4 h-4 text-amber-500 ${isBookmarked ? 'fill-amber-500' : ''}"></i>
     <span>${isBookmarked ? '북마크됨' : '북마크'}</span>
   `;
-  safeCreateIcons(btn);
+  renderContestIcons();
 }
 
 // 6-1. 공모전 캘린더 등록 헬퍼
@@ -999,7 +990,7 @@ function openContestCalendarModal() {
   backdrop.classList.remove('opacity-0');
   backdrop.classList.add('opacity-100');
   document.body.classList.add('overflow-hidden');
-  safeCreateIcons(modal);
+  renderContestIcons();
 }
 
 function closeContestCalendarModal() {
@@ -1180,7 +1171,7 @@ function renderContestCalendar(year, month) {
     }
   }
 
-  safeCreateIcons(document.getElementById('contestCalendarModal'));
+  renderContestIcons();
 }
 
 function scrollToCalendarTimelineDay(day) {
