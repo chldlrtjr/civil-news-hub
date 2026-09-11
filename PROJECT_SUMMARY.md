@@ -383,6 +383,21 @@ mindmap
      - `/`, `/mobile`, `*.html` 라우트에 `Cache-Control: no-cache, no-store, must-revalidate` 및 `Pragma: no-cache`를 설정하고 nginx 재로드 완료.
      - 모든 스크립트/CSS 로드 쿼리스트링 파라미터를 `?v=20260911_1935`로 일괄 동기화.
 
+#### 28) DOM 태그 불균형(미닫힘 div) 완전문맥 교정 및 모바일 하단바 완전 노출 보장 (ver 1.0.27)
+- **발생 문제 분석**:
+  1. **`<div id="contestDetailModal">` 태그 미닫힘 버그 (근본 원인 적발)**:
+     - `index.html` 및 `static/index.html`의 793행에서 공모전 상세 모달(`contestDetailModal`)의 최상단 wrapper `<div>`를 닫는 `</div>` 태그가 누락되어 있었음.
+     - 이로 인해 이후에 선언된 캘린더 모달, 북마크 메모 모달, 푸터, 그리고 **`#mobileBottomNav`**가 모두 `contestDetailModal`의 하위 자식 노드로 DOM 트리에 파싱됨.
+     - `contestDetailModal`이 기본적으로 `invisible opacity-0`(즉 `visibility: hidden; opacity: 0;`) 스타일을 가지므로, 자식으로 갇힌 `#mobileBottomNav` 역시 CSS 상속으로 인해 **화면 전체에서 100% 영구적으로 투명화·비가시화(`invisible`)**되어 모바일 기기 및 시뮬레이터에서 전혀 보이지 않는 현상의 원천 원인이었음.
+  2. **검색 입력창 self-closing 태그 누락 교정**:
+     - `newsSearchInput`에 닫는 슬래시(`/>`)가 누락되어 일부 엄격한 파서에서 검색 초기화 버튼이 씹히는 문제 교정.
+- **해결 및 최적화 내역**:
+  1. **DOM 트리 태그 밸런스 100% 정상화**:
+     - `contestDetailModal` 직후 누락되었던 닫는 `</div>`를 보강 삽입하여 Python 파서 기준 **Unclosed tags: 0 (All clean!)** 검증 완료.
+     - 푸터 및 `#mobileBottomNav`가 정상적으로 `<body>`의 독립된 직계 자식 노드로 분리되어 모달의 `invisible` 간섭을 100% 탈피함.
+  2. **PWA Service Worker 캐시 갱신 (`civil-news-hub-v1.0.27`)**:
+     - 캐시 버스팅 파라미터(`?v=20260911_1947`) 및 `sw.js` 캐시 키를 일괄 갱신하여 클라이언트 기기에 즉각 반영.
+
 ---
 
 ## 🌿 3. Git 브랜치 현황
