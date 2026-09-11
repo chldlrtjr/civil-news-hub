@@ -577,33 +577,31 @@ function renderContestCard(contest) {
     catBadgeClass = 'bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800';
   }
 
-  // D-Day 뱃지 스타일: 알림/점멸(animate-pulse, flame) 없는 차분한 디자인
+  // D-Day 뱃지 스타일: 알림/점멸(animate-pulse, flame) 없는 차분한 디자인 (접수중일 때만 D-Day 노출)
   let ddayBadgeHtml = '';
-  if (ddayInfo.isUrgent) {
-    ddayBadgeHtml = `
-      <span class="inline-flex items-center text-xs sm:text-sm px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-lg font-semibold bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200 dark:border-rose-800 flex-shrink-0">
-        ${ddayInfo.text}
-      </span>
-    `;
-  } else {
-    let ddayBadgeClass = 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300';
-    if (contest.status === '접수중') {
-      if (ddayInfo.days <= 7) {
-        ddayBadgeClass = 'bg-amber-500 text-white font-bold';
-      } else {
-        ddayBadgeClass = 'bg-blue-600 text-white font-bold';
+  if (ddayInfo.text && ddayInfo.text !== contest.status && (ddayInfo.text.startsWith('D-') || ddayInfo.text === '오늘마감')) {
+    if (ddayInfo.isUrgent) {
+      ddayBadgeHtml = `
+        <span class="inline-flex items-center text-xs sm:text-sm px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full font-semibold bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200 dark:border-rose-800 flex-shrink-0">
+          ${ddayInfo.text}
+        </span>
+      `;
+    } else {
+      let ddayBadgeClass = 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800';
+      if (contest.status === '접수중' && ddayInfo.days <= 7) {
+        ddayBadgeClass = 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800';
       }
+      ddayBadgeHtml = `
+        <span class="text-xs sm:text-sm px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full font-semibold border ${ddayBadgeClass} flex-shrink-0">
+          ${ddayInfo.text}
+        </span>
+      `;
     }
-    ddayBadgeHtml = `
-      <span class="text-xs sm:text-sm px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-lg font-semibold ${ddayBadgeClass} flex-shrink-0">
-        ${ddayInfo.text}
-      </span>
-    `;
   }
 
   /*
     [GEMINI.md 핵심 레이아웃 규칙 준수]
-    1행: 좌측 카테고리 뱃지, 우측 최상단 상태 뱃지 고정 (flex justify-between)
+    1행: 좌측 카테고리 뱃지, 우측 최상단 상태 뱃지 & D-Day 고정 (flex justify-between)
     2행: [📅 접수기간: YYYY.MM.DD ~ MM.DD (상세시간 마감)] 독립 행 배치
   */
   return `
@@ -612,18 +610,18 @@ function renderContestCard(contest) {
       onclick="openContestModal('${contest.id}')"
     >
       <div>
-        <!-- 1행 (상단 헤더): 좌측 카테고리 뱃지, 우측 최상단 상태 뱃지 고정 (flex justify-between) -->
+        <!-- 1행 (상단 헤더): 좌측 카테고리 뱃지, 우측 최상단 상태 뱃지 & D-Day 뱃지 고정 (flex justify-between) -->
         <div class="flex items-center justify-between gap-2 pb-3">
           <div class="flex items-center gap-2 min-w-0">
             <span class="text-xs sm:text-sm px-3 py-1 rounded-full font-semibold border ${catBadgeClass} flex-shrink-0">
               ${contest.category || '공모전'}
             </span>
-            ${ddayBadgeHtml}
           </div>
-          <div class="flex items-center gap-2 flex-shrink-0">
+          <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
             <span class="text-xs sm:text-sm px-3 py-1 rounded-full font-semibold border ${statusBadgeClass}">
               ${contest.status}
             </span>
+            ${ddayBadgeHtml}
           </div>
         </div>
 
@@ -743,12 +741,21 @@ function openContestModal(contestId) {
   if (statusEl) statusEl.textContent = contest.status;
   const ddayEl = document.getElementById('modalDdayBadge');
   if (ddayEl) {
-    if (ddayInfo.isUrgent) {
-      ddayEl.className = 'text-xs px-2.5 py-0.5 rounded-full font-semibold bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200 dark:border-rose-800';
-      ddayEl.textContent = ddayInfo.text;
+    if (ddayInfo.text && ddayInfo.text !== contest.status && (ddayInfo.text.startsWith('D-') || ddayInfo.text === '오늘마감')) {
+      ddayEl.style.display = 'inline-block';
+      if (ddayInfo.isUrgent) {
+        ddayEl.className = 'text-xs px-2.5 py-0.5 rounded-full font-semibold bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200 dark:border-rose-800';
+        ddayEl.textContent = ddayInfo.text;
+      } else {
+        let ddayBadgeClass = 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800';
+        if (contest.status === '접수중' && ddayInfo.days <= 7) {
+          ddayBadgeClass = 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800 font-bold';
+        }
+        ddayEl.className = `text-xs px-2.5 py-0.5 rounded-full font-semibold border ${ddayBadgeClass}`;
+        ddayEl.textContent = ddayInfo.text;
+      }
     } else {
-      ddayEl.className = 'text-xs px-2.5 py-0.5 rounded-full font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300';
-      ddayEl.textContent = ddayInfo.text;
+      ddayEl.style.display = 'none';
     }
   }
   const titleEl = document.getElementById('modalTitle');
