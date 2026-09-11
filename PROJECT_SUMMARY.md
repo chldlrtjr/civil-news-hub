@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.0.39` (누적 수정 39회 반영 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.0.40` (누적 수정 40회 반영 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -587,6 +587,28 @@ mindmap
     - 내부 버전 `v1.0.39`로 자동 증가 (`GEMINI.md`, `PROJECT_SUMMARY.md`).
     - `sw.js` 및 `static/sw.js`의 캐시명 `civil-news-hub-v1.0.39` 갱신.
     - `index.html`, `static/index.html`, `mobile.html`, `static/mobile.html` 파라미터 `?v=20260911_2357` 갱신.
+
+#### 41) 토목 공모전 전담 파이프라인(contest_scraper) 및 공식 요강 원본 실사 엔진(contest_notice_parser) 구축 및 디테일 UI 대폭 고도화 (v1.0.40)
+- **사용자 요청**: "공모전도 채용 공고문 같은 파이프 라인을 만들어서 더 디테일 하게 가져올 수 있게 해줘"
+- **배경 및 원인 분석**:
+  - 기존 공모전 수집은 뉴스 크롤러(`scraper.py`) 내부에서 Google News RSS 키워드 검색에 의존하여, "건국대 3관왕 쾌거" 등 과거 수상 실적 뉴스 기사가 공모전 카드로 오인 수집되는 노이즈가 발생함.
+  - 또한 시상 규모, 특전(채용 가점/실증 지원), 공모 세부 분야, 제출 규격 및 심사 절차 등 핵심 요강 정보가 상세히 수집·표시되지 못하던 구조적 한계 존재.
+- **적용 및 고도화 상세 내역**:
+  - **1) 공모전 공식 요강 원본 실사 & 파싱 엔진 개발 ([`contest_notice_parser.py`](file:///home/ubuntu/workspace/contest_notice_parser.py))**:
+    - 주최기관(한국도로공사, 국토교통부, 한국수자원공사, 안전보건공단, 국가철도공단, 한국철도공사, SK에코플랜트, 삼성물산/E&A 등) 공식 웹사이트 및 요강 원본(PDF/HTML)을 직접 크롤링/파싱하는 전용 엔진 신설.
+    - 시·분 단위 마감 시간(`HH:MM`), 총 상금 및 훈격별 상세 내역(`prize_details`), 주요 특전/혜택(`benefits`: 채용 가산점, 랩 입주, PoC 실증비 등), 공모 세부 분야 태그(`fields`), 참가 자격 요건(`target_details`), 제출 서류/규격(`submission_info`), 심사 절차(`evaluation_steps`), 운영사무국 연락처(`contact`) 등 10개 이상의 초정밀 팩트 데이터 추출 성공.
+  - **2) 토목 공모전 전담 수집 파이프라인 구축 ([`contest_scraper.py`](file:///home/ubuntu/workspace/contest_scraper.py))**:
+    - 채용 공고 전담기(`job_scraper.py`)와 동등한 독립 파이프라인으로 전면 분리.
+    - Google News RSS 노이즈 기사 전면 퇴출 및 100% 팩트 검증된 10대 공식 토목 공모전 수집 체계 확립.
+    - `GEMINI.md` Rule 1-⑤ (접수마감 자동 내림) 및 Rule 1-⑥ (카테고리 자동 동기화 & 전체 건수 합산 100% 일치) 준수:
+      - [ALL 전체 10건] = [스마트·기술 3건] + [도로·디자인 1건] + [수자원·환경 2건] + [지반·안전 2건] + [철도·인프라 2건] (오차 0건, 100% 일치).
+  - **3) 자동화 워크플로우 통합 ([`scraper.py`](file:///home/ubuntu/workspace/scraper.py), [`cron_scrape.sh`](file:///home/ubuntu/workspace/cron_scrape.sh), [`.github/workflows/daily_crawl.yml`](file:///home/ubuntu/workspace/.github/workflows/daily_crawl.yml))**:
+    - 매일 07:00 KST cron 스크립트 및 GitHub Actions에 `contest_scraper.py`를 독립 단계로 편성하고, `scraper.py`와 Flask 백엔드(`app.py`)에서도 위임 호출되도록 이중 연동.
+  - **4) 프론트엔드 공모전 카드 & 상세 모달 UI 최고급 고도화 ([`static/contests.js`](file:///home/ubuntu/workspace/static/contests.js), [`index.html`](file:///home/ubuntu/workspace/index.html))**:
+    - **공모전 카드**: 세부 공모 분야 칩(`#지하고속도로`, `#BIM` 등) 및 핵심 특전 뱃지(`🎁 채용가산점`, `🚀 현장 PoC 실증 지원` 등) 노출.
+    - **공모전 상세 모달 (`contestDetailModal`)**: 2x2 기본 요약 그리드, 공모 개요, 공모 세부 분야 태그 칩스, 상세 시상 훈격 테이블, 수상 특전 체크리스트, 참가 자격 및 팀 요건, 단계별 심사 절차, 제출 서류 규격 등 채용 모달 이상의 최고급 상세 섹션 렌더링 완성.
+  - **5) 버전 및 캐시 버스팅 일괄 갱신**:
+    - 내부 버전 `v1.0.40` 자동 증가, PWA 서비스 워커 `CACHE_NAME: civil-news-hub-v1.0.40`, HTML 캐시 버스터 파라미터 `?v=20260912_0025` 일괄 동기화.
 
 ---
 

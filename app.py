@@ -128,7 +128,11 @@ def get_news():
 @app.route("/data/contests.json")
 def get_contests():
     if not os.path.exists(CONTESTS_JSON_PATH):
-        scraper.scrape_civil_contests()
+        try:
+            import contest_scraper
+            contest_scraper.scrape_civil_contests()
+        except Exception:
+            scraper.scrape_civil_contests()
     return send_file(CONTESTS_JSON_PATH, mimetype="application/json; charset=utf-8")
 
 @app.route("/api/jobs")

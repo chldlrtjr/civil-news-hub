@@ -596,6 +596,28 @@ function renderContestCard(contest) {
           <span>${contest.target || '전국민'}</span>
         </div>
 
+        <!-- 세부 공모 분야 칩스 -->
+        ${(contest.fields && contest.fields.length > 0) ? `
+          <div class="flex flex-wrap gap-1.5 mb-2.5">
+            ${contest.fields.slice(0, 3).map(f => `
+              <span class="text-[11px] font-medium px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60">
+                #${f}
+              </span>
+            `).join('')}
+            ${contest.fields.length > 3 ? `<span class="text-[11px] text-slate-400 font-medium self-center">+${contest.fields.length - 3}</span>` : ''}
+          </div>
+        ` : ''}
+
+        <!-- 주요 특전 뱃지 (있을 경우) -->
+        ${(contest.benefits && contest.benefits.length > 0) ? `
+          <div class="mb-3">
+            <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200/70 dark:border-emerald-800/60 max-w-full">
+              <i data-lucide="gift" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 flex-shrink-0"></i>
+              <span class="truncate">${contest.benefits[0]}</span>
+            </span>
+          </div>
+        ` : ''}
+
         <!-- 요약 설명 -->
         <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed mb-4">
           ${contest.description || ''}
@@ -679,14 +701,139 @@ function openContestModal(contestId) {
   if (titleEl) titleEl.textContent = contest.title;
   const orgEl = document.getElementById('modalOrganizer');
   if (orgEl) orgEl.textContent = `주최/주관: ${contest.organizer}`;
-  const periodEl = document.getElementById('modalPeriod');
-  if (periodEl) periodEl.textContent = contest.period || '공식 공고문 확인';
-  const prizeEl = document.getElementById('modalPrize');
-  if (prizeEl) prizeEl.textContent = contest.prize || '공식 공고문 확인';
-  const targetEl = document.getElementById('modalTarget');
-  if (targetEl) targetEl.textContent = contest.target || '전국민 누구나 / 관련 분야 전공자 및 기업';
-  const descEl = document.getElementById('modalDescription');
-  if (descEl) descEl.textContent = contest.description || '세부 요강 및 제출 양식은 공식 접수처 웹사이트를 참조하시기 바랍니다.';
+
+  // 모달 본문 상세 동적 렌더링
+  const modalBody = document.getElementById('contestModalBody');
+  if (modalBody) {
+    modalBody.innerHTML = `
+      <!-- 1. 기본 핵심 요약 정보 박스 (2x2 Grid) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 text-xs sm:text-sm">
+        <div class="space-y-0.5">
+          <span class="text-slate-400 dark:text-slate-500 block text-[11px] font-semibold">📅 접수 기간</span>
+          <strong class="text-slate-900 dark:text-slate-100 font-bold">${contest.period || '공식 공고문 확인'}</strong>
+        </div>
+        <div class="space-y-0.5">
+          <span class="text-slate-400 dark:text-slate-500 block text-[11px] font-semibold">🏆 총 시상 규모</span>
+          <strong class="text-amber-600 dark:text-amber-400 font-bold">${contest.prize || '공식 공고문 확인'}</strong>
+        </div>
+        <div class="space-y-0.5">
+          <span class="text-slate-400 dark:text-slate-500 block text-[11px] font-semibold">👥 참가 대상</span>
+          <span class="text-slate-700 dark:text-slate-300 font-medium">${contest.target || '전국민 누구나'}</span>
+        </div>
+        <div class="space-y-0.5">
+          <span class="text-slate-400 dark:text-slate-500 block text-[11px] font-semibold">📞 문의처</span>
+          <span class="text-slate-700 dark:text-slate-300 font-medium">${contest.contact || '공식 접수처 웹사이트 확인'}</span>
+        </div>
+      </div>
+
+      <!-- 2. 공모 개요 및 취지 -->
+      <div>
+        <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-1.5">
+          <i data-lucide="info" class="w-4 h-4 text-amber-500"></i>
+          <span>공모 개요 및 상세 취지</span>
+        </h4>
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50/60 dark:bg-slate-800/40 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800">
+          ${contest.description || '세부 요강 및 제출 양식은 공식 접수처 웹사이트를 참조하시기 바랍니다.'}
+        </p>
+      </div>
+
+      <!-- 3. 공모 세부 분야 및 경연 주제 (fields) -->
+      ${(contest.fields && contest.fields.length > 0) ? `
+        <div>
+          <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-1.5">
+            <i data-lucide="layers" class="w-4 h-4 text-amber-500"></i>
+            <span>공모 세부 분야 및 경연 주제</span>
+          </h4>
+          <div class="flex flex-wrap gap-1.5 sm:gap-2">
+            ${contest.fields.map(f => `
+              <span class="px-2.5 sm:px-3 py-1 rounded-lg bg-amber-50/80 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 text-xs font-semibold border border-amber-200/70 dark:border-amber-900/60">
+                # ${f}
+              </span>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- 4. 상세 시상 내역 및 수상 특전 (prize_details & benefits) -->
+      <div>
+        <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-1.5">
+          <i data-lucide="award" class="w-4 h-4 text-amber-500"></i>
+          <span>시상 훈격 및 수상 특전</span>
+        </h4>
+        ${(contest.prize_details && contest.prize_details.length > 0) ? `
+          <div class="space-y-1.5 mb-3">
+            ${contest.prize_details.map(p => `
+              <div class="flex items-center justify-between text-xs sm:text-sm p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-amber-900 dark:text-amber-200 px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950 text-xs">${p.rank}</span>
+                  <span class="font-medium text-slate-700 dark:text-slate-300">${p.award}</span>
+                </div>
+                <span class="font-bold text-amber-600 dark:text-amber-400">${p.prize}</span>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+        ${(contest.benefits && contest.benefits.length > 0) ? `
+          <div class="p-3.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/70 dark:border-emerald-800/60 space-y-1.5">
+            <span class="text-xs font-bold text-emerald-800 dark:text-emerald-300 block mb-1 flex items-center gap-1">
+              <i data-lucide="gift" class="w-3.5 h-3.5 text-emerald-600"></i>
+              주요 수상 특전 및 인센티브
+            </span>
+            ${contest.benefits.map(b => `
+              <div class="flex items-start gap-2 text-xs sm:text-sm text-emerald-900 dark:text-emerald-200 font-medium leading-relaxed">
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600 dark:text-emerald-400 mt-0.5 flex-shrink-0"></i>
+                <span>${b}</span>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+      </div>
+
+      <!-- 5. 참가 자격 및 팀 요건 -->
+      <div>
+        <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white mb-1.5 flex items-center gap-1.5">
+          <i data-lucide="users" class="w-4 h-4 text-blue-500"></i>
+          <span>참가 자격 및 팀 구성 요건</span>
+        </h4>
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50/60 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+          ${contest.target_details || contest.target || '전국민 누구나 지원 가능'}
+        </p>
+      </div>
+
+      <!-- 6. 심사 기준 및 진행 절차 (evaluation_steps) -->
+      ${(contest.evaluation_steps && contest.evaluation_steps.length > 0) ? `
+        <div>
+          <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-1.5">
+            <i data-lucide="git-commit" class="w-4 h-4 text-amber-500"></i>
+            <span>심사 기준 및 진행 절차</span>
+          </h4>
+          <div class="flex flex-wrap items-center gap-2">
+            ${contest.evaluation_steps.map((step, idx) => `
+              <div class="flex items-center gap-1.5">
+                <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-medium text-xs border border-slate-200 dark:border-slate-700">
+                  <strong class="text-amber-600 dark:text-amber-400 font-bold">${idx + 1}단계</strong>: ${step}
+                </span>
+                ${idx < contest.evaluation_steps.length - 1 ? '<i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>' : ''}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- 7. 제출 서류 및 규격 (submission_info) -->
+      ${contest.submission_info ? `
+        <div>
+          <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white mb-1.5 flex items-center gap-1.5">
+            <i data-lucide="file-check" class="w-4 h-4 text-indigo-500"></i>
+            <span>제출 서류 및 규격</span>
+          </h4>
+          <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50/60 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+            ${contest.submission_info}
+          </p>
+        </div>
+      ` : ''}
+    `;
+  }
 
   const officialLink = document.getElementById('modalOfficialLink');
   if (officialLink) {
