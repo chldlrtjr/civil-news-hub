@@ -11,10 +11,9 @@
 
 | 문서명 | 파일 위치 | 주요 내용 |
 | :--- | :--- | :--- |
-| **운영 및 개발 원칙** | [`GEMINI.md`](file:///C:/Users/최익석/Desktop/goofy-borg/GEMINI.md) | 팩트 기반 공모전 수집 규칙, 카테고리 탭 고정 규격, 모바일 무경계 원칙, 북마크 표준 |
-| **프로젝트 종합 현황** | [`PROJECT_SUMMARY.md`](file:///C:/Users/최익석/Desktop/goofy-borg/PROJECT_SUMMARY.md) *(저장소)*<br>[`project_status_and_roadmap.md`](file:///C:/Users/최익석/.gemini/antigravity-cli/brain/51b5f7b7-721e-418b-b7f7-d5374e28aadd/project_status_and_roadmap.md) *(아티팩트)* | 지금까지 구현된 전체 기능, 상세 논의 내역, 브랜치 작업, 향후 로드맵 |
-| **공모전 탭 시안 프리뷰** | [`contest_category_redesign_preview.md`](file:///C:/Users/최익석/.gemini/antigravity-cli/brain/51b5f7b7-721e-418b-b7f7-d5374e28aadd/contest_category_redesign_preview.md) | 카테고리 3가지 디자인 시안(A: 아이콘 칩, B: 미니멀 언더라인, C: 글래스모피즘) 비교 |
-| **모바일 기사 뷰 프리뷰** | [`mobile_article_redesign_preview.md`](file:///C:/Users/최익석/.gemini/antigravity-cli/brain/51b5f7b7-721e-418b-b7f7-d5374e28aadd/mobile_article_redesign_preview.md) | 모바일 무경계(Borderless) 피드 및 대형 헤드라인 리디자인 비교 시안 |
+| **운영 및 개발 원칙** | [`GEMINI.md`](file:///home/ubuntu/workspace/GEMINI.md) | 팩트 기반 공모전 수집 규칙, 카테고리 탭 고정 규격, 모바일 무경계 원칙, 북마크 표준 |
+| **프로젝트 종합 현황** | [`PROJECT_SUMMARY.md`](file:///home/ubuntu/workspace/PROJECT_SUMMARY.md) | 지금까지 구현된 전체 기능, 상세 논의 내역, 브랜치 작업, 향후 로드맵 |
+| **취업 대비 포트폴리오 가이드** | [`NOTION_PORTFOLIO_GUIDE.md`](file:///home/ubuntu/workspace/NOTION_PORTFOLIO_GUIDE.md) | 10대 기술 스택, 6대 핵심 기능 및 STAR 문제 해결 사례 총망라 |
 
 ---
 
@@ -558,7 +557,7 @@ mindmap
     - `data/jobs.json`, `job_scraper.py`에 전수 검증된 팩트 일정 반영.
     - `v1.0.38` 버전 자동 증가, 서비스 워커 `CACHE_NAME: civil-news-hub-v1.0.38` 동기화.
 
-#### 15) 마감 완료된 채용공고문 전면 내림 및 실시간 유효 공고 100% 동기화 (v1.0.39)
+#### 40) 마감 완료된 채용공고문 전면 내림 및 실시간 유효 공고 100% 동기화 (v1.0.39)
 - **사용자 요청**: "마감 완료된 채용공고문들은 내려줘"
 - **배경 및 원칙**:
   - `GEMINI.md` 규칙 1-⑤ (접수마감 항목 자동 내림 원칙): 모집 기간이 종료된 공고는 사용자 혼선을 차단하기 위해 목록에서 즉시 내림(제외) 처리.
