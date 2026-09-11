@@ -86,7 +86,12 @@ async function loadJobsData() {
     }
 
     const data = await res.json();
-    allJobs = data.jobs || [];
+    const rawJobs = data.jobs || [];
+    // [GEMINI.md 원칙 1-⑤] 접수마감 항목은 프론트엔드에서도 즉시 자동 내림(배제) 처리
+    allJobs = rawJobs.filter(j => {
+      const ddayInfo = calculateDday(j.deadline_date, j.period);
+      return !ddayInfo.isClosed;
+    });
     window.allJobs = allJobs;
 
     // [동적 카테고리 동기화] 새로운 채용 카테고리가 등장할 경우 카테고리 탭 목록에 자동 추가하여 전체 건수 합산 일치 보장
