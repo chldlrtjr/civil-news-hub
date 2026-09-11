@@ -1,5 +1,5 @@
 // Civil News Hub - AI Briefing Chatbot Controller (Option 2: Gemini 1.5 Flash + Local RAG)
-// Silent Internal Version: v1.0.20
+// Silent Internal Version: v1.0.21
 
 (function () {
   let isChatbotOpen = false;
@@ -280,7 +280,7 @@
         badge.textContent = 'Gemini 1.5 (개인 키)';
       } else if (hasServerApiKey) {
         badge.className = 'text-[10px] px-2 py-0.5 rounded-full font-semibold bg-blue-500/20 text-blue-300 border border-blue-400/30';
-        badge.textContent = 'Gemini 1.5 (서버 무료 이용)';
+        badge.textContent = 'Gemini (서버 무료 이용)';
       } else {
         badge.className = 'text-[10px] px-2 py-0.5 rounded-full font-semibold bg-amber-500/20 text-amber-300 border border-amber-400/30';
         badge.textContent = '로컬 요약 모드';
