@@ -5,7 +5,7 @@ title Civil News Hub Server
 echo ======================================================
 echo    Civil News Hub - Server Starting...
 echo    PC Browser:   http://localhost:8000/#news
-echo    Mobile Phone: http://192.168.25.58:8000/#news
+echo    Mobile Phone: https://diverse-tattoo-exterior-reporting.trycloudflare.com/#news
 echo    To stop the server, press Ctrl + C or close this window.
 echo ======================================================
 echo.

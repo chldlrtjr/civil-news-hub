@@ -1711,7 +1711,7 @@ window.toggleQrModal = function(show) {
 
 window.copyLocalIpUrl = function() {
   const urlText = document.getElementById('localIpUrlText');
-  const text = (urlText && urlText.textContent) || 'http://192.168.25.58:8000/#news';
+  const text = (urlText && urlText.textContent) || 'https://diverse-tattoo-exterior-reporting.trycloudflare.com/#news';
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text).then(() => {
       showToast('📋 모바일 접속 주소가 복사되었습니다.');

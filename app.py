@@ -1,4 +1,5 @@
 import os
+import re
 import json
 import socket
 import webbrowser
@@ -137,8 +138,24 @@ def get_jobs():
         job_scraper.scrape_civil_jobs()
     return send_file(JOBS_JSON_PATH, mimetype="application/json; charset=utf-8")
 
+def get_live_tunnel_url():
+    """Cloudflare Tunnel 로그에서 현재 활성화된 라이브 터널 URL 조회"""
+    log_file = "/var/log/civil-tunnel.log"
+    if os.path.exists(log_file):
+        try:
+            with open(log_file, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+            for line in reversed(lines):
+                m = re.search(r"https://[a-zA-Z0-9-]+\.trycloudflare\.com", line)
+                if m:
+                    return m.group(0)
+        except Exception:
+            pass
+    return "https://diverse-tattoo-exterior-reporting.trycloudflare.com"
+
 @app.route("/api/network-info")
 def network_info():
+    tunnel_url = get_live_tunnel_url()
     local_ip = get_local_ip()
     host = request.host
     scheme = request.headers.get("X-Forwarded-Proto", "http")
@@ -147,8 +164,9 @@ def network_info():
         "port": PORT,
         "server_url": f"{scheme}://{host}/#news",
         "local_url": f"http://localhost:{PORT}/#news",
-        "mobile_url": f"http://{local_ip}/#news",
-        "mobile_simulator_url": f"http://{local_ip}/mobile#news",
+        "mobile_url": f"{tunnel_url}/#news",
+        "tunnel_url": f"{tunnel_url}/#news",
+        "mobile_simulator_url": f"{tunnel_url}/mobile#news",
         "github_pages_url": "https://chldlrtjr.github.io/civil-news-hub/#news"
     })
 
