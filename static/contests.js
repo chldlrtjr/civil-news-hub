@@ -610,7 +610,7 @@ function renderContestCard(contest) {
     >
       <div>
         <!-- 1행 (상단 헤더): 좌측 카테고리 뱃지, 우측 D-Day/일정 뱃지 단독 고정 -->
-        <div class="flex items-center justify-between gap-2 pb-3">
+        <div class="flex items-center justify-between gap-2 pb-3.5 mb-0.5">
           <div class="flex items-center gap-2 min-w-0">
             <span class="text-xs sm:text-sm px-3 py-1 rounded-full font-semibold border ${catBadgeClass} flex-shrink-0">
               ${contest.category || '공모전'}
@@ -619,17 +619,6 @@ function renderContestCard(contest) {
           <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
             ${rightBadgeHtml}
           </div>
-        </div>
-
-        <!-- 2행 (접수 기간 & 참가 대상 뱃지) -->
-        <div class="flex items-center gap-1.5 flex-wrap mb-3.5">
-          <span class="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100/80 dark:bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
-            <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
-            <span>접수: ${contest.period || '공식 공고문 참조'}</span>
-          </span>
-          <span class="inline-flex items-center text-xs font-semibold px-2.5 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200/80 dark:border-amber-900/60">
-            ${getContestTargetBadge(contest)}
-          </span>
         </div>
 
         <!-- 공모전 제목 -->
@@ -674,11 +663,10 @@ function renderContestCard(contest) {
 
       <!-- 카드 하단 버튼 영역 -->
       <div class="pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
-        <!-- 공모전 보상 (상금 / 혜택 뱃지) -->
-        <div class="flex items-center min-w-0 pr-1 flex-1" title="공모전 보상: ${contest.prize || '공식 공고문 확인'}">
-          <span class="inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-bold text-amber-800 dark:text-amber-300 bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-900/60 px-2.5 sm:px-3 py-1.5 rounded-xl truncate shadow-2xs">
-            <i data-lucide="award" class="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0"></i>
-            <span class="truncate">${contest.prize || '공식 공고문 확인'}</span>
+        <!-- 참가대상 뱃지 (상금 뱃지 대체 및 푸터 좌측 배치) -->
+        <div class="flex items-center min-w-0 pr-1 flex-1">
+          <span class="inline-flex items-center text-xs sm:text-sm font-semibold px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200/80 dark:border-amber-900/60 truncate shadow-2xs">
+            ${getContestTargetBadge(contest)}
           </span>
         </div>
 
