@@ -340,9 +340,14 @@ def scrape_civil_news():
         "raw_total_count": len(all_articles),
         "duplicate_count": duplicate_count,
         "trending_keywords": trending_keywords,
-        "categories": [
-            {"id": c["id"], "name": c["name"], "badge_color": c["badge_color"]} for c in CATEGORIES
-        ],
+        "categories": (lambda: [
+            *([{"id": c["id"], "name": c["name"], "badge_color": c["badge_color"]} for c in CATEGORIES]),
+            *([
+                {"id": a["category_id"], "name": a.get("category_name", a["category_id"]), "badge_color": a.get("badge_color", "blue")}
+                for a in final_articles
+                if a.get("category_id") and a["category_id"] not in {c["id"] for c in CATEGORIES}
+            ])
+        ])(),
         "articles": final_articles
     }
     

@@ -555,12 +555,22 @@ def scrape_civil_jobs():
 
     print(f"  [+] 유효 활성 채용 공고 총 {len(collected_jobs)}건 정제 완료.")
     
+    # 신규 채용 카테고리 자동 감지 및 등록 (전체 건수 합산 일치 영구 보장)
+    existing_job_cat_ids = {c["id"] for c in JOB_CATEGORIES}
+    final_job_categories = list(JOB_CATEGORIES)
+    for j in collected_jobs:
+        cid = j.get("category_id")
+        cname = j.get("category_name", cid)
+        if cid and cid not in existing_job_cat_ids:
+            existing_job_cat_ids.add(cid)
+            final_job_categories.append({"id": cid, "name": cname})
+
     # 최종 JSON 파일 저장
     jobs_data = {
         "last_updated": now_kst.strftime("%Y-%m-%d %H:%M"),
         "last_updated_display": now_kst.strftime("%Y년 %m월 %d일 %H:%M"),
         "total_count": len(collected_jobs),
-        "categories": JOB_CATEGORIES,
+        "categories": final_job_categories,
         "jobs": collected_jobs
     }
     
