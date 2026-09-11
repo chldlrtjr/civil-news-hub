@@ -934,11 +934,18 @@ def scrape_civil_contests():
     all_contests = [c for c in (FEATURED_CONTESTS + collected_contests) if c.get("status") != "접수마감"]
     
     now_kst = datetime.now(kst)
+    contest_categories = ["ALL", "스마트·기술", "도로·디자인", "수자원·환경", "지반·안전", "철도·인프라"]
+    for c in all_contests:
+        cat = c.get("category")
+        if cat and cat not in contest_categories:
+            contest_categories.append(cat)
+
     contests_data = {
         "last_updated": now_kst.strftime("%Y-%m-%d %H:%M:%S"),
         "last_updated_display": now_kst.strftime("%m월 %d일 %H:%M"),
         "total_count": len(all_contests),
         "featured_count": len([c for c in FEATURED_CONTESTS if c.get("status") != "접수마감"]),
+        "categories": contest_categories,
         "contests": all_contests
     }
     

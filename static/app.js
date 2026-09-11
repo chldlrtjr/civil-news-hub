@@ -355,6 +355,9 @@ async function loadNewsData() {
     window.allArticles = allArticles;
     categories = data.categories || [];
     
+    // [동적 카테고리 동기화] 새로운 카테고리가 등장할 경우 카테고리 탭 목록에 자동 추가하여 전체 건수 합산 일치 보장
+    syncNewsCategories();
+
     // 메타데이터 업데이트
     const updatedEl = document.getElementById('newsLastUpdated');
     if (updatedEl) updatedEl.textContent = data.last_updated_display || '방금 전';
@@ -389,11 +392,40 @@ async function loadNewsData() {
   }
 }
 
+// 신규 뉴스 카테고리 동적 감지 및 등록 (전체 건수와 카테고리별 합산 불일치 방지)
+function syncNewsCategories() {
+  if (!categories || !Array.isArray(categories)) categories = [];
+  const existingCatIds = new Set(categories.map(c => c.id));
+
+  allArticles.forEach(a => {
+    if (!a.category_id && !a.category_name) {
+      a.category_id = 'general';
+      a.category_name = '토목 종합';
+    } else if (!a.category_id && a.category_name) {
+      a.category_id = a.category_name.trim().replace(/\s+/g, '_');
+    } else if (a.category_id && !a.category_name) {
+      const matched = categories.find(c => c.id === a.category_id);
+      a.category_name = matched ? matched.name : a.category_id;
+    }
+
+    if (a.category_id && a.category_id !== 'all' && !existingCatIds.has(a.category_id)) {
+      existingCatIds.add(a.category_id);
+      categories.push({
+        id: a.category_id,
+        name: a.category_name || a.category_id,
+        badge_color: a.badge_color || 'blue'
+      });
+    }
+  });
+}
+
 // 카테고리 탭 렌더링 (채용 공고문과 동일한 '전체' + 각 카테고리 필터 탭 네비게이션)
 function renderCategoryTabs() {
   const container = document.getElementById('newsCategoryTabs');
   if (!container) return;
   container.innerHTML = '';
+
+  syncNewsCategories();
 
   const targetCategories = [
     { id: 'all', name: '전체' },

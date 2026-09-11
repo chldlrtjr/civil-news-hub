@@ -117,7 +117,9 @@ async function loadContestsData() {
       isContestBookmarkView = true;
     }
 
-    updateContestCategoryCounts();
+    // [동적 카테고리 동기화] 새로운 공모전 카테고리가 등장할 경우 카테고리 탭 목록에 자동 추가하여 전체 건수 합산 일치 보장
+    syncContestCategories(data.categories);
+    renderContestCategoryTabs();
     renderContests();
     if (window.updateGlobalBookmarkCount) window.updateGlobalBookmarkCount();
   } catch (err) {
@@ -282,9 +284,117 @@ function getFilteredContests() {
   return list;
 }
 
-// 카테고리 탭 뱃지 카운트 갱신
+// 4. 분야(카테고리) 탭 동적 렌더링 및 동기화
+let CONTEST_CATEGORIES = [
+  'ALL',
+  '스마트·기술',
+  '도로·디자인',
+  '수자원·환경',
+  '지반·안전',
+  '철도·인프라'
+];
+
+// 신규 공모전 카테고리 동적 감지 및 등록 (전체 건수와 카테고리별 합산 불일치 방지)
+function syncContestCategories(apiCategories = []) {
+  const existingCats = new Set(CONTEST_CATEGORIES);
+
+  if (Array.isArray(apiCategories)) {
+    apiCategories.forEach(cat => {
+      const catName = typeof cat === 'string' ? cat : (cat.name || cat.id);
+      if (catName && !existingCats.has(catName)) {
+        existingCats.add(catName);
+        CONTEST_CATEGORIES.push(catName);
+      }
+    });
+  }
+
+  allContests.forEach(c => {
+    let cat = (c.category || '').trim();
+    if (!cat) {
+      cat = '스마트·기술';
+      c.category = cat;
+    }
+    if (cat !== 'ALL' && !existingCats.has(cat)) {
+      existingCats.add(cat);
+      CONTEST_CATEGORIES.push(cat);
+    }
+  });
+}
+
+// 카테고리 탭 동적 DOM 렌더링 (GEMINI.md 시안 B: 미니멀 언더라인 & 글씨 늘어남 원천 차단 규격 100% 준수)
+function renderContestCategoryTabs() {
+  const container = document.getElementById('contestCategoryTabs');
+  if (!container) return;
+  container.innerHTML = '';
+
+  syncContestCategories();
+
+  CONTEST_CATEGORIES.forEach(cat => {
+    let count = 0;
+    if (cat === 'ALL') {
+      count = allContests.length;
+    } else {
+      count = allContests.filter(c => c.category === cat).length;
+    }
+
+    const isActive = !isContestBookmarkView && contestActiveCategory === cat;
+    const catLabel = (cat === 'ALL') ? '전체' : cat;
+
+    const btn = document.createElement('button');
+    btn.setAttribute('data-category', cat);
+    btn.className = `cat-pill category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold cursor-pointer whitespace-nowrap select-none border-b-2 -mb-px ${
+      isActive
+        ? 'active text-amber-600 dark:text-amber-400 border-amber-500'
+        : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 border-transparent'
+    }`;
+
+    btn.innerHTML = `
+      <span>${catLabel}</span>
+      <span class="count-badge text-[11px] px-2 py-0.5 rounded-full font-semibold transition-colors ${
+        isActive
+          ? 'bg-amber-100 text-amber-700 dark:bg-amber-950/70 dark:text-amber-300 shadow-xs'
+          : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
+      }">${count}</span>
+    `;
+
+    btn.addEventListener('click', () => {
+      if (!window.isGlobalBookmarkMode && isContestBookmarkView) {
+        isContestBookmarkView = false;
+      }
+      contestActiveCategory = cat;
+      updateContestCategoryTabStyles(cat);
+      renderContests();
+
+      // 스크롤 상단 보정
+      const stickyBar = container.closest('.sticky');
+      if (stickyBar) {
+        const isMobile = window.innerWidth < 640;
+        const offset = isMobile ? 0 : 64;
+        const rect = stickyBar.getBoundingClientRect();
+        if (rect.top < offset) {
+          const targetY = window.pageYOffset + rect.top - offset;
+          window.scrollTo({ top: targetY, behavior: 'smooth' });
+        }
+      }
+    });
+
+    container.appendChild(btn);
+  });
+}
+
+// 카테고리 탭 뱃지 카운트 갱신 (신규 카테고리 감지 시 즉시 탭 재렌더링)
 function updateContestCategoryCounts() {
-  const tabs = document.querySelectorAll('#contestCategoryTabs .cat-pill');
+  const container = document.getElementById('contestCategoryTabs');
+  if (!container) return;
+
+  const existingDomCats = new Set(Array.from(container.querySelectorAll('.cat-pill')).map(t => t.getAttribute('data-category')));
+  const hasNewCat = allContests.some(c => c.category && !existingDomCats.has(c.category));
+  if (hasNewCat || container.querySelectorAll('.cat-pill').length === 0) {
+    renderContestCategoryTabs();
+    return;
+  }
+
+  const tabs = container.querySelectorAll('.cat-pill');
   tabs.forEach(tab => {
     const cat = tab.getAttribute('data-category');
     const badge = tab.querySelector('.count-badge');
@@ -301,11 +411,17 @@ function updateContestCategoryCounts() {
 
 // [시안 B] 미니멀 언더라인 탭 스타일 갱신 (토스/애플 스타일 슬림 & 선명한 앰버 인디케이터)
 function updateContestCategoryTabStyles(activeCategory = 'ALL') {
-  const tabs = document.querySelectorAll('#contestCategoryTabs .cat-pill');
+  const container = document.getElementById('contestCategoryTabs');
+  if (!container) return;
+  const tabs = container.querySelectorAll('.cat-pill');
+  if (tabs.length === 0) {
+    renderContestCategoryTabs();
+    return;
+  }
   tabs.forEach(tab => {
     const cat = tab.getAttribute('data-category');
     const badge = tab.querySelector('.count-badge');
-    const isActive = (cat === activeCategory);
+    const isActive = !isContestBookmarkView && (cat === activeCategory);
 
     if (isActive) {
       tab.className = 'cat-pill active category-tab-btn flex items-center gap-1.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-amber-600 dark:text-amber-400 border-b-2 border-amber-500 -mb-px cursor-pointer whitespace-nowrap select-none';
@@ -391,6 +507,20 @@ function renderContestCard(contest) {
     catBadgeClass = 'bg-cyan-100 text-cyan-800 dark:bg-cyan-950/60 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800';
   } else if (contest.category === '지반·안전') {
     catBadgeClass = 'bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border-rose-200 dark:border-rose-800';
+  } else if (contest.category === '철도·인프라') {
+    catBadgeClass = 'bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800';
+  } else if (contest.category === '토목·일반') {
+    catBadgeClass = 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700';
+  } else if (contest.badge_color === 'indigo') {
+    catBadgeClass = 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800';
+  } else if (contest.badge_color === 'emerald') {
+    catBadgeClass = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
+  } else if (contest.badge_color === 'cyan') {
+    catBadgeClass = 'bg-cyan-100 text-cyan-800 dark:bg-cyan-950/60 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800';
+  } else if (contest.badge_color === 'rose') {
+    catBadgeClass = 'bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border-rose-200 dark:border-rose-800';
+  } else if (contest.badge_color === 'blue') {
+    catBadgeClass = 'bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800';
   }
 
   // D-Day 뱃지 스타일: 알림/점멸(animate-pulse, flame) 없는 차분한 디자인

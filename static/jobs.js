@@ -89,6 +89,9 @@ async function loadJobsData() {
     allJobs = data.jobs || [];
     window.allJobs = allJobs;
 
+    // [동적 카테고리 동기화] 새로운 채용 카테고리가 등장할 경우 카테고리 탭 목록에 자동 추가하여 전체 건수 합산 일치 보장
+    syncJobCategories(data.categories);
+
     // 메타데이터 업데이트
     const lastUpdatedEl = document.getElementById('jobLastUpdated');
     if (lastUpdatedEl) lastUpdatedEl.textContent = data.last_updated_display || '방금 전';
@@ -170,7 +173,7 @@ window.toggleJobUrgentFilter = function() {
 };
 
 // 4. 카테고리 탭 렌더링
-const JOB_CATEGORIES = [
+let JOB_CATEGORIES = [
   { id: 'all', name: '전체' },
   { id: 'public', name: '공기업·공공기관' },
   { id: 'builder', name: '대형 건설사' },
@@ -178,10 +181,49 @@ const JOB_CATEGORIES = [
   { id: 'safety_research', name: '전문기술·안전·연구' }
 ];
 
+// 신규 채용 카테고리 동적 감지 및 등록 (전체 건수와 카테고리별 합산 불일치 방지)
+function syncJobCategories(apiCategories = []) {
+  const existingCatIds = new Set(JOB_CATEGORIES.map(c => c.id));
+
+  if (Array.isArray(apiCategories)) {
+    apiCategories.forEach(cat => {
+      if (cat.id && !existingCatIds.has(cat.id)) {
+        existingCatIds.add(cat.id);
+        JOB_CATEGORIES.push({
+          id: cat.id,
+          name: cat.name || cat.id
+        });
+      }
+    });
+  }
+
+  allJobs.forEach(job => {
+    if (!job.category_id && !job.category_name) {
+      job.category_id = 'public';
+      job.category_name = '공기업·공공기관';
+    } else if (!job.category_id && job.category_name) {
+      job.category_id = job.category_name.trim().replace(/\s+/g, '_');
+    } else if (job.category_id && !job.category_name) {
+      const matched = JOB_CATEGORIES.find(c => c.id === job.category_id);
+      job.category_name = matched ? matched.name : job.category_id;
+    }
+
+    if (job.category_id && job.category_id !== 'all' && !existingCatIds.has(job.category_id)) {
+      existingCatIds.add(job.category_id);
+      JOB_CATEGORIES.push({
+        id: job.category_id,
+        name: job.category_name || job.category_id
+      });
+    }
+  });
+}
+
 function renderJobCategoryTabs() {
   const container = document.getElementById('jobCategoryTabs');
   if (!container) return;
   container.innerHTML = '';
+
+  syncJobCategories();
 
   JOB_CATEGORIES.forEach(cat => {
     let count = 0;
