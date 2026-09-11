@@ -1,5 +1,5 @@
 // Civil News Hub - AI Briefing Chatbot Controller (Option 2: Gemini 1.5 Flash + Local RAG)
-// Silent Internal Version: v1.0.22
+// Silent Internal Version: v1.0.23
 
 (function () {
   let isChatbotOpen = false;
@@ -9,7 +9,6 @@
   let geminiApiKey = '';
   let hasServerApiKey = false;
   let serverModelName = 'gemini-1.5-flash';
-  let savedScrollY = 0;
   let isBodyLocked = false;
 
   // 1. 초기화
@@ -23,7 +22,7 @@
     loadApiKey();
     injectChatbotUI();
     setupChatbotListeners();
-    initWelcomeMessage();
+    loadChatSession();
     checkServerStatus();
   }
 
@@ -90,10 +89,10 @@
         class="fixed inset-0 z-40 bg-slate-950/40 dark:bg-slate-950/60 backdrop-blur-xs hidden opacity-0 transition-opacity duration-300"
       ></div>
 
-      <!-- 챗봇 창 모달 / 패널 (크기 완전 유지 & 입력창 하단 고정) -->
+      <!-- 챗봇 창 모달 / 패널 (모바일 화면 하단 완전 밀착 도킹 & 데스크탑 우하단 고정) -->
       <div 
         id="chatbotWindow" 
-        class="fixed inset-x-2 bottom-2 sm:inset-x-auto sm:bottom-6 sm:right-6 z-50 hidden flex-col w-auto sm:w-[440px] h-[86vh] sm:h-[620px] max-h-[90vh] bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden transition-all duration-300 transform scale-95 opacity-0 backdrop-blur-xl"
+        class="fixed inset-x-0 bottom-0 sm:inset-x-auto sm:bottom-6 sm:right-6 z-50 hidden flex-col w-full sm:w-[440px] h-[85vh] h-[85dvh] sm:h-[620px] max-h-[92vh] max-h-[92dvh] bg-white dark:bg-slate-900 border-t sm:border border-slate-200/90 dark:border-slate-800 rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden transition-all duration-300 transform scale-100 opacity-0 backdrop-blur-xl origin-bottom sm:origin-bottom-right"
         style="box-sizing: border-box;"
       >
         <!-- 챗봇 헤더 (터치 액션 고정) -->
@@ -215,10 +214,10 @@
           <!-- JS로 동적 메시지 렌더링 -->
         </div>
 
-        <!-- 하단 입력 바 (맨 아래 고정) -->
+        <!-- 하단 입력 바 (화면 맨 아래 밀착 고정) -->
         <div 
           id="chatbotInputContainer" 
-          class="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex-shrink-0 mt-auto"
+          class="p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex-shrink-0 mt-auto"
           style="flex-shrink: 0; margin-top: auto;"
         >
           <form id="chatbotInputForm" class="flex items-center gap-2">
@@ -409,29 +408,65 @@
   // 모바일 화면 챗봇 오픈 시 뒷배경 스크롤 완전 락(Lock)
   function lockBodyScroll() {
     if (window.innerWidth < 768 && !isBodyLocked) {
-      savedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${savedScrollY}px`;
-      document.body.style.width = '100%';
-      document.body.style.overflow = 'hidden';
       document.documentElement.classList.add('chatbot-open-lock');
       document.body.classList.add('chatbot-open-lock');
       isBodyLocked = true;
     }
   }
 
-  // 모바일 챗봇 닫힘 시 뒷배경 스크롤 락 해제 및 원래 스크롤 위치 복원
+  // 모바일 챗봇 닫힘 시 뒷배경 스크롤 락 해제
   function unlockBodyScroll() {
     if (isBodyLocked) {
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.overflow = '';
       document.documentElement.classList.remove('chatbot-open-lock');
       document.body.classList.remove('chatbot-open-lock');
-      window.scrollTo(0, savedScrollY);
       isBodyLocked = false;
     }
+  }
+
+  function saveChatSession() {
+    try {
+      sessionStorage.setItem('civil_chatbot_history', JSON.stringify(chatHistory));
+      sessionStorage.setItem('civil_chatbot_open', isChatbotOpen ? '1' : '0');
+    } catch (e) {}
+  }
+
+  function loadChatSession() {
+    try {
+      const saved = sessionStorage.getItem('civil_chatbot_history');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          chatHistory = parsed;
+          renderChatHistory();
+        } else {
+          initWelcomeMessage();
+        }
+      } else {
+        initWelcomeMessage();
+      }
+
+      const wasOpen = sessionStorage.getItem('civil_chatbot_open') === '1';
+      if (wasOpen) {
+        toggleChatbotWindow(true);
+      }
+    } catch (e) {
+      initWelcomeMessage();
+    }
+  }
+
+  function renderChatHistory() {
+    const container = document.getElementById('chatbotMessagesContainer');
+    if (!container) return;
+    initWelcomeMessage();
+    chatHistory.forEach(item => {
+      if (item.role === 'user') {
+        renderUserMessageDOM(item.text);
+      } else if (item.role === 'ai') {
+        renderAiMessageDOM(item.text, item.sources, item.isGemini);
+      }
+    });
+    refreshIcons();
+    scrollToBottom();
   }
 
   function toggleChatbotWindow(forceState) {
@@ -464,14 +499,17 @@
 
       windowEl.classList.remove('hidden');
       windowEl.classList.add('is-open', 'flex');
-      setTimeout(() => {
-        windowEl.classList.remove('scale-95', 'opacity-0');
-        windowEl.classList.add('scale-100', 'opacity-100');
+      requestAnimationFrame(() => {
+        windowEl.classList.remove('opacity-0');
+        windowEl.classList.add('opacity-100');
         const textInput = document.getElementById('chatbotTextInput');
         if (textInput && window.innerWidth >= 640) textInput.focus();
         scrollToBottom();
-      }, 10);
+      });
+      setTimeout(scrollToBottom, 100);
+      setTimeout(scrollToBottom, 300);
       if (floatBtn) floatBtn.classList.add('hidden');
+      saveChatSession();
     } else {
       // 모바일 배경 스크롤 차단 해제
       unlockBodyScroll();
@@ -483,13 +521,14 @@
         setTimeout(() => backdropEl.classList.add('hidden'), 250);
       }
 
-      windowEl.classList.remove('scale-100', 'opacity-100');
-      windowEl.classList.add('scale-95', 'opacity-0');
+      windowEl.classList.remove('opacity-100');
+      windowEl.classList.add('opacity-0');
       setTimeout(() => {
         windowEl.classList.remove('is-open', 'flex');
         windowEl.classList.add('hidden');
         if (floatBtn) floatBtn.classList.remove('hidden');
       }, 250);
+      saveChatSession();
     }
   }
   window.openCivilChatbot = () => toggleChatbotWindow(true);
@@ -743,7 +782,7 @@ ${query}`;
 
 
   // 8. 메시지 렌더링 헬퍼들
-  function appendUserMessage(text) {
+  function renderUserMessageDOM(text) {
     const container = document.getElementById('chatbotMessagesContainer');
     if (!container) return;
 
@@ -755,10 +794,16 @@ ${query}`;
       </div>
     `;
     container.appendChild(el);
+  }
+
+  function appendUserMessage(text) {
+    renderUserMessageDOM(text);
+    chatHistory.push({ role: 'user', text: text });
+    saveChatSession();
     scrollToBottom();
   }
 
-  function appendAiMessage(markdownText, sources = [], isGemini = true) {
+  function renderAiMessageDOM(markdownText, sources = [], isGemini = true) {
     const container = document.getElementById('chatbotMessagesContainer');
     if (!container) return;
 
@@ -781,6 +826,12 @@ ${query}`;
     `;
 
     container.appendChild(el);
+  }
+
+  function appendAiMessage(markdownText, sources = [], isGemini = true) {
+    renderAiMessageDOM(markdownText, sources, isGemini);
+    chatHistory.push({ role: 'ai', text: markdownText, sources: sources, isGemini: isGemini });
+    saveChatSession();
     refreshIcons();
     scrollToBottom();
   }
@@ -946,11 +997,20 @@ ${query}`;
     }
   }
 
-  function scrollToBottom() {
+  function scrollToBottom(smooth = false) {
     const container = document.getElementById('chatbotMessagesContainer');
-    if (container) {
-      container.scrollTop = container.scrollHeight;
-    }
+    if (!container) return;
+    const doScroll = () => {
+      if (smooth) {
+        container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+      } else {
+        container.scrollTop = container.scrollHeight;
+      }
+    };
+    doScroll();
+    requestAnimationFrame(doScroll);
+    setTimeout(doScroll, 80);
+    setTimeout(doScroll, 250);
   }
 
   // 마크다운 파서 (코드, 볼드, 불릿, 줄바꿈)

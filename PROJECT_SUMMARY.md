@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.0.23` (누적 수정 23회 반영 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.0.24` (누적 수정 24회 반영 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -324,6 +324,23 @@ mindmap
      - systemd 서비스(`civil-tunnel.service`)로 등록하여 24시간 무중단 자동 유지 (`Restart=always`).
   2. **모바일 브라우저 및 Gemini AI 연동 검증**:
      - 모바일 HTTPS 요청(`/api/chat/status`, `/api/chat`)을 Nginx를 거쳐 내부 Gunicorn Flask 및 Google Gemini 3.6 Flash로 100% 정상 연동 검증.
+
+#### 25) 챗봇 창 모바일 화면 밑바닥 밀착 고정(Bottom Sheet) 및 리로드 시 좌표 튐·스크롤 이탈 원천 수정 (ver 1.0.24)
+- **발생 문제 분석**:
+  1. `lockBodyScroll()` 실행 시 `document.body`에 `position: fixed; top: -${scrollY}px;`를 적용하여, 모바일 뷰포트에서 고정(fixed)된 챗봇 창의 기준 좌표가 스크롤 오프셋만큼 위로 밀려 화면 하단에 고정되지 않고 공중에 붕 뜨는 현상 발생.
+  2. 페이지 새로고침(리로드) 또는 모바일 당겨서 새로고침 시 Service Worker의 과거 캐시(`v1.0.20`) 및 스크롤 복원 오차로 인해 채팅창 위치와 대화 스크롤이 위로 튀는 현상 발생.
+- **해결 및 최적화 내역**:
+  1. **모바일 챗봇 창 바닥 완전 밀착(Bottom Sheet) 규격 개편**:
+     - 모바일(640px 미만) 환경에서 `inset-x-0 bottom-0 w-full rounded-t-3xl rounded-b-none`으로 화면 맨 밑바닥에 완전 밀착.
+     - 하단 입력창에 `pb-[max(0.75rem,env(safe-area-inset-bottom))]`를 주입하여 갤럭시·아이폰 제스처 바 간섭 완벽 차단.
+     - 데스크탑 환경은 기존 우하단 플로팅 규격(`sm:bottom-6 sm:right-6 sm:w-[440px] sm:h-[620px] sm:rounded-3xl`) 100% 유지.
+  2. **바디 락 좌표 왜곡 제거 (Clean Viewport Lock)**:
+     - `body`의 `position: fixed` 및 `top` 조작을 전면 제거하고, `html.chatbot-open-lock`, `body.chatbot-open-lock` 클래스로 `overflow: hidden; touch-action: none; overscroll-behavior: none;`을 적용하여 뒷배경 스크롤은 완벽 차단하되 챗봇 창의 뷰포트 바닥 좌표가 절대 위로 튀지 않도록 수정.
+  3. **세션 스토리지 기반 대화 내역 & 오픈 상태 복원 및 멀티프레임 자동 스크롤**:
+     - 새로고침 시에도 대화 내역이 유실되지 않고 이전 대화 끝(하단)으로 즉시 복귀할 수 있도록 `sessionStorage` 연동.
+     - `scrollToBottom()`을 멀티프레임(`requestAnimationFrame`, `setTimeout 80ms`, `250ms`)으로 강화하여 DOM 렌더링 완료 후 100% 최신 메시지 하단에 정렬.
+  4. **PWA Service Worker 캐시 갱신 (`civil-news-hub-v1.0.24`)**:
+     - `sw.js` 캐시명을 신규 버전으로 갱신하여 클라이언트 브라우저의 구버전 캐시 강제 삭제 및 최신 코드 자동 반영.
 
 ---
 
