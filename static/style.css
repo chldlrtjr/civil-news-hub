@@ -153,4 +153,58 @@ html {
   font-weight: 600 !important; /* 뱃지 폰트 폭 동일 고정 */
 }
 
+/* AI 챗봇 창 레이아웃 완전 고정 및 대화 내역 독립 스크롤 */
+#chatbotWindow {
+  box-sizing: border-box;
+}
+
+#chatbotWindow.is-open {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+#chatbotMessagesContainer {
+  flex: 1 1 0% !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+#chatbotInputContainer {
+  flex-shrink: 0 !important;
+  margin-top: auto !important;
+}
+
+/* 챗봇 대화창 부드러운 슬림 스크롤바 */
+#chatbotMessagesContainer::-webkit-scrollbar {
+  width: 5px;
+}
+#chatbotMessagesContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+#chatbotMessagesContainer::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 9999px;
+}
+#chatbotMessagesContainer::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.6);
+}
+
+/* 모바일 챗봇 오픈 시 뒷배경 페이지 스크롤 완전 차단 */
+@media (max-width: 767px) {
+  html.chatbot-open-lock {
+    overflow: hidden !important;
+    overscroll-behavior: none !important;
+    touch-action: none !important;
+  }
+  body.chatbot-open-lock {
+    overflow: hidden !important;
+    overscroll-behavior: none !important;
+    touch-action: none !important;
+    position: fixed !important;
+    width: 100% !important;
+  }
+}
+
 

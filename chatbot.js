@@ -1,5 +1,5 @@
 // Civil News Hub - AI Briefing Chatbot Controller (Option 2: Gemini 1.5 Flash + Local RAG)
-// Silent Internal Version: v1.0.21
+// Silent Internal Version: v1.0.22
 
 (function () {
   let isChatbotOpen = false;
@@ -9,6 +9,8 @@
   let geminiApiKey = '';
   let hasServerApiKey = false;
   let serverModelName = 'gemini-1.5-flash';
+  let savedScrollY = 0;
+  let isBodyLocked = false;
 
   // 1. 초기화
   if (document.readyState === 'loading') {
@@ -82,13 +84,20 @@
         <span class="text-xs sm:text-sm font-bold tracking-tight">AI 기사 질문</span>
       </button>
 
-      <!-- 챗봇 창 모달 / 패널 -->
+      <!-- 모바일 배경 딤 & 터치 스크롤 방지 오버레이 -->
+      <div 
+        id="chatbotBackdrop" 
+        class="fixed inset-0 z-40 bg-slate-950/40 dark:bg-slate-950/60 backdrop-blur-xs hidden opacity-0 transition-opacity duration-300"
+      ></div>
+
+      <!-- 챗봇 창 모달 / 패널 (크기 완전 유지 & 입력창 하단 고정) -->
       <div 
         id="chatbotWindow" 
         class="fixed inset-x-2 bottom-2 sm:inset-x-auto sm:bottom-6 sm:right-6 z-50 hidden flex-col w-auto sm:w-[440px] h-[86vh] sm:h-[620px] max-h-[90vh] bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden transition-all duration-300 transform scale-95 opacity-0 backdrop-blur-xl"
+        style="box-sizing: border-box;"
       >
-        <!-- 챗봇 헤더 -->
-        <div class="flex items-center justify-between px-4 py-3 bg-slate-900 dark:bg-slate-950 text-white border-b border-slate-800 select-none flex-shrink-0">
+        <!-- 챗봇 헤더 (터치 액션 고정) -->
+        <div class="flex items-center justify-between px-4 py-3 bg-slate-900 dark:bg-slate-950 text-white border-b border-slate-800 select-none flex-shrink-0 touch-none">
           <div class="flex items-center gap-2.5">
             <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/30">
               <i data-lucide="bot" class="w-4 h-4"></i>
@@ -197,13 +206,21 @@
           </button>
         </div>
 
-        <!-- 메시지 리스트 스크롤 영역 -->
-        <div id="chatbotMessagesContainer" class="flex-1 overflow-y-auto p-4 space-y-4 text-xs sm:text-sm bg-white dark:bg-slate-900/50">
+        <!-- 메시지 리스트 스크롤 영역 (독립 스크롤 보장) -->
+        <div 
+          id="chatbotMessagesContainer" 
+          class="flex-1 min-h-0 overflow-y-auto p-4 space-y-4 text-xs sm:text-sm bg-white dark:bg-slate-900/50 overscroll-contain"
+          style="flex: 1 1 0%; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;"
+        >
           <!-- JS로 동적 메시지 렌더링 -->
         </div>
 
-        <!-- 하단 입력 바 -->
-        <div class="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex-shrink-0">
+        <!-- 하단 입력 바 (맨 아래 고정) -->
+        <div 
+          id="chatbotInputContainer" 
+          class="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex-shrink-0 mt-auto"
+          style="flex-shrink: 0; margin-top: auto;"
+        >
           <form id="chatbotInputForm" class="flex items-center gap-2">
             <input 
               type="text" 
@@ -360,11 +377,67 @@
         handleUserMessage(text);
       });
     });
+
+    // 배경 딤(Backdrop) 터치/클릭 시 닫기 및 배경 터치 스크롤 차단
+    const backdropEl = document.getElementById('chatbotBackdrop');
+    if (backdropEl) {
+      backdropEl.addEventListener('click', () => toggleChatbotWindow(false));
+      backdropEl.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+      }, { passive: false });
+    }
+
+    // ESC 키 입력 시 챗봇 닫기 지원
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isChatbotOpen) {
+        toggleChatbotWindow(false);
+      }
+    });
+
+    // 뷰포트 크기 변경 시 모바일 스크롤락 상태 보정
+    window.addEventListener('resize', () => {
+      if (isChatbotOpen) {
+        if (window.innerWidth >= 768) {
+          unlockBodyScroll();
+        } else {
+          lockBodyScroll();
+        }
+      }
+    });
+  }
+
+  // 모바일 화면 챗봇 오픈 시 뒷배경 스크롤 완전 락(Lock)
+  function lockBodyScroll() {
+    if (window.innerWidth < 768 && !isBodyLocked) {
+      savedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${savedScrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+      document.documentElement.classList.add('chatbot-open-lock');
+      document.body.classList.add('chatbot-open-lock');
+      isBodyLocked = true;
+    }
+  }
+
+  // 모바일 챗봇 닫힘 시 뒷배경 스크롤 락 해제 및 원래 스크롤 위치 복원
+  function unlockBodyScroll() {
+    if (isBodyLocked) {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+      document.documentElement.classList.remove('chatbot-open-lock');
+      document.body.classList.remove('chatbot-open-lock');
+      window.scrollTo(0, savedScrollY);
+      isBodyLocked = false;
+    }
   }
 
   function toggleChatbotWindow(forceState) {
     const windowEl = document.getElementById('chatbotWindow');
     const floatBtn = document.getElementById('chatbotFloatingBtn');
+    const backdropEl = document.getElementById('chatbotBackdrop');
     if (!windowEl) return;
 
     if (typeof forceState === 'boolean') {
@@ -376,7 +449,21 @@
     if (isChatbotOpen) {
       checkServerStatus();
       updateApiStatusBadge();
+
+      // 모바일 배경 스크롤 차단 활성화
+      lockBodyScroll();
+
+      // 배경 딤 오버레이 표시
+      if (backdropEl) {
+        backdropEl.classList.remove('hidden');
+        requestAnimationFrame(() => {
+          backdropEl.classList.remove('opacity-0');
+          backdropEl.classList.add('opacity-100');
+        });
+      }
+
       windowEl.classList.remove('hidden');
+      windowEl.classList.add('is-open', 'flex');
       setTimeout(() => {
         windowEl.classList.remove('scale-95', 'opacity-0');
         windowEl.classList.add('scale-100', 'opacity-100');
@@ -386,9 +473,20 @@
       }, 10);
       if (floatBtn) floatBtn.classList.add('hidden');
     } else {
+      // 모바일 배경 스크롤 차단 해제
+      unlockBodyScroll();
+
+      // 배경 딤 오버레이 숨김
+      if (backdropEl) {
+        backdropEl.classList.remove('opacity-100');
+        backdropEl.classList.add('opacity-0');
+        setTimeout(() => backdropEl.classList.add('hidden'), 250);
+      }
+
       windowEl.classList.remove('scale-100', 'opacity-100');
       windowEl.classList.add('scale-95', 'opacity-0');
       setTimeout(() => {
+        windowEl.classList.remove('is-open', 'flex');
         windowEl.classList.add('hidden');
         if (floatBtn) floatBtn.classList.remove('hidden');
       }, 250);

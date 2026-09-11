@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.0.21` (누적 수정 21회 반영 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.0.22` (누적 수정 22회 반영 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -291,6 +291,26 @@ mindmap
   3. **서버 Gemini API 연동 챗봇 안정화 및 UI 개선**:
      - 서버 사이드 Gemini 3.6 Flash 모델 연동 정상화 (`/api/chat` 테스트 통과 및 고품질 한국어 응답 생성).
      - 클라이언트 챗봇 뱃지를 "Gemini (서버 무료 이용)"으로 정돈.
+
+#### 23) 챗봇 하단 입력바 완전 고정, 대화 내역 독립 스크롤 및 모바일 배경 스크롤 락 구현 (ver 1.0.22)
+- **요청 사항**:
+  1. 챗봇 창 크기는 현재 규격 그대로 완전 유지.
+  2. 하단 텍스트 입력창(`chatbotInputContainer`)을 창 맨 아래에 흔들림 없이 완전 고정.
+  3. 주고받은 채팅 내역들(`chatbotMessagesContainer`)이 잘리지 않고 독립적으로 부드럽게 스크롤되도록 보장.
+  4. 모바일 환경에서 챗봇을 열었을 때 뒷배경 페이지가 멋대로 스크롤되지 않도록 완벽 락(Lock) 처리.
+- **구현 및 최적화 내역**:
+  1. **플렉스박스 레이아웃 계층 완전 정돈 및 입력바 하단 고정**:
+     - `#chatbotWindow` 활성화 시 `display: flex !important; flex-direction: column !important;` 강제 적용.
+     - 하단 입력 컨테이너(`chatbotInputContainer`)에 `flex-shrink: 0 !important; margin-top: auto !important;`를 부여하여 메시지가 아무리 길어져도 항상 창 맨 밑바닥에 밀림 없이 100% 고정.
+  2. **대화 내역(`chatbotMessagesContainer`) 독립 스크롤 및 오버스크롤 차단**:
+     - 메시지 컨테이너에 `flex: 1 1 0% !important; min-height: 0 !important; overflow-y: auto !important;` 적용하여 잔여 높이를 정밀 계산하여 독립 스크롤 구현.
+     - `overscroll-behavior: contain !important;` 및 `-webkit-overflow-scrolling: touch;`를 부여하여 모바일 터치 스와이프 시 스크롤 끝단에서 바깥 페이지로 스크롤 이벤트가 전파(Scroll Chaining)되는 현상 원천 차단.
+     - 가독성 높은 슬림 스크롤바 디자인 적용.
+  3. **모바일 배경 페이지 스크롤 완벽 락 (Body Scroll Lock)**:
+     - 챗봇 오픈 시(`toggleChatbotWindow(true)`), 뷰포트 너비 768px 미만 모바일 환경에서 현재 `scrollY` 위치를 메모리에 보관하고 `body`에 `position: fixed; width: 100%; top: -${scrollY}px; overflow: hidden;` 동적 주입.
+     - 챗봇 닫힘 시(`toggleChatbotWindow(false)`), 원래의 스크롤 위치(`scrollY`)로 오차 없이 완벽 복원하여 화면 튕김 현상 방지.
+     - 모바일 전용 딤 배경(`chatbotBackdrop`)을 추가하여 바깥 터치 시 스크롤 차단(`touchmove.preventDefault()`) 및 부드러운 원터치 닫기 지원.
+     - ESC 키 입력 및 창 리사이즈 대응 추가.
 
 ---
 
