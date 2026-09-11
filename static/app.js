@@ -837,18 +837,6 @@ function renderArticleCard(article) {
           >
             <i data-lucide="bookmark" class="w-4 h-4 sm:w-4.5 sm:h-4.5 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}"></i>
           </button>
-
-          <!-- 원문 보러가기 버튼 -->
-          <a 
-            href="${article.link}" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            onclick="recordView('${article.id}'); markArticleAsRead('${article.id}');"
-            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white dark:bg-blue-950/40 dark:text-blue-300 dark:hover:bg-blue-600 dark:hover:text-white transition shadow-2xs"
-          >
-            <span>원문</span>
-            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-          </a>
         </div>
       </div>
       ${renderBookmarkNoteRow(article.id, article.title)}

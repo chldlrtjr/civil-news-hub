@@ -1,5 +1,5 @@
 // Civil News Hub Service Worker (PWA Offline & Instant Load Support)
-const CACHE_NAME = 'civil-news-hub-v1.0.29';
+const CACHE_NAME = 'civil-news-hub-v1.0.30';
 const STATIC_ASSETS = [
   './',
   './index.html',
