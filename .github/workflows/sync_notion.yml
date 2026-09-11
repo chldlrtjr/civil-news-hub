@@ -1,0 +1,27 @@
+name: Notion 포트폴리오 자동 동기화
+
+on:
+  workflow_dispatch: # GitHub Actions 웹에서 [Run workflow] 버튼으로 즉시 수동 실행 가능
+  push:
+    paths:
+      - 'NOTION_PORTFOLIO_GUIDE.md'
+    branches:
+      - main
+
+jobs:
+  sync-notion:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 3.12 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Notion 페이지로 포트폴리오 업로드 실행
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+        run: |
+          python sync_to_notion.py

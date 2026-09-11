@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.0.25` (누적 수정 25회 반영 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.0.28` (누적 수정 28회 반영 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -397,6 +397,18 @@ mindmap
      - 푸터 및 `#mobileBottomNav`가 정상적으로 `<body>`의 독립된 직계 자식 노드로 분리되어 모달의 `invisible` 간섭을 100% 탈피함.
   2. **PWA Service Worker 캐시 갱신 (`civil-news-hub-v1.0.27`)**:
      - 캐시 버스팅 파라미터(`?v=20260911_1947`) 및 `sw.js` 캐시 키를 일괄 갱신하여 클라이언트 기기에 즉각 반영.
+
+#### 29) 취업 대비 포트폴리오 노션(Notion) 완전 자동 업로드 파이프라인 구축 (ver 1.0.28)
+- **배경 및 요구사항**:
+  - 개발자가 지금까지 구축한 서비스 기획, 아키텍처, 트러블슈팅(STAR 기법) 경험을 취업 포트폴리오로 활용하기 위해 개인 노션 페이지(`https://app.notion.com/p/3d5009a14e198038ba3ff62b74d18e03`)에 자동 업로드 연동 요청.
+- **구현 및 자동화 내역**:
+  1. **종합 기술 포트폴리오 문서화 ([`NOTION_PORTFOLIO_GUIDE.md`](file:///home/ubuntu/workspace/NOTION_PORTFOLIO_GUIDE.md))**:
+     - 1인 개발 역할 및 기여도 100%, Mermaid 아키텍처 다이어그램, 10대 기술 스택 선정 이유, 6대 핵심 기능, 6대 핵심 문제 해결 사례(STAR) 총망라.
+  2. **Notion 공식 API 자동 변환 스크립트 ([`sync_to_notion.py`](file:///home/ubuntu/workspace/sync_to_notion.py)) 개발**:
+     - 마크다운의 헤딩, 콜아웃, 코드 블록, 인라인 서식(볼드, 링크, 인라인 코드) 및 2개 대형 데이터 표(Table)를 노션 API 규격 블록으로 100% 무손실 자동 파싱 (총 123개 블록).
+     - Notion API의 1회 전송 100개 블록 제한을 안전하게 분할 전송(청크 크기 40개)하여 안정적인 무오류 업로드 구현.
+  3. **GitHub Actions 자동 동기화 워크플로우 ([`.github/workflows/sync_notion.yml`](file:///home/ubuntu/workspace/.github/workflows/sync_notion.yml)) 구축**:
+     - GitHub Secrets(`NOTION_TOKEN`) 연동을 통해, 포트폴리오 문서 수정 후 `git push` 시 또는 웹에서 'Run workflow' 클릭 한 번으로 사용자의 노션 페이지에 최신 포트폴리오가 100% 전자동으로 배포되도록 구성.
 
 ---
 
