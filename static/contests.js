@@ -92,10 +92,19 @@ async function loadContestsData() {
     const data = await res.json();
     let rawList = data.contests || [];
 
-    // [GEMINI.md 절대 원칙] 접수마감 항목은 프론트엔드에서도 원천 배제
+    // [GEMINI.md 절대 원칙: 런타임 클라이언트 이중 방어막]
+    // 1. is_active === false 원천 배제
+    // 2. status === '접수마감' 원천 배제
+    // 3. 과거/종료 영구 배제 키워드 탐지 시 원천 배제
+    // 4. 시·분 단위 실시간 마감 시간 경과 시 즉시 원천 배제
     allContests = rawList.filter(c => {
+      if (c.is_active === false) return false;
       if (c.status === '접수마감') return false;
-      const ddayInfo = parseDdayFromPeriod(c.period, c.status);
+      if (isContestBanned(c)) {
+        console.warn(`[Client Guard] 배제 대상 공모전 감지되어 화면 노출 차단: ${c.title}`);
+        return false;
+      }
+      const ddayInfo = parseDdayFromPeriod(c.period, c.status, c.deadline_date, c.deadline_time);
       return !ddayInfo.isClosed;
     });
     window.allContests = allContests;
@@ -130,8 +139,23 @@ async function loadContestsData() {
   }
 }
 
-// 3. 접수기간 문자열에서 마감일 추출 및 D-Day 연산
-function parseDdayFromPeriod(periodStr, statusStr) {
+// 2-1. 영구 배제 키워드 목록 (클라이언트 브라우저 실시간 2차 방어선)
+const BANNED_CONTEST_KEYWORDS = [
+  '삼성 epc', '삼성epc', '지하안전관리', '물 빅데이터', '물빅데이터', 
+  'ktx & 인프라', '차세대 ktx', '국토기술대전', '토목의 날 경진대회', '창작 공모전'
+];
+
+function isContestBanned(contest) {
+  if (!contest) return true;
+  const title = (contest.title || '').toLowerCase();
+  for (const kw of BANNED_CONTEST_KEYWORDS) {
+    if (title.includes(kw)) return true;
+  }
+  return false;
+}
+
+// 3. 접수기간 문자열 및 마감일시에서 정밀 D-Day 연산
+function parseDdayFromPeriod(periodStr, statusStr, deadlineDateStr, deadlineTimeStr) {
   if (!periodStr || statusStr === '상시접수' || periodStr.includes('상시')) {
     return { text: '상시접수', days: 9999, isUrgent: false, isClosed: false };
   }
@@ -139,11 +163,41 @@ function parseDdayFromPeriod(periodStr, statusStr) {
     return { text: '접수예정', days: 500, isUrgent: false, isClosed: false };
   }
 
+  // 1. deadlineDateStr (YYYY-MM-DD)와 deadlineTimeStr (HH:MM)이 주어졌을 때 정밀 분 단위 실시간 계산
+  if (deadlineDateStr && deadlineDateStr.includes('-')) {
+    try {
+      const [y, m, d] = deadlineDateStr.split('-').map(Number);
+      const [th, tm] = (deadlineTimeStr || '18:00').split(':').map(Number);
+      const deadlineDt = new Date(y, m - 1, d, th || 18, tm || 0, 0);
+      const now = new Date();
+      const diffMs = deadlineDt.getTime() - now.getTime();
+      if (diffMs < 0) {
+        return { text: '접수마감', days: -1, isUrgent: false, isClosed: true };
+      }
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      if (diffDays === 0) {
+        return { text: '오늘마감', days: 0, isUrgent: true, isClosed: false };
+      } else {
+        return { text: `D-${diffDays}`, days: diffDays, isUrgent: diffDays <= 3, isClosed: false };
+      }
+    } catch (e) {
+      console.warn('마감일자 연산 오류:', e);
+    }
+  }
+
+  // 2. 과거 연도 텍스트 감지 (2018~2025년)
+  const currentYear = new Date().getFullYear();
+  for (let pastYear = 2018; pastYear < currentYear; pastYear++) {
+    if (periodStr.includes(String(pastYear)) && !periodStr.includes(String(currentYear))) {
+      return { text: '접수마감', days: -1, isUrgent: false, isClosed: true };
+    }
+  }
+
+  // 3. 기간 텍스트 파싱
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // YYYY.MM.DD ~ MM.DD 또는 YYYY.MM.DD ~ YYYY.MM.DD 파싱
     let endDate = null;
     const match = periodStr.match(/~\s*(?:(\d{4})[.\-/])?(\d{1,2})[.\-/](\d{1,2})/);
     if (match) {
@@ -151,7 +205,7 @@ function parseDdayFromPeriod(periodStr, statusStr) {
       const month = parseInt(match[2], 10) - 1;
       const day = parseInt(match[3], 10);
       endDate = new Date(year, month, day);
-      endDate.setHours(0, 0, 0, 0);
+      endDate.setHours(23, 59, 59, 999);
     }
 
     if (!endDate || isNaN(endDate.getTime())) {

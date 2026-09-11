@@ -18,6 +18,7 @@ from datetime import datetime, timezone, timedelta
 from email.utils import parsedate_to_datetime
 
 import contest_notice_parser
+import contest_validator
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
@@ -75,6 +76,7 @@ def scrape_civil_contests():
     """
     토목 공모전 전담 수집 및 정제 파이프라인
     - 공식 요강 원본 실사 엔진(contest_notice_parser)을 호출하여 최신 팩트 획득
+    - contest_validator 무결성 검증 엔진으로 마감/과거/블랙리스트 항목 원천 차단
     - 마감 공모전 즉시 제외
     - 전체 건수 및 카테고리별 건수 100% 동기화
     """
@@ -85,12 +87,18 @@ def scrape_civil_contests():
     # 1. 팩트 실사 엔진 가동
     raw_contests = contest_notice_parser.run_comprehensive_contest_inspection()
 
-    # 2. 실시간 유효 공모전 필터링 (Rule 1-⑤: 마감 공모전 자동 내림)
+    # 2. 실시간 유효 공모전 다중 방어 검증 (Rule 1-①, 1-⑤, 1-⑦: 무결성 검증 게이트)
     active_contests = []
     for c in raw_contests:
+        # [방어막 1] contest_validator 단일 객체 철저 검증
+        is_valid, reason = contest_validator.validate_contest(c)
+        if not is_valid:
+            print(f"⛔ [검증 엔진 차단] {c.get('title')} -> {reason}")
+            continue
+
         dday_info = calculate_contest_dday(c.get("deadline_date", ""), c.get("deadline_time", "18:00"))
         
-        # 현재 상태 보정
+        # [방어막 2] 시·분 단위 마감 여부 실시간 확인
         if dday_info["is_closed"]:
             print(f"❌ [마감 내림] {c['title']} ({c['period']}) -> 접수 마감되어 목록 제외")
             continue
@@ -101,6 +109,14 @@ def scrape_civil_contests():
             c["status_color"] = "emerald"
             
         active_contests.append(c)
+
+    # [방어막 3] 수집 목록 일괄 무결성 재검증
+    verified_contests, rejected = contest_validator.filter_and_validate_contests(active_contests)
+    if rejected:
+        print(f"⚠️ [비상 경보] 필터링 후 잔류한 부적격 공모전 {len(rejected)}건 발견:")
+        for rej in rejected:
+            print(f"   - {rej['contest'].get('title')}: {rej['reason']}")
+        active_contests = verified_contests
 
     # 3. 카테고리 동적 감지 및 검증 (Rule 1-⑥)
     categories = list(CONTEST_CATEGORIES)

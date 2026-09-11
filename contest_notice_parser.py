@@ -18,6 +18,7 @@ from datetime import datetime, timezone, timedelta
 import requests
 import pypdf
 import urllib3
+import contest_validator
 
 urllib3.disable_warnings()
 
@@ -318,12 +319,20 @@ def run_comprehensive_contest_inspection():
     print("\n[1] 실시간 활성 공모전 (접수중 / 접수예정 / 상시접수):")
     for name, func in active_inspectors:
         res = func()
-        if res and res.get("is_active"):
-            print(f"✅ [{name}] 팩트 요강 파싱 성공!")
-            print(f"   - 공모전명: {res['title']}")
-            print(f"   - 접수일정: {res['period']} (마감: {res['deadline_date']} {res['deadline_time']})")
-            print(f"   - 시상규모: {res['prize']}")
-            results.append(res)
+        if not res:
+            print(f"⚠️ [{name}] 파싱 실패 (결과 없음)")
+            continue
+            
+        is_valid, reason = contest_validator.validate_contest(res)
+        if not is_valid:
+            print(f"⛔ [{name}] 검증 게이트 차단: {reason}")
+            continue
+
+        print(f"✅ [{name}] 팩트 요강 파싱 & 무결성 검증 성공!")
+        print(f"   - 공모전명: {res['title']}")
+        print(f"   - 접수일정: {res['period']} (마감: {res['deadline_date']} {res['deadline_time']})")
+        print(f"   - 시상규모: {res['prize']}")
+        results.append(res)
 
     print("\n[2] 마감 완료 및 과거 공모전 실사 (Rule 1-①, 1-⑤ 자동 제외 검증):")
     for name, func in inactive_inspectors:

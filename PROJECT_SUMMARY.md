@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.0.41` (누적 수정 41회 반영 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.0.42` (누적 수정 42회 반영 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -633,6 +633,31 @@ mindmap
     - `ALL(전체) 5건` = 스마트·기술 1건 + 도로·디자인 1건 + 수자원·환경 1건 + 지반·안전 1건 + 철도·인프라 1건 (오차 0건, 100% 일치).
   - **4) 버전 및 캐시 버스팅 갱신**:
     - 내부 버전 `v1.0.41` 자동 증가, PWA 서비스 워커 `civil-news-hub-v1.0.41`, HTML 캐시 버스터 파라미터 `?v=20260912_0035` 일괄 갱신.
+
+#### 43) 마감 및 과거 공모전 재발 원천 차단: 4중 방어 무결성 검증 체계 구축 (v1.0.42)
+- **사용자 지시**: "앞으로 이런 일이 없게 해"
+- **근본 원인 분석**:
+  - 기존 파이프라인에서 공식 웹사이트 요강을 크롤링/파싱하기 전, 과거 레거시 딥링크 매핑이나 개발 과정에서의 추정 마감일 지정이 시스템적으로 원천 차단되지 못했던 취약점 존재.
+  - 마감 시점(시·분 단위) 경과 여부 및 과거 연도(2021~2025) 데이터 필터링이 개발자의 수동 플래그(`is_active`) 설정에만 의존하던 구조적 한계 개선 필요.
+- **4중 방어 무결성 검증 체계(Zero-Tolerance Multi-Layer Integrity Shield) 구축**:
+  - **1) 백엔드 전담 무결성 검증 엔진 신설 ([`contest_validator.py`](file:///home/ubuntu/workspace/contest_validator.py))**:
+    - **실시간 마감 검증**: `deadline_date` 및 `deadline_time`(시·분 단위)을 파싱하여 현재 KST 시각보다 1초라도 이전이면 무조건 `DEADLINE_EXPIRED`로 차단(DROP).
+    - **과거 연도 탐지**: `period` 또는 `deadline_date`에 과거 연도(2018~2025년)가 언급되고 당해 연도(2026)가 아닐 경우 `PAST_YEAR_DETECTED`로 원천 차단.
+    - **영구 배제(Blacklist) 시그니처 검사**: 삼성 EPC, 지하안전관리, 코레일 KTX, 물 빅데이터, 미개최 공모전(국토기술대전 등) 키워드가 감지되면 즉시 `BANNED_SIGNATURE`로 배제.
+    - **상태 및 플래그 검사**: `is_active: False` 또는 `status: 접수마감` 항목 즉시 배제.
+  - **2) 수집기 파이프라인 연동 ([`contest_scraper.py`](file:///home/ubuntu/workspace/contest_scraper.py), [`contest_notice_parser.py`](file:///home/ubuntu/workspace/contest_notice_parser.py))**:
+    - 요강 파서가 공모전을 반환할 때마다 `contest_validator.validate_contest()`를 필수 통과하도록 하드 게이트 적용.
+    - 수집 완료 후 최종 JSON 저장 직전 `filter_and_validate_contests()`로 전수 재검증을 수행하여 비인가 공모전 침투 0건 보장.
+  - **3) 프론트엔드 브라우저 런타임 삼중 방어선 ([`static/contests.js`](file:///home/ubuntu/workspace/static/contests.js))**:
+    - 클라이언트 브라우저에서 `loadContestsData()` 수행 시, `isContestBanned()` 및 정밀 `parseDdayFromPeriod(c.period, c.status, c.deadline_date, c.deadline_time)`를 실시간 실행.
+    - 서버 캐시나 레거시 JSON이 브라우저에 남아 있더라도 렌더링 직전 메모리 배열에서 즉각 영구 필터링 제거하여 0.001초도 화면에 노출되지 않도록 이중 안전망 구축.
+  - **4) 자동화 무결성 테스트 스크립트 작성 및 Cron 파이프라인 연동 ([`test_contests_integrity.py`](file:///home/ubuntu/workspace/test_contests_integrity.py), [`cron_scrape.sh`](file:///home/ubuntu/workspace/cron_scrape.sh))**:
+    - 전체 공모전 목록을 전수 검사하여 마감/과거/블랙리스트 위반이 단 1건이라도 발견되거나, 전체 건수와 카테고리 합산이 불일치하면 `exit 1`로 자동화 크롤링을 즉시 중단시키는 독립 테스트 러너 구축.
+    - 매일 07:00 KST 실행되는 `cron_scrape.sh`의 4단계(`[4/4] test_contests_integrity.py`)로 공식 편성.
+  - **5) 운영 규칙 헌법화 ([`GEMINI.md`](file:///home/ubuntu/workspace/GEMINI.md) Rule 1-⑦ 신설)**:
+    - Rule 1-① 영구 배제 목록에 5대 과거/마감 공모전을 공식 명문화하고, Rule 1-⑦ '마감 및 과거 공모전 재발 방지 다중 방어 시스템 의무화 원칙'을 불변 규칙으로 영구 제정.
+  - **6) 버전 및 캐시 동기화**:
+    - 내부 버전 `v1.0.42` 증가, PWA 서비스 워커 `civil-news-hub-v1.0.42`, 프론트엔드 캐시 버스터 `?v=20260912_0040` 일괄 갱신.
 
 ---
 

@@ -655,33 +655,29 @@ FEATURED_CONTESTS = [
     }
 ]
 
-# 2. 공식 주최 기관 웹사이트 매핑 룰 (전용 공모전 상세 공고문/접수처 1순위 직결 매핑)
+# 2. 공식 주최 기관 웹사이트 매핑 룰 (100% 팩트 검증된 실시간 활성 공모전만 유지)
 OFFICIAL_CONTEST_MAPPINGS = [
-    (["스마트건설", "챌린지"], "https://smartconstchallenge.com/main/", "국토교통부 · 한국건설기술연구원"),
-    (["스마트건설챌린지"], "https://smartconstchallenge.com/main/", "국토교통부 · 한국건설기술연구원"),
     (["도로경관", "디자인"], "https://www.ex-contest.co.kr/design26", "한국도로공사"),
     (["도로경관디자인"], "https://www.ex-contest.co.kr/design26", "한국도로공사"),
     (["도로공사", "디자인"], "https://www.ex-contest.co.kr/design26", "한국도로공사"),
-    (["추락사고", "예방"], "https://www.safecontest.kr/summary", "국토교통부 · 고용노동부"),
-    (["추락사고예방"], "https://www.safecontest.kr/summary", "국토교통부 · 고용노동부"),
-    (["추락", "예방"], "https://www.safecontest.kr/summary", "국토교통부 · 고용노동부"),
-    (["물산업", "창업대전"], "http://www.startupwater.net", "환경부 · 한국수자원공사"),
-    (["물산업혁신"], "http://www.startupwater.net", "환경부 · 한국수자원공사"),
-    (["수자원공사", "물빅데이터"], "https://www.kwater.or.kr/danbitoktok/kor/citizenContest/view/50917898-5158-47ce-a632-d77454b90d1e.do", "한국수자원공사"),
-    (["물빅데이터"], "https://www.kwater.or.kr/danbitoktok/kor/citizenContest/view/50917898-5158-47ce-a632-d77454b90d1e.do", "한국수자원공사"),
-    (["지하안전", "국토안전관리원"], "https://www.jis.go.kr/community/boa01005_popup.do?board_no=1207", "국토안전관리원 · 국토교통부"),
-    (["지하안전"], "https://www.jis.go.kr/community/boa01005_popup.do?board_no=1207", "국토안전관리원 · 국토교통부"),
-    (["철도공사", "코레일"], "https://info.korail.com/info/selectBbsNttView.do?key=911&bbsNo=199&nttNo=26949&searchCtgry=&searchCnd=all&searchKrwd=&integrDeptCode=&pageIndex=1", "한국철도공사"),
+    (["추락사고", "예방"], "https://www.safecontest.kr/summary", "국토교통부 · 고용노동부 · 한국산업안전보건공단"),
+    (["추락사고예방"], "https://www.safecontest.kr/summary", "국토교통부 · 고용노동부 · 한국산업안전보건공단"),
+    (["추락", "예방"], "https://www.safecontest.kr/summary", "국토교통부 · 고용노동부 · 한국산업안전보건공단"),
+    (["물산업", "창업대전"], "https://www.kwater.or.kr/wis/wq/index.do?w2xPath=/wis/ui/index.xml&&ntfDivCd=PBLANC&&targetMenuId=WISWS02120701&&tabId=203030&&pbanno=WS260098", "환경부 · 한국수자원공사"),
+    (["물산업혁신"], "https://www.kwater.or.kr/wis/wq/index.do?w2xPath=/wis/ui/index.xml&&ntfDivCd=PBLANC&&targetMenuId=WISWS02120701&&tabId=203030&&pbanno=WS260098", "환경부 · 한국수자원공사"),
     (["철도공단", "유휴부지"], "https://www.kr.or.kr/boardCnts/view.do?boardID=52&boardSeq=1122113", "국가철도공단"),
     (["유휴부지"], "https://www.kr.or.kr/boardCnts/view.do?boardID=52&boardSeq=1122113", "국가철도공단"),
     (["sk에코플랜트", "콘테크"], "https://innobranch.com/front/challenge/detail/1451", "SK에코플랜트"),
-    (["미트업", "sk에코플랜트"], "https://innobranch.com/front/challenge/detail/1451", "SK에코플랜트"),
-    (["콘테크", "삼성"], "https://www.samsungena.com/kr/newsroom/news/view?idx=15836", "삼성물산 · 삼성E&A · 삼성중공업"),
-    (["혁신제품", "국토교통"], "https://hub.kaia.re.kr", "국토교통과학기술진흥원"),
-    (["혁신제품"], "https://hub.kaia.re.kr", "국토교통과학기술진흥원"),
-    (["평택항", "항만공사"], "https://www.gppc.or.kr", "경기평택항만공사"),
-    (["대경 스마트건설", "스마트건설 대상"], "https://www.dnews.co.kr", "대한경제 (스마트건설대상)"),
-    (["스마트건설 대상"], "https://www.dnews.co.kr", "대한경제 (스마트건설대상)")
+    (["미트업", "sk에코플랜트"], "https://innobranch.com/front/challenge/detail/1451", "SK에코플랜트")
+]
+
+# 2-1. 과거 개최 또는 이미 마감되어 피드 노출이 영구 배제된 공모전 (Blacklist)
+EXCLUDED_PAST_CONTESTS = [
+    "삼성 EPC 콘테크 공모전 (2026.09.04 마감 완료)",
+    "지하안전관리 우수사례 및 아이디어 공모전 (2025년 과거 공모전)",
+    "코레일 차세대 KTX & 인프라 아이디어 공모전 (2026.07.30 마감 완료)",
+    "K-water 대국민 물 빅데이터 공모전 (2021년 과거 공모전)",
+    "스마트건설 챌린지 (2026년 공식 신규 요강 미발표 상태)"
 ]
 
 # 3. 비토목 및 부적격 공고 제외 키워드
