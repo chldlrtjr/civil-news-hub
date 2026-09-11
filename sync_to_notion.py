@@ -3,6 +3,7 @@
 """
 Notion 자동 포트폴리오 동기화 스크립트
 NOTION_PORTFOLIO_GUIDE.md 내용을 Notion 공식 API를 통해 지정한 페이지로 자동 등록/동기화합니다.
+기존 블록을 깔끔히 덮어쓰기(초기화 후 재등록)하여 중복 누적을 방지합니다.
 """
 
 import os
@@ -11,6 +12,7 @@ import re
 import json
 import urllib.request
 import urllib.error
+from concurrent.futures import ThreadPoolExecutor
 
 PAGE_ID = "3d5009a14e198038ba3ff62b74d18e03"
 FILE_PATH = os.path.join(os.path.dirname(__file__), "NOTION_PORTFOLIO_GUIDE.md")
@@ -72,7 +74,6 @@ def parse_markdown_to_blocks(md_content):
             return
         rows = []
         for l in table_lines:
-            # 구분행 (|---|---|) 건너뛰기
             if re.match(r"^\|?(\s*:?-+:?\s*\|?)+$", l.strip()):
                 continue
             cells = [c.strip() for c in l.strip().strip("|").split("|")]
@@ -104,7 +105,6 @@ def parse_markdown_to_blocks(md_content):
     for line in lines:
         stripped = line.strip()
 
-        # 표(Table) 라인 수집
         if stripped.startswith("|") and stripped.endswith("|"):
             table_lines.append(stripped)
             continue
@@ -112,7 +112,6 @@ def parse_markdown_to_blocks(md_content):
             if table_lines:
                 flush_table()
 
-        # 코드 블록 처리
         if stripped.startswith("```"):
             if in_code_block:
                 code_text = "\n".join(code_lines)[:2000]
@@ -141,7 +140,6 @@ def parse_markdown_to_blocks(md_content):
         if not stripped:
             continue
 
-        # 구분선
         if stripped in ["---", "***", "___"]:
             blocks.append({
                 "object": "block",
@@ -150,7 +148,6 @@ def parse_markdown_to_blocks(md_content):
             })
             continue
 
-        # 헤딩 1
         if stripped.startswith("# "):
             content = stripped[2:].strip()
             blocks.append({
@@ -160,7 +157,6 @@ def parse_markdown_to_blocks(md_content):
             })
             continue
 
-        # 헤딩 2
         if stripped.startswith("## "):
             content = stripped[3:].strip()
             blocks.append({
@@ -170,7 +166,6 @@ def parse_markdown_to_blocks(md_content):
             })
             continue
 
-        # 헤딩 3
         if stripped.startswith("### "):
             content = stripped[4:].strip()
             blocks.append({
@@ -180,7 +175,6 @@ def parse_markdown_to_blocks(md_content):
             })
             continue
 
-        # 인용구 / 콜아웃
         if stripped.startswith("> "):
             content = stripped[2:].strip()
             blocks.append({
@@ -193,7 +187,6 @@ def parse_markdown_to_blocks(md_content):
             })
             continue
 
-        # 불릿 리스트
         if stripped.startswith("- ") or stripped.startswith("* "):
             content = stripped[2:].strip()
             blocks.append({
@@ -203,7 +196,6 @@ def parse_markdown_to_blocks(md_content):
             })
             continue
 
-        # 번호 리스트
         num_match = re.match(r"^\d+\.\s+(.*)", stripped)
         if num_match:
             content = num_match.group(1).strip()
@@ -214,18 +206,54 @@ def parse_markdown_to_blocks(md_content):
             })
             continue
 
-        # 일반 본문 문단
         blocks.append({
             "object": "block",
             "type": "paragraph",
             "paragraph": {"rich_text": parse_inline(stripped)}
         })
 
-    # 루프 종료 후 남은 표 flush
     if table_lines:
         flush_table()
 
     return blocks
+
+def clear_existing_blocks(token, page_id):
+    """
+    페이지에 이미 존재하는 블록들을 정리(Archive)하여 중복 생성을 원천 방지
+    """
+    headers = {"Authorization": f"Bearer {token}", "Notion-Version": "2022-06-28"}
+    url = f"https://api.notion.com/v1/blocks/{page_id}/children"
+    block_ids = []
+    start_cursor = None
+
+    while True:
+        target_url = url + (f"?start_cursor={start_cursor}" if start_cursor else "")
+        req = urllib.request.Request(target_url, headers=headers)
+        try:
+            with urllib.request.urlopen(req) as resp:
+                data = json.loads(resp.read().decode())
+                for b in data.get("results", []):
+                    block_ids.append(b["id"])
+                if data.get("has_more") and data.get("next_cursor"):
+                    start_cursor = data["next_cursor"]
+                else:
+                    break
+        except Exception:
+            break
+
+    if block_ids:
+        print(f"🧹 기존 {len(block_ids)}개 블록을 정리하여 최신 내용으로 교체 준비 중...")
+        def del_block(bid):
+            del_req = urllib.request.Request(f"https://api.notion.com/v1/blocks/{bid}", headers=headers, method="DELETE")
+            try:
+                with urllib.request.urlopen(del_req) as r:
+                    return True
+            except Exception:
+                return False
+
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            list(executor.map(del_block, block_ids))
+        print("✨ 기존 블록 정리 완료!")
 
 def append_blocks_to_notion(token, page_id, blocks):
     url = f"https://api.notion.com/v1/blocks/{page_id}/children"
@@ -235,7 +263,7 @@ def append_blocks_to_notion(token, page_id, blocks):
         "Notion-Version": "2022-06-28"
     }
 
-    chunk_size = 40  # 안정적인 일괄 업로드 청크 크기
+    chunk_size = 40
     total_chunks = (len(blocks) + chunk_size - 1) // chunk_size
     print(f"📦 총 {len(blocks)}개 노션 블록(표, 서식, 코드블록 포함) 변환 완료! ({total_chunks}회 분할 업로드 시작)")
 
@@ -252,11 +280,6 @@ def append_blocks_to_notion(token, page_id, blocks):
         except urllib.error.HTTPError as e:
             err_body = e.read().decode("utf-8")
             print(f"❌ HTTP Error {e.code}: {err_body}")
-            if e.code == 404:
-                print("\n⚠️ [연결 필요] 노션 페이지에 해당 API Integration이 연결되지 않았습니다.")
-                print("👉 해결 방법: 노션 웹 페이지 우측 상단 '···' 클릭 -> '연결(Connect to)' -> 발급한 Integration 선택")
-            elif e.code == 401:
-                print("\n⚠️ [인증 오류] 노션 API 토큰이 유효하지 않습니다.")
             return False
         except Exception as e:
             print(f"❌ 네트워크 오류: {e}")
@@ -266,8 +289,13 @@ def append_blocks_to_notion(token, page_id, blocks):
 
 def main():
     token = os.environ.get("NOTION_TOKEN")
-    if len(sys.argv) > 1:
-        token = sys.argv[1].strip()
+    append_mode = False
+    
+    for arg in sys.argv[1:]:
+        if arg == "--append":
+            append_mode = True
+        elif not token:
+            token = arg.strip()
 
     if not token:
         print("=" * 60)
@@ -285,7 +313,10 @@ def main():
     with open(FILE_PATH, "r", encoding="utf-8") as f:
         content = f.read()
 
-    print(f"🚀 노션 페이지(ID: {PAGE_ID})로 포트폴리오 업로드를 시작합니다...")
+    print(f"🚀 노션 페이지(ID: {PAGE_ID}) 동기화를 시작합니다...")
+    if not append_mode:
+        clear_existing_blocks(token, PAGE_ID)
+
     blocks = parse_markdown_to_blocks(content)
     success = append_blocks_to_notion(token, PAGE_ID, blocks)
 
