@@ -160,6 +160,14 @@ COMPANY_REGISTRY = {
         "link": "https://www.kict.re.kr/announcementRecruitWeb/getAnnouncementRecruitList.es?mid=a10513030000",
         "benefits": ["정부출연연구원 복지", "연구인센티브", "사택 지원", "종합검진", "해외연수 기회"],
         "default_steps": ["서류전형", "연구실적 심사", "1차 전공세미나 면접", "2차 종합면접", "최종합격"]
+    },
+    "국토연구원": {
+        "category_id": "safety_research",
+        "category_name": "전문기술·안전·연구",
+        "badge_color": "amber",
+        "link": "http://recruit.krihs.re.kr/ext/rec/rec_5010.do?ANNC_NO=26082701&SUPT_FLD_CD=0&DEG=0",
+        "benefits": ["정부출연연구원 복지", "연구활동지원비", "사택 지원", "종합건강검진", "유연근무제"],
+        "default_steps": ["서류전형 (6배수)", "면접전형 (직무+인성)", "신체검사", "최종합격"]
     }
 }
 
@@ -426,24 +434,24 @@ VERIFIED_JOBS_MASTER = [
         "steps": ["서류전형", "실무면접", "임원면접", "최종합격"]
     },
     {
-        "id": "job-kalis-2026-02",
-        "company": "국토안전관리원",
+        "id": "job-krihs-2026-03",
+        "company": "국토연구원",
         "category_id": "safety_research",
         "category_name": "전문기술·안전·연구",
         "badge_color": "amber",
-        "title": "2026년 하반기 토목시설 안전진단 및 지반안전 정규직 채용",
-        "fields": ["교량·터널 정밀안전진단", "지하안전평가 및 싱크홀 조사", "스마트 건설안전 모니터링"],
-        "career": "신입 / 경력 (3년 이상)",
-        "education": "학력무관 (블라인드)",
-        "location": "경남 진주 본원 및 전국 권역지사 (수도권, 강원, 충청, 호남, 영남)",
-        "period": "2026.09.12 ~ 09.29 (18:00 마감)",
-        "deadline_date": "2026-09-29",
-        "salary": "신입 초임 연 4,120만원 수준",
-        "tags": ["안전공공기관", "정밀안전진단", "지하안전", "블라인드 채용"],
-        "link": "https://kalis.incruit.com",
-        "summary": "국가 주요 1종 인프라 시설물의 붕괴 예방과 지하안전관리를 담당하는 국토교통부 산하 준정부기관 정규직 공채입니다.",
-        "qualifications": "토목기사 필수, 안전진단 전문기관 실무 경력자 우대, 시설물안전법에 따른 책임기술자 교육 이수자 우대",
-        "steps": ["서류전형", "필기시험 (NCS+안전진단공학)", "1차 직무면접", "2차 종합인성면접", "신체검사", "최종합격"]
+        "title": "2026년 제3차 청년인턴 공개채용 (국토·인프라 연구지원)",
+        "fields": ["국토·도시계획 연구", "공간인프라 데이터 분석", "토목·환경 GIS 기술지원"],
+        "career": "청년인턴 (체험형)",
+        "education": "만 15세 이상 ~ 만 34세 이하 청년",
+        "location": "세종특별자치시 국토연구원 본원",
+        "period": "2026.08.31 ~ 09.14 (18:00 마감)",
+        "deadline_date": "2026-09-14",
+        "salary": "월 210만원 수준 (4대보험 및 중식 지원)",
+        "tags": ["정부출연연구기관", "공식공고문 PDF 검증", "공간인프라", "세종 본원"],
+        "link": "http://recruit.krihs.re.kr/ext/rec/rec_5010.do?ANNC_NO=26082701&SUPT_FLD_CD=0&DEG=0",
+        "summary": "국토교통부 산하 싱크탱크 국토연구원에서 국토·도시인프라 계획 및 GIS 공간데이터 분석 연구를 지원할 청년인재를 모집합니다.",
+        "qualifications": "청년고용촉진 특별법상 청년(만 15세~34세), 도시계획/토목/지리정보 등 관련 전공자 우대",
+        "steps": ["서류전형 (6배수)", "면접전형 (직무+인성)", "최종합격"]
     },
     {
         "id": "job-kict-2026-02",
