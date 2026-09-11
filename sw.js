@@ -1,5 +1,5 @@
 // Civil News Hub Service Worker (PWA Offline & Instant Load Support)
-const CACHE_NAME = 'civil-news-hub-v1.0.25';
+const CACHE_NAME = 'civil-news-hub-v1.0.26';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -43,6 +43,22 @@ self.addEventListener('fetch', (event) => {
 
   // 데이터(json/api) 요청: 네트워크 우선 (최신성 유지), 실패 시 캐시 폴백
   if (url.pathname.includes('/data/') || url.pathname.includes('/api/')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response && response.status === 200) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // HTML 네비게이션 요청: 네트워크 우선 (항상 최신 DOM 및 스크립트 버전 즉시 반영), 오프라인 시에만 캐시 폴백
+  if (event.request.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname === '/' || url.pathname === '/mobile') {
     event.respondWith(
       fetch(event.request)
         .then((response) => {

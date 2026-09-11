@@ -227,7 +227,7 @@ body.chatbot-open-lock {
 }
 
 /* 모바일 전용 하단 네비게이션 바 (Mobile Bottom Navigation Bar) 명시적 규격 고정 */
-@media (max-width: 639px) {
+@media (max-width: 767px) {
   #mobileBottomNav {
     display: flex !important;
     position: fixed !important;
@@ -238,7 +238,7 @@ body.chatbot-open-lock {
     z-index: 40 !important;
   }
 }
-@media (min-width: 640px) {
+@media (min-width: 768px) {
   #mobileBottomNav {
     display: none !important;
   }

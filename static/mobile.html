@@ -11,8 +11,8 @@
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   
   <!-- 파비콘 -->
-  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="alternate icon" href="../favicon.svg">
+  <link rel="icon" type="image/svg+xml" href="./static/favicon.svg">
+  <link rel="alternate icon" href="./favicon.svg">
 
   <script>
     tailwind.config = {
@@ -133,8 +133,8 @@
   </header>
 
   <!-- 메인 갤럭시 디바이스 뷰어 컨테이너 -->
-  <main class="flex-1 flex items-center justify-center p-4 sm:p-8 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-    <div id="phoneWrapper" class="relative transition-all duration-300 flex flex-col items-center galaxy-frame rounded-[40px] bg-slate-900 overflow-hidden" style="width: 412px;">
+  <main class="flex-1 flex flex-col items-center justify-start p-3 sm:p-6 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 overflow-y-auto">
+    <div id="phoneWrapper" class="relative transition-all duration-300 flex flex-col items-center galaxy-frame rounded-[40px] bg-slate-900 overflow-hidden my-auto" style="width: 412px;">
       
       <!-- 갤럭시 One UI 상단 상태 표시줄 & 인피니티-O 펀치홀 카메라 -->
       <div class="w-full bg-[#0f172a] pt-3 pb-2 px-6 flex items-center justify-between border-b border-slate-800/80 select-none">
@@ -162,7 +162,7 @@
 
       <!-- 갤럭시 화면 본체 (iframe) -->
       <div id="screenContainer" class="w-full bg-slate-950 overflow-hidden relative shadow-inner" style="height: 800px;">
-        <iframe id="mobileFrame" src="./index.html?v=20260911_0630#news" title="Civil News Hub Galaxy Mobile View"></iframe>
+        <iframe id="mobileFrame" src="./index.html?v=20260911_1935#news" title="Civil News Hub Galaxy Mobile View"></iframe>
       </div>
 
       <!-- 갤럭시 One UI 하단 네비게이션 제스처 바 -->
@@ -267,7 +267,41 @@
       history.replaceState(null, null, `#${tab}`);
     }
 
+    let currentDeviceWidth = 412;
+    let currentDeviceHeight = 915;
+
+    function fitPhoneToViewport() {
+      const wrapper = document.getElementById('phoneWrapper');
+      if (!wrapper) return;
+      const header = document.querySelector('header');
+      const footer = document.querySelector('footer');
+      const headerH = header ? header.offsetHeight : 60;
+      const footerH = footer ? footer.offsetHeight : 40;
+      const padding = 32;
+
+      // 브라우저 화면 높이에서 상하 요소들을 제외한 가용 높이 계산
+      const availableH = window.innerHeight - headerH - footerH - padding;
+      const targetH = currentDeviceHeight || 915;
+
+      if (availableH < targetH && availableH > 360) {
+        const scale = Math.min(1, Math.max(0.55, (availableH / targetH) * 0.98));
+        wrapper.style.transform = `scale(${scale})`;
+        wrapper.style.transformOrigin = 'top center';
+        const reduced = targetH * (1 - scale);
+        wrapper.style.marginBottom = `-${reduced}px`;
+      } else {
+        wrapper.style.transform = 'none';
+        wrapper.style.transformOrigin = 'top center';
+        wrapper.style.marginBottom = '0px';
+      }
+    }
+
+    window.addEventListener('resize', fitPhoneToViewport);
+    window.addEventListener('load', fitPhoneToViewport);
+
     function setDeviceSize(width, height, name) {
+      currentDeviceWidth = width;
+      currentDeviceHeight = height;
       phoneWrapper.style.width = width + 'px';
       const screenHeight = height - 70; // 상하단 베젤 및 제스처 바 차감
       screenContainer.style.height = screenHeight + 'px';
@@ -281,6 +315,8 @@
       if (width === 384) document.getElementById('sizeBtnFlip').className = 'px-2.5 py-1 rounded bg-blue-600 text-white font-bold transition shadow-xs cursor-pointer';
       if (width === 412) document.getElementById('sizeBtnS24').className = 'px-2.5 py-1 rounded bg-blue-600 text-white font-bold transition shadow-xs cursor-pointer';
       if (width === 432) document.getElementById('sizeBtnUltra').className = 'px-2.5 py-1 rounded bg-blue-600 text-white font-bold transition shadow-xs cursor-pointer';
+
+      fitPhoneToViewport();
     }
 
     function reloadFrame() {
@@ -289,7 +325,7 @@
       try {
         frame.contentWindow.location.reload();
       } catch (e) {
-        frame.src = `./index.html#${currentTab}`;
+        frame.src = `./index.html?v=20260911_1935#${currentTab}`;
       }
       setTimeout(() => {
         if (icon) icon.classList.remove('animate-spin');

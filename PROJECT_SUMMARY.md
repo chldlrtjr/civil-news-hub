@@ -358,6 +358,31 @@ mindmap
   3. **PWA Service Worker 캐시 갱신 (`civil-news-hub-v1.0.25`)**:
      - 캐시 버스팅 파라미터(`?v=20260911_0630`) 갱신 및 캐시 키 교체로 클라이언트 기기에 즉시 반영.
 
+#### 27) 뷰포트 맞춤 동적 스케일링, 모바일 하단 네비게이션 바 상시 노출 및 캐시 방지 전면화 (ver 1.0.26)
+- **발생 문제 분석**:
+  1. **데스크탑 모바일 시뮬레이터(`/mobile`) 화면 하단 잘림(Clipping)**:
+     - 고정 915px 높이로 렌더링되던 갤럭시 프레임이 데스크탑/노트북(1080p 해상도, 가용 높이 약 800~900px)에서 화면 하단 밖으로 150~200px 밀려나며, 프레임 하단의 제스처 바 및 `#mobileBottomNav`가 모니터 밖으로 잘림.
+     - iframe 내부로 마우스 휠 이벤트가 포커싱되어 외부 페이지 스크롤이 불가능하여 사용자가 하단바를 볼 수 없었음.
+  2. **모바일 브라우저 PWA Service Worker 및 Nginx 캐시 지속(Stale SW Cache)**:
+     - Android 크롬 등 실제 모바일 기기에서 PWA Service Worker가 `index.html`을 캐시 우선(Cache-First)으로 서빙하여, 로컬 서버 재접속 시 이전 버전 캐시가 표시되며 하단바 갱신 내역이 반영되지 않는 현상 발생.
+  3. **반응형 브레이크포인트(640px vs 768px) 제한**:
+     - 기존 `sm:hidden`(640px 기준)으로 설정되어 있어 작은 창 모드나 프리뷰 창에서 640~767px 사이 구간일 때 하단바가 숨겨지는 문제.
+- **해결 및 최적화 내역**:
+  1. **모바일 시뮬레이터 뷰포트 맞춤 동적 스케일링 (`fitPhoneToViewport`)**:
+     - `mobile.html` 및 `static/mobile.html`에 브라우저 높이(`window.innerHeight`)와 상단 툴바, 하단 안내를 계산하여 화면 높이에 맞춰 프레임을 자동 축소하는 `fitPhoneToViewport()` 동적 스케일링(`transform: scale(...)`, `transformOrigin: top center`, `marginBottom` 오프셋) 구현.
+     - 어떤 모니터, 노트북 해상도에서도 상단 펀치홀 카메라부터 최하단 `#mobileBottomNav` 및 제스처 바까지 100% 한 화면에 잘림 없이 노출.
+     - `resize` 및 `load` 이벤트에 바인딩하여 창 크기 조절 시 즉시 반응.
+  2. **모바일 네비게이션 브레이크포인트 표준화 (`md:` 768px)**:
+     - `index.html`, `static/index.html`의 `#mobileBottomNav`를 `md:hidden`으로, 데스크탑 헤더를 `hidden md:block`으로 변경.
+     - `style.css`의 명시적 미디어 쿼리를 `@media (max-width: 767px)`로 상향하여 태블릿 세로 모드 및 모든 스마트폰 기기에서 상시 노출 보장.
+     - 푸터 영역에 `pb-24 md:pb-6`를 적용하여 스크롤 최하단 도달 시 하단바에 의한 콘텐츠 가림 현상 방지.
+  3. **Service Worker Network-First 전략 개편 및 캐시 무효화 (`civil-news-hub-v1.0.26`)**:
+     - `sw.js` 및 `static/sw.js`에서 네비게이션 및 HTML 요청(`event.request.mode === 'navigate'`, `*.html`, `/`, `/mobile`)에 대해 **Network First** 전략을 적용하여 새로고침 시 항상 서버의 최신 DOM 및 스크립트가 즉시 반영되도록 구현 (오프라인 시에만 캐시 폴백).
+     - `CACHE_NAME`을 `civil-news-hub-v1.0.26`으로 갱신하여 기존 캐시 완전 제거.
+  4. **Nginx HTML 실시간 no-cache 헤더 전면 적용**:
+     - `/`, `/mobile`, `*.html` 라우트에 `Cache-Control: no-cache, no-store, must-revalidate` 및 `Pragma: no-cache`를 설정하고 nginx 재로드 완료.
+     - 모든 스크립트/CSS 로드 쿼리스트링 파라미터를 `?v=20260911_1935`로 일괄 동기화.
+
 ---
 
 ## 🌿 3. Git 브랜치 현황

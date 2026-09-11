@@ -35,7 +35,7 @@
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 
   <!-- 커스텀 스타일 (테일윈드 보완) -->
-  <link rel="stylesheet" href="./style.css?v=20260911_0630">
+  <link rel="stylesheet" href="./style.css?v=20260911_1935">
 
   <script>
     tailwind.config = {
@@ -64,7 +64,7 @@
 <body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
 
   <!-- 상단 네비게이션 헤더 (SPA 탭 전환: 데스크탑 전용, 모바일에서는 하단바로 대체) -->
-  <header class="hidden sm:block sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 transition-colors shadow-sm">
+  <header class="hidden md:block sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 transition-colors shadow-sm">
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-14 sm:h-16 gap-1">
         
@@ -926,12 +926,15 @@
     </div>
   </div>
 
-  <!-- 푸터 -->
-  <footer class="mt-12 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-6 transition-colors pb-24 sm:pb-8">
+  <!-- 푸터 (표준 규격) -->
+  <footer class="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-6 pb-24 md:pb-6 transition-colors">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-500 dark:text-slate-400 space-y-2">
-      <p>토목 뉴스 브리핑 & 채용·공모전 올인원 허브 · Civil News Hub</p>
-      <p>매일 아침 주요 포털, 공공기관 채용 및 공식 공모전 요강을 자동으로 수집 및 정제합니다.</p>
-      <div class="pt-2 flex items-center justify-center">
+      <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+        <span>© 2026 Civil News Hub. All rights reserved.</span>
+        <span>•</span>
+        <span>AI 기반 실시간 토목 뉴스 & 공모전 & 채용 정보 브리핑 서비스</span>
+      </div>
+      <div class="flex items-center justify-center gap-2 pt-1">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           마지막 업데이트: <strong id="footerLastUpdated" class="text-slate-700 dark:text-slate-300 ml-1">확인 중...</strong>
@@ -941,7 +944,7 @@
   </footer>
 
   <!-- 모바일 전용 하단 고정 네비게이션 바 (Mobile Bottom Navigation Bar) -->
-  <nav id="mobileBottomNav" class="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800/80 px-2 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] flex items-center justify-around shadow-lg transition-colors" aria-label="모바일 하단 네비게이션">
+  <nav id="mobileBottomNav" class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800/80 px-2 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] flex items-center justify-around shadow-lg transition-colors" aria-label="모바일 하단 네비게이션">
     <!-- 1. 토목 뉴스 -->
     <button id="mobileTabNews" type="button" onclick="switchMainTab('news')" class="flex-1 flex flex-col items-center justify-center py-1 px-1 text-blue-600 dark:text-blue-400 font-bold transition cursor-pointer" title="토목 뉴스 브리핑">
       <i data-lucide="newspaper" class="w-5 h-5 mb-0.5"></i>
@@ -1016,9 +1019,9 @@
   </div>
 
   <!-- 프론트엔드 스크립트 로드 (SPA 마스터 컨트롤러 & 채용 & 공모전 & AI 챗봇) -->
-  <script src="./app.js?v=20260911_0630"></script>
-  <script src="./jobs.js?v=20260911_0630"></script>
-  <script src="./contests.js?v=20260911_0630"></script>
-  <script src="./chatbot.js?v=20260911_0630"></script>
+  <script src="./app.js?v=20260911_1935"></script>
+  <script src="./jobs.js?v=20260911_1935"></script>
+  <script src="./contests.js?v=20260911_1935"></script>
+  <script src="./chatbot.js?v=20260911_1935"></script>
 </body>
 </html>
