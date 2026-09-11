@@ -121,13 +121,29 @@ async function loadJobsData() {
   }
 }
 
-// 3. D-Day 계산 헬퍼
-function calculateDday(deadlineStr) {
+// 3. D-Day 계산 헬퍼 (마감 시간 분 단위까지 정밀 판정)
+function calculateDday(deadlineStr, periodStr) {
   if (!deadlineStr || deadlineStr === '상시' || deadlineStr.includes('상시')) {
     return { text: '상시접수', days: 999, isUrgent: false, isClosed: false };
   }
 
   try {
+    const now = new Date();
+
+    // 1. 공고 기간에 상세 마감 시간(예: 18:00 마감, 17:00 마감, 15:00 마감 등)이 명시된 경우 시간 단위 정밀 검증
+    if (periodStr) {
+      const timeMatch = periodStr.match(/(\d{1,2}):(\d{2})\s*마감/);
+      if (timeMatch) {
+        const parts = deadlineStr.split('-');
+        if (parts.length === 3) {
+          const deadlineDt = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10), parseInt(timeMatch[1], 10), parseInt(timeMatch[2], 10), 0);
+          if (now > deadlineDt) {
+            return { text: '접수마감', days: -1, isUrgent: false, isClosed: true };
+          }
+        }
+      }
+    }
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -152,7 +168,7 @@ function calculateDday(deadlineStr) {
 // 3-1. 긴급(D-3) 마감 임박 공고 추출
 function getUrgentJobs() {
   return allJobs.filter(j => {
-    const dday = calculateDday(j.deadline_date);
+    const dday = calculateDday(j.deadline_date, j.period);
     return !dday.isClosed && dday.isUrgent;
   });
 }
@@ -413,7 +429,7 @@ function filterAndSortJobs() {
   // (2-2) 마감 임박 (D-3) 퀵 필터
   if (isJobUrgentFilterActive) {
     list = list.filter(j => {
-      const ddayInfo = calculateDday(j.deadline_date);
+      const ddayInfo = calculateDday(j.deadline_date, j.period);
       return !ddayInfo.isClosed && ddayInfo.isUrgent;
     });
   }
@@ -434,15 +450,15 @@ function filterAndSortJobs() {
 
   // (4) 마감된 공고 제외 (GEMINI.md 원칙: 접수마감 항목 내림)
   list = list.filter(j => {
-    const ddayInfo = calculateDday(j.deadline_date);
+    const ddayInfo = calculateDday(j.deadline_date, j.period);
     return !ddayInfo.isClosed;
   });
 
   // (5) 정렬
   if (currentJobSort === 'deadline') {
     list.sort((a, b) => {
-      const da = calculateDday(a.deadline_date).days;
-      const db = calculateDday(b.deadline_date).days;
+      const da = calculateDday(a.deadline_date, a.period).days;
+      const db = calculateDday(b.deadline_date, b.period).days;
       return da - db;
     });
   } else if (currentJobSort === 'salary_high') {
@@ -498,7 +514,7 @@ function getJobRegionBadge(locStr) {
 // 6. 공고 카드 HTML 생성
 function renderJobCard(job) {
   const isBookmarked = jobBookmarks.has(job.id);
-  const ddayInfo = calculateDday(job.deadline_date);
+  const ddayInfo = calculateDday(job.deadline_date, job.period);
   const careerBadge = getJobCareerBadge(job.career);
   const regionBadge = getJobRegionBadge(job.location);
 
@@ -745,7 +761,7 @@ function openJobModal(jobId) {
   const modalContent = document.getElementById('jobModalContent');
   if (!modal || !modalContent) return;
 
-  const ddayInfo = calculateDday(job.deadline_date);
+  const ddayInfo = calculateDday(job.deadline_date, job.period);
 
   modalContent.innerHTML = `
     <!-- 모달 헤더 -->
