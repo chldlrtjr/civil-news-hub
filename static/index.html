@@ -35,7 +35,7 @@
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 
   <!-- 커스텀 스타일 (테일윈드 보완) -->
-  <link rel="stylesheet" href="./style.css?v=20260911_2155">
+  <link rel="stylesheet" href="./style.css?v=20260911_2200">
 
   <script>
     tailwind.config = {
@@ -150,28 +150,10 @@
       </h2>
     </div>
 
-    <!-- 검색 입력창 -->
-    <div class="mt-5 mb-4 sm:mb-0">
-      <div class="relative w-full">
-        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-          <i data-lucide="search" class="w-5 h-5"></i>
-        </div>
-        <input
-          type="text"
-          id="newsSearchInput"
-          placeholder="기사 제목, 내용 또는 언론사명으로 검색 (예: GTX, 싱크홀, 교량, 시공사 등)"
-          class="w-full pl-10 pr-10 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition shadow-sm"
-        />
-        <button id="clearNewsSearchBtn" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hidden cursor-pointer">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
-      </div>
-
-      <!-- 오늘의 토목 핵심 키워드(#) 필터 칩 바 -->
-      <div class="mt-3 overflow-x-auto pb-1 scrollbar-none" style="touch-action: pan-x; overscroll-behavior: none; overscroll-behavior-x: none;">
-        <div id="newsKeywordChips" class="flex items-center gap-1.5 text-xs" style="touch-action: pan-x;">
-          <!-- JS 동적 렌더링 -->
-        </div>
+    <!-- 오늘의 토목 핵심 키워드(#) 필터 칩 바 -->
+    <div class="mt-3.5 mb-2 overflow-x-auto pb-1 scrollbar-none" style="touch-action: pan-x; overscroll-behavior: none; overscroll-behavior-x: none;">
+      <div id="newsKeywordChips" class="flex items-center gap-1.5 text-xs" style="touch-action: pan-x;">
+        <!-- JS 동적 렌더링 -->
       </div>
     </div>
 
@@ -235,23 +217,6 @@
       </h2>
     </div>
 
-    <!-- 검색 입력창 -->
-    <div class="mt-5 mb-4 sm:mb-0">
-      <div class="relative w-full">
-        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-          <i data-lucide="search" class="w-5 h-5"></i>
-        </div>
-        <input
-          type="text"
-          id="jobSearchInput"
-          placeholder="기업명, 직무(토목시공, 구조설계, 지반, 철도 등), 근무지, 우대조건 검색"
-          class="w-full pl-10 pr-10 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition shadow-sm"
-        />
-        <button id="clearJobSearchBtn" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hidden cursor-pointer">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
-      </div>
-    </div>
 
     <!-- 카테고리 탭 (상단 고정 Sticky Navigation - 시안 B: 미니멀 언더라인 바) -->
     <div class="sticky top-0 sm:top-16 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-0 mt-0 mb-4 sm:my-4 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 shadow-xs transition-colors">
@@ -360,26 +325,6 @@
         <i data-lucide="trophy" class="w-5 h-5 text-amber-500"></i>
         토목 공모전 & 경진대회 공고
       </h2>
-    </div>
-
-
-
-    <!-- 검색 입력창 (토목 뉴스 기반 풀 와이드 100% 통일) -->
-    <div class="mt-5 mb-4 sm:mb-0">
-      <div class="relative w-full">
-        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-          <i data-lucide="search" class="w-5 h-5"></i>
-        </div>
-        <input
-          type="text"
-          id="contestSearchInput"
-          placeholder="공모전 제목, 주최기관, 키워드 검색 (예: 도로공사, 수자원, BIM, 안전)"
-          class="w-full pl-10 pr-10 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition shadow-sm"
-        />
-        <button id="clearContestSearchBtn" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hidden cursor-pointer" title="검색어 지우기">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
-      </div>
     </div>
 
     <!-- 분야(카테고리) 탭 (상단 고정 Sticky Navigation - 시안 B: 미니멀 언더라인 바 풀 블리드 통일) -->
@@ -995,10 +940,10 @@
   </div>
 
   <!-- 프론트엔드 스크립트 로드 (SPA 마스터 컨트롤러 & 채용 & 공모전 & AI 챗봇) -->
-  <script src="./app.js?v=20260911_2155"></script>
-  <script src="./jobs.js?v=20260911_2155"></script>
-  <script src="./contests.js?v=20260911_2155"></script>
-  <script src="./chatbot.js?v=20260911_2155"></script>
+  <script src="./app.js?v=20260911_2200"></script>
+  <script src="./jobs.js?v=20260911_2200"></script>
+  <script src="./contests.js?v=20260911_2200"></script>
+  <script src="./chatbot.js?v=20260911_2200"></script>
 
   <script>
     if ('serviceWorker' in navigator && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
