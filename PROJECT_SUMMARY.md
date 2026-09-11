@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.0.22` (누적 수정 22회 반영 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.0.23` (누적 수정 23회 반영 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -311,6 +311,19 @@ mindmap
      - 챗봇 닫힘 시(`toggleChatbotWindow(false)`), 원래의 스크롤 위치(`scrollY`)로 오차 없이 완벽 복원하여 화면 튕김 현상 방지.
      - 모바일 전용 딤 배경(`chatbotBackdrop`)을 추가하여 바깥 터치 시 스크롤 차단(`touchmove.preventDefault()`) 및 부드러운 원터치 닫기 지원.
      - ESC 키 입력 및 창 리사이즈 대응 추가.
+
+#### 24) 모바일 외부망 접속 불가 원인 분석 및 24시간 보안 HTTPS 터널링(civil-tunnel.service) 구축 (ver 1.0.23)
+- **발생 문제 분석**:
+  1. JCloud 인스턴스 보안 그룹이 학생 권한으로 잠겨 있어 80/8080 인바운드 규칙 등록 불가 (`PolicyNotAuthorized`).
+  2. 전북대 학내망 방화벽에서 외부 공용망(스마트폰 LTE/5G)발 80/8080 포트 직접 인바운드 접근 차단.
+  3. 모바일 브라우저(사파리, 크롬)의 HTTPS 강제 정책으로 인한 SSL 인증서 부재 에러.
+- **해결 및 구축 내역**:
+  1. **24시간 고성능 보안 HTTPS 터널링 구축 (`civil-tunnel.service`)**:
+     - `cloudflared` (HTTP/2 프로토콜) 기반으로 Cloudflare 서울 엣지 데이터센터(`icn05`)와 1:1 암호화 아웃바운드 터널 연결.
+     - JCloud 보안 그룹/방화벽 설정 변경 없이 어디서나(외부 LTE, 5G, Wi-Fi) 접속 가능한 정식 보안 HTTPS URL 생성.
+     - systemd 서비스(`civil-tunnel.service`)로 등록하여 24시간 무중단 자동 유지 (`Restart=always`).
+  2. **모바일 브라우저 및 Gemini AI 연동 검증**:
+     - 모바일 HTTPS 요청(`/api/chat/status`, `/api/chat`)을 Nginx를 거쳐 내부 Gunicorn Flask 및 Google Gemini 3.6 Flash로 100% 정상 연동 검증.
 
 ---
 
