@@ -1026,5 +1026,16 @@
   <script src="./static/jobs.js?v=20260911_2113"></script>
   <script src="./static/contests.js?v=20260911_2113"></script>
   <script src="./static/chatbot.js?v=20260911_2113"></script>
+
+  <script>
+    if ('serviceWorker' in navigator && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        for (let r of regs) r.unregister();
+      });
+      if ('caches' in window) {
+        caches.keys().then(names => names.forEach(n => caches.delete(n)));
+      }
+    }
+  </script>
 </body>
 </html>

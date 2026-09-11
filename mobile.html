@@ -322,14 +322,20 @@
     function reloadFrame() {
       const icon = document.getElementById('reloadIcon');
       if (icon) icon.classList.add('animate-spin');
-      try {
-        frame.contentWindow.location.reload();
-      } catch (e) {
-        frame.src = `./index.html?v=20260911_2113#${currentTab}`;
-      }
+      frame.src = `./index.html?t=${Date.now()}#${currentTab}`;
       setTimeout(() => {
         if (icon) icon.classList.remove('animate-spin');
       }, 500);
+    }
+
+    // localhost 개발 환경에서 오래된 Service Worker 캐시 자동 정리
+    if ('serviceWorker' in navigator && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        for (let r of regs) r.unregister();
+      });
+      if ('caches' in window) {
+        caches.keys().then(names => names.forEach(n => caches.delete(n)));
+      }
     }
 
     // 갤럭시 실시간 시계 업데이트

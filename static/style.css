@@ -235,7 +235,10 @@ body.chatbot-open-lock {
     left: 0 !important;
     right: 0 !important;
     width: 100% !important;
-    z-index: 40 !important;
+    z-index: 9999 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
   }
 }
 @media (min-width: 768px) {
