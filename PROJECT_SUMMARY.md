@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.0.24` (누적 수정 24회 반영 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.0.25` (누적 수정 25회 반영 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -341,6 +341,22 @@ mindmap
      - `scrollToBottom()`을 멀티프레임(`requestAnimationFrame`, `setTimeout 80ms`, `250ms`)으로 강화하여 DOM 렌더링 완료 후 100% 최신 메시지 하단에 정렬.
   4. **PWA Service Worker 캐시 갱신 (`civil-news-hub-v1.0.24`)**:
      - `sw.js` 캐시명을 신규 버전으로 갱신하여 클라이언트 브라우저의 구버전 캐시 강제 삭제 및 최신 코드 자동 반영.
+
+#### 26) 모바일 하단 네비게이션 바(토목 뉴스·채용 공고·공모전·마이페이지) 복구 및 챗봇 자동 오픈 차단 (ver 1.0.25)
+- **발생 문제 분석**:
+  1. 직전 작업에서 새로고침 시 챗봇 상태 복원을 위해 `civil_chatbot_open`을 `sessionStorage`에 저장하고 로드 시 자동 오픈(`toggleChatbotWindow(true)`)하도록 설정함.
+  2. 이로 인해 사용자가 새로고침하거나 사이트에 재접속할 때마다 챗봇 바텀 시트(`h-[85vh]`, `z-50`, `bottom-0`)가 화면 맨 아래에 강제 팝업되며, 기존 모바일 전용 하단 고정 네비게이션 바(`z-40`, `bottom-0`)를 완전히 덮어씌워 하단 UI가 사라진 것처럼 보이는 현상 발생.
+  3. 모바일 하단 네비게이션 버튼 텍스트가 `뉴스`, `채용` 등 약칭으로 되어 있어 데스크탑 및 시뮬레이터 뷰어의 정식 명칭과 불일치.
+- **해결 및 최적화 내역**:
+  1. **페이지 로드/새로고침 시 챗봇 자동 오픈 전면 차단**:
+     - `chatbot.js` 및 `static/chatbot.js`의 `loadChatSession()`에서 `sessionStorage.removeItem('civil_chatbot_open')`을 적용하여 새로고침 시 챗봇이 멋대로 열려 화면 및 하단 네비게이션 바를 가리는 현상을 원천 방지함.
+     - 대화 내역(`civil_chatbot_history`)은 안전하게 유지하여 사용자가 우하단 플로팅 버튼(`AI 기사 질문`)을 눌렀을 때만 이전 대화가 즉각 렌더링되도록 구현.
+  2. **모바일 하단 네비게이션 바(`#mobileBottomNav`) 복구 및 표준 명칭 동기화**:
+     - `index.html` 및 `static/index.html`의 모바일 네비게이션 바에 `#mobileBottomNav` ID 부여 및 명시적 CSS(`display: flex !important; position: fixed !important; bottom: 0 !important; z-index: 40 !important;`)를 `style.css`에 추가하여 레이아웃 충돌 원천 방지.
+     - 4대 탭 명칭을 사용자가 요청한 정식 표준 명칭인 **`토목 뉴스`**, **`채용 공고`**, **`공모전`**, **`마이페이지`**로 100% 일치시키고 `flex-1` 균등 4분할 및 모바일 제스처 바 안전 영역(`pb-[max(0.5rem,env(safe-area-inset-bottom))]`) 적용.
+     - `app.js`의 `updateMobileNavStyles()` 내 `flex-1` 유지 적용.
+  3. **PWA Service Worker 캐시 갱신 (`civil-news-hub-v1.0.25`)**:
+     - 캐시 버스팅 파라미터(`?v=20260911_0630`) 갱신 및 캐시 키 교체로 클라이언트 기기에 즉시 반영.
 
 ---
 

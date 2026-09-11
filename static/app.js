@@ -1328,9 +1328,9 @@ function updateMobileNavStyles(activeTab) {
     if (!el) return;
     const isActive = t.key === activeTab;
     if (isActive) {
-      el.className = `relative flex flex-col items-center justify-center py-1 px-3 ${t.activeColor} font-bold transition cursor-pointer`;
+      el.className = `flex-1 relative flex flex-col items-center justify-center py-1 px-1 ${t.activeColor} font-bold transition cursor-pointer`;
     } else {
-      el.className = 'relative flex flex-col items-center justify-center py-1 px-3 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition cursor-pointer';
+      el.className = 'flex-1 relative flex flex-col items-center justify-center py-1 px-1 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition cursor-pointer';
     }
   });
 }

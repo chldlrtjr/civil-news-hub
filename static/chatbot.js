@@ -426,12 +426,14 @@
   function saveChatSession() {
     try {
       sessionStorage.setItem('civil_chatbot_history', JSON.stringify(chatHistory));
-      sessionStorage.setItem('civil_chatbot_open', isChatbotOpen ? '1' : '0');
     } catch (e) {}
   }
 
   function loadChatSession() {
     try {
+      // 페이지 로드/새로고침 시 챗봇이 자동 오픈되어 하단 네비게이션 바 및 화면을 가리지 않도록 플래그 초기화
+      sessionStorage.removeItem('civil_chatbot_open');
+
       const saved = sessionStorage.getItem('civil_chatbot_history');
       if (saved) {
         const parsed = JSON.parse(saved);
@@ -443,11 +445,6 @@
         }
       } else {
         initWelcomeMessage();
-      }
-
-      const wasOpen = sessionStorage.getItem('civil_chatbot_open') === '1';
-      if (wasOpen) {
-        toggleChatbotWindow(true);
       }
     } catch (e) {
       initWelcomeMessage();
@@ -509,7 +506,6 @@
       setTimeout(scrollToBottom, 100);
       setTimeout(scrollToBottom, 300);
       if (floatBtn) floatBtn.classList.add('hidden');
-      saveChatSession();
     } else {
       // 모바일 배경 스크롤 차단 해제
       unlockBodyScroll();
@@ -528,7 +524,6 @@
         windowEl.classList.add('hidden');
         if (floatBtn) floatBtn.classList.remove('hidden');
       }, 250);
-      saveChatSession();
     }
   }
   window.openCivilChatbot = () => toggleChatbotWindow(true);
