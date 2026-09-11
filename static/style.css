@@ -247,5 +247,20 @@ body.chatbot-open-lock {
   }
 }
 
+/* AI 챗봇 3D 로봇 플로팅 버튼 부드러운 둥실둥실 애니메이션 (Gentle Floating Effect) */
+@keyframes civilFloatPulse {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
 
+.civil-floating-robot {
+  animation: civilFloatPulse 3.2s ease-in-out infinite;
+}
 
+.civil-floating-robot:hover {
+  animation-play-state: paused;
+}

@@ -26,6 +26,11 @@
     checkServerStatus();
   }
 
+  function getRobotAvatarSrc() {
+    const isStaticPath = window.location.pathname.includes('/static/');
+    return isStaticPath ? './ai_robot_avatar.png' : './static/ai_robot_avatar.png';
+  }
+
   async function checkServerStatus() {
     try {
       const res = await fetch('/api/chat/status');
@@ -65,22 +70,48 @@
   function injectChatbotUI() {
     if (document.getElementById('civilChatbotRoot')) return;
 
+    const isStaticPath = window.location.pathname.includes('/static/');
+    const robotAvatarSrc = isStaticPath ? './ai_robot_avatar.png' : './static/ai_robot_avatar.png';
+
     const root = document.createElement('div');
     root.id = 'civilChatbotRoot';
     root.innerHTML = `
-      <!-- 플로팅 트리거 버튼 (모바일 하단 탭바 높이를 고려하여 bottom-20 배치) -->
+      <!-- 3D 토목 AI 로봇 플로팅 원형 뱃지 (시안 1: 단독 56px 원형 & 은은한 광채 Glow) -->
       <button 
         id="chatbotFloatingBtn" 
         type="button"
         aria-label="토목 뉴스 AI 챗봇 열기"
-        class="fixed bottom-20 sm:bottom-6 right-4 sm:right-6 z-40 flex items-center gap-2 px-3.5 sm:px-4 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:to-indigo-800 text-white rounded-full shadow-xl shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer border border-white/20 select-none group"
+        title="AI 기사 질문 (토목 AI 챗봇)"
+        class="civil-floating-robot fixed bottom-20 sm:bottom-6 right-4 sm:right-6 z-40 w-14 h-14 sm:w-16 sm:h-16 p-0 rounded-full flex items-center justify-center cursor-pointer select-none group focus:outline-none transition-transform duration-300 hover:scale-110 active:scale-95"
       >
-        <span class="relative flex h-2.5 w-2.5">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"></span>
+        <!-- 은은한 광채(Glow) 외곽 링 & 펄스 효과 -->
+        <span class="absolute -inset-1 rounded-full bg-gradient-to-tr from-blue-600 via-indigo-500 to-amber-400 opacity-70 blur-[3px] group-hover:opacity-100 group-hover:blur-[5px] transition-all duration-300 animate-pulse"></span>
+        
+        <!-- 원형 버튼 베이스 컨테이너 -->
+        <span class="relative w-full h-full rounded-full bg-gradient-to-b from-white via-blue-50/60 to-indigo-100/80 dark:from-slate-800 dark:via-slate-800/90 dark:to-slate-900 border-2 border-white/90 dark:border-slate-700/90 shadow-xl shadow-blue-500/25 dark:shadow-blue-500/35 flex items-center justify-center overflow-hidden">
+          <!-- 3D 토목 AI 로봇 캐릭터 이미지 (시안 1) -->
+          <img 
+            src="${robotAvatarSrc}" 
+            alt="토목 AI 로봇" 
+            class="w-full h-full object-cover p-1 transition-transform duration-300 group-hover:scale-110 pointer-events-none"
+            loading="eager"
+            decoding="async"
+            onerror="if(this.src.indexOf('ai_robot_avatar.png')!==-1&&this.src.indexOf('static')===-1)this.src='./static/ai_robot_avatar.png';"
+          />
         </span>
-        <i data-lucide="sparkles" class="w-4 h-4 text-amber-300 group-hover:rotate-12 transition-transform"></i>
-        <span class="text-xs sm:text-sm font-bold tracking-tight">AI 기사 질문</span>
+
+        <!-- 실시간 활성(온라인) 그린 핑 인디케이터 -->
+        <span class="absolute top-0 right-0 z-20 flex h-3.5 w-3.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-white dark:border-slate-900 shadow-xs"></span>
+        </span>
+
+        <!-- 데스크탑 호버 툴팁 (깔끔한 말풍선 안내) -->
+        <div class="pointer-events-none absolute right-full mr-3.5 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all duration-200 hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/95 dark:bg-slate-800/95 text-white text-xs font-bold shadow-xl backdrop-blur-md whitespace-nowrap border border-slate-700/60 z-30">
+          <span>AI 기사 질문</span>
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-300"></i>
+          <span class="absolute left-full top-1/2 -translate-y-1/2 border-4 border-transparent border-l-slate-900/95 dark:border-l-slate-800/95"></span>
+        </div>
       </button>
 
       <!-- 모바일 배경 딤 & 터치 스크롤 방지 오버레이 -->
@@ -98,8 +129,8 @@
         <!-- 챗봇 헤더 (터치 액션 고정) -->
         <div class="flex items-center justify-between px-4 py-3 bg-slate-900 dark:bg-slate-950 text-white border-b border-slate-800 select-none flex-shrink-0 touch-none">
           <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/30">
-              <i data-lucide="bot" class="w-4 h-4"></i>
+            <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/30 overflow-hidden p-0.5 border border-white/20 flex-shrink-0">
+              <img src="${robotAvatarSrc}" alt="AI" class="w-full h-full object-cover rounded-lg" onerror="if(this.src.indexOf('ai_robot_avatar.png')!==-1&&this.src.indexOf('static')===-1)this.src='./static/ai_robot_avatar.png';" />
             </div>
             <div>
               <div class="flex items-center gap-2">
@@ -537,8 +568,8 @@
 
     container.innerHTML = `
       <div class="flex items-start gap-2.5">
-        <div class="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white flex-shrink-0 mt-0.5 shadow-sm">
-          <i data-lucide="bot" class="w-4 h-4"></i>
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white flex-shrink-0 mt-0.5 shadow-sm overflow-hidden p-0.5 border border-blue-400/30">
+          <img src="${getRobotAvatarSrc()}" alt="AI" class="w-full h-full object-cover rounded-lg" onerror="if(this.src.indexOf('ai_robot_avatar.png')!==-1&&this.src.indexOf('static')===-1)this.src='./static/ai_robot_avatar.png';" />
         </div>
         <div class="space-y-2 max-w-[85%]">
           <div class="p-3.5 rounded-2xl rounded-tl-none bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700/80 leading-relaxed text-xs sm:text-sm">
@@ -809,8 +840,8 @@ ${query}`;
     const sourceBadgesHtml = renderSourceChips(sources);
 
     el.innerHTML = `
-      <div class="w-7 h-7 rounded-lg ${isGemini ? 'bg-indigo-600' : 'bg-blue-600'} flex items-center justify-center text-white flex-shrink-0 mt-0.5 shadow-sm">
-        <i data-lucide="${isGemini ? 'sparkles' : 'bot'}" class="w-4 h-4"></i>
+      <div class="w-7 h-7 rounded-lg ${isGemini ? 'bg-indigo-600' : 'bg-blue-600'} flex items-center justify-center text-white flex-shrink-0 mt-0.5 shadow-sm overflow-hidden p-0.5 border border-blue-400/30">
+        <img src="${getRobotAvatarSrc()}" alt="AI" class="w-full h-full object-cover rounded" onerror="if(this.src.indexOf('ai_robot_avatar.png')!==-1&&this.src.indexOf('static')===-1)this.src='./static/ai_robot_avatar.png';" />
       </div>
       <div class="space-y-2 max-w-[88%] select-text">
         <div class="p-3.5 rounded-2xl rounded-tl-none bg-slate-100 dark:bg-slate-800/90 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700/80 leading-relaxed text-xs sm:text-sm shadow-2xs">
