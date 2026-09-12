@@ -76,32 +76,26 @@
     const root = document.createElement('div');
     root.id = 'civilChatbotRoot';
     root.innerHTML = `
-      <!-- 3D 토목 AI 로봇 플로팅 원형 뱃지 (시안 1: 단독 56px 원형 & 은은한 광채 Glow) -->
+      <!-- 3D 토목 AI 로봇 플로팅 뱃지 (얼굴 윤곽 단독 & 주변 원형 컨테이너 배제) -->
       <button 
         id="chatbotFloatingBtn" 
         type="button"
         aria-label="토목 뉴스 AI 챗봇 열기"
         title="AI 기사 질문 (토목 AI 챗봇)"
-        class="civil-floating-robot fixed bottom-20 sm:bottom-6 right-4 sm:right-6 z-40 w-14 h-14 sm:w-16 sm:h-16 p-0 rounded-full flex items-center justify-center cursor-pointer select-none group focus:outline-none transition-transform duration-300 hover:scale-110 active:scale-95"
+        class="civil-floating-robot fixed bottom-20 sm:bottom-6 right-4 sm:right-6 z-40 w-14 h-14 sm:w-16 sm:h-16 p-0 bg-transparent border-0 flex items-center justify-center cursor-pointer select-none group focus:outline-none transition-transform duration-300 hover:scale-110 active:scale-95"
       >
-        <!-- 은은한 광채(Glow) 외곽 링 & 펄스 효과 -->
-        <span class="absolute -inset-1 rounded-full bg-gradient-to-tr from-blue-600 via-indigo-500 to-amber-400 opacity-70 blur-[3px] group-hover:opacity-100 group-hover:blur-[5px] transition-all duration-300 animate-pulse"></span>
-        
-        <!-- 원형 버튼 베이스 컨테이너 -->
-        <span class="relative w-full h-full rounded-full bg-gradient-to-b from-white via-blue-50/60 to-indigo-100/80 dark:from-slate-800 dark:via-slate-800/90 dark:to-slate-900 border-2 border-white/90 dark:border-slate-700/90 shadow-xl shadow-blue-500/25 dark:shadow-blue-500/35 flex items-center justify-center overflow-hidden">
-          <!-- 3D 토목 AI 로봇 캐릭터 이미지 (시안 1) -->
-          <img 
-            src="${robotAvatarSrc}" 
-            alt="토목 AI 로봇" 
-            class="w-full h-full object-cover p-1 transition-transform duration-300 group-hover:scale-110 pointer-events-none"
-            loading="eager"
-            decoding="async"
-            onerror="if(this.src.indexOf('ai_robot_avatar.png')!==-1&&this.src.indexOf('static')===-1)this.src='./static/ai_robot_avatar.png';"
-          />
-        </span>
+        <!-- 3D 토목 AI 로봇 얼굴 윤곽 단독 (주변 동그라미 컨테이너 없이 얼굴 자체 플로팅) -->
+        <img 
+          src="${robotAvatarSrc}" 
+          alt="토목 AI 로봇" 
+          class="w-full h-full object-contain pointer-events-none transition-all duration-300 drop-shadow-[0_8px_12px_rgba(0,0,0,0.22)] dark:drop-shadow-[0_8px_16px_rgba(0,0,0,0.45)] group-hover:drop-shadow-[0_12px_20px_rgba(37,99,235,0.45)]"
+          loading="eager"
+          decoding="async"
+          onerror="if(this.src.indexOf('ai_robot_avatar.png')!==-1&&this.src.indexOf('static')===-1)this.src='./static/ai_robot_avatar.png';"
+        />
 
-        <!-- 실시간 활성(온라인) 그린 핑 인디케이터 -->
-        <span class="absolute top-0 right-0 z-20 flex h-3.5 w-3.5">
+        <!-- 실시간 활성(온라인) 그린 핑 인디케이터 (안전모 우상단 배치) -->
+        <span class="absolute top-0 right-0 sm:right-0.5 z-20 flex h-3.5 w-3.5 pointer-events-none">
           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
           <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-white dark:border-slate-900 shadow-xs"></span>
         </span>
