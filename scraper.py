@@ -327,8 +327,8 @@ def scrape_civil_news():
     # 유사/중복 기사 군집화 (대표 기사 하위에 타 언론사 보도자료 그룹핑)
     final_articles, duplicate_count = cluster_related_articles(all_articles)
 
-    # 당일 아침 7시 수집 기사 기반 대표 트렌딩 키워드 동적 추출
-    trending_keywords = extract_trending_keywords(final_articles, max_keywords=10)
+    # 당일 아침 7시 수집 기사 기반 대표 트렌딩 키워드 동적 추출 (8대 전문 분야 1-Keyword-Per-Domain)
+    trending_keywords = extract_trending_keywords(final_articles, max_keywords=8)
     print(f"🔥 [오늘의 대표 키워드 추출] {', '.join(f'#{k}' for k in trending_keywords)}")
     
     # 결과 구조체
@@ -484,10 +484,10 @@ def cluster_related_articles(articles):
     return final_articles, total_duplicates
 
 
-def extract_trending_keywords(articles, max_keywords=10):
+def extract_trending_keywords(articles, max_keywords=8):
     """
     매일 아침 수집된 전체 토목 기사들로부터 가장 화제가 되고 있는
-    대표 토픽 키워드 8~10개를 정밀 분석하여 동적으로 추출합니다.
+    대표 토픽 키워드 8개를 정밀 분석하여 동적으로 추출합니다.
     동일 키워드 완전 중복 및 어근/형태소(철도, 도로 등)가 겹치는 유사 키워드의 중복 생성을 원천 차단합니다.
     """
     if not articles:
