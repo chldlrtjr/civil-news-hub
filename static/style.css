@@ -264,3 +264,21 @@ body.chatbot-open-lock {
 .civil-floating-robot:hover {
   animation-play-state: paused;
 }
+
+/* 오늘의 키워드 칩 바 스타일 (글자 겹침 및 세로 꺾임 원천 차단 규격) */
+#newsKeywordChips {
+  white-space: nowrap !important;
+  flex-wrap: nowrap !important;
+}
+
+.keyword-pill {
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  font-weight: 500 !important;
+  user-select: none !important;
+}
+
+.keyword-pill.active {
+  font-weight: 600 !important;
+}
+

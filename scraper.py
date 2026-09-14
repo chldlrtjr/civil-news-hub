@@ -488,10 +488,10 @@ def extract_trending_keywords(articles, max_keywords=10):
     """
     매일 아침 수집된 전체 토목 기사들로부터 가장 화제가 되고 있는
     대표 토픽 키워드 8~10개를 정밀 분석하여 동적으로 추출합니다.
-    고정 키워드 대신 실제 당일 보도 이슈(지천댐, 싱크홀, 태그리스, GTX 등)가 반영됩니다.
+    동일 키워드 완전 중복 및 어근/형태소(철도, 도로 등)가 겹치는 유사 키워드의 중복 생성을 원천 차단합니다.
     """
     if not articles:
-        return ["스마트건설", "지하안전", "GTX", "수자원", "철도망", "교량·터널", "신기술", "싱크홀"]
+        return ["스마트건설", "지하안전", "GTX", "수자원", "철도망", "싱크홀", "교량", "신기술"]
 
     # 1. 노이즈 및 과도하게 일반적인 단어 배제 불용어
     GENERIC_STOPWORDS = {
@@ -509,33 +509,45 @@ def extract_trending_keywords(articles, max_keywords=10):
         '피해', '필요', '노조', '논란', '주민', '대응', '반발', '통과', '추석', '사고', 
         '시민', '적용', '문제', '요구', '주장', '확인', '예정', '우려', '방안', '개선',
         '서울', '경기', '부산', '대구', '인천', '광주', '대전', '울산', '경기도', '4개', '4대', '1위',
-        '통합', '시스템', '투입', '지하철'
+        '통합', '시스템', '투입', '지하철', '연장', '다자녀', '현안', '하루', '글로벌', '본격화'
     }
 
-    # 2. 토목 핵심 전문 분야 및 주요 프로젝트 사전 스캐너
+    # 2. 토목 핵심 전문 분야별 사전 패턴 (패턴, 도메인그룹, 부스트점수)
     DOMAIN_PATTERNS = [
-        ('지천댐', 1.5), ('태그리스', 1.5), ('싱크홀', 1.5), ('지반침하', 1.5),
-        ('무선제어', 1.3), ('스마트건설', 1.4), ('GTX', 1.4), ('도시철도', 1.2),
-        ('지하고속도로', 1.4), ('항만공사', 1.1), ('도로공사', 1.1), ('철도망', 1.2),
-        ('국토부', 1.0), ('BIM', 1.4), ('디지털트윈', 1.4), ('모듈러', 1.3),
-        ('프리팹', 1.3), ('하천정비', 1.3), ('가덕도', 1.4), ('신안산선', 1.4),
-        ('달빛철도', 1.4), ('새만금', 1.3), ('신기술', 1.2), ('대심도', 1.3),
-        ('탄소중립', 1.2), ('방파제', 1.3), ('해수담수화', 1.4), ('안전진단', 1.2),
-        ('지하안전', 1.4), ('AI', 1.3), ('수자원공사', 1.1), ('철도공단', 1.1),
-        ('LH', 1.1), ('CM직발주', 1.4), ('침수예방', 1.3), ('사면안정', 1.3)
+        # 스마트 / 디지털 / 신기술
+        ('스마트건설', 'tech', 1.5), ('AI', 'tech', 1.4), ('BIM', 'tech', 1.4), 
+        ('디지털트윈', 'tech', 1.4), ('모듈러', 'tech', 1.3), ('신기술', 'tech', 1.2),
+        ('태그리스', 'tech', 1.5), ('무선제어', 'tech', 1.3),
+        # 지반 / 안전 / 방재
+        ('싱크홀', 'safety', 1.5), ('지반침하', 'safety', 1.5), ('지하안전', 'safety', 1.4), 
+        ('대심도', 'safety', 1.3), ('안전진단', 'safety', 1.2), ('사면안정', 'safety', 1.3),
+        # 수자원 / 환경
+        ('지천댐', 'water', 1.6), ('하천정비', 'water', 1.4), ('해수담수화', 'water', 1.4), 
+        ('방파제', 'water', 1.3), ('침수예방', 'water', 1.3), ('탄소중립', 'water', 1.2),
+        # 철도 / 교통
+        ('GTX', 'rail', 1.5), ('철도망', 'rail', 1.3), ('도시철도', 'rail', 1.3), 
+        ('달빛철도', 'rail', 1.4), ('신안산선', 'rail', 1.4),
+        # 도로 / 인프라
+        ('고속도로', 'road', 1.3), ('지하고속도로', 'road', 1.4), ('가덕도', 'infra', 1.4), 
+        ('새만금', 'infra', 1.3), ('항만공사', 'infra', 1.1),
+        # 정책 / 공공기관 (최대 2개까지만 노출 제한)
+        ('국토부', 'policy', 1.1), ('수자원공사', 'policy', 1.1), 
+        ('철도공단', 'policy', 1.1), ('도로공사', 'policy', 1.1), ('LH', 'policy', 1.1)
     ]
 
     scores = Counter()
+    kw_group = {}
 
     for a in articles:
         title = a.get('title', '')
         snippet = a.get('snippet', '')
         text = f"{title} {snippet}"
 
-        for pattern, boost in DOMAIN_PATTERNS:
+        for pattern, group, boost in DOMAIN_PATTERNS:
+            kw_group[pattern] = group
             p_re = r'\b' + re.escape(pattern) + r'\b' if pattern in ['AI', 'GTX', 'BIM', 'LH'] else re.escape(pattern)
             if re.search(p_re, title, re.IGNORECASE):
-                scores[pattern] += int(4 * boost)
+                scores[pattern] += int(5 * boost)
             elif re.search(p_re, text, re.IGNORECASE):
                 scores[pattern] += int(1 * boost)
 
@@ -551,32 +563,65 @@ def extract_trending_keywords(articles, max_keywords=10):
     for w, count in title_token_counts.items():
         if count >= 3 and w not in scores:
             scores[w] += count * 2
+            kw_group[w] = 'misc'
 
-    # 4. 상위 점수 순위 추출
-    sorted_keywords = [k for k, score in scores.most_common(25) if score >= 2]
+    # 4. 키워드 상호 겹침(어근/형태소 중복) 판별기
+    def is_overlapping(k1, k2):
+        # 1) 동일 또는 포함 관계 (도로공사 vs 고속도로, 항만 vs 항만공사)
+        if k1 == k2 or k1 in k2 or k2 in k1:
+            return True
+        # 2) 2글자 이상 핵심 어근 공유 검사 (철도망 vs 철도공단, 도로공사 vs 고속도로)
+        # 일반적인 접미사/접두사는 제외하고 검사
+        ignored_stems = {'공사', '공단', '개발', '기술', '사업', '추진', '혁신'}
+        for i in range(len(k1) - 1):
+            bi = k1[i:i+2]
+            if bi in ignored_stems:
+                continue
+            if bi in k2:
+                return True
+        return False
 
-    # 5. 유사/포함 키워드 중복 제거 (예: 도로공사 vs 한국도로공사)
+    # 5. 상위 점수 순위 추출
+    sorted_candidates = [k for k, score in scores.most_common(40) if score >= 2]
+
+    # 6. 분야 균형 및 겹침 방지 선별
     final_keywords = []
-    for kw in sorted_keywords:
-        is_dup = False
+    group_counts = Counter()
+
+    for cand in sorted_candidates:
+        cand_group = kw_group.get(cand, 'misc')
+        # 특정 분야(예: 기관, 철도 등)가 키워드 목록을 독식하지 못하도록 그룹당 최대 2개 제한
+        if group_counts[cand_group] >= 2 and cand_group != 'misc':
+            continue
+
+        # 이미 선정된 키워드와 어근/부분문자열 겹침 여부 확인
+        overlap = False
         for chosen in final_keywords:
-            if kw in chosen or chosen in kw:
-                is_dup = True
+            if is_overlapping(cand, chosen):
+                overlap = True
                 break
-        if not is_dup:
-            final_keywords.append(kw)
+        if not overlap:
+            final_keywords.append(cand)
+            group_counts[cand_group] += 1
         if len(final_keywords) >= max_keywords:
             break
 
-    # 6. 수집된 키워드가 부족할 경우 기본 대표 키워드로 보충
-    fallback = ["스마트건설", "지하안전", "GTX", "수자원", "철도망", "싱크홀", "교량·터널", "신기술"]
+    # 7. 부족할 경우 분야별 대표 fallback 키워드로 중복 없이 보충
+    fallback = ["스마트건설", "지하안전", "GTX", "수자원", "철도망", "싱크홀", "교량", "신기술"]
     for fb in fallback:
         if len(final_keywords) >= max_keywords:
             break
-        if fb not in final_keywords:
+        overlap = False
+        for chosen in final_keywords:
+            if is_overlapping(fb, chosen):
+                overlap = True
+                break
+        if not overlap:
             final_keywords.append(fb)
 
-    return final_keywords[:max_keywords]
+    # 8. 최종 안전 중복 제거 및 최대 개수 제한
+    unique_final = list(dict.fromkeys(final_keywords))[:max_keywords]
+    return unique_final
 
 
 CONTESTS_JSON_PATH = os.path.join(DATA_DIR, "contests.json")

@@ -387,9 +387,10 @@ async function loadNewsData() {
       window.updateChatbotArticleCount(allArticles.length);
     }
 
-    // 매일 아침 크롤링된 당일 대표 트렌딩 키워드(#) 동적 연동
+    // 매일 아침 크롤링된 당일 대표 트렌딩 키워드(#) 동적 연동 (중복 및 겹침 원천 방지)
     if (data.trending_keywords && Array.isArray(data.trending_keywords) && data.trending_keywords.length > 0) {
-      newsKeywordChips = ['전체', ...data.trending_keywords];
+      const uniqueKeywords = Array.from(new Set(data.trending_keywords.map(k => (k || '').trim()).filter(Boolean)));
+      newsKeywordChips = ['전체', ...uniqueKeywords];
       if (activeKeywordFilter !== '전체' && !newsKeywordChips.includes(activeKeywordFilter)) {
         activeKeywordFilter = '전체';
       }
@@ -483,6 +484,11 @@ function renderCategoryTabs() {
         updateBookmarkTabStyle();
       }
       activeNewsCategory = cat.id;
+      // 카테고리 탭 클릭 시 이전 키워드 필터가 남아있다면 안전하게 리셋하여 0건 충돌 방지
+      if (activeKeywordFilter !== '전체') {
+        activeKeywordFilter = '전체';
+        renderNewsKeywordChips();
+      }
       updateNewsCategoryTabStyles(cat.id);
       renderArticles();
 
@@ -570,6 +576,15 @@ function renderNewsKeywordChips() {
         activeKeywordFilter = '전체';
       } else {
         activeKeywordFilter = chip;
+        // 특정 카테고리에 갇혀 0건이 뜨는 현상을 원천 방지하기 위해 전체 분야로 자동 전환
+        if (chip !== '전체') {
+          if (isNewsBookmarkView) {
+            isNewsBookmarkView = false;
+            updateBookmarkTabStyle();
+          }
+          activeNewsCategory = 'all';
+          updateNewsCategoryTabStyles('all');
+        }
       }
       searchDisplayedCount = SEARCH_PAGE_SIZE;
       renderNewsKeywordChips();
@@ -598,25 +613,46 @@ function resetNewsKeywordAndSearch() {
 }
 window.resetNewsKeywordAndSearch = resetNewsKeywordAndSearch;
 
-// 검색 및 필터 헬퍼 (검색어 + 키워드 칩 동시 지원)
+// 검색 및 필터 헬퍼 (검색어 + 키워드 칩 동시 지원, 군집화 관련 기사 및 영문 약어 정밀 매칭)
 function filterBySearch(articles) {
   let list = articles;
   if (activeKeywordFilter && activeKeywordFilter !== '전체') {
-    const kw = activeKeywordFilter.toLowerCase();
-    const subKeywords = kw.split('·');
+    const kw = activeKeywordFilter.trim();
+    const kwLower = kw.toLowerCase();
     list = list.filter(a => {
       const summaryText = (a.summary_points || []).join(' ');
-      const target = `${a.title || ''} ${a.snippet || ''} ${summaryText} ${a.category_name || ''}`.toLowerCase();
+      const relatedText = (a.related_articles || []).map(r => `${r.title || ''} ${r.snippet || ''}`).join(' ');
+      const target = `${a.title || ''} ${a.snippet || ''} ${summaryText} ${relatedText} ${a.category_name || ''}`.toLowerCase();
+      
+      // 약어 및 영문 키워드 정밀 단어 경계 판별
+      if (kw === 'AI') {
+        return /\b(ai|인공지능)\b/i.test(`${a.title || ''} ${a.snippet || ''} ${summaryText} ${relatedText}`);
+      }
+      if (kw === 'GTX') {
+        return /\bgtx\b/i.test(target) || target.includes('광역급행철도');
+      }
+      if (kw === 'BIM') {
+        return /\bbim\b/i.test(target);
+      }
+      if (kw === 'LH') {
+        return /\blh\b/i.test(target) || target.includes('한국토지주택공사') || target.includes('토지주택공사');
+      }
+      
+      const subKeywords = kwLower.split('·');
       return subKeywords.some(sub => target.includes(sub));
     });
   }
   if (!newsSearchQuery) return list;
-  const q = newsSearchQuery.toLowerCase();
+  const q = newsSearchQuery.toLowerCase().trim();
   return list.filter(a => {
+    const summaryText = (a.summary_points || []).join(' ');
+    const relatedText = (a.related_articles || []).map(r => `${r.title || ''} ${r.snippet || ''}`).join(' ');
     const titleMatch = (a.title || '').toLowerCase().includes(q);
     const snipMatch = (a.snippet || '').toLowerCase().includes(q);
     const pubMatch = (a.publisher || '').toLowerCase().includes(q);
-    return titleMatch || snipMatch || pubMatch;
+    const summaryMatch = summaryText.toLowerCase().includes(q);
+    const relatedMatch = relatedText.toLowerCase().includes(q);
+    return titleMatch || snipMatch || pubMatch || summaryMatch || relatedMatch;
   });
 }
 
