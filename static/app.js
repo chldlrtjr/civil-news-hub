@@ -356,7 +356,7 @@ async function loadNewsData() {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 3500);
-      res = await fetch('/api/news', { signal: controller.signal });
+      res = await fetch('/api/news?t=' + Date.now(), { signal: controller.signal });
       clearTimeout(timeoutId);
       if (!res.ok) throw new Error('API failed');
     } catch (e) {
@@ -559,7 +559,12 @@ function renderNewsKeywordChips() {
   label.innerHTML = '<i data-lucide="trending-up" class="w-3.5 h-3.5 text-blue-500"></i><span>오늘의 키워드:</span>';
   container.appendChild(label);
 
+  const seenChips = new Set();
+
   newsKeywordChips.forEach(chip => {
+    if (!chip || seenChips.has(chip)) return;
+    seenChips.add(chip);
+
     const isActive = activeKeywordFilter === chip;
     const btn = document.createElement('button');
     btn.type = 'button';

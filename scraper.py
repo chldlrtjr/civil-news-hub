@@ -509,30 +509,33 @@ def extract_trending_keywords(articles, max_keywords=10):
         '피해', '필요', '노조', '논란', '주민', '대응', '반발', '통과', '추석', '사고', 
         '시민', '적용', '문제', '요구', '주장', '확인', '예정', '우려', '방안', '개선',
         '서울', '경기', '부산', '대구', '인천', '광주', '대전', '울산', '경기도', '4개', '4대', '1위',
-        '통합', '시스템', '투입', '지하철', '연장', '다자녀', '현안', '하루', '글로벌', '본격화'
+        '거제', '청도', '가평', '통영', '안산', '광양', '남원', '포항', '전주', '창원',
+        '통합', '시스템', '투입', '지하철', '연장', '다자녀', '현안', '하루', '글로벌', '본격화', '중단'
     }
 
-    # 2. 토목 핵심 전문 분야별 사전 패턴 (패턴, 도메인그룹, 부스트점수)
+    # 2. 토목 8대 세부 전문 도메인 사전 패턴 (도메인당 1개만 선정하여 '2개씩 생기는 현상' 원천 차단)
     DOMAIN_PATTERNS = [
-        # 스마트 / 디지털 / 신기술
-        ('스마트건설', 'tech', 1.5), ('AI', 'tech', 1.4), ('BIM', 'tech', 1.4), 
-        ('디지털트윈', 'tech', 1.4), ('모듈러', 'tech', 1.3), ('신기술', 'tech', 1.2),
-        ('태그리스', 'tech', 1.5), ('무선제어', 'tech', 1.3),
-        # 지반 / 안전 / 방재
-        ('싱크홀', 'safety', 1.5), ('지반침하', 'safety', 1.5), ('지하안전', 'safety', 1.4), 
-        ('대심도', 'safety', 1.3), ('안전진단', 'safety', 1.2), ('사면안정', 'safety', 1.3),
-        # 수자원 / 환경
-        ('지천댐', 'water', 1.6), ('하천정비', 'water', 1.4), ('해수담수화', 'water', 1.4), 
-        ('방파제', 'water', 1.3), ('침수예방', 'water', 1.3), ('탄소중립', 'water', 1.2),
-        # 철도 / 교통
-        ('GTX', 'rail', 1.5), ('철도망', 'rail', 1.3), ('도시철도', 'rail', 1.3), 
-        ('달빛철도', 'rail', 1.4), ('신안산선', 'rail', 1.4),
-        # 도로 / 인프라
-        ('고속도로', 'road', 1.3), ('지하고속도로', 'road', 1.4), ('가덕도', 'infra', 1.4), 
-        ('새만금', 'infra', 1.3), ('항만공사', 'infra', 1.1),
-        # 정책 / 공공기관 (최대 2개까지만 노출 제한)
-        ('국토부', 'policy', 1.1), ('수자원공사', 'policy', 1.1), 
-        ('철도공단', 'policy', 1.1), ('도로공사', 'policy', 1.1), ('LH', 'policy', 1.1)
+        # 1. smart_tech (스마트건설 / AI / BIM)
+        ('스마트건설', 'smart_tech', 1.5), ('AI', 'smart_tech', 1.4), ('BIM', 'smart_tech', 1.4), 
+        ('디지털트윈', 'smart_tech', 1.4), ('태그리스', 'smart_tech', 1.5), ('무선제어', 'smart_tech', 1.3),
+        # 2. safety_ground (지반 / 지하안전 / 싱크홀)
+        ('싱크홀', 'safety_ground', 1.5), ('지반침하', 'safety_ground', 1.5), ('지하안전', 'safety_ground', 1.4), 
+        ('사면안정', 'safety_ground', 1.3), ('안전진단', 'safety_ground', 1.2),
+        # 3. water_env (수자원 / 댐 / 하천)
+        ('지천댐', 'water_env', 1.6), ('하천정비', 'water_env', 1.4), ('해수담수화', 'water_env', 1.4), 
+        ('방파제', 'water_env', 1.3), ('침수예방', 'water_env', 1.3), ('탄소중립', 'water_env', 1.2),
+        # 4. railway (철도 / 광역교통)
+        ('철도망', 'railway', 1.4), ('GTX', 'railway', 1.3), ('도시철도', 'railway', 1.3), 
+        ('달빛철도', 'railway', 1.4), ('신안산선', 'railway', 1.4),
+        # 5. road (도로 / 고속도로 / 대심도)
+        ('고속도로', 'road', 1.4), ('지하고속도로', 'road', 1.3), ('대심도', 'road', 1.3), ('교량', 'road', 1.2),
+        # 6. port_infra (항만 / 공항 / 해양)
+        ('항만공사', 'port_infra', 1.2), ('가덕도', 'port_infra', 1.4), ('새만금', 'port_infra', 1.3),
+        # 7. policy_gov (정책 / 정부기관)
+        ('국토부', 'policy_gov', 1.2), ('수자원공사', 'policy_gov', 1.1), 
+        ('철도공단', 'policy_gov', 1.1), ('도로공사', 'policy_gov', 1.1), ('LH', 'policy_gov', 1.1),
+        # 8. construction_method (신기술 / 특수공법)
+        ('신기술', 'construction_method', 1.3), ('모듈러', 'construction_method', 1.3), ('프리팹', 'construction_method', 1.3)
     ]
 
     scores = Counter()
@@ -567,11 +570,8 @@ def extract_trending_keywords(articles, max_keywords=10):
 
     # 4. 키워드 상호 겹침(어근/형태소 중복) 판별기
     def is_overlapping(k1, k2):
-        # 1) 동일 또는 포함 관계 (도로공사 vs 고속도로, 항만 vs 항만공사)
         if k1 == k2 or k1 in k2 or k2 in k1:
             return True
-        # 2) 2글자 이상 핵심 어근 공유 검사 (철도망 vs 철도공단, 도로공사 vs 고속도로)
-        # 일반적인 접미사/접두사는 제외하고 검사
         ignored_stems = {'공사', '공단', '개발', '기술', '사업', '추진', '혁신'}
         for i in range(len(k1) - 1):
             bi = k1[i:i+2]
@@ -582,16 +582,16 @@ def extract_trending_keywords(articles, max_keywords=10):
         return False
 
     # 5. 상위 점수 순위 추출
-    sorted_candidates = [k for k, score in scores.most_common(40) if score >= 2]
+    sorted_candidates = [k for k, score in scores.most_common(50) if score >= 2]
 
-    # 6. 분야 균형 및 겹침 방지 선별
+    # 6. 도메인당 무조건 딱 1개만 선정 (1-Keyword-Per-Domain 절대 원칙: 2개씩 짝지어 생기는 현상 원천 차단)
     final_keywords = []
-    group_counts = Counter()
+    used_groups = set()
 
     for cand in sorted_candidates:
         cand_group = kw_group.get(cand, 'misc')
-        # 특정 분야(예: 기관, 철도 등)가 키워드 목록을 독식하지 못하도록 그룹당 최대 2개 제한
-        if group_counts[cand_group] >= 2 and cand_group != 'misc':
+        # 일반 명사나 지역명 등 비도메인 토큰 배제 및 동일 도메인 중복 선택 금지
+        if cand_group == 'misc' or cand_group in used_groups:
             continue
 
         # 이미 선정된 키워드와 어근/부분문자열 겹침 여부 확인
@@ -600,17 +600,34 @@ def extract_trending_keywords(articles, max_keywords=10):
             if is_overlapping(cand, chosen):
                 overlap = True
                 break
+            # 접미사 '공사'도 중복 방지 (항만공사 vs 수자원공사 중복 차단)
+            if cand.endswith('공사') and chosen.endswith('공사'):
+                overlap = True
+                break
         if not overlap:
             final_keywords.append(cand)
-            group_counts[cand_group] += 1
-        if len(final_keywords) >= max_keywords:
+            if cand_group != 'misc':
+                used_groups.add(cand_group)
+        if len(final_keywords) >= 8:
             break
 
-    # 7. 부족할 경우 분야별 대표 fallback 키워드로 중복 없이 보충
-    fallback = ["스마트건설", "지하안전", "GTX", "수자원", "철도망", "싱크홀", "교량", "신기술"]
-    for fb in fallback:
-        if len(final_keywords) >= max_keywords:
+    # 7. 부족할 경우 분야별 대표 fallback 키워드로 중복 없이 1개씩 보충
+    fallback_by_group = [
+        ('smart_tech', '스마트건설'),
+        ('safety_ground', '싱크홀'),
+        ('water_env', '지천댐'),
+        ('railway', '철도망'),
+        ('road', '고속도로'),
+        ('port_infra', '항만'),
+        ('policy_gov', '국토부'),
+        ('construction_method', '신기술')
+    ]
+
+    for group, fb in fallback_by_group:
+        if len(final_keywords) >= 8:
             break
+        if group in used_groups:
+            continue
         overlap = False
         for chosen in final_keywords:
             if is_overlapping(fb, chosen):
@@ -618,9 +635,10 @@ def extract_trending_keywords(articles, max_keywords=10):
                 break
         if not overlap:
             final_keywords.append(fb)
+            used_groups.add(group)
 
-    # 8. 최종 안전 중복 제거 및 최대 개수 제한
-    unique_final = list(dict.fromkeys(final_keywords))[:max_keywords]
+    # 8. 최종 안전 중복 제거 및 최대 8개 순수 독립 키워드 반환
+    unique_final = list(dict.fromkeys(final_keywords))[:8]
     return unique_final
 
 

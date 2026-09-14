@@ -116,13 +116,16 @@ def serve_sw():
         sw_path = os.path.join(STATIC_DIR, "sw.js")
     return send_file(sw_path, mimetype="application/javascript")
 
-# --- 데이터 API ---
 @app.route("/api/news")
 @app.route("/data/news.json")
 def get_news():
     if not os.path.exists(NEWS_JSON_PATH):
         scraper.scrape_civil_news()
-    return send_file(NEWS_JSON_PATH, mimetype="application/json; charset=utf-8")
+    resp = send_file(NEWS_JSON_PATH, mimetype="application/json; charset=utf-8")
+    resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    resp.headers["Pragma"] = "no-cache"
+    resp.headers["Expires"] = "0"
+    return resp
 
 @app.route("/api/contests")
 @app.route("/data/contests.json")
