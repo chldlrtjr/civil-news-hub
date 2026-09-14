@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.0.47` (누적 수정 47회 반영 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.0.49` (누적 수정 49회 반영 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -749,14 +749,42 @@ mindmap
     - `sw.js` 및 `static/sw.js` 캐시명 `civil-news-hub-v1.0.47` 갱신 및 `ai_robot_head_only.png` 캐싱 등록.
     - HTML/JS/CSS 캐시 버스터 파라미터 `?v=20260912_1046` 일괄 동기화.
 
+#### 49) 무한 로딩 원천 차단: SW 업데이트 자동 감지·캐시 일괄 삭제 및 15초 안전 타임아웃 가드 (ver 1.0.48)
+- **배경 및 원인 분석**:
+  - 모바일 또는 데스크탑 PWA 환경에서 Service Worker의 신규 버전 캐시 갱신이 백그라운드에서 지연되거나 네트워크 불안정 발생 시, 뉴스 브리핑 로딩 스피너(`newsLoadingIndicator`)가 무한히 화면에 지속되는 현상 방지 필요.
+  - 구버전 캐시와 신규 스크립트 충돌 시 사용자가 수동 새로고침을 하지 않고도 최신 서비스로 매끄럽게 자동 전환되도록 브라우저 런타임 방어선 구축 요구.
+- **적용 및 최적화 상세 내역**:
+  - **1) Service Worker 신규 버전 자동 감지 및 캐시 일괄 삭제·자동 리로드 (`static/app.js`, `app.js`)**:
+    - SW 등록 핸들러에 `updatefound` 및 신규 워커의 `statechange` 이벤트를 리스닝하여, 새 서비스 워커가 `activated`되는 즉시 브라우저 Cache Storage의 모든 캐시를 일괄 삭제(`caches.delete`)하고 페이지를 자동 새로고침(`window.location.reload()`)하도록 구현.
+    - 방문자가 캐시를 직접 비우지 않아도 무중단으로 최신 코드가 즉시 반영됨.
+  - **2) 15초 안전 타임아웃 가드 탑재 (`showNewsLoading`)**:
+    - 뉴스 로딩 시작 시 15초 카운트다운 타이머(`window._newsLoadingSafetyTimer`)를 가동.
+    - 정적 json 지연이나 예외 상황으로 인해 스피너가 잔존하더라도 15초 초과 시 콘솔 경고와 함께 로딩 스피너를 강제 해제(`showNewsLoading(false)`)하여 무한 로딩 원천 차단.
+  - **3) 버전 및 캐시 버스팅 일괄 갱신**:
+    - 내부 버전 `v1.0.48` 자동 증가, PWA 서비스 워커 `civil-news-hub-v1.0.48`, HTML 캐시 버스터 파라미터 `?v=20260912_1625` 일괄 동기화.
+
+#### 50) 로컬 서버 cron 크롤링 파이프라인 GitHub Push & Pages 자동 배포 통합 (ver 1.0.49)
+- **배경 및 목적**:
+  - Ubuntu 로컬 서버에서 매일 07:00 KST에 `cron_scrape.sh`를 통해 토목 뉴스, 공모전 및 채용 공고를 자동 크롤링하고 데이터 무결성을 검증한 후, 변경된 데이터셋(`news.json`, `contests.json`, `jobs.json`)을 GitHub 원격 저장소(`main` 브랜치)로 즉시 자동 `commit & push`하여 GitHub Pages 웹 서비스까지 단 한 번의 중단 없이 100% 전자동으로 라이브 배포되도록 파이프라인 고도화.
+- **적용 및 자동화 상세 내역**:
+  - **1) cron 파이프라인 5단계 GitHub 자동 배포 확장 ([`cron_scrape.sh`](file:///home/ubuntu/workspace/cron_scrape.sh))**:
+    - 기존 4단계(뉴스 &rarr; 공모전 &rarr; 채용 &rarr; 무결성 검증)에서 `[5/5] GitHub 자동 배포` 단계를 신설.
+    - `data/news.json`, `data/contests.json`, `data/jobs.json` 변경분을 스테이징(`git add`)하고, `git diff --cached --quiet`로 실제 데이터 변경 여부를 사전 판별하여 변경이 있을 때만 정갈한 타임스탬프 커밋 생성.
+  - **2) 네트워크 일시 오류 대비 3회 자동 재시도(Retry) 가드**:
+    - 푸시 실패 시 즉시 종료되지 않고 10초 간격으로 최대 3회까지 자동 재시도(`PUSH_OK=0; for i in 1 2 3; do ... done`)하는 안전망 탑재.
+  - **3) 크롤링 로그 무한 증가 방지 자동 순환(Log Rotation)**:
+    - `cron_scrape.log` 파일 크기가 10MB를 초과할 경우 `${LOG_FILE}.old`로 자동 백업 및 순환하도록 조치하여 서버 디스크 용량 고갈 방지.
+  - **4) 24시간 풀 파이프라인 완성**:
+    - 매일 아침 07:00 KST 로컬 서버 크롤링 &rarr; 팩트 요강 파싱 &rarr; 4중 방어 무결성 검증 통과 &rarr; GitHub 자동 배포 &rarr; GitHub Pages 라이브 반영의 100% 무인 자동화 달성.
+
 ---
 
 ## 🌿 3. Git 브랜치 현황
 
 | 브랜치명 | 상태 | 설명 |
 | :--- | :--- | :--- |
-| **`feature/footer-last-updated`** | **최신 작업 완료 (원격 푸시됨)** | 푸터 업데이트 이전, 글씨 늘어남 차단, 상단 뱃지 및 설명 문구 삭제가 모두 반영된 최신 브랜치 |
-| **`main`** | **공식 배포 브랜치** | GitHub Pages를 통해 라이브 서비스되는 기준 브랜치 (언제든 `feature/footer-last-updated`와 병합 가능) |
+| **`main`** | **최신 공식 배포 브랜치 (v1.0.49)** | GitHub Pages를 통해 라이브 서비스 중인 메인 브랜치 (크롤링, 무결성 검증, UI/UX 및 배포 파이프라인 통합 완료) |
+| **`feature/footer-last-updated`** | **작업 완료 (main 병합됨)** | 푸터 업데이트 이전 및 초기 헤더 클린업 작업 브랜치 |
 
 - **온라인 라이브 서비스**: [https://chldlrtjr.github.io/civil-news-hub/](https://chldlrtjr.github.io/civil-news-hub/)
 - **로컬 실행 주소**: `http://localhost:8000` (모바일 시뮬레이터: `http://localhost:8000/mobile`)
