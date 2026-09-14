@@ -131,11 +131,11 @@
                 <h3 class="text-xs sm:text-sm font-bold tracking-tight text-white flex items-center gap-1">
                   토목 뉴스 AI 브리핑
                 </h3>
-                <span id="chatbotModeBadge" class="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-blue-500/20 text-blue-300 border border-blue-400/30">
-                  로컬 요약 모드
+                <span id="chatbotModeBadge" class="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-amber-500/20 text-amber-300 border border-amber-400/30" title="API 키 없이 실시간 기사 데이터를 직접 분석·요약하는 모드 (상단 🔑 버튼으로 Gemini 연동 가능)">
+                  기사 데이터 요약 모드
                 </span>
               </div>
-              <p id="chatbotSubHeader" class="text-[11px] text-slate-400">237건 팩트 기사 기반 실시간 Q&A</p>
+              <p id="chatbotSubHeader" class="text-[11px] text-slate-400">실시간 팩트 기사 기반 Q&A</p>
             </div>
           </div>
 
@@ -289,9 +289,9 @@
     const serverNotice = document.getElementById('chatbotServerKeyNotice');
     if (input) input.value = geminiApiKey || '';
 
-    const count = (window.allArticles && window.allArticles.length) || 237;
+    const count = (window.allArticles && window.allArticles.length) || 0;
     if (subHeader) {
-      subHeader.textContent = `${count}건 팩트 기사 기반 실시간 Q&A`;
+      subHeader.textContent = count > 0 ? `${count}건 팩트 기사 기반 실시간 Q&A` : '실시간 팩트 기사 기반 Q&A';
     }
 
     if (serverNotice) {
@@ -308,7 +308,7 @@
         serverNotice.innerHTML = `
           <i data-lucide="info" class="w-4 h-4 flex-shrink-0 text-blue-500"></i>
           <div>
-            <span class="font-bold">안내:</span> 서버 환경변수 미등록 시 아래에 개인 무료 키를 등록하면 즉시 Gemini AI 브리핑이 활성화됩니다.
+            <span class="font-bold">안내:</span> 서버 환경변수 미등록 시 아래에 개인 무료 키를 등록하면 즉시 Gemini AI 브리핑이 활성화됩니다. (미등록 시 브라우저 내 실시간 기사 요약 모드로 동작)
           </div>
         `;
       }
@@ -319,15 +319,30 @@
       if (geminiApiKey) {
         badge.className = 'text-[10px] px-2 py-0.5 rounded-full font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30';
         badge.textContent = 'Gemini 1.5 (개인 키)';
+        badge.title = '사용자 개인 Gemini API 키 연동 중';
       } else if (hasServerApiKey) {
         badge.className = 'text-[10px] px-2 py-0.5 rounded-full font-semibold bg-blue-500/20 text-blue-300 border border-blue-400/30';
         badge.textContent = 'Gemini (서버 무료 이용)';
+        badge.title = '서버 등록 Gemini AI 모델 연동 중';
       } else {
         badge.className = 'text-[10px] px-2 py-0.5 rounded-full font-semibold bg-amber-500/20 text-amber-300 border border-amber-400/30';
-        badge.textContent = '로컬 요약 모드';
+        badge.textContent = '기사 데이터 요약 모드';
+        badge.title = 'API 키 미등록 상태: 브라우저 내 실시간 기사 데이터를 기반으로 핵심 요약 답변 제공 (상단 🔑 버튼으로 Gemini 연동 가능)';
       }
     }
   }
+
+  window.updateChatbotArticleCount = function(count) {
+    const articleCount = count !== undefined ? count : ((window.allArticles && window.allArticles.length) || 0);
+    const subHeader = document.getElementById('chatbotSubHeader');
+    if (subHeader) {
+      subHeader.textContent = articleCount > 0 ? `${articleCount}건 팩트 기사 기반 실시간 Q&A` : '실시간 팩트 기사 기반 Q&A';
+    }
+    const welcomeCountEl = document.getElementById('chatbotWelcomeCount');
+    if (welcomeCountEl) {
+      welcomeCountEl.innerHTML = articleCount > 0 ? `<strong>${articleCount}건</strong>의 ` : '';
+    }
+  };
 
 
   // 3. 이벤트 리스너 설정
@@ -379,7 +394,7 @@
         saveApiKey('');
         const input = document.getElementById('chatbotApiKeyInput');
         if (input) input.value = '';
-        if (window.showToast) window.showToast('키가 삭제되었습니다. (로컬 요약 모드 전환)');
+        if (window.showToast) window.showToast('키가 삭제되었습니다. (기사 데이터 요약 모드 전환)');
       });
     }
     if (form) {
@@ -491,20 +506,18 @@
     scrollToBottom();
   }
 
-  function toggleChatbotWindow(forceState) {
+  // 챗봇 창 열기/닫기 토글
+  function toggleChatbotWindow(open) {
     const windowEl = document.getElementById('chatbotWindow');
     const floatBtn = document.getElementById('chatbotFloatingBtn');
     const backdropEl = document.getElementById('chatbotBackdrop');
     if (!windowEl) return;
 
-    if (typeof forceState === 'boolean') {
-      isChatbotOpen = forceState;
-    } else {
-      isChatbotOpen = !isChatbotOpen;
-    }
+    isChatbotOpen = !!open;
 
-    if (isChatbotOpen) {
-      checkServerStatus();
+    if (open) {
+      // 기사 건수 및 API 모드 뱃지 실시간 동기화
+      if (window.updateChatbotArticleCount) window.updateChatbotArticleCount();
       updateApiStatusBadge();
 
       // 모바일 배경 스크롤 차단 활성화
@@ -558,7 +571,12 @@
     const container = document.getElementById('chatbotMessagesContainer');
     if (!container) return;
 
-    const count = (window.allArticles && window.allArticles.length) || 237;
+    const count = (window.allArticles && window.allArticles.length) || 0;
+    const countText = count > 0 ? `<strong>${count}건</strong>의 ` : '';
+
+    const modeNotice = (hasServerApiKey || geminiApiKey)
+      ? '💡 <strong>Tip</strong>: 상단 <strong>[추천 질문 칩]</strong>을 누르시거나 궁금하신 토목 키워드를 자유롭게 질문해 보세요!'
+      : '💡 <strong>Tip</strong>: 상단 <strong>[추천 질문 칩]</strong>을 누르시거나 토목 키워드를 질문해 보세요. (우측 상단 🔑 버튼으로 Google Gemini API 키를 등록하면 생성형 AI 심층 브리핑을 이용하실 수 있습니다.)';
 
     container.innerHTML = `
       <div class="flex items-start gap-2.5">
@@ -571,10 +589,10 @@
               <span>안녕하세요! Civil AI 브리핑입니다.</span> 🏗️
             </p>
             <p class="text-slate-600 dark:text-slate-300 mb-2">
-              최신 토목 기사 <strong>${count}건</strong>의 실시간 데이터를 기반으로 사업비, 완공 일정, 핵심 공법, 정책 이슈를 알기 쉽게 설명해 드립니다.
+              최신 토목 기사 <span id="chatbotWelcomeCount">${countText}</span>실시간 데이터를 기반으로 사업비, 완공 일정, 핵심 공법, 정책 이슈를 알기 쉽게 설명해 드립니다.
             </p>
-            <div class="p-2 rounded-xl bg-blue-50 dark:bg-slate-900/60 border border-blue-100 dark:border-slate-700 text-[11px] text-blue-800 dark:text-blue-300">
-              💡 <strong>Tip</strong>: 상단 <strong>[추천 질문 칩]</strong>을 누르시거나 궁금하신 토목 키워드를 자유롭게 질문해 보세요!
+            <div id="chatbotWelcomeTip" class="p-2 rounded-xl bg-blue-50 dark:bg-slate-900/60 border border-blue-100 dark:border-slate-700 text-[11px] text-blue-800 dark:text-blue-300">
+              ${modeNotice}
             </div>
           </div>
         </div>
@@ -594,6 +612,9 @@
       if (res.ok) {
         const data = await res.json();
         window.allArticles = data.articles || [];
+        if (window.updateChatbotArticleCount) {
+          window.updateChatbotArticleCount(window.allArticles.length);
+        }
         return window.allArticles;
       }
     } catch (e) {

@@ -382,6 +382,11 @@ async function loadNewsData() {
     const countEl = document.getElementById('newsTotalCount');
     if (countEl) countEl.textContent = `${allArticles.length}건`;
 
+    // AI 챗봇 실시간 기사 건수 동기화
+    if (window.updateChatbotArticleCount) {
+      window.updateChatbotArticleCount(allArticles.length);
+    }
+
     // 매일 아침 크롤링된 당일 대표 트렌딩 키워드(#) 동적 연동
     if (data.trending_keywords && Array.isArray(data.trending_keywords) && data.trending_keywords.length > 0) {
       newsKeywordChips = ['전체', ...data.trending_keywords];
