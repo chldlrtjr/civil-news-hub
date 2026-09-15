@@ -152,7 +152,7 @@
             전북대학교 아르바이트
             <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-extrabold">JBNU Alba</span>
           </h2>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">전북대 공식 광장 실시간 수집 · 스마트 월 예상 수입 자동 계산기 탑재</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">전북대 공식 광장 실시간 수집 · 단기·일급 및 시급 맞춤 안내</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
@@ -183,7 +183,7 @@
       <div class="flex items-center gap-2">
         <!-- 정렬 드롭다운 -->
         <select id="jbnuAlbaSortSelect" onchange="window.handleAlbaSortChange(this.value)" class="bg-white dark:bg-slate-900 text-xs text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 shadow-sm cursor-pointer">
-          <option value="wage_high" selected>💰 월 예상 수입 높은순</option>
+          <option value="wage_high" selected>💰 급여 높은순</option>
           <option value="deadline">⏱️ 마감 임박순 (D-Day순)</option>
           <option value="views">👀 조회수 많은순</option>
           <option value="recent">📅 최신 등록순</option>
@@ -1019,7 +1019,7 @@
 
       <!-- 스마트 수입 박스 -->
       <div class="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 mb-5 text-center">
-        <div class="text-xs font-bold text-emerald-700 dark:text-emerald-300">💡 스마트 월 예상 수입</div>
+        <div id="modalAlbaBadge" class="text-xs font-bold text-emerald-700 dark:text-emerald-300">💡 급여 및 근무 조건 안내</div>
         <div id="modalAlbaEstimate" class="text-xl font-black text-emerald-800 dark:text-emerald-200 mt-0.5"></div>
         <div id="modalAlbaEstimateSub" class="text-xs text-emerald-600 dark:text-emerald-400 mt-0.5"></div>
       </div>
@@ -1068,11 +1068,11 @@
   </div>
 
   <!-- 프론트엔드 스크립트 로드 (전북대 알바 & SPA 마스터 컨트롤러 & 채용 & 공모전 & AI 챗봇) -->
-  <script src="./static/jbnu_alba.js?v=20260915_v110"></script>
-  <script src="./static/app.js?v=20260915_v110"></script>
-  <script src="./static/jobs.js?v=20260915_v110"></script>
-  <script src="./static/contests.js?v=20260915_v110"></script>
-  <script src="./static/chatbot.js?v=20260915_v110"></script>
+  <script src="./static/jbnu_alba.js?v=20260915_v111"></script>
+  <script src="./static/app.js?v=20260915_v111"></script>
+  <script src="./static/jobs.js?v=20260915_v111"></script>
+  <script src="./static/contests.js?v=20260915_v111"></script>
+  <script src="./static/chatbot.js?v=20260915_v111"></script>
 
   <script>
     if ('serviceWorker' in navigator && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {

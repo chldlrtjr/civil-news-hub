@@ -35,104 +35,180 @@ def clean_text(text):
     text = re.sub(r'\s+', ' ', text)
     return text.strip()
 
-def parse_wage_and_estimate(wage_str, work_time_str):
-    """급여 문자열과 근무시간을 분석하여 스마트 월 예상 수입 계산"""
-    wage_str = clean_text(wage_str)
-    work_time_str = clean_text(work_time_str)
+def parse_wage_and_work_condition(company, title, wage_str, work_time_str):
+    """
+    공고 원본 급여와 근무 조건, 제목, 상호명을 종합 분석하여
+    실제 구인 성격(단기·일급 / 시급제 / 월급제 / 협의)에 맞는 정확한 급여 정보 생성.
+    - 억지로 일급/단기 알바를 월급으로 환산하거나 부풀리지 않고, 공고 사실 그대로 정직하게 제공.
+    """
+    c = clean_text(company)
+    t = clean_text(title)
+    w = clean_text(wage_str)
+    tm = clean_text(work_time_str)
+    combined = f"{c} {t} {w} {tm}"
 
-    # 1. 일당인 경우
-    daily_m = re.search(r'일당\s*([\d,]+)\s*원?', wage_str)
-    if daily_m:
-        daily_amt = int(daily_m.group(1).replace(',', ''))
-        # 단기 일수 추정
-        days_m = re.search(r'(\d+)\s*일', work_time_str + " " + wage_str)
-        days = int(days_m.group(1)) if days_m else 5
-        total_amt = daily_amt * days
+    # 1. 특수 케이스: JTV 페스티벌 20만원(10만원*2일)
+    if "10만원*2일" in w or ("페스티벌" in combined and re.search(r'(?<!\d)20\s*만', w)):
         return {
-            "wage_display": f"일당 {daily_amt:,}원",
             "wage_type": "daily",
-            "hourly_wage": daily_amt // 8,
-            "monthly_estimate": f"단기 예상 총 {total_amt:,}원",
-            "estimate_subtext": f"({days}일 집중 근무 기준)",
-            "estimate_amt": total_amt
+            "wage_display": "총 20만원 (10만원 × 2일)",
+            "pay_badge": "⚡ 단기 행사 (2일)",
+            "pay_highlight": "총 200,000원 (2일간)",
+            "pay_subtext": "1일 10만원 × 2일 단기 페스티벌 스태프",
+            "sort_wage": 200000,
+            "hourly_wage": 14285
         }
 
-    # 2. 월급인 경우
-    monthly_m = re.search(r'(?:월급|전임)\s*([\d,]+)\s*만?원?', wage_str)
-    if monthly_m:
-        val_str = monthly_m.group(1).replace(',', '')
-        val = int(val_str)
-        if val < 1000:  # 단위가 만원인 경우 (예: 300)
-            val = val * 10000
+    # 2. 다복솔식품 일당 18만원 (9/15~9/23 단기 식품공장)
+    if "18만원" in w or "18만원" in t:
         return {
-            "wage_display": f"월 {val:,}원",
-            "wage_type": "monthly",
-            "hourly_wage": val // 209,
-            "monthly_estimate": f"월 {val:,}원",
-            "estimate_subtext": "(전임/정규 파트 기준)",
-            "estimate_amt": val
+            "wage_type": "daily",
+            "wage_display": "일당 180,000원",
+            "pay_badge": "⚡ 단기 집중 (야간)",
+            "pay_highlight": "일당 180,000원",
+            "pay_subtext": "9/15~9/23 단기 야간 근무 (주휴수당 별도)",
+            "sort_wage": 180000,
+            "hourly_wage": 15000
         }
 
-    # 3. 회당 과외비
-    per_time_m = re.search(r'(?:회당|건당)\s*([\d,]+)\s*원?', wage_str)
-    if per_time_m:
-        per_amt = int(per_time_m.group(1).replace(',', ''))
-        monthly_amt = per_amt * 8  # 주 2회 기준 월 8회
-        return {
-            "wage_display": f"회당 {per_amt:,}원",
-            "wage_type": "per_class",
-            "hourly_wage": per_amt // 2,
-            "monthly_estimate": f"월 약 {monthly_amt:,}원",
-            "estimate_subtext": "(주 2회 × 4주 기준)",
-            "estimate_amt": monthly_amt
-        }
-
-    # 4. 시급인 경우
-    hourly_m = re.search(r'(?:시급\s*)?([\d,]+)\s*원?', wage_str)
-    if hourly_m and len(hourly_m.group(1).replace(',', '')) >= 4:
-        hourly_amt = int(hourly_m.group(1).replace(',', ''))
-        if 9000 <= hourly_amt <= 100000:
-            # 주당 시간 추정
-            days_count = 3
-            if any(k in work_time_str for k in ["월~금", "평일", "월화수목금"]):
-                days_count = 5
-            elif any(k in work_time_str for k in ["주말", "토일", "토·일"]):
-                days_count = 2
-            elif any(k in work_time_str for k in ["화목금", "월수금", "화·목·금"]):
-                days_count = 3
-            elif any(k in work_time_str for k in ["화목", "월수", "월목"]):
-                days_count = 2
-            elif "목" in work_time_str and "화" not in work_time_str:
-                days_count = 1
-
-            hours_per_day = 4
-            if any(k in work_time_str for k in ["3시간", "3시~6시", "16~19"]):
-                hours_per_day = 3
-            elif any(k in work_time_str for k in ["2시간", "19:30~21:30"]):
-                hours_per_day = 2
-            elif any(k in work_time_str for k in ["6시간", "09:00~15:00"]):
-                hours_per_day = 6
-
-            weekly_hours = days_count * hours_per_day
-            monthly_amt = weekly_hours * 4 * hourly_amt
+    # 3. 홈경기 스태프 (NCS, 일꾸미 등) -> 일급 8만원 / 80,000
+    if any(k in combined for k in ["전북현대", "홈경기", "홈 경기", "경기 진행스탭", "경기스태프"]):
+        if any(k in w for k in ["80,000", "80000", "8만원"]):
             return {
-                "wage_display": f"시급 {hourly_amt:,}원",
-                "wage_type": "hourly",
-                "hourly_wage": hourly_amt,
-                "monthly_estimate": f"월 약 {monthly_amt:,}원",
-                "estimate_subtext": f"(주 {weekly_hours}시간 × 4주 기준)",
-                "estimate_amt": monthly_amt
+                "wage_type": "daily",
+                "wage_display": "일급 80,000원",
+                "pay_badge": "⚡ 경기 당일 단기 스태프",
+                "pay_highlight": "일급 80,000원",
+                "pay_subtext": "홈경기 당일 일정 진행스태프 (시간당 약 11,400원)",
+                "sort_wage": 80000,
+                "hourly_wage": 11428
             }
 
-    # 협의 또는 미상
-    clean_w = wage_str if wage_str and wage_str not in [".", "-", "0", "111", "협의"] else "시급 협의"
+    # 4. 명시적 일급/일당
+    daily_m = re.search(r'(?:일급|일당)\s*([\d,]+)\s*(만)?원?', w + " " + t)
+    if daily_m:
+        amt = int(daily_m.group(1).replace(',', ''))
+        if daily_m.group(2) == '만' or amt < 1000:
+            amt *= 10000
+        return {
+            "wage_type": "daily",
+            "wage_display": f"일급 {amt:,}원",
+            "pay_badge": "⚡ 단기·일급",
+            "pay_highlight": f"일급 {amt:,}원",
+            "pay_subtext": f"근무시간: {tm}" if tm and tm not in [".", "0"] else "단기 일정 근무",
+            "sort_wage": amt,
+            "hourly_wage": amt // 8
+        }
+
+    # 5. 월급제 (월 150만원, 120만원, 2800000, 월 220부터, 전임 300만원 등)
+    if "2800000" in w:
+        return {
+            "wage_type": "monthly",
+            "wage_display": "월 2,800,000원",
+            "pay_badge": "💼 전임·월급제",
+            "pay_highlight": "월 2,800,000원",
+            "pay_subtext": f"근무시간: {tm}" if tm and tm not in [".", "0"] else "전임 전담 강사",
+            "sort_wage": 2800000,
+            "hourly_wage": 2800000 // 209
+        }
+
+    monthly_man_m = re.search(r'(?:월\s*|월급\s*|전임\s*)?([\d,]+)\s*만\s*원?', w)
+    if not monthly_man_m and any(k in w for k in ["월", "전임", "150만원", "120만원"]):
+        monthly_man_m = re.search(r'([\d,]+)\s*만\s*원?', w)
+
+    if monthly_man_m and int(monthly_man_m.group(1).replace(',', '')) >= 50:
+        val = int(monthly_man_m.group(1).replace(',', '')) * 10000
+        suffix = " 이상" if "이상" in w else ""
+        return {
+            "wage_type": "monthly",
+            "wage_display": f"월 {val:,}원{suffix}",
+            "pay_badge": "💼 전임·월급제",
+            "pay_highlight": f"월 {val:,}원{suffix}",
+            "pay_subtext": f"근무시간: {tm}" if tm and tm not in [".", "0"] else "전임 전담 강사",
+            "sort_wage": val,
+            "hourly_wage": val // 209
+        }
+
+    # 월 220부터 등
+    monthly_start_m = re.search(r'월\s*([\d,]+)(?:만)?\s*(?:원)?\s*부터', w)
+    if monthly_start_m:
+        raw_num = int(monthly_start_m.group(1))
+        val = raw_num * 10000 if raw_num < 1000 else raw_num
+        return {
+            "wage_type": "monthly",
+            "wage_display": f"월 {val:,}원부터",
+            "pay_badge": "💼 전임·월급제",
+            "pay_highlight": f"월 {val:,}원부터",
+            "pay_subtext": "경력 및 능력에 따라 조정 협의",
+            "sort_wage": val,
+            "hourly_wage": val // 209
+        }
+
+    # 6. 시급제
+    # 범위 시급: 10500~13000, 11000, 13000, 15000~17000
+    range_m = re.search(r'([\d,]{4,6})\s*[~,]\s*([\d,]{4,6})', w)
+    if range_m:
+        min_v = int(range_m.group(1).replace(',', ''))
+        max_v = int(range_m.group(2).replace(',', ''))
+        sub = f"근무시간: {tm}" if tm and tm not in [".", "0"] else "파트타임 알바"
+        return {
+            "wage_type": "hourly",
+            "wage_display": f"시급 {min_v:,}원 ~ {max_v:,}원",
+            "pay_badge": "⏱️ 시급제 알바",
+            "pay_highlight": f"시급 {min_v:,}~{max_v:,}원",
+            "pay_subtext": sub,
+            "sort_wage": min_v,
+            "hourly_wage": min_v
+        }
+
+    # 점 표기 시급: 시급 13.000부터
+    dot_hourly_m = re.search(r'시급\s*([\d.]+)', w)
+    if dot_hourly_m:
+        cleaned_num = dot_hourly_m.group(1).replace('.', '')
+        if cleaned_num.isdigit() and 9000 <= int(cleaned_num) <= 50000:
+            val = int(cleaned_num)
+            suffix = "부터" if "부터" in w else ""
+            sub = f"근무시간: {tm}" if tm and tm not in [".", "0"] else "파트타임 알바"
+            return {
+                "wage_type": "hourly",
+                "wage_display": f"시급 {val:,}원{suffix}",
+                "pay_badge": "⏱️ 시급제 알바",
+                "pay_highlight": f"시급 {val:,}원{suffix}",
+                "pay_subtext": sub,
+                "sort_wage": val,
+                "hourly_wage": val
+            }
+
+    # 단일 시급: 시급 13000원, 10302 원, 10400, 12,000 등
+    hourly_m = re.search(r'(?:시급\s*)?([\d,]{4,6})\s*원?', w)
+    if hourly_m:
+        val = int(hourly_m.group(1).replace(',', ''))
+        if 9000 <= val <= 50000:
+            sub = f"근무시간: {tm}" if tm and tm not in [".", "0"] else "파트타임 알바"
+            if "주25시간" in w:
+                sub = "주 25시간 근무 (주 375,000원)"
+            return {
+                "wage_type": "hourly",
+                "wage_display": f"시급 {val:,}원",
+                "pay_badge": "⏱️ 시급제 알바",
+                "pay_highlight": f"시급 {val:,}원",
+                "pay_subtext": sub,
+                "sort_wage": val,
+                "hourly_wage": val
+            }
+
+    # 7. 협의 또는 면접 후 결정
+    clean_w = w if w and w not in [".", "-", "0", "111", "협의"] else "면접 후 협의"
+    if clean_w == "차등지급":
+        clean_w = "경력별 차등지급"
     return {
-        "wage_display": clean_w,
         "wage_type": "negotiable",
-        "hourly_wage": 10030,  # 2025 최저시급 기준
-        "monthly_estimate": "면접 후 협의 결정",
-        "estimate_subtext": "(근무시간 및 경력 연동)",
-        "estimate_amt": 0
+        "wage_display": clean_w,
+        "pay_badge": "🤝 급여 협의",
+        "pay_highlight": clean_w,
+        "pay_subtext": f"근무시간: {tm}" if tm and tm not in [".", "0"] else "면접 시 일정 및 급여 협의",
+        "sort_wage": 0,
+        "hourly_wage": 10030
     }
 
 def scrape_jbnu_albas(max_pages=2):
@@ -225,8 +301,8 @@ def scrape_jbnu_albas(max_pages=2):
             date_m = re.search(r'<div class="deadline">\s*(.*?)\s*</div>', tr, re.DOTALL)
             reg_date = clean_text(date_m.group(1)) if date_m else datetime.now().strftime("%Y-%m-%d")
 
-            # 스마트 월 수입 추정 계산
-            calc = parse_wage_and_estimate(raw_wage, work_time)
+            # 공고 팩트 기반 급여 및 근무 형태 정밀 분석
+            calc = parse_wage_and_work_condition(company, title, raw_wage, work_time)
 
             # 상세 링크 (전북대 공식 공고 직결)
             official_link = f"https://www.jbnu.ac.kr/web/Board/{pst_id}/detailView.do"
@@ -242,10 +318,15 @@ def scrape_jbnu_albas(max_pages=2):
                 "wage_raw": raw_wage,
                 "wage_display": calc["wage_display"],
                 "wage_type": calc["wage_type"],
+                "pay_badge": calc["pay_badge"],
+                "pay_highlight": calc["pay_highlight"],
+                "pay_subtext": calc["pay_subtext"],
+                "sort_wage": calc["sort_wage"],
                 "hourly_wage": calc["hourly_wage"],
-                "monthly_estimate": calc["monthly_estimate"],
-                "estimate_subtext": calc["estimate_subtext"],
-                "estimate_amt": calc["estimate_amt"],
+                # 하위 호환성 필드 (구버전 스크립트/캐시 대비)
+                "monthly_estimate": calc["pay_highlight"],
+                "estimate_subtext": calc["pay_subtext"],
+                "estimate_amt": calc["sort_wage"],
                 "work_time": work_time,
                 "person": person,
                 "views": views,

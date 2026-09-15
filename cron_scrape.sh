@@ -29,18 +29,22 @@ echo "[2/5] 공모전 전담 수집 및 요강 실사 중 (contest_scraper.py)..
 echo "[3/5] 채용 공고 수집 중 (job_scraper.py)..." >> "$LOG_FILE"
 "$SCRIPT_DIR/venv/bin/python3" job_scraper.py >> "$LOG_FILE" 2>&1
 
-# 4. 공모전 데이터 무결성 전수 검증 (GEMINI.md Rule 1-⑦)
-echo "[4/5] 공모전 무결성 전수 검증 중 (test_contests_integrity.py)..." >> "$LOG_FILE"
+# 4. 전북대학교 아르바이트 공고 크롤링
+echo "[4/6] 전북대 아르바이트 수집 및 정제 중 (jbnu_scraper.py)..." >> "$LOG_FILE"
+"$SCRIPT_DIR/venv/bin/python3" jbnu_scraper.py >> "$LOG_FILE" 2>&1
+
+# 5. 공모전 데이터 무결성 전수 검증 (GEMINI.md Rule 1-⑦)
+echo "[5/6] 공모전 무결성 전수 검증 중 (test_contests_integrity.py)..." >> "$LOG_FILE"
 "$SCRIPT_DIR/venv/bin/python3" test_contests_integrity.py >> "$LOG_FILE" 2>&1
 
-# 5. GitHub 자동 배포 (data 변경분 commit + push → GitHub Pages 자동 반영)
-echo "[5/5] GitHub 자동 배포 중..." >> "$LOG_FILE"
-git add data/news.json data/contests.json data/jobs.json >> "$LOG_FILE" 2>&1
+# 6. GitHub 자동 배포 (data 변경분 commit + push → GitHub Pages 자동 반영)
+echo "[6/6] GitHub 자동 배포 중..." >> "$LOG_FILE"
+git add data/news.json data/contests.json data/jobs.json data/jbnu_albas.json >> "$LOG_FILE" 2>&1
 
 if git diff --cached --quiet; then
   echo "  ℹ️  데이터 변경 없음 — push 건너뜀" >> "$LOG_FILE"
 else
-  COMMIT_MSG="chore: [로컬 자동 수집] $(date '+%Y-%m-%d %H:%M') 토목 뉴스, 공모전 및 채용 데이터 업데이트"
+  COMMIT_MSG="chore: [로컬 자동 수집] $(date '+%Y-%m-%d %H:%M') 토목 뉴스, 공모전, 채용 및 알바 데이터 업데이트"
   git commit -m "$COMMIT_MSG" >> "$LOG_FILE" 2>&1
 
   # push 실패 시 최대 3회 재시도 (네트워크 일시 장애 대비)

@@ -154,7 +154,8 @@
     // 정렬
     filtered.sort((a, b) => {
       if (currentAlbaSort === 'wage_high') {
-        return (b.estimate_amt || 0) - (a.estimate_amt || 0);
+        const getWage = (j) => (j.sort_wage !== undefined ? j.sort_wage : (j.estimate_amt || 0));
+        return getWage(b) - getWage(a);
       } else if (currentAlbaSort === 'deadline') {
         const getDays = (d) => {
           if (!d) return 999;
@@ -191,15 +192,18 @@
       const isBookmarked = albaBookmarks.has(job.id);
       const isUrgent = job.is_urgent;
 
-      // 스마트 수입 박스 테마 컬러
-      let incomeBoxClass = 'bg-emerald-50/80 dark:bg-emerald-950/30 border-emerald-200/60 dark:border-emerald-800/50 text-emerald-800 dark:text-emerald-300';
-      let incomeBadge = '💡 스마트 월 예상 수입';
+      // 급여 형태 및 조건별 테마 스타일
+      let payBoxClass = 'bg-emerald-50/80 dark:bg-emerald-950/30 border-emerald-200/60 dark:border-emerald-800/50 text-emerald-900 dark:text-emerald-200';
+      let payBadge = job.pay_badge || '⏱️ 시급제 알바';
+      let payHighlight = job.pay_highlight || job.wage_display || job.monthly_estimate || '급여 협의';
+      let paySubtext = job.pay_subtext || job.estimate_subtext || job.work_time || '';
+
       if (job.wage_type === 'daily') {
-        incomeBoxClass = 'bg-amber-50/80 dark:bg-amber-950/30 border-amber-200/60 dark:border-amber-800/50 text-amber-800 dark:text-amber-300';
-        incomeBadge = '⚡ 단기 집중 예상 수입';
+        payBoxClass = 'bg-amber-50/80 dark:bg-amber-950/30 border-amber-200/60 dark:border-amber-800/50 text-amber-950 dark:text-amber-200';
       } else if (job.wage_type === 'monthly') {
-        incomeBoxClass = 'bg-blue-50/80 dark:bg-blue-950/30 border-blue-200/60 dark:border-blue-800/50 text-blue-800 dark:text-blue-300';
-        incomeBadge = '💼 정규 파트 예상 월급';
+        payBoxClass = 'bg-blue-50/80 dark:bg-blue-950/30 border-blue-200/60 dark:border-blue-800/50 text-blue-950 dark:text-blue-200';
+      } else if (job.wage_type === 'negotiable') {
+        payBoxClass = 'bg-slate-50/90 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300';
       }
 
       // D-Day 뱃지
@@ -242,7 +246,7 @@
             <!-- 4행: 근무 조건 요약 -->
             <div class="space-y-1.5 text-xs text-slate-600 dark:text-slate-400 pt-1">
               <div class="flex items-center justify-between">
-                <span class="text-slate-400">급여 형태</span>
+                <span class="text-slate-400">급여 안내</span>
                 <strong class="font-black text-slate-900 dark:text-slate-200 text-sm text-emerald-600 dark:text-emerald-400">
                   ${job.wage_display}
                 </strong>
@@ -261,14 +265,14 @@
               </div>
             </div>
 
-            <!-- 5행: 핵심 하이라이트 - 스마트 월 수입 자동 계산 박스 -->
-            <div class="p-3.5 rounded-2xl border ${incomeBoxClass} text-center transition">
-              <div class="text-[11px] font-bold tracking-tight opacity-90">${incomeBadge}</div>
+            <!-- 5행: 핵심 하이라이트 - 팩트 기반 급여 & 근무 안내 박스 -->
+            <div class="p-3.5 rounded-2xl border ${payBoxClass} text-center transition">
+              <div class="text-[11px] font-bold tracking-tight opacity-90">${payBadge}</div>
               <div class="text-base sm:text-lg font-black mt-0.5 tracking-tight">
-                ${job.monthly_estimate}
+                ${payHighlight}
               </div>
-              <div class="text-[10px] opacity-75 mt-0.5">
-                ${job.estimate_subtext}
+              <div class="text-[10px] opacity-80 mt-0.5 truncate" title="${paySubtext}">
+                ${paySubtext}
               </div>
             </div>
           </div>
@@ -315,8 +319,12 @@
     document.getElementById('modalAlbaCompany').innerText = job.company;
     document.getElementById('modalAlbaTitle').innerText = job.title;
     document.getElementById('modalAlbaWage').innerText = job.wage_display;
-    document.getElementById('modalAlbaEstimate').innerText = job.monthly_estimate;
-    document.getElementById('modalAlbaEstimateSub').innerText = job.estimate_subtext;
+
+    const badgeEl = document.getElementById('modalAlbaBadge');
+    if (badgeEl) badgeEl.innerText = job.pay_badge || '💡 급여 및 근무 조건 안내';
+
+    document.getElementById('modalAlbaEstimate').innerText = job.pay_highlight || job.wage_display || job.monthly_estimate;
+    document.getElementById('modalAlbaEstimateSub').innerText = job.pay_subtext || job.estimate_subtext || job.work_time;
     document.getElementById('modalAlbaTime').innerText = job.work_time;
     document.getElementById('modalAlbaPerson').innerText = job.person;
     document.getElementById('modalAlbaViews').innerText = job.views + '회';
