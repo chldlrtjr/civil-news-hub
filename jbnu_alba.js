@@ -31,7 +31,7 @@
     } catch (e) {}
   }
 
-  // 데이터 로드
+  // 데이터 로드 (GitHub Pages 상대경로 ./data/ 완벽 지원)
   async function loadJbnuAlbaData() {
     const indicator = document.getElementById('jbnuAlbaLoadingIndicator');
     const container = document.getElementById('jbnuAlbaContainer');
@@ -40,20 +40,35 @@
     if (container) container.classList.add('hidden');
 
     try {
-      const resp = await fetch('/api/jbnu-albas?t=' + Date.now());
-      if (!resp.ok) throw new Error('API 응답 실패');
+      let resp;
+      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      
+      if (isLocal) {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 2000);
+          resp = await fetch('/api/jbnu-albas?t=' + Date.now(), { signal: controller.signal });
+          clearTimeout(timeoutId);
+          if (!resp.ok) throw new Error('Local API failed');
+        } catch (e) {
+          resp = await fetch('./data/jbnu_albas.json?t=' + Date.now());
+        }
+      } else {
+        // GitHub Pages 등 정적 호스팅 환경: 도메인 루트(/)가 아닌 상대 경로(./data/...)로 즉각 요청
+        try {
+          resp = await fetch('./data/jbnu_albas.json?t=' + Date.now());
+          if (!resp.ok) throw new Error('Relative fetch failed');
+        } catch (e) {
+          resp = await fetch('data/jbnu_albas.json?t=' + Date.now());
+        }
+      }
+
+      if (!resp || !resp.ok) throw new Error('Data fetch failed');
       const data = await resp.json();
       allAlbas = data.jobs || [];
     } catch (err) {
-      console.warn('⚠️ /api/jbnu-albas 로드 실패, 정적 json 폴백 시도:', err);
-      try {
-        const fbResp = await fetch('/data/jbnu_albas.json?t=' + Date.now());
-        const fbData = await fbResp.json();
-        allAlbas = fbData.jobs || [];
-      } catch (fbErr) {
-        console.error('❌ 전북대 알바 데이터 최종 로드 실패:', fbErr);
-        allAlbas = [];
-      }
+      console.error('❌ 전북대 알바 데이터 최종 로드 실패:', err);
+      allAlbas = [];
     } finally {
       if (indicator) indicator.classList.add('hidden');
       if (container) container.classList.remove('hidden');
@@ -369,12 +384,25 @@
 
   // 전역 초기화 함수 노출
   window.initJbnuAlba = function() {
-    loadJbnuAlbaData();
+    if (allAlbas && allAlbas.length > 0) {
+      const indicator = document.getElementById('jbnuAlbaLoadingIndicator');
+      const container = document.getElementById('jbnuAlbaContainer');
+      if (indicator) indicator.classList.add('hidden');
+      if (container) container.classList.remove('hidden');
+      renderAlbaCategoryTabs();
+      renderAlbaCards();
+    } else {
+      loadJbnuAlbaData();
+    }
   };
 
-  // DOMContentLoaded 시 최초 데이터 로드
-  document.addEventListener('DOMContentLoaded', () => {
+  // DOMContentLoaded 또는 즉시 로드 (스크립트 로드 시점과 무관하게 100% 보장)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      loadJbnuAlbaData();
+    });
+  } else {
     loadJbnuAlbaData();
-  });
+  }
 
 })();

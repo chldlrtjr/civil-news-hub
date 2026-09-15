@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.0.54` (누적 수정 54회 반영 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.0.55` (누적 수정 55회 반영 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -887,11 +887,19 @@ mindmap
     - **4) GEMINI.md 규격 100% 준수 카테고리 탭**:
       - 시안 B 미니멀 언더라인 바 스타일, `font-semibold` 고정, `overscroll-behavior: none` 적용.
       - 전체 건수(32건)와 개별 카테고리 건수 합산 100% 일치.
-    - **5) 상세 모달 (`#jbnuAlbaModal`) 및 북마크(`civil_jbnu_alba_bookmarks`) 연동**:
-      - 카드 클릭 시 상세 요강 모달 팝업 및 전북대 공식 공고 바로가기 링크 제공, 북마크 리본 토글 지원.
-    - **6) SPA 라우팅 및 버전/캐시 버스터 갱신**:
-      - 안전모 GNB 버튼 클릭 시 `#tabPanelHome` 매끄러운 탭 전환 및 데이터 실시간 로드.
-      - 내부 버전 `v1.0.54` 자동 증가, PWA 서비스 워커 `civil-news-hub-v1.0.54`, 캐시 버스터 `?v=20260915_2015` 동기화 완료.
+- **(56) GitHub Pages 정적 배포 환경 상대경로(./data/...) 완벽 패치 및 데이터 무노출 버그 해결 (ver 1.0.55)**:
+  - **문제 증상 및 원인 분석**:
+    - 로컬 서버(`http://localhost:8000`)에서는 전북대 알바 32건이 정상 표출되나, GitHub Pages 라이브(`https://chldlrtjr.github.io/civil-news-hub/`)에서는 데이터가 전혀 로드되지 않는 현상 발생.
+    - **근본 원인**: `jbnu_alba.js`에서 `/data/jbnu_albas.json` 절대 경로를 요청하여 저장소 서브경로(`/civil-news-hub/`)가 생략된 채 도메인 루트(`https://chldlrtjr.github.io/data/...`)로 요청되어 404 Not Found 발생.
+  - **해결 조치**:
+    - **1) GitHub Pages 상대 경로(`./data/jbnu_albas.json`) 자동 폴백 체계 완비**:
+      - `window.location.hostname` 기반 로컬/라이브 환경 자동 감지.
+      - GitHub Pages 정적 호스팅 환경에서는 상대 경로 `./data/jbnu_albas.json` 및 `data/jbnu_albas.json`으로 즉시 요청하도록 완벽 보정.
+    - **2) 스크립트 로드 순서 및 document.readyState 안전망 강화**:
+      - `index.html`에서 `jbnu_alba.js`를 `app.js`보다 먼저 로드하여 GNB 탭 전환 시 즉시 전역 핸들러 연동.
+      - `document.readyState === 'loading'` 여부를 체크하여 어떤 시점에 스크립트가 로드되더라도 100% 누락 없이 즉시 렌더링되도록 보장.
+    - **3) 서비스 워커 및 캐시 버스팅 갱신**:
+      - PWA 캐시 `civil-news-hub-v1.0.55`, 스크립트 캐시 버스터 `?v=20260915_2030` 일괄 갱신.
 
 ---
 
@@ -899,7 +907,7 @@ mindmap
 
 | 브랜치명 | 상태 | 설명 |
 | :--- | :--- | :--- |
-| **`main`** | **최신 공식 배포 브랜치 (v1.0.54)** | GitHub Pages를 통해 라이브 서비스 중인 메인 브랜치 (전북대 알바 매소너리 보드, 토목 뉴스, 채용, 공모전 통합) |
+| **`main`** | **최신 공식 배포 브랜치 (v1.0.55)** | GitHub Pages를 통해 라이브 서비스 중인 메인 브랜치 (전북대 알바 매소너리 보드, 토목 뉴스, 채용, 공모전 통합) |
 | **`feature/footer-last-updated`** | **작업 완료 (main 병합됨)** | 푸터 업데이트 이전 및 초기 헤더 클린업 작업 브랜치 |
 
 - **온라인 라이브 서비스**: [https://chldlrtjr.github.io/civil-news-hub/](https://chldlrtjr.github.io/civil-news-hub/)
