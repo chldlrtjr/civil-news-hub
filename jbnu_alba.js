@@ -215,7 +215,8 @@
       }
 
       html += `
-        <article class="bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-700 transition flex flex-col justify-between group">
+        <article class="bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:shadow-md hover:border-emerald-400 dark:hover:border-emerald-600 transition flex flex-col justify-between group cursor-pointer"
+          onclick="window.open('${job.link}', '_blank', 'noopener,noreferrer')">
           <div class="space-y-3.5">
             <!-- 1행: 카테고리 뱃지 & D-day -->
             <div class="flex items-center justify-between">
@@ -239,7 +240,7 @@
             </div>
 
             <!-- 3행: 공고 헤드라인 제목 -->
-            <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition cursor-pointer" onclick="window.openAlbaModal('${job.id}')">
+            <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
               ${job.title}
             </h3>
 
@@ -278,7 +279,7 @@
           </div>
 
           <!-- 6행: 하단 푸터 액션 바 -->
-          <div class="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
+          <div class="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2" onclick="event.stopPropagation()">
             <div class="flex items-center gap-1">
               <!-- 북마크 리본 버튼 -->
               <button onclick="window.toggleAlbaBookmark('${job.id}', event)"
@@ -294,11 +295,13 @@
               </button>
             </div>
 
-            <!-- 상세보기 버튼 -->
-            <button onclick="window.openAlbaModal('${job.id}')"
-              class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold transition flex items-center gap-1 shadow-xs cursor-pointer">
-              상세보기 <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-            </button>
+            <!-- 공식 원문 바로가기 링크 -->
+            <a href="${job.link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()"
+              class="inline-flex items-center gap-1 text-xs font-bold text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition py-1 px-1"
+              title="원문 공고 새 창으로 보기">
+              <span>바로가기</span>
+              <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+            </a>
           </div>
         </article>
       `;
@@ -308,32 +311,12 @@
     if (window.lucide) window.lucide.createIcons();
   }
 
-  // 모달 열기
+  // 공고 바로가기 (알바 클릭 시 공고 원문 새 창 이동)
   window.openAlbaModal = function(id) {
     const job = allAlbas.find(j => j.id === id);
-    if (!job) return;
-
-    const modal = document.getElementById('jbnuAlbaModal');
-    if (!modal) return;
-
-    document.getElementById('modalAlbaCompany').innerText = job.company;
-    document.getElementById('modalAlbaTitle').innerText = job.title;
-    document.getElementById('modalAlbaWage').innerText = job.wage_display;
-
-    const badgeEl = document.getElementById('modalAlbaBadge');
-    if (badgeEl) badgeEl.innerText = job.pay_badge || '💡 급여 및 근무 조건 안내';
-
-    document.getElementById('modalAlbaEstimate').innerText = job.pay_highlight || job.wage_display || job.monthly_estimate;
-    document.getElementById('modalAlbaEstimateSub').innerText = job.pay_subtext || job.estimate_subtext || job.work_time;
-    document.getElementById('modalAlbaTime').innerText = job.work_time;
-    document.getElementById('modalAlbaPerson').innerText = job.person;
-    document.getElementById('modalAlbaViews').innerText = job.views + '회';
-    document.getElementById('modalAlbaDate').innerText = job.reg_date;
-    document.getElementById('modalAlbaLink').href = job.link;
-
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    document.body.style.overflow = 'hidden';
+    if (job && job.link) {
+      window.open(job.link, '_blank', 'noopener,noreferrer');
+    }
   };
 
   // 모달 닫기
