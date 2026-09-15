@@ -21,6 +21,7 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 NEWS_JSON_PATH = os.path.join(DATA_DIR, "news.json")
 CONTESTS_JSON_PATH = os.path.join(DATA_DIR, "contests.json")
 JOBS_JSON_PATH = os.path.join(DATA_DIR, "jobs.json")
+JBNU_JSON_PATH = os.path.join(DATA_DIR, "jbnu_albas.json")
 
 PORT = int(os.environ.get("PORT", 5000))
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.6-flash")
@@ -144,6 +145,22 @@ def get_jobs():
     if not os.path.exists(JOBS_JSON_PATH):
         job_scraper.scrape_civil_jobs()
     return send_file(JOBS_JSON_PATH, mimetype="application/json; charset=utf-8")
+
+@app.route("/api/jbnu-albas")
+@app.route("/api/albas")
+@app.route("/data/jbnu_albas.json")
+def get_jbnu_albas():
+    if not os.path.exists(JBNU_JSON_PATH):
+        try:
+            import jbnu_scraper
+            jbnu_scraper.scrape_jbnu_albas()
+        except Exception:
+            pass
+    resp = send_file(JBNU_JSON_PATH, mimetype="application/json; charset=utf-8")
+    resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    resp.headers["Pragma"] = "no-cache"
+    resp.headers["Expires"] = "0"
+    return resp
 
 def get_live_tunnel_url():
     """Cloudflare Tunnel 로그에서 현재 활성화된 라이브 터널 URL 조회"""

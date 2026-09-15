@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="ko" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎓 전북대 알바 UI/UX 5대 디자인 인터랙티브 시각화 프리뷰</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+  <script src="https://unpkg.com/lucide@0.441.0/dist/umd/lucide.min.js"></script>
+  <style>
+    body {
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    }
+    .neo-shadow {
+      box-shadow: 4px 4px 0px #000;
+    }
+    .neo-shadow-lg {
+      box-shadow: 6px 6px 0px #000;
+    }
+    .neo-shadow-sm {
+      box-shadow: 2px 2px 0px #000;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 min-h-full flex flex-col antialiased selection:bg-blue-500 selection:text-white">
+
+  <!-- Top Sticky Header -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="/#home" class="p-2 -ml-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition" title="메인으로 돌아가기">
+          <i data-lucide="arrow-left" class="w-5 h-5"></i>
+        </a>
+        <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+          🎓
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-black text-slate-900 leading-tight">전북대 알바(JBNU Alba) UI/UX 시각화 갤러리</h1>
+          <p class="text-xs text-slate-500 hidden sm:block">전북대 아르바이트 게시판 실시간 수집 데이터 기반 5대 인터랙티브 디자인 프로토타입</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="/#home" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition">
+          허브로 이동
+        </a>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="bg-white border-t border-slate-100">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex space-x-1 sm:space-x-4 overflow-x-auto no-scrollbar py-2" id="designTabs">
+          <button onclick="switchDesign('all')" class="tab-btn px-3 py-2 text-xs sm:text-sm font-bold rounded-xl transition bg-blue-600 text-white shadow-xs" data-target="all">
+            ✨ 5대 디자인 한눈에 비교
+          </button>
+          <button onclick="switchDesign('1')" class="tab-btn px-3 py-2 text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition" data-target="1">
+            📱 디자인 1: 당근알바 퀵 피드
+          </button>
+          <button onclick="switchDesign('2')" class="tab-btn px-3 py-2 text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition" data-target="2">
+            📊 디자인 2: 노션 스마트 시트
+          </button>
+          <button onclick="switchDesign('3')" class="tab-btn px-3 py-2 text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition" data-target="3">
+            🧱 디자인 3: 핀터레스트 매소너리
+          </button>
+          <button onclick="switchDesign('4')" class="tab-btn px-3 py-2 text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition" data-target="4">
+            🗓️ 디자인 4: 에타 공강 시간표
+          </button>
+          <button onclick="switchDesign('5')" class="tab-btn px-3 py-2 text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition" data-target="5">
+            🖤 디자인 5: 네오 브루탈리즘
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+
+    <!-- ========================================================================= -->
+    <!-- DESIGN 1: 당근알바 스타일 "모바일 퍼스트 퀵 피드 & 칩" -->
+    <!-- ========================================================================= -->
+    <section id="section-design-1" class="design-section bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm transition">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+        <div>
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-100 text-orange-700 text-xs font-bold mb-2">
+            📱 디자인 1 · 모바일 최적화
+          </div>
+          <h2 class="text-xl sm:text-2xl font-black text-slate-900">당근알바 스타일 "모바일 퍼스트 퀵 피드 & 스토리 칩"</h2>
+          <p class="text-sm text-slate-500 mt-1">답답한 외곽 박스를 벗어던지고, 스마트폰 한 손 스크롤과 1초 스캔에 맞춘 초경량 피드</p>
+        </div>
+        <div class="flex items-center gap-2 text-xs font-semibold text-slate-500">
+          <span class="px-2.5 py-1 bg-slate-100 rounded-lg">#한손스크롤</span>
+          <span class="px-2.5 py-1 bg-slate-100 rounded-lg">#스토리칩</span>
+          <span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-lg">#에메랄드급여뱃지</span>
+        </div>
+      </div>
+
+      <div class="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- Live AI Rendered Mockup Showcase -->
+        <div class="lg:col-span-4 flex flex-col items-center">
+          <div class="text-xs font-bold text-slate-500 mb-2 flex items-center gap-1">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-blue-500"></i> AI 비주얼 렌더링 결과물 (Visual Mockup)
+          </div>
+          <div class="w-full max-w-[320px] rounded-2xl overflow-hidden shadow-xl border border-slate-200">
+            <img src="/static/img/jbnu_alba_design1_feed.jpg" alt="디자인 1 모바일 피드 AI 비주얼 시안" class="w-full h-auto object-cover">
+          </div>
+        </div>
+
+        <!-- Interactive HTML Native Preview -->
+        <div class="lg:col-span-8 bg-slate-50 rounded-2xl p-4 sm:p-6 border border-slate-200">
+          <div class="text-xs font-bold text-slate-600 mb-3 flex items-center justify-between">
+            <span>✨ 실시간 인터랙티브 UI 컴포넌트 프리뷰</span>
+            <span class="text-blue-600 font-bold">동작 테스트 가능</span>
+          </div>
+
+          <!-- Phone Screen Container -->
+          <div class="max-w-md mx-auto bg-white rounded-3xl shadow-md border border-slate-200 p-5 space-y-4">
+            <!-- Search bar -->
+            <div class="relative">
+              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+              <input type="text" placeholder="전북대 인근 알바 검색 (예: 송천동, 카페, 과외)..." class="w-full pl-10 pr-4 py-2.5 bg-slate-100 rounded-2xl text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-orange-500 transition">
+            </div>
+
+            <!-- Story Circles Chips -->
+            <div class="flex items-center gap-3 overflow-x-auto no-scrollbar py-1">
+              <button class="flex flex-col items-center gap-1 flex-shrink-0 group">
+                <div class="w-13 h-13 rounded-full bg-gradient-to-tr from-orange-500 to-amber-400 p-0.5 shadow-xs">
+                  <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-xl group-hover:scale-95 transition">
+                    🔥
+                  </div>
+                </div>
+                <span class="text-[11px] font-bold text-orange-600">급구</span>
+              </button>
+              <button class="flex flex-col items-center gap-1 flex-shrink-0 group">
+                <div class="w-13 h-13 rounded-full bg-slate-200 p-0.5">
+                  <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-xl group-hover:scale-95 transition">
+                    💰
+                  </div>
+                </div>
+                <span class="text-[11px] font-bold text-slate-700">1.3만↑</span>
+              </button>
+              <button class="flex flex-col items-center gap-1 flex-shrink-0 group">
+                <div class="w-13 h-13 rounded-full bg-slate-200 p-0.5">
+                  <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-xl group-hover:scale-95 transition">
+                    🏫
+                  </div>
+                </div>
+                <span class="text-[11px] font-bold text-slate-700">교내/근로</span>
+              </button>
+              <button class="flex flex-col items-center gap-1 flex-shrink-0 group">
+                <div class="w-13 h-13 rounded-full bg-slate-200 p-0.5">
+                  <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-xl group-hover:scale-95 transition">
+                    📚
+                  </div>
+                </div>
+                <span class="text-[11px] font-bold text-slate-700">학원/과외</span>
+              </button>
+              <button class="flex flex-col items-center gap-1 flex-shrink-0 group">
+                <div class="w-13 h-13 rounded-full bg-slate-200 p-0.5">
+                  <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-xl group-hover:scale-95 transition">
+                    ☕
+                  </div>
+                </div>
+                <span class="text-[11px] font-bold text-slate-700">카페/식당</span>
+              </button>
+            </div>
+
+            <!-- Feed Card 1 -->
+            <div class="border-t border-slate-100 pt-4 space-y-2.5">
+              <div class="flex items-center justify-between">
+                <span class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-[11px] font-bold">교육 · 학원</span>
+                <span class="text-[11px] font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded-full">D-11</span>
+              </div>
+              <h3 class="text-base font-extrabold text-slate-900 leading-snug">
+                에코서일어학원 · 영어도서관 리딩랩 코칭 선생님 구인
+              </h3>
+              <div class="flex items-baseline gap-2">
+                <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 text-xs font-black rounded-lg">
+                  시급 13,000원
+                </span>
+                <span class="text-xs text-slate-500">화·목·금 15:00~19:00</span>
+              </div>
+              <div class="flex items-center justify-between text-xs text-slate-400 pt-1">
+                <span class="flex items-center gap-1"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i> 송천동 에코시티</span>
+                <span>모집 1명 · 조회 128</span>
+              </div>
+              <div class="flex gap-2 pt-2">
+                <button class="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1">
+                  <i data-lucide="phone" class="w-3.5 h-3.5"></i> 전화문의
+                </button>
+                <button class="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1">
+                  <i data-lucide="external-link" class="w-3.5 h-3.5"></i> 지원하기
+                </button>
+              </div>
+            </div>
+
+            <!-- Feed Card 2 -->
+            <div class="border-t border-slate-100 pt-4 space-y-2.5">
+              <div class="flex items-center justify-between">
+                <span class="px-2 py-0.5 rounded bg-purple-50 text-purple-700 text-[11px] font-bold">사무 · 공공기관</span>
+                <span class="text-[11px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">D-6</span>
+              </div>
+              <h3 class="text-base font-extrabold text-slate-900 leading-snug">
+                전북창조경제혁신센터 · 청년 일경험 프로그램 참여자 31명 모집
+              </h3>
+              <div class="flex items-baseline gap-2">
+                <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 text-xs font-black rounded-lg">
+                  시급 15,000원
+                </span>
+                <span class="text-xs text-slate-500 font-bold text-blue-600">(주 37.5만원)</span>
+              </div>
+              <div class="flex items-center justify-between text-xs text-slate-400 pt-1">
+                <span class="flex items-center gap-1"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i> 덕진동 (전북대 인근)</span>
+                <span>모집 31명 · 조회 542</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- DESIGN 2: 노션 스마트 시트 & 우측 드로어 -->
+    <!-- ========================================================================= -->
+    <section id="section-design-2" class="design-section bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm transition">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+        <div>
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold mb-2">
+            📊 디자인 2 · 고생산성 데이터 시트
+          </div>
+          <h2 class="text-xl sm:text-2xl font-black text-slate-900">노션(Notion) / 에어테이블형 "인터랙티브 스마트 시트"</h2>
+          <p class="text-sm text-slate-500 mt-1">PC/태블릿에서 한 번에 20개 공고를 비교하고, 행을 누르면 우측에서 슬라이드 오버 드로어가 즉시 열림</p>
+        </div>
+        <div class="flex items-center gap-2 text-xs font-semibold text-slate-500">
+          <span class="px-2.5 py-1 bg-slate-100 rounded-lg">#원클릭정렬</span>
+          <span class="px-2.5 py-1 bg-slate-100 rounded-lg">#슬라이드오버드로어</span>
+          <span class="px-2.5 py-1 bg-indigo-100 text-indigo-700 rounded-lg">#엑셀비교감성</span>
+        </div>
+      </div>
+
+      <div class="mt-6 relative">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div class="flex items-center gap-2 text-xs font-bold text-slate-600">
+            <span>총 <strong class="text-blue-600 font-black">16</strong>건 공고</span>
+            <span class="text-slate-300">|</span>
+            <span class="text-slate-500">💡 표의 행을 클릭하면 우측에서 상세 드로어가 열립니다</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-200 transition">
+              급여 높은순 정렬 ▼
+            </button>
+            <button class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-200 transition">
+              마감 임박순 ▼
+            </button>
+          </div>
+        </div>
+
+        <!-- Notion Table Container -->
+        <div class="overflow-x-auto border border-slate-200 rounded-2xl">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
+              <tr>
+                <th class="p-3.5">분류</th>
+                <th class="p-3.5">기업/기관명</th>
+                <th class="p-3.5">공고 헤드라인</th>
+                <th class="p-3.5 text-right">급여(시급/일당)</th>
+                <th class="p-3.5">근무 요일/시간</th>
+                <th class="p-3.5 text-center">마감일</th>
+                <th class="p-3.5 text-center">액션</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <tr onclick="openDrawer('다복솔식품', '식품공장 단기 아르바이트 (야간)', '일당 180,000원', '20:00~08:00', 'D-8', '0명', '통근버스 운행, 야간수당 포함')" class="hover:bg-blue-50/60 cursor-pointer transition">
+                <td class="p-3.5"><span class="px-2 py-0.5 bg-amber-100 text-amber-800 rounded font-bold text-xs">제조</span></td>
+                <td class="p-3.5 font-bold text-slate-900">다복솔식품</td>
+                <td class="p-3.5 font-extrabold text-blue-600">식품공장 추석 단기 아르바이트 (야간 집중)</td>
+                <td class="p-3.5 text-right font-black text-emerald-600">일당 180,000원</td>
+                <td class="p-3.5 text-slate-600">20:00~08:00 (야간)</td>
+                <td class="p-3.5 text-center"><span class="px-2 py-0.5 bg-red-100 text-red-700 rounded-full font-bold text-xs">D-8</span></td>
+                <td class="p-3.5 text-center"><button class="px-2.5 py-1 bg-slate-100 hover:bg-blue-600 hover:text-white rounded-lg text-xs font-bold transition">상세보기</button></td>
+              </tr>
+              <tr onclick="openDrawer('전북창조경제혁신센터', '일경험 프로그램 참여자 모집', '시급 15,000원', '평일 09:00~15:00', 'D-6', '31명', '청년 적합 일경험, 혁신센터 수료증 발급')" class="hover:bg-blue-50/60 cursor-pointer transition">
+                <td class="p-3.5"><span class="px-2 py-0.5 bg-purple-100 text-purple-800 rounded font-bold text-xs">사무</span></td>
+                <td class="p-3.5 font-bold text-slate-900">전북창조경제혁신센터</td>
+                <td class="p-3.5 font-extrabold text-slate-900">전북체육회 / 혁신센터 일경험 프로그램 31명 모집</td>
+                <td class="p-3.5 text-right font-black text-emerald-600">시급 15,000원</td>
+                <td class="p-3.5 text-slate-600">월~금 09:00~15:00</td>
+                <td class="p-3.5 text-center"><span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full font-bold text-xs">D-6</span></td>
+                <td class="p-3.5 text-center"><button class="px-2.5 py-1 bg-slate-100 hover:bg-blue-600 hover:text-white rounded-lg text-xs font-bold transition">상세보기</button></td>
+              </tr>
+              <tr onclick="openDrawer('에코서일어학원', '영어도서관 리딩랩 코칭', '시급 13,000원', '화목금 15:00~19:00', 'D-11', '1명', '초등 리딩 코칭 및 자기주도학습 지도')" class="hover:bg-blue-50/60 cursor-pointer transition">
+                <td class="p-3.5"><span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded font-bold text-xs">교육</span></td>
+                <td class="p-3.5 font-bold text-slate-900">에코서일어학원</td>
+                <td class="p-3.5 font-extrabold text-slate-900">영어도서관 리딩랩 코칭 선생님 구인</td>
+                <td class="p-3.5 text-right font-black text-emerald-600">시급 13,000원</td>
+                <td class="p-3.5 text-slate-600">화·목·금 15:00~19:00</td>
+                <td class="p-3.5 text-center"><span class="px-2 py-0.5 bg-slate-100 text-slate-700 rounded-full font-bold text-xs">D-11</span></td>
+                <td class="p-3.5 text-center"><button class="px-2.5 py-1 bg-slate-100 hover:bg-blue-600 hover:text-white rounded-lg text-xs font-bold transition">상세보기</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Slide-over Drawer (Interactive Simulated) -->
+        <div id="notionDrawer" class="hidden absolute top-0 right-0 w-full sm:w-96 h-full bg-white border-l border-slate-200 shadow-2xl rounded-r-2xl p-6 flex-col justify-between z-20 transition-all duration-300">
+          <div>
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+              <span class="text-xs font-black text-blue-600 uppercase tracking-wider">공고 상세 정보</span>
+              <button onclick="closeDrawer()" class="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700">
+                <i data-lucide="x" class="w-5 h-5"></i>
+              </button>
+            </div>
+            <div class="mt-4 space-y-4">
+              <h3 id="drawerTitle" class="text-base font-black text-slate-900 leading-snug">공고 제목</h3>
+              <div class="p-3 bg-emerald-50 rounded-xl">
+                <div class="text-xs text-emerald-600 font-bold">확정 급여</div>
+                <div id="drawerWage" class="text-lg font-black text-emerald-800">일당 180,000원</div>
+              </div>
+              <div class="space-y-2 text-xs text-slate-600">
+                <div class="flex justify-between py-1 border-b border-slate-100">
+                  <span class="text-slate-400">기업/상호</span>
+                  <span id="drawerCompany" class="font-bold text-slate-800">다복솔식품</span>
+                </div>
+                <div class="flex justify-between py-1 border-b border-slate-100">
+                  <span class="text-slate-400">근무시간</span>
+                  <span id="drawerTime" class="font-bold text-slate-800">20:00~08:00</span>
+                </div>
+                <div class="flex justify-between py-1 border-b border-slate-100">
+                  <span class="text-slate-400">모집인원</span>
+                  <span id="drawerPerson" class="font-bold text-slate-800">0명</span>
+                </div>
+              </div>
+              <p id="drawerDesc" class="text-xs text-slate-500 leading-relaxed bg-slate-50 p-3 rounded-xl">
+                특이사항 및 상세 내용이 여기에 표시됩니다.
+              </p>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-slate-100">
+            <button class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
+              <i data-lucide="external-link" class="w-4 h-4"></i> 전북대 공식 공고 바로가기
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- DESIGN 3: 핀터레스트 매소너리 보드 & 월 수입 자동 계산기 -->
+    <!-- ========================================================================= -->
+    <section id="section-design-3" class="design-section bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm transition">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+        <div>
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold mb-2">
+            🧱 디자인 3 · 스마트 수입 계산기 결합
+          </div>
+          <h2 class="text-xl sm:text-2xl font-black text-slate-900">핀터레스트(Pinterest)형 "워커스 매소너리 & 수입 계산기"</h2>
+          <p class="text-sm text-slate-500 mt-1">시급과 근무 시간을 자동 곱연산하여 "내가 이 알바로 한 달에 얼마를 버는가?"를 즉각 금액 변환</p>
+        </div>
+        <div class="flex items-center gap-2 text-xs font-semibold text-slate-500">
+          <span class="px-2.5 py-1 bg-slate-100 rounded-lg">#유기적카드월</span>
+          <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-lg">#월예상수입계산</span>
+          <span class="px-2.5 py-1 bg-slate-100 rounded-lg">#직종이모지</span>
+        </div>
+      </div>
+
+      <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+        <!-- Card 1 -->
+        <div class="bg-gradient-to-b from-white to-slate-50/60 rounded-2xl p-6 border border-slate-200/80 shadow-sm hover:shadow-md transition space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-2xl">📚</span>
+            <span class="px-2.5 py-1 bg-red-50 text-red-600 rounded-full text-xs font-bold">D-11</span>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-blue-600">에코서일어학원</div>
+            <h3 class="text-base font-black text-slate-900 mt-1 leading-snug">영어도서관 리딩랩 코칭 선생님 구인</h3>
+          </div>
+          <div class="space-y-1.5 text-xs text-slate-600">
+            <div class="flex justify-between">
+              <span class="text-slate-400">시급</span>
+              <strong class="font-extrabold text-slate-900">13,000원</strong>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">근무 요일</span>
+              <span>화·목·금 (주 3일)</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">근무 시간</span>
+              <span>15:00~19:00 (일 4시간)</span>
+            </div>
+          </div>
+          <!-- Smart Income Box -->
+          <div class="p-3.5 bg-emerald-50 rounded-xl border border-emerald-200/60 text-center">
+            <div class="text-[11px] font-bold text-emerald-700">💡 스마트 월 예상 수입</div>
+            <div class="text-lg font-black text-emerald-800 mt-0.5">약 624,000원 <span class="text-xs font-semibold text-emerald-600">/ 월</span></div>
+            <div class="text-[10px] text-emerald-600 mt-0.5">(주 12시간 × 4주 기준)</div>
+          </div>
+          <button class="w-full py-2 bg-slate-900 hover:bg-blue-600 text-white rounded-xl text-xs font-bold transition">
+            알바 지원하기
+          </button>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="bg-gradient-to-b from-white to-slate-50/60 rounded-2xl p-6 border border-slate-200/80 shadow-sm hover:shadow-md transition space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-2xl">🏭</span>
+            <span class="px-2.5 py-1 bg-amber-50 text-amber-600 rounded-full text-xs font-bold">D-8</span>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-purple-600">다복솔식품</div>
+            <h3 class="text-base font-black text-slate-900 mt-1 leading-snug">식품공장 추석 단기 아르바이트 (야간)</h3>
+          </div>
+          <div class="space-y-1.5 text-xs text-slate-600">
+            <div class="flex justify-between">
+              <span class="text-slate-400">일당</span>
+              <strong class="font-extrabold text-slate-900">180,000원</strong>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">근무 기간</span>
+              <span>9/15~23 (총 9일 집중)</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">근무 시간</span>
+              <span>20:00~08:00 (야간)</span>
+            </div>
+          </div>
+          <!-- Smart Income Box -->
+          <div class="p-3.5 bg-amber-50 rounded-xl border border-amber-200/60 text-center">
+            <div class="text-[11px] font-bold text-amber-700">⚡ 단기 총 예상 수입</div>
+            <div class="text-lg font-black text-amber-800 mt-0.5">총 1,620,000원</div>
+            <div class="text-[10px] text-amber-600 mt-0.5">(9일 풀근무 + 주휴 별도)</div>
+          </div>
+          <button class="w-full py-2 bg-slate-900 hover:bg-blue-600 text-white rounded-xl text-xs font-bold transition">
+            알바 지원하기
+          </button>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="bg-gradient-to-b from-white to-slate-50/60 rounded-2xl p-6 border border-slate-200/80 shadow-sm hover:shadow-md transition space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-2xl">🎨</span>
+            <span class="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-bold">D-14</span>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-rose-600">아트 레시피 미술학원</div>
+            <h3 class="text-base font-black text-slate-900 mt-1 leading-snug">에코시티 아동미술학원 선생님 구합니다</h3>
+          </div>
+          <div class="space-y-1.5 text-xs text-slate-600">
+            <div class="flex justify-between">
+              <span class="text-slate-400">시급</span>
+              <strong class="font-extrabold text-slate-900">15,000원 (3개월후 인상)</strong>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">근무 요일</span>
+              <span>매주 목요일 (주 1회)</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">근무 시간</span>
+              <span>16:00~19:00 (목 3시간)</span>
+            </div>
+          </div>
+          <!-- Smart Income Box -->
+          <div class="p-3.5 bg-blue-50 rounded-xl border border-blue-200/60 text-center">
+            <div class="text-[11px] font-bold text-blue-700">💡 스마트 월 예상 수입</div>
+            <div class="text-lg font-black text-blue-800 mt-0.5">약 180,000원 <span class="text-xs font-semibold text-blue-600">/ 월</span></div>
+            <div class="text-[10px] text-blue-600 mt-0.5">(목요일 공강 활용 용돈 알바)</div>
+          </div>
+          <button class="w-full py-2 bg-slate-900 hover:bg-blue-600 text-white rounded-xl text-xs font-bold transition">
+            알바 지원하기
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- DESIGN 4: 에타 공강 시간표 매칭 -->
+    <!-- ========================================================================= -->
+    <section id="section-design-4" class="design-section bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm transition">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+        <div>
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-100 text-violet-700 text-xs font-bold mb-2">
+            🗓️ 디자인 4 · 대학생 학업 라이프 최적화
+          </div>
+          <h2 class="text-xl sm:text-2xl font-black text-slate-900">에브리타임 시간표 연계 "공강 매칭 타임테이블"</h2>
+          <p class="text-sm text-slate-500 mt-1">내 공강 요일(예: 화/목 오후)을 누르면, 시간표에 꼭 맞는 알바를 매칭률(98%, 92%)로 추천</p>
+        </div>
+        <div class="flex items-center gap-2 text-xs font-semibold text-slate-500">
+          <span class="px-2.5 py-1 bg-violet-100 text-violet-800 rounded-lg">#공강시간표매칭</span>
+          <span class="px-2.5 py-1 bg-slate-100 rounded-lg">#매칭률순정렬</span>
+          <span class="px-2.5 py-1 bg-slate-100 rounded-lg">#동선거리안내</span>
+        </div>
+      </div>
+
+      <!-- Timetable interactive selector -->
+      <div class="mt-6 bg-slate-50 rounded-2xl p-5 border border-slate-200">
+        <div class="text-xs font-bold text-slate-700 mb-2.5">📅 내 공강 요일 및 가능 시간대 선택 (클릭하여 토글):</div>
+        <div class="flex flex-wrap items-center gap-2 pb-4 border-b border-slate-200">
+          <button class="px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-600 hover:bg-slate-100">월</button>
+          <button class="px-3.5 py-1.5 rounded-xl text-xs font-bold border-2 border-violet-600 bg-violet-600 text-white shadow-xs">화 ✓</button>
+          <button class="px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-600 hover:bg-slate-100">수</button>
+          <button class="px-3.5 py-1.5 rounded-xl text-xs font-bold border-2 border-violet-600 bg-violet-600 text-white shadow-xs">목 ✓</button>
+          <button class="px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-600 hover:bg-slate-100">금</button>
+          <button class="px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-600 hover:bg-slate-100">토/일(주말)</button>
+          <span class="text-slate-300 mx-1">|</span>
+          <button class="px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-600 hover:bg-slate-100">오전</button>
+          <button class="px-3.5 py-1.5 rounded-xl text-xs font-bold border-2 border-violet-600 bg-violet-600 text-white shadow-xs">오후 (13~18시) ✓</button>
+          <button class="px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-600 hover:bg-slate-100">야간</button>
+        </div>
+
+        <div class="mt-4 flex items-center justify-between">
+          <div class="text-xs font-extrabold text-violet-700">
+            🎯 [화·목 오후] 공강에 딱 들어맞는 추천 알바 3건 매칭됨
+          </div>
+          <span class="text-[11px] text-slate-500 font-semibold">동선 기준: 전북대 인근</span>
+        </div>
+
+        <!-- Matched List -->
+        <div class="mt-3 space-y-3">
+          <div class="bg-white rounded-xl p-4 border border-violet-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-violet-400 transition">
+            <div class="flex items-start gap-3">
+              <div class="w-11 h-11 rounded-xl bg-violet-100 text-violet-700 flex flex-col items-center justify-center font-black text-xs flex-shrink-0">
+                <span>98%</span>
+                <span class="text-[9px] font-bold">일치</span>
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold text-slate-500">에코서일어학원</span>
+                  <span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">시급 13,000원</span>
+                </div>
+                <h4 class="text-sm font-extrabold text-slate-900 mt-0.5">영어도서관 리딩랩 코칭 선생님 (화·목·금 15:00~19:00)</h4>
+                <p class="text-xs text-slate-500 mt-1">📍 화/목 4교시(15시) 수업 끝나고 바로 버스로 이동 가능 (소요 18분)</p>
+              </div>
+            </div>
+            <button class="px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold rounded-xl transition flex-shrink-0">
+              공강 매칭 지원
+            </button>
+          </div>
+
+          <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-violet-400 transition">
+            <div class="flex items-start gap-3">
+              <div class="w-11 h-11 rounded-xl bg-slate-100 text-slate-700 flex flex-col items-center justify-center font-black text-xs flex-shrink-0">
+                <span>92%</span>
+                <span class="text-[9px] font-bold">일치</span>
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold text-slate-500">아트 레시피 미술학원</span>
+                  <span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">시급 15,000원</span>
+                </div>
+                <h4 class="text-sm font-extrabold text-slate-900 mt-0.5">에코시티 아동미술학원 선생님 (목 16:00~19:00)</h4>
+                <p class="text-xs text-slate-500 mt-1">📍 목요일 단 하루 3시간 집중 알바로 주 4.5만원 확보</p>
+              </div>
+            </div>
+            <button class="px-4 py-2 bg-slate-900 hover:bg-violet-600 text-white text-xs font-bold rounded-xl transition flex-shrink-0">
+              공강 매칭 지원
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- DESIGN 5: 토스 감성 네오 브루탈리즘 & 볼드 넘버 -->
+    <!-- ========================================================================= -->
+    <section id="section-design-5" class="design-section bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm transition">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+        <div>
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-yellow-200 text-yellow-900 text-xs font-bold mb-2">
+            🖤 디자인 5 · 힙한 핀테크/네오 브루탈 감성
+          </div>
+          <h2 class="text-xl sm:text-2xl font-black text-slate-900">토스/핀테크 감성 "네오 브루탈리즘 & 볼드 넘버"</h2>
+          <p class="text-sm text-slate-500 mt-1">두꺼운 2px 블랙 외곽선, 하드 섀도우, 자질구레한 설명 대신 '돈(급여)'을 초대형 숫자로 강조</p>
+        </div>
+        <div class="flex items-center gap-2 text-xs font-semibold text-slate-500">
+          <span class="px-2.5 py-1 bg-yellow-100 text-yellow-900 font-black rounded-lg">#초대형급여</span>
+          <span class="px-2.5 py-1 bg-black text-white rounded-lg">#하드섀도우</span>
+          <span class="px-2.5 py-1 bg-lime-200 text-black font-black rounded-lg">#Z세대감성</span>
+        </div>
+      </div>
+
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Neo Card 1 -->
+        <div class="bg-[#FFFDF5] border-2 border-black rounded-2xl p-6 neo-shadow hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-1 bg-[#FFE600] border-2 border-black text-black text-xs font-black rounded-lg">
+              ⚡ 전북대 시급 상위 5% PICK
+            </span>
+            <span class="px-2 py-0.5 border border-black text-xs font-bold rounded bg-white">D-6</span>
+          </div>
+          <div>
+            <div class="text-3xl sm:text-4xl font-black text-black tracking-tight">
+              ₩15,000 <span class="text-base font-bold text-slate-600">/ 시급</span>
+            </div>
+            <h3 class="text-lg font-black text-black mt-2 leading-tight">
+              전북창조경제혁신센터 · 청년 일경험 31명 모집
+            </h3>
+            <p class="text-xs text-slate-600 mt-1 font-medium">월~금 09:00~15:00 (주 37.5만) · 혁신센터 수료증</p>
+          </div>
+          <div class="flex flex-wrap gap-1.5 pt-2 border-t-2 border-black">
+            <span class="px-2 py-0.5 bg-black text-white text-[11px] font-bold rounded">#공공기관</span>
+            <span class="px-2 py-0.5 bg-[#E2F87B] border border-black text-black text-[11px] font-bold rounded">#주37.5만</span>
+            <span class="px-2 py-0.5 bg-white border border-black text-black text-[11px] font-bold rounded">#덕진동</span>
+          </div>
+          <button class="w-full py-3 bg-black hover:bg-[#FFE600] text-white hover:text-black font-black text-sm rounded-xl border-2 border-black transition neo-shadow-sm flex items-center justify-center gap-1">
+            지원하기 <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Neo Card 2 -->
+        <div class="bg-[#F5FBFF] border-2 border-black rounded-2xl p-6 neo-shadow hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-1 bg-[#6EE7B7] border-2 border-black text-black text-xs font-black rounded-lg">
+              🌙 고수익 야간 단기 집중
+            </span>
+            <span class="px-2 py-0.5 border border-black text-xs font-bold rounded bg-white">D-8</span>
+          </div>
+          <div>
+            <div class="text-3xl sm:text-4xl font-black text-black tracking-tight">
+              ₩180,000 <span class="text-base font-bold text-slate-600">/ 일당</span>
+            </div>
+            <h3 class="text-lg font-black text-black mt-2 leading-tight">
+              다복솔식품 · 9/15~23 단기 식품공장 생산
+            </h3>
+            <p class="text-xs text-slate-600 mt-1 font-medium">20:00~08:00 (야간) · 통근버스 무료 · 주휴수당 포함</p>
+          </div>
+          <div class="flex flex-wrap gap-1.5 pt-2 border-t-2 border-black">
+            <span class="px-2 py-0.5 bg-black text-white text-[11px] font-bold rounded">#단기집중</span>
+            <span class="px-2 py-0.5 bg-[#6EE7B7] border border-black text-black text-[11px] font-bold rounded">#야간수당</span>
+            <span class="px-2 py-0.5 bg-white border border-black text-black text-[11px] font-bold rounded">#통근버스</span>
+          </div>
+          <button class="w-full py-3 bg-black hover:bg-[#6EE7B7] text-white hover:text-black font-black text-sm rounded-xl border-2 border-black transition neo-shadow-sm flex items-center justify-center gap-1">
+            지원하기 <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- RECOMMENDATION: 권장 하이브리드 조합안 (Best Mix) -->
+    <!-- ========================================================================= -->
+    <section class="bg-gradient-to-r from-blue-900 to-indigo-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl">
+      <div class="flex items-center gap-2 text-yellow-300 font-black text-xs uppercase tracking-wider mb-2">
+        <i data-lucide="award" class="w-4 h-4"></i> 최종 권장 하이브리드 조합 (Best Recommendation)
+      </div>
+      <h3 class="text-xl sm:text-2xl font-black">
+        "디자인 1 (모바일 퀵 피드) + 디자인 4 (공강 시간표 매칭) + 디자인 5 (볼드 급여)"
+      </h3>
+      <p class="text-sm text-blue-100 mt-2 max-w-3xl leading-relaxed">
+        상단에 <strong>내 공강 요일 칩</strong>을 두고, 리스트는 손쉬운 <strong>모바일 피드</strong>로 흐르며, 급여는 <strong>시원한 볼드 뱃지(₩15,000 / 시급)</strong>로 노출하는 형태가 전북대 학생들에게 가장 압도적인 반응과 만족도를 제공합니다.
+      </p>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a href="/#home" class="px-5 py-2.5 bg-white text-blue-900 hover:bg-yellow-300 hover:text-slate-900 font-extrabold text-sm rounded-xl transition shadow-md">
+          이 조합으로 신규 알바 페이지 구현 시작하기 &rarr;
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Interactive Scripts -->
+  <script>
+    lucide.createIcons();
+
+    function switchDesign(target) {
+      // Tab highlight
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        if (btn.dataset.target === target) {
+          btn.className = 'tab-btn px-3 py-2 text-xs sm:text-sm font-bold rounded-xl transition bg-blue-600 text-white shadow-xs';
+        } else {
+          btn.className = 'tab-btn px-3 py-2 text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition';
+        }
+      });
+
+      // Show/Hide sections
+      document.querySelectorAll('.design-section').forEach(sec => {
+        if (target === 'all') {
+          sec.style.display = 'block';
+        } else {
+          if (sec.id === `section-design-${target}`) {
+            sec.style.display = 'block';
+            sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          } else {
+            sec.style.display = 'none';
+          }
+        }
+      });
+    }
+
+    function openDrawer(company, title, wage, time, dday, person, desc) {
+      const drawer = document.getElementById('notionDrawer');
+      document.getElementById('drawerTitle').innerText = title;
+      document.getElementById('drawerCompany').innerText = company;
+      document.getElementById('drawerWage').innerText = wage;
+      document.getElementById('drawerTime').innerText = time;
+      document.getElementById('drawerPerson').innerText = person;
+      document.getElementById('drawerDesc').innerText = desc;
+      drawer.classList.remove('hidden');
+      drawer.classList.add('flex');
+    }
+
+    function closeDrawer() {
+      const drawer = document.getElementById('notionDrawer');
+      drawer.classList.add('hidden');
+      drawer.classList.remove('flex');
+    }
+  </script>
+</body>
+</html>

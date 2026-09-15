@@ -70,7 +70,7 @@
         
         <!-- 로고 및 서비스 네비게이션 (SPA 3원 GNB 버튼) -->
         <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
-          <button id="gnbHatBtn" onclick="switchMainTab('home')" class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 flex-shrink-0 hover:scale-105 transition cursor-pointer" title="토목 허브 (신규 페이지)">
+          <button id="gnbHatBtn" onclick="switchMainTab('home')" class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 flex-shrink-0 hover:scale-105 transition cursor-pointer" title="전북대 알바 (JBNU Alba)">
             <i data-lucide="hard-hat" class="w-4 h-4 sm:w-6 sm:h-6"></i>
           </button>
           
@@ -138,44 +138,69 @@
   </header>
 
   <!-- ========================================== -->
-  <!-- 0. 신규 페이지 탭 패널 (#tabPanelHome)       -->
+  <!-- 0. 전북대학교 아르바이트 (JBNU Alba) 패널  -->
   <!-- ========================================== -->
   <section id="tabPanelHome" class="hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <!-- 상단 헤더 -->
-    <div class="mb-8">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-200/80 dark:border-slate-800">
-        <div class="flex items-center gap-3">
-          <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white flex items-center justify-center font-bold shadow-md shadow-blue-500/20 flex-shrink-0">
-            <i data-lucide="hard-hat" class="w-6 h-6"></i>
-          </div>
-          <div>
-            <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">토목 허브 (신규 페이지)</h2>
-            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">새로운 기능과 콘텐츠를 구성할 전용 페이지 공간입니다.</p>
-          </div>
+    <!-- 상단 헤더 타이틀 -->
+    <div class="pb-4 border-b border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center font-black text-xl shadow-md shadow-emerald-500/20 flex-shrink-0">
+          🎓
+        </div>
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            전북대학교 아르바이트
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-extrabold">JBNU Alba</span>
+          </h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">전북대 공식 광장 실시간 수집 · 스마트 월 예상 수입 자동 계산기 탑재</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="https://www.jbnu.ac.kr/web/unvrslife/square/sub02/1.do" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold transition">
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          <span>전북대 공식 광장 바로가기</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- 카테고리 탭 (상단 고정 Sticky Navigation - 시안 B: 미니멀 언더라인 바) -->
+    <div class="sticky top-0 sm:top-16 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-0 mt-0 mb-4 sm:my-4 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 shadow-xs transition-colors">
+      <div class="max-w-7xl mx-auto flex items-center overflow-x-auto scrollbar-none category-scroll-container" style="touch-action: pan-x; overscroll-behavior: none; overscroll-behavior-x: none;">
+        <div id="jbnuAlbaCategoryTabs" class="flex items-center gap-1 sm:gap-3 min-w-max h-full" style="touch-action: pan-x;">
+          <!-- jbnu_alba.js에서 동적 탭 렌더링 -->
         </div>
       </div>
     </div>
 
-    <!-- 신규 페이지 준비 컨테이너 (사용자 맞춤 구성 영역) -->
-    <div class="rounded-3xl border border-dashed border-slate-300 dark:border-slate-700 p-8 sm:p-12 text-center bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
-      <div class="w-16 h-16 rounded-3xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 mx-auto flex items-center justify-center mb-4 border border-blue-200 dark:border-blue-900/60 shadow-xs">
-        <i data-lucide="sparkles" class="w-8 h-8"></i>
+    <!-- 필터 및 정렬 옵션 바 -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400 mb-4 px-1">
+      <div class="flex items-center gap-2">
+        <span id="jbnuAlbaResultCountNotice" class="font-medium text-slate-700 dark:text-slate-300">
+          알바 공고를 불러오는 중입니다...
+        </span>
       </div>
-      <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-2">새로운 페이지가 성공적으로 연결되었습니다!</h3>
-      <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-6">
-        토목뉴스 왼쪽의 안전모(모자) 버튼을 클릭하면 이 페이지로 전환됩니다.<br>
-        이곳에 구성하고자 하시는 내용이나 기능을 말씀해주시면 바로 만들어 드립니다.
-      </p>
-      <div class="flex flex-wrap items-center justify-center gap-3">
-        <button onclick="switchMainTab('news')" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold transition cursor-pointer shadow-xs">
-          토목 뉴스로 돌아가기
-        </button>
-        <button onclick="switchMainTab('jobs')" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold transition cursor-pointer border border-slate-200 dark:border-slate-700">
-          채용 공고 둘러보기
-        </button>
-        <button onclick="switchMainTab('contests')" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold transition cursor-pointer border border-slate-200 dark:border-slate-700">
-          공모전 둘러보기
-        </button>
+
+      <div class="flex items-center gap-2">
+        <!-- 정렬 드롭다운 -->
+        <select id="jbnuAlbaSortSelect" onchange="window.handleAlbaSortChange(this.value)" class="bg-white dark:bg-slate-900 text-xs text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 shadow-sm cursor-pointer">
+          <option value="wage_high" selected>💰 월 예상 수입 높은순</option>
+          <option value="deadline">⏱️ 마감 임박순 (D-Day순)</option>
+          <option value="views">👀 조회수 많은순</option>
+          <option value="recent">📅 최신 등록순</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 로딩 인디케이터 -->
+    <div id="jbnuAlbaLoadingIndicator" class="flex flex-col items-center justify-center py-24 text-center">
+      <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-600 mb-3"></div>
+      <p class="text-sm text-slate-500 dark:text-slate-400">전북대학교 아르바이트 공고를 불러오는 중입니다...</p>
+    </div>
+
+    <!-- 알바 매소너리 카드 그리드 컨테이너 -->
+    <div id="jbnuAlbaContainer" class="hidden">
+      <div id="jbnuAlbaGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+        <!-- jbnu_alba.js에서 렌더링 -->
       </div>
     </div>
   </section>
@@ -976,17 +1001,78 @@
     </div>
   </div>
 
+  <!-- 전북대 알바 상세 보기 모달 -->
+  <div id="jbnuAlbaModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl relative">
+      <button type="button" onclick="window.closeAlbaModal()" class="absolute top-5 right-5 p-1.5 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-2 mb-3">
+        <span class="px-2.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-bold">
+          전북대 공식 공고
+        </span>
+        <span id="modalAlbaCompany" class="text-xs font-extrabold text-blue-600 dark:text-blue-400"></span>
+      </div>
+
+      <h3 id="modalAlbaTitle" class="text-lg sm:text-xl font-black text-slate-900 dark:text-white leading-snug mb-4"></h3>
+
+      <!-- 스마트 수입 박스 -->
+      <div class="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 mb-5 text-center">
+        <div class="text-xs font-bold text-emerald-700 dark:text-emerald-300">💡 스마트 월 예상 수입</div>
+        <div id="modalAlbaEstimate" class="text-xl font-black text-emerald-800 dark:text-emerald-200 mt-0.5"></div>
+        <div id="modalAlbaEstimateSub" class="text-xs text-emerald-600 dark:text-emerald-400 mt-0.5"></div>
+      </div>
+
+      <!-- 세부 조건 그리드 -->
+      <div class="space-y-2.5 text-xs text-slate-600 dark:text-slate-300 mb-6 bg-slate-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
+        <div class="flex justify-between py-1 border-b border-slate-200/60 dark:border-slate-700/60">
+          <span class="text-slate-400">급여 안내</span>
+          <span id="modalAlbaWage" class="font-extrabold text-slate-900 dark:text-white"></span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-slate-200/60 dark:border-slate-700/60">
+          <span class="text-slate-400">근무 시간</span>
+          <span id="modalAlbaTime" class="font-bold text-slate-900 dark:text-white"></span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-slate-200/60 dark:border-slate-700/60">
+          <span class="text-slate-400">모집 인원</span>
+          <span id="modalAlbaPerson" class="font-bold text-slate-900 dark:text-white"></span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-slate-200/60 dark:border-slate-700/60">
+          <span class="text-slate-400">등록일자</span>
+          <span id="modalAlbaDate" class="font-medium text-slate-700 dark:text-slate-300"></span>
+        </div>
+        <div class="flex justify-between py-1">
+          <span class="text-slate-400">조회수</span>
+          <span id="modalAlbaViews" class="font-medium text-slate-700 dark:text-slate-300"></span>
+        </div>
+      </div>
+
+      <!-- 액션 버튼 -->
+      <div class="flex gap-3">
+        <button type="button" onclick="window.closeAlbaModal()" class="flex-1 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-xl transition cursor-pointer">
+          닫기
+        </button>
+        <a id="modalAlbaLink" href="#" target="_blank" rel="noopener noreferrer" class="flex-2 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl transition flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/20 cursor-pointer">
+          <span>전북대 공식 공고 확인 및 지원</span>
+          <i data-lucide="external-link" class="w-4 h-4"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
   <!-- 토스트 알림 컴포넌트 -->
   <div id="toast" class="fixed bottom-20 sm:bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 flex items-center space-x-2 px-4 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl shadow-xl text-xs sm:text-sm font-medium pointer-events-none">
     <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400 dark:text-emerald-600"></i>
     <span id="toastMessage">알림 메시지</span>
   </div>
 
-  <!-- 프론트엔드 스크립트 로드 (SPA 마스터 컨트롤러 & 채용 & 공모전 & AI 챗봇) -->
-  <script src="./static/app.js?v=20260915_1845"></script>
-  <script src="./static/jobs.js?v=20260915_1845"></script>
-  <script src="./static/contests.js?v=20260915_1845"></script>
-  <script src="./static/chatbot.js?v=20260915_1845"></script>
+  <!-- 프론트엔드 스크립트 로드 (SPA 마스터 컨트롤러 & 채용 & 공모전 & AI 챗봇 & 전북대 알바) -->
+  <script src="./static/app.js?v=20260915_2015"></script>
+  <script src="./static/jobs.js?v=20260915_2015"></script>
+  <script src="./static/contests.js?v=20260915_2015"></script>
+  <script src="./static/jbnu_alba.js?v=20260915_2015"></script>
+  <script src="./static/chatbot.js?v=20260915_2015"></script>
 
   <script>
     if ('serviceWorker' in navigator && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {

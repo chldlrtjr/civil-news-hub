@@ -1353,7 +1353,11 @@ window.switchMainTab = function(tabName, updateHash = true) {
   if (panelContests) panelContests.classList.toggle('hidden', tabName !== 'contests');
   if (panelMyPage) panelMyPage.classList.toggle('hidden', tabName !== 'mypage');
 
-  if (tabName === 'news') {
+  if (tabName === 'home') {
+    if (typeof window.initJbnuAlba === 'function') {
+      window.initJbnuAlba();
+    }
+  } else if (tabName === 'news') {
     isNewsBookmarkView = false;
     renderCategoryTabs();
     renderArticles();
