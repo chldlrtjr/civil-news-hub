@@ -1341,11 +1341,13 @@ window.switchMainTab = function(tabName, updateHash = true) {
     localStorage.setItem('civil_last_tab', tabName);
   } catch (e) {}
 
+  const panelHome = document.getElementById('tabPanelHome');
   const panelNews = document.getElementById('tabPanelNews');
   const panelJobs = document.getElementById('tabPanelJobs');
   const panelContests = document.getElementById('tabPanelContests');
   const panelMyPage = document.getElementById('tabPanelMyPage');
 
+  if (panelHome) panelHome.classList.toggle('hidden', tabName !== 'home');
   if (panelNews) panelNews.classList.toggle('hidden', tabName !== 'news');
   if (panelJobs) panelJobs.classList.toggle('hidden', tabName !== 'jobs');
   if (panelContests) panelContests.classList.toggle('hidden', tabName !== 'contests');
@@ -1387,6 +1389,15 @@ window.switchMainTab = function(tabName, updateHash = true) {
 };
 
 function updateGnbTabStyles(activeTab) {
+  const hatBtn = document.getElementById('gnbHatBtn');
+  if (hatBtn) {
+    if (activeTab === 'home') {
+      hatBtn.className = 'w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/40 ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-900 scale-105 transition cursor-pointer flex-shrink-0';
+    } else {
+      hatBtn.className = 'w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 hover:scale-105 transition cursor-pointer flex-shrink-0';
+    }
+  }
+
   const tabs = [
     { id: 'gnbTabNews', key: 'news' },
     { id: 'gnbTabJobs', key: 'jobs' },
@@ -1513,7 +1524,9 @@ function initTabRouting() {
     savedTab = localStorage.getItem('civil_last_tab') || 'news';
   } catch (e) {}
 
-  if (hash === 'jobs') {
+  if (hash === 'home') {
+    switchMainTab('home', false);
+  } else if (hash === 'jobs') {
     switchMainTab('jobs', false);
   } else if (hash === 'contests') {
     switchMainTab('contests', false);
@@ -1528,7 +1541,8 @@ function initTabRouting() {
 
   window.addEventListener('hashchange', () => {
     const newHash = (window.location.hash || '').replace('#', '').toLowerCase();
-    if (newHash === 'jobs') switchMainTab('jobs', false);
+    if (newHash === 'home') switchMainTab('home', false);
+    else if (newHash === 'jobs') switchMainTab('jobs', false);
     else if (newHash === 'contests') switchMainTab('contests', false);
     else if (newHash === 'mypage') switchMainTab('mypage', false);
     else switchMainTab('news', false);

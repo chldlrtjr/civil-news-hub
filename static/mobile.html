@@ -84,19 +84,23 @@
 
       <!-- 중앙 탭 바로가기 스위처 -->
       <div class="flex items-center bg-slate-800/90 rounded-xl p-1 border border-slate-700/60 text-xs font-semibold">
-        <button onclick="setTab('news')" id="tabBtnNews" class="px-3.5 py-1.5 rounded-lg transition bg-blue-600 text-white shadow-sm flex items-center gap-1.5 cursor-pointer">
+        <button onclick="setTab('home')" id="tabBtnHome" class="px-3 py-1.5 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer">
+          <i data-lucide="hard-hat" class="w-3.5 h-3.5"></i>
+          <span>토목 허브</span>
+        </button>
+        <button onclick="setTab('news')" id="tabBtnNews" class="px-3 py-1.5 rounded-lg transition bg-blue-600 text-white shadow-sm flex items-center gap-1.5 cursor-pointer">
           <i data-lucide="newspaper" class="w-3.5 h-3.5"></i>
           <span>토목 뉴스</span>
         </button>
-        <button onclick="setTab('jobs')" id="tabBtnJobs" class="px-3.5 py-1.5 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer">
+        <button onclick="setTab('jobs')" id="tabBtnJobs" class="px-3 py-1.5 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer">
           <i data-lucide="briefcase" class="w-3.5 h-3.5"></i>
           <span>채용 공고</span>
         </button>
-        <button onclick="setTab('contests')" id="tabBtnContests" class="px-3.5 py-1.5 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer">
+        <button onclick="setTab('contests')" id="tabBtnContests" class="px-3 py-1.5 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer">
           <i data-lucide="trophy" class="w-3.5 h-3.5"></i>
           <span>공모전</span>
         </button>
-        <button onclick="setTab('mypage')" id="tabBtnMypage" class="px-3.5 py-1.5 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer">
+        <button onclick="setTab('mypage')" id="tabBtnMypage" class="px-3 py-1.5 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer">
           <i data-lucide="bookmark" class="w-3.5 h-3.5"></i>
           <span>마이페이지</span>
         </button>
@@ -230,7 +234,7 @@
 
     // URL 해시 확인
     const initialHash = (window.location.hash || '').replace('#', '').toLowerCase();
-    if (['jobs', 'contests', 'news', 'mypage'].includes(initialHash)) {
+    if (['home', 'jobs', 'contests', 'news', 'mypage'].includes(initialHash)) {
       currentTab = initialHash;
     }
 
@@ -242,14 +246,14 @@
     function setTab(tab) {
       currentTab = tab;
       
-      const tabs = ['news', 'jobs', 'contests', 'mypage'];
+      const tabs = ['home', 'news', 'jobs', 'contests', 'mypage'];
       tabs.forEach(t => {
         const btn = document.getElementById(`tabBtn${t.charAt(0).toUpperCase() + t.slice(1)}`);
         if (btn) {
           if (t === tab) {
-            btn.className = 'px-3.5 py-1.5 rounded-lg transition bg-blue-600 text-white shadow-sm flex items-center gap-1.5 cursor-pointer';
+            btn.className = 'px-3 py-1.5 rounded-lg transition bg-blue-600 text-white shadow-sm flex items-center gap-1.5 cursor-pointer';
           } else {
-            btn.className = 'px-3.5 py-1.5 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer';
+            btn.className = 'px-3 py-1.5 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer';
           }
         }
       });

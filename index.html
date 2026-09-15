@@ -35,7 +35,7 @@
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 
   <!-- 커스텀 스타일 (테일윈드 보완) -->
-  <link rel="stylesheet" href="./static/style.css?v=20260914_1720">
+  <link rel="stylesheet" href="./static/style.css?v=20260915_1845">
 
   <script>
     tailwind.config = {
@@ -70,7 +70,7 @@
         
         <!-- 로고 및 서비스 네비게이션 (SPA 3원 GNB 버튼) -->
         <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
-          <button onclick="switchMainTab('news')" class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 flex-shrink-0 hover:scale-105 transition cursor-pointer" title="홈(뉴스)으로">
+          <button id="gnbHatBtn" onclick="switchMainTab('home')" class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 flex-shrink-0 hover:scale-105 transition cursor-pointer" title="토목 허브 (신규 페이지)">
             <i data-lucide="hard-hat" class="w-4 h-4 sm:w-6 sm:h-6"></i>
           </button>
           
@@ -136,6 +136,49 @@
       </div>
     </div>
   </header>
+
+  <!-- ========================================== -->
+  <!-- 0. 신규 페이지 탭 패널 (#tabPanelHome)       -->
+  <!-- ========================================== -->
+  <section id="tabPanelHome" class="hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <!-- 상단 헤더 -->
+    <div class="mb-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-200/80 dark:border-slate-800">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white flex items-center justify-center font-bold shadow-md shadow-blue-500/20 flex-shrink-0">
+            <i data-lucide="hard-hat" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">토목 허브 (신규 페이지)</h2>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">새로운 기능과 콘텐츠를 구성할 전용 페이지 공간입니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 신규 페이지 준비 컨테이너 (사용자 맞춤 구성 영역) -->
+    <div class="rounded-3xl border border-dashed border-slate-300 dark:border-slate-700 p-8 sm:p-12 text-center bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
+      <div class="w-16 h-16 rounded-3xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 mx-auto flex items-center justify-center mb-4 border border-blue-200 dark:border-blue-900/60 shadow-xs">
+        <i data-lucide="sparkles" class="w-8 h-8"></i>
+      </div>
+      <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-2">새로운 페이지가 성공적으로 연결되었습니다!</h3>
+      <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-6">
+        토목뉴스 왼쪽의 안전모(모자) 버튼을 클릭하면 이 페이지로 전환됩니다.<br>
+        이곳에 구성하고자 하시는 내용이나 기능을 말씀해주시면 바로 만들어 드립니다.
+      </p>
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        <button onclick="switchMainTab('news')" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold transition cursor-pointer shadow-xs">
+          토목 뉴스로 돌아가기
+        </button>
+        <button onclick="switchMainTab('jobs')" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold transition cursor-pointer border border-slate-200 dark:border-slate-700">
+          채용 공고 둘러보기
+        </button>
+        <button onclick="switchMainTab('contests')" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold transition cursor-pointer border border-slate-200 dark:border-slate-700">
+          공모전 둘러보기
+        </button>
+      </div>
+    </div>
+  </section>
 
   <!-- ========================================== -->
   <!-- 1. 토목 뉴스 탭 패널 (#tabPanelNews)       -->
@@ -940,10 +983,10 @@
   </div>
 
   <!-- 프론트엔드 스크립트 로드 (SPA 마스터 컨트롤러 & 채용 & 공모전 & AI 챗봇) -->
-  <script src="./static/app.js?v=20260914_1910"></script>
-  <script src="./static/jobs.js?v=20260914_1910"></script>
-  <script src="./static/contests.js?v=20260914_1910"></script>
-  <script src="./static/chatbot.js?v=20260914_1910"></script>
+  <script src="./static/app.js?v=20260915_1845"></script>
+  <script src="./static/jobs.js?v=20260915_1845"></script>
+  <script src="./static/contests.js?v=20260915_1845"></script>
+  <script src="./static/chatbot.js?v=20260915_1845"></script>
 
   <script>
     if ('serviceWorker' in navigator && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
