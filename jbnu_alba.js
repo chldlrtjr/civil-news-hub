@@ -364,6 +364,7 @@
   let albaCalendarCurrentYear = new Date().getFullYear();
   let albaCalendarCurrentMonth = new Date().getMonth();
   let albaCalendarFilter = 'all'; // 'all', 'deadline', 'work'
+  let albaCalendarSelectedDay = null; // null: 이번 달 전체, 숫자(1~31): 해당 일자 알바만 필터링
 
   function getJobScheduleInfo(job) {
     const today = new Date();
@@ -451,6 +452,7 @@
     const today = new Date();
     albaCalendarCurrentYear = today.getFullYear();
     albaCalendarCurrentMonth = today.getMonth();
+    albaCalendarSelectedDay = null; // 초기화: 전체 일정
 
     renderAlbaCalendar(albaCalendarCurrentYear, albaCalendarCurrentMonth);
 
@@ -483,6 +485,7 @@
       albaCalendarCurrentMonth = 0;
       albaCalendarCurrentYear += 1;
     }
+    albaCalendarSelectedDay = null; // 월 변경 시 날짜 선택 초기화
     renderAlbaCalendar(albaCalendarCurrentYear, albaCalendarCurrentMonth);
   }
 
@@ -490,7 +493,29 @@
     const today = new Date();
     albaCalendarCurrentYear = today.getFullYear();
     albaCalendarCurrentMonth = today.getMonth();
+    albaCalendarSelectedDay = today.getDate(); // 오늘 일자 자동 선택
     renderAlbaCalendar(albaCalendarCurrentYear, albaCalendarCurrentMonth);
+  }
+
+  function selectAlbaCalendarDay(day) {
+    if (day === null) {
+      albaCalendarSelectedDay = null;
+    } else if (albaCalendarSelectedDay === day) {
+      albaCalendarSelectedDay = null; // 이미 선택된 날짜 재클릭 시 전체 보기 토글
+    } else {
+      albaCalendarSelectedDay = day;
+    }
+    renderAlbaCalendar(albaCalendarCurrentYear, albaCalendarCurrentMonth);
+
+    // 날짜 선택 시 하단 타임라인으로 부드럽게 스크롤
+    if (albaCalendarSelectedDay !== null) {
+      setTimeout(() => {
+        const timelineTitle = document.getElementById('albaCalendarMonthTimelineTitle');
+        if (timelineTitle) {
+          timelineTitle.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }, 50);
+    }
   }
 
   function setAlbaCalendarFilter(type) {
@@ -597,6 +622,7 @@
       const currentDayDate = new Date(year, month, day);
       const dayOfWeek = currentDayDate.getDay();
       const isToday = (today.getFullYear() === year && today.getMonth() === month && today.getDate() === day);
+      const isSelected = (albaCalendarSelectedDay === day);
       const items = dayEventMap[day] || [];
       const hasItems = items.length > 0;
 
@@ -607,21 +633,33 @@
       gridHtml += `
         <div 
           class="relative flex flex-col items-start p-1 sm:p-1.5 rounded-xl border transition cursor-pointer min-h-[56px] sm:min-h-[68px] ${
-            isToday
-              ? 'border-emerald-500 bg-emerald-50/40 dark:bg-emerald-950/20 shadow-xs'
+            isSelected
+              ? 'ring-2 ring-emerald-500 border-emerald-500 bg-emerald-100/70 dark:bg-emerald-950/80 shadow-md transform scale-[1.02] z-10'
+              : isToday
+              ? 'border-emerald-500 bg-emerald-50/40 dark:bg-emerald-950/20 shadow-xs hover:border-emerald-400'
               : hasItems
               ? 'border-emerald-200 dark:border-emerald-900/60 bg-white dark:bg-slate-800 hover:border-emerald-400 shadow-xs'
               : 'border-slate-100 dark:border-slate-800/80 bg-white dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-800/40'
           }"
-          onclick="${hasItems ? `scrollToAlbaTimelineDay(${day})` : ''}"
-          title="${hasItems ? `${day}일 알바 일정 ${items.length}건` : ''}"
+          onclick="selectAlbaCalendarDay(${day})"
+          title="${day}일 클릭: ${hasItems ? `${items.length}건 일정 보기` : '이 날짜 알바 보기'}"
         >
           <div class="flex items-center justify-between w-full mb-0.5">
-            <span class="text-[11px] sm:text-xs font-bold ${dayColorClass} ${isToday ? 'px-1.5 py-0.2 rounded-md bg-emerald-600 text-white' : ''}">
+            <span class="text-[11px] sm:text-xs font-bold ${dayColorClass} ${
+              isSelected
+                ? 'px-1.5 py-0.2 rounded-md bg-emerald-700 text-white font-black'
+                : isToday
+                ? 'px-1.5 py-0.2 rounded-md bg-emerald-600 text-white'
+                : ''
+            }">
               ${day}
             </span>
             ${hasItems ? `
-              <span class="px-1 py-0.2 rounded-full text-[9px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300/80">
+              <span class="px-1 py-0.2 rounded-full text-[9px] font-bold ${
+                isSelected
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300/80'
+              }">
                 ${items.length}
               </span>
             ` : ''}
@@ -634,7 +672,7 @@
                 </div>
               `).join('')}
               ${items.length > 1 ? `
-                <div class="text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold pl-0.5">
+                <div class="text-[9px] ${isSelected ? 'text-emerald-800 dark:text-emerald-200 font-extrabold' : 'text-emerald-600 dark:text-emerald-400 font-semibold'} pl-0.5">
                   +${items.length - 1}개 더보기
                 </div>
               ` : ''}
@@ -656,28 +694,81 @@
 
     daysGrid.innerHTML = gridHtml;
 
-    // 타임라인 리스트 렌더링
-    if (timelineTitle) {
-      const filterLabel = albaCalendarFilter === 'deadline' ? '마감 예정' : albaCalendarFilter === 'work' ? '근무·행사' : '전체';
-      timelineTitle.textContent = `${year}년 ${month + 1}월 알바 ${filterLabel} 일정 (${monthEvents.length}건)`;
-    }
+    // 해당 날짜 클릭 시 해당 날짜 알바들만 필터링
+    const displayEvents = (albaCalendarSelectedDay !== null)
+      ? monthEvents.filter(ev => ev.day === albaCalendarSelectedDay)
+      : monthEvents;
 
-    if (timelineList) {
-      if (monthEvents.length === 0) {
-        timelineList.innerHTML = `
-          <div class="py-8 text-center text-slate-400 dark:text-slate-500 text-xs">
-            이 달에 등록된 알바 일정이 없습니다.
+    // 타임라인 타이틀 렌더링
+    if (timelineTitle) {
+      if (albaCalendarSelectedDay !== null) {
+        const dt = new Date(year, month, albaCalendarSelectedDay);
+        const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+        const dayName = dayNames[dt.getDay()];
+        timelineTitle.innerHTML = `
+          <div class="flex items-center justify-between w-full">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="text-emerald-600 dark:text-emerald-400 font-black">${month + 1}월 ${albaCalendarSelectedDay}일 (${dayName})</span>
+              <span>알바 일정 (${displayEvents.length}건)</span>
+            </div>
+            <button 
+              type="button" 
+              onclick="selectAlbaCalendarDay(null); event.stopPropagation();" 
+              class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700 transition cursor-pointer flex-shrink-0"
+              title="이번 달 전체 일정 다시 보기"
+            >
+              <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+              <span>전체 날짜 보기</span>
+            </button>
           </div>
         `;
       } else {
-        monthEvents.sort((a, b) => {
+        const filterLabel = albaCalendarFilter === 'deadline' ? '마감 예정' : albaCalendarFilter === 'work' ? '근무·행사' : '전체';
+        timelineTitle.innerHTML = `
+          <div class="flex items-center justify-between w-full">
+            <span>${year}년 ${month + 1}월 알바 ${filterLabel} 일정 (${monthEvents.length}건)</span>
+            <span class="text-[11px] font-normal text-slate-400 dark:text-slate-500 hidden sm:inline">
+              달력의 날짜를 누르면 그 날짜의 알바만 모아봅니다.
+            </span>
+          </div>
+        `;
+      }
+    }
+
+    if (timelineList) {
+      if (displayEvents.length === 0) {
+        if (albaCalendarSelectedDay !== null) {
+          timelineList.innerHTML = `
+            <div class="py-10 text-center text-slate-400 dark:text-slate-500 text-xs">
+              <div class="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-2 text-slate-400">
+                <i data-lucide="calendar-x" class="w-5 h-5"></i>
+              </div>
+              <p class="font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                ${month + 1}월 ${albaCalendarSelectedDay}일에는 등록된 알바 일정이 없습니다.
+              </p>
+              <p class="text-[11px] text-slate-400">달력에서 숫자가 표시된 다른 날짜를 눌러보세요.</p>
+              <button onclick="selectAlbaCalendarDay(null)" class="mt-3 px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/80 text-emerald-700 dark:text-emerald-300 text-xs font-bold transition cursor-pointer border border-emerald-300/80 dark:border-emerald-800 inline-flex items-center gap-1">
+                <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+                <span>이번 달 전체 일정 (${monthEvents.length}건) 보기</span>
+              </button>
+            </div>
+          `;
+        } else {
+          timelineList.innerHTML = `
+            <div class="py-8 text-center text-slate-400 dark:text-slate-500 text-xs">
+              이 달에 등록된 알바 일정이 없습니다.
+            </div>
+          `;
+        }
+      } else {
+        displayEvents.sort((a, b) => {
           if (a.day !== b.day) return a.day - b.day;
           return a.type === 'work' ? -1 : 1;
         });
 
         const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
 
-        timelineList.innerHTML = monthEvents.map(ev => {
+        timelineList.innerHTML = displayEvents.map(ev => {
           const dt = new Date(year, month, ev.day);
           const dayName = dayNames[dt.getDay()];
           const isWork = ev.type === 'work';
@@ -752,6 +843,7 @@
   window.closeAlbaCalendarModal = closeAlbaCalendarModal;
   window.changeAlbaCalendarMonth = changeAlbaCalendarMonth;
   window.resetAlbaCalendarToToday = resetAlbaCalendarToToday;
+  window.selectAlbaCalendarDay = selectAlbaCalendarDay;
   window.setAlbaCalendarFilter = setAlbaCalendarFilter;
   window.scrollToAlbaTimelineDay = scrollToAlbaTimelineDay;
 
