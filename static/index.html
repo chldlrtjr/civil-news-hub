@@ -181,6 +181,17 @@
       </div>
 
       <div class="flex items-center gap-2">
+        <!-- 알바 일정 캘린더 모달 열기 버튼 -->
+        <button 
+          type="button" 
+          onclick="openAlbaCalendarModal()" 
+          class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 dark:text-emerald-300 border border-emerald-300/80 dark:border-emerald-700/80 transition cursor-pointer shadow-xs flex-shrink-0"
+          title="전북대 아르바이트 일정 캘린더 보기"
+        >
+          <i data-lucide="calendar-days" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400"></i>
+          <span>알바 캘린더</span>
+        </button>
+
         <!-- 정렬 드롭다운 -->
         <select id="jbnuAlbaSortSelect" onchange="window.handleAlbaSortChange(this.value)" class="bg-white dark:bg-slate-900 text-xs text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 shadow-sm cursor-pointer">
           <option value="wage_high" selected>💰 급여 높은순</option>
@@ -779,6 +790,97 @@
     </div>
   </div>
 
+  <!-- 2-1. 전북대학교 아르바이트 일정 캘린더 모달 (#albaCalendarModal) -->
+  <div id="albaCalendarModal" class="fixed inset-0 z-50 invisible opacity-0 transition-all duration-300 flex items-center justify-center p-3 sm:p-4">
+    <div id="albaCalendarBackdrop" onclick="closeAlbaCalendarModal()" class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm opacity-0 transition-opacity"></div>
+    <div class="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden z-10 flex flex-col max-h-[90vh]">
+      <!-- 캘린더 모달 헤더 -->
+      <div class="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold shadow-xs flex-shrink-0">
+            <i data-lucide="calendar" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white leading-snug flex items-center gap-2">
+              전북대 알바 일정 캘린더
+              <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-extrabold">JBNU Alba</span>
+            </h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              월별 공고 마감일 및 단기·행사 근무 일정을 시각적으로 확인하고 바로 지원합니다.
+            </p>
+          </div>
+        </div>
+        <button onclick="closeAlbaCalendarModal()" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer flex-shrink-0" title="닫기">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- 월 전환 컨트롤러 & 일정 필터 바 -->
+      <div class="px-5 sm:px-6 py-3 bg-slate-50/80 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+        <!-- 월 이동 네비게이션 -->
+        <div class="flex items-center justify-between sm:justify-start gap-1.5 sm:gap-2">
+          <button id="albaCalendarPrevMonthBtn" onclick="changeAlbaCalendarMonth(-1)" class="p-1.5 sm:px-2.5 sm:py-1 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center gap-1 transition cursor-pointer">
+            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">이전 달</span>
+          </button>
+          <span id="albaCalendarCurrentMonthDisplay" class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white tracking-tight px-1 min-w-[100px] text-center">
+            2026년 9월
+          </span>
+          <button id="albaCalendarNextMonthBtn" onclick="changeAlbaCalendarMonth(1)" class="p-1.5 sm:px-2.5 sm:py-1 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center gap-1 transition cursor-pointer">
+            <span class="hidden sm:inline">다음 달</span>
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+          <button onclick="resetAlbaCalendarToToday()" class="ml-1 px-2 py-1 rounded-md text-[11px] font-semibold bg-emerald-100/80 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-200 dark:hover:bg-emerald-900 transition cursor-pointer" title="오늘 날짜로 이동">
+            오늘
+          </button>
+        </div>
+
+        <!-- 캘린더 일정 유형 필터 칩 -->
+        <div class="flex items-center gap-1 text-xs">
+          <button id="albaCalFilterAll" onclick="setAlbaCalendarFilter('all')" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-600 text-white shadow-xs transition cursor-pointer">
+            🎯 전체
+          </button>
+          <button id="albaCalFilterDeadline" onclick="setAlbaCalendarFilter('deadline')" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer">
+            ⏱️ 마감일
+          </button>
+          <button id="albaCalFilterWork" onclick="setAlbaCalendarFilter('work')" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer">
+            ⚡ 근무·행사일
+          </button>
+        </div>
+      </div>
+
+      <!-- 캘린더 본문 (스크롤) -->
+      <div class="p-4 sm:p-6 overflow-y-auto space-y-4">
+        <!-- 달력 요일 헤더 -->
+        <div class="grid grid-cols-7 text-center text-xs font-bold text-slate-400 mb-1">
+          <div class="text-rose-500 py-1">일</div>
+          <div class="py-1">월</div>
+          <div class="py-1">화</div>
+          <div class="py-1">수</div>
+          <div class="py-1">목</div>
+          <div class="py-1">금</div>
+          <div class="text-blue-500 py-1">토</div>
+        </div>
+
+        <!-- 달력 일자 그리드 -->
+        <div id="albaCalendarDaysGrid" class="grid grid-cols-7 gap-1 sm:gap-1.5 text-xs">
+          <!-- JS 동적 주입 -->
+        </div>
+
+        <!-- 이번 달 알바 일정 타임라인 요약 -->
+        <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
+          <h4 class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+            <i data-lucide="clock" class="w-3.5 h-3.5 text-emerald-500"></i>
+            <span id="albaCalendarMonthTimelineTitle">이번 달 알바 일정</span>
+          </h4>
+          <div id="albaCalendarTimelineList" class="space-y-2 text-xs">
+            <!-- JS 동적 주입 -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- 3. 공모전 마감 일정 캘린더 모달 (#contestCalendarModal) -->
   <div id="contestCalendarModal" class="fixed inset-0 z-50 invisible opacity-0 transition-all duration-300 flex items-center justify-center p-3 sm:p-4">
     <div id="contestCalendarBackdrop" onclick="closeContestCalendarModal()" class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm opacity-0 transition-opacity"></div>
@@ -1068,11 +1170,11 @@
   </div>
 
   <!-- 프론트엔드 스크립트 로드 (전북대 알바 & SPA 마스터 컨트롤러 & 채용 & 공모전 & AI 챗봇) -->
-  <script src="./static/jbnu_alba.js?v=20260915_v113"></script>
-  <script src="./static/app.js?v=20260915_v113"></script>
-  <script src="./static/jobs.js?v=20260915_v113"></script>
-  <script src="./static/contests.js?v=20260915_v113"></script>
-  <script src="./static/chatbot.js?v=20260915_v113"></script>
+  <script src="./static/jbnu_alba.js?v=20260915_v114"></script>
+  <script src="./static/app.js?v=20260915_v114"></script>
+  <script src="./static/jobs.js?v=20260915_v114"></script>
+  <script src="./static/contests.js?v=20260915_v114"></script>
+  <script src="./static/chatbot.js?v=20260915_v114"></script>
 
   <script>
     if ('serviceWorker' in navigator && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {

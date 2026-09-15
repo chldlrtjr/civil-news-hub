@@ -304,6 +304,45 @@ def scrape_jbnu_albas(max_pages=2):
             # 공고 팩트 기반 급여 및 근무 형태 정밀 분석
             calc = parse_wage_and_work_condition(company, title, raw_wage, work_time)
 
+            # 캘린더용 접수 마감일(deadline_date) 및 단기/행사 근무일(work_dates) 산출
+            deadline_date = None
+            if dday in ["D-day", "D-0", "D-Day"]:
+                deadline_date = reg_date
+            elif dday.startswith("D-"):
+                try:
+                    days = int(re.search(r'\d+', dday).group(0))
+                    base_dt = datetime.strptime(reg_date, "%Y-%m-%d")
+                    deadline_date = (base_dt + timedelta(days=days)).strftime("%Y-%m-%d")
+                except Exception:
+                    deadline_date = None
+
+            work_dates = []
+            full_txt = title + " " + work_time
+            range_m = re.search(r'(\d{1,2})[/\.월]\s*(\d{1,2})일?\s*[~-]\s*(\d{1,2})[/\.월]\s*(\d{1,2})일?', full_txt)
+            if range_m:
+                m1, d1, m2, d2 = int(range_m.group(1)), int(range_m.group(2)), int(range_m.group(3)), int(range_m.group(4))
+                try:
+                    cur_year = datetime.strptime(reg_date, "%Y-%m-%d").year
+                    start_d = datetime(cur_year, m1, d1)
+                    end_d = datetime(cur_year, m2, d2)
+                    if 0 <= (end_d - start_d).days <= 31:
+                        cur = start_d
+                        while cur <= end_d:
+                            work_dates.append(cur.strftime("%Y-%m-%d"))
+                            cur += timedelta(days=1)
+                except Exception:
+                    pass
+
+            for sm in re.finditer(r'(\d{1,2})월\s*(\d{1,2})일', full_txt):
+                m_val, d_val = int(sm.group(1)), int(sm.group(2))
+                try:
+                    cur_year = datetime.strptime(reg_date, "%Y-%m-%d").year
+                    w_d = datetime(cur_year, m_val, d_val).strftime("%Y-%m-%d")
+                    if w_d not in work_dates:
+                        work_dates.append(w_d)
+                except Exception:
+                    pass
+
             # 상세 링크 (전북대 공식 공고 직결)
             official_link = f"https://www.jbnu.ac.kr/web/Board/{pst_id}/detailView.do"
 
@@ -332,6 +371,8 @@ def scrape_jbnu_albas(max_pages=2):
                 "views": views,
                 "dday": dday,
                 "reg_date": reg_date,
+                "deadline_date": deadline_date,
+                "work_dates": work_dates,
                 "link": official_link,
                 "is_urgent": bool(re.search(r'^D-[0-3]$', dday)),
                 "is_active": (dday != "접수마감")
