@@ -280,6 +280,11 @@
 
           <!-- 6행: 하단 푸터 액션 바 -->
           <div class="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2" onclick="event.stopPropagation()">
+            <div class="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 font-medium">
+              <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+              <span>${job.reg_date || '최근 등록'}</span>
+            </div>
+
             <div class="flex items-center gap-1">
               <!-- 북마크 리본 버튼 -->
               <button onclick="window.toggleAlbaBookmark('${job.id}', event)"
@@ -294,14 +299,6 @@
                 <i data-lucide="share-2" class="w-4 h-4"></i>
               </button>
             </div>
-
-            <!-- 공식 원문 바로가기 링크 -->
-            <a href="${job.link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()"
-              class="inline-flex items-center gap-1 text-xs font-bold text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition py-1 px-1"
-              title="원문 공고 새 창으로 보기">
-              <span>바로가기</span>
-              <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-            </a>
           </div>
         </article>
       `;
