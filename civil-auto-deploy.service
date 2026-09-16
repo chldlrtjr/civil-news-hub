@@ -1,0 +1,16 @@
+[Unit]
+Description=Civil News Hub Realtime Auto Deploy Watcher (GitHub to Server)
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/workspace
+ExecStart=/bin/bash /home/ubuntu/workspace/auto_deploy_watcher.sh
+Restart=always
+RestartSec=10
+StandardOutput=append:/home/ubuntu/workspace/auto_deploy.log
+StandardError=append:/home/ubuntu/workspace/auto_deploy.log
+
+[Install]
+WantedBy=multi-user.target

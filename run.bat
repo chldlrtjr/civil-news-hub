@@ -2,6 +2,8 @@
 cd /d "%~dp0"
 title Civil News Hub Server
 
+set PORT=8000
+
 echo ======================================================
 echo    Civil News Hub - Server Starting...
 echo    PC Browser:   http://localhost:8000/#news

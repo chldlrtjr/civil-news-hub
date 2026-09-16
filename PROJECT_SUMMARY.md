@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.1.8` (PC ➔ GitHub ➔ Server 배포 파이프라인 수립 및 원터치 deploy.sh 탑재 / 누적 수정 63회 달성 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.1.10` (아웃바운드 실시간 무인 자동 배포(CI/CD) 데몬 civil-auto-deploy 탑재 / 누적 수정 65회 달성 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -1004,13 +1004,28 @@ mindmap
      - ② 깃허브(`chldlrtjr/civil-news-hub`): 최신 코드 형상 관리
      - ③ 서버(`10.0.0.131`): `./deploy.sh` 한 줄로 실시간 서비스 자동 배포 완료
 
+#### 64) 로컬 Windows run.bat 포트 정합성(8000) 동기화 및 라이브러리 검증 (ver 1.1.9)
+- **배경**: 사용자 로컬 환경에서 `run.bat` 실행 시 브라우저 표시 포트와 실제 동작 포트 정합성을 맞추고, 파이썬 Flask/requests 의존성 패키지 정상 설치 완료 확인.
+
+#### 65) 아웃바운드 기반 실시간 무인 자동 배포(CI/CD) 데몬 구축 (ver 1.1.10)
+- **배경**: 학교 상위 방화벽의 인바운드 포트 차단 및 무료 Cloudflare 터널 세션 만료 문제로 인해 외부 GitHub Webhook 수신이 불가능한 한계를 극복하기 위해, 방화벽 제약을 100% 우회하는 아웃바운드 기반 자동 배포 감시기(Auto Deploy Watcher) 파이프라인 수립.
+- **구축 내역**:
+  1. **실시간 원격 변경 감시기 개발 ([`auto_deploy_watcher.sh`](file:///home/ubuntu/workspace/auto_deploy_watcher.sh))**:
+     - 30초 주기로 `git fetch origin main`을 수행하여 로컬 HEAD와 원격 origin/main의 해시를 비교.
+     - 신규 커밋 감지 시 즉시 `deploy.sh`를 실행하여 무인 자동 배포 수행.
+     - 5MB 초과 시 로그 자동 순환(Rotate) 처리로 디스크 고갈 원천 방지.
+  2. **우분투 상주 시스템 데몬 유닛 작성 ([`civil-auto-deploy.service`](file:///home/ubuntu/workspace/civil-auto-deploy.service))**:
+     - systemd 서비스로 등록하여 서버 재부팅 시에도 24시간 백그라운드 자동 가동 및 장애 시 10초 내 자동 재시작(`Restart=always`) 보장.
+  3. **원터치 설치 자동화 스크립트 제작 ([`install_auto_deploy.sh`](file:///home/ubuntu/workspace/install_auto_deploy.sh))**:
+     - 서버 터미널에서 `bash install_auto_deploy.sh` 실행 시 권한 부여, 유닛 등록, daemon-reload 및 서비스 활성화를 원스톱으로 처리.
+
 ---
 
 ## 🌿 3. Git 브랜치 현황
 
 | 브랜치명 | 상태 | 설명 |
 | :--- | :--- | :--- |
-| **`main`** | **최신 공식 배포 브랜치 (v1.1.8)** | GitHub Pages 및 JCloud 우분투 서버를 통해 라이브 서비스 중인 메인 브랜치 (PC ➔ GitHub ➔ Server 배포 파이프라인 탑재) |
+| **`main`** | **최신 공식 배포 브랜치 (v1.1.10)** | GitHub Pages 및 JCloud 우분투 서버를 통해 라이브 서비스 중인 메인 브랜치 (GitHub Webhook 실시간 자동 배포 탑재) |
 | **`feature/footer-last-updated`** | **작업 완료 (main 병합됨)** | 푸터 업데이트 이전 및 초기 헤더 클린업 작업 브랜치 |
 
 - **온라인 라이브 서비스**: [https://chldlrtjr.github.io/civil-news-hub/](https://chldlrtjr.github.io/civil-news-hub/)
