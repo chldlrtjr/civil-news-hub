@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.1.7` (레거시 미완성 코드 및 비사용 자산 전면 정비 완료 / 누적 수정 62회 달성 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.1.8` (PC ➔ GitHub ➔ Server 배포 파이프라인 수립 및 원터치 deploy.sh 탑재 / 누적 수정 63회 달성 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -990,13 +990,27 @@ mindmap
     - **4) 캐시 버스팅 및 PWA 서비스 워커 갱신**:
       - 내부 버전 `v1.1.7` 자동 증가, PWA 서비스 워커 `civil-news-hub-v1.1.7`, HTML/스크립트 캐시 버스터 `?v=20260917_v117` 일괄 동기화.
 
+#### 63) PC ➔ GitHub ➔ Server 3단계 배포 파이프라인 수립 및 원터치 deploy.sh 스크립트 탑재 (ver 1.1.8)
+- **배경**: 사용자 로컬 컴퓨터(Windows / `C:\Users\최익석\Desktop\goofy-borg`)와 Orca 도구를 활용한 개발 환경에서 깃허브로 코드를 푸시하고, JCloud 우분투 서버로 즉시 반영·배포할 수 있는 표준화된 파이프라인 필요.
+- **구축 내역**:
+  1. **원터치 배포 스크립트 (`deploy.sh`) 개발**:
+     - `git fetch origin main` & `git reset --hard origin/main`으로 깃허브 최신 코드를 완벽하게 동기화.
+     - 파이썬 가상환경 의존성(`requirements.txt`) 자동 점검 및 설치.
+     - 백엔드 Gunicorn/Flask 데몬(`civil-news-hub.service`) 재시작 및 Nginx 웹 서버 리로드 자동화.
+  2. **Git 브랜치 동기화 및 GitHub main 반영**:
+     - 이전 `fix/news-data-loading`의 최신 복구 커밋을 `main`에 성공적으로 병합(Fast-forward)하여 GitHub `origin/main`에 푸시 완료.
+  3. **3단계 워크플로우 가이드 수립**:
+     - ① 내 컴퓨터(`goofy-borg`): `git pull origin main` ➔ 작업 ➔ `git commit` & `git push origin main`
+     - ② 깃허브(`chldlrtjr/civil-news-hub`): 최신 코드 형상 관리
+     - ③ 서버(`10.0.0.131`): `./deploy.sh` 한 줄로 실시간 서비스 자동 배포 완료
+
 ---
 
 ## 🌿 3. Git 브랜치 현황
 
 | 브랜치명 | 상태 | 설명 |
 | :--- | :--- | :--- |
-| **`main`** | **최신 공식 배포 브랜치 (v1.1.7)** | GitHub Pages를 통해 라이브 서비스 중인 메인 브랜치 (레거시 코드 전면 정비, 전북대 알바 캘린더 날짜별 단독 필터링 탑재, 토목 뉴스, 채용, 공모전 통합) |
+| **`main`** | **최신 공식 배포 브랜치 (v1.1.8)** | GitHub Pages 및 JCloud 우분투 서버를 통해 라이브 서비스 중인 메인 브랜치 (PC ➔ GitHub ➔ Server 배포 파이프라인 탑재) |
 | **`feature/footer-last-updated`** | **작업 완료 (main 병합됨)** | 푸터 업데이트 이전 및 초기 헤더 클린업 작업 브랜치 |
 
 - **온라인 라이브 서비스**: [https://chldlrtjr.github.io/civil-news-hub/](https://chldlrtjr.github.io/civil-news-hub/)
