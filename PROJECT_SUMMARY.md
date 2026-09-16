@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.1.11` (신규 추가 저장소(/dev/vdb)로 가상 램(Swap 4GB) 이전 및 루트 디스크 용량 3GB 확보 / 누적 수정 66회 달성 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.1.12` (Windows 네이티브 토스트 알림 notify.ps1 및 원클릭 sync.bat 탑재 / 누적 수정 67회 달성 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -1033,13 +1033,21 @@ mindmap
      - `/etc/fstab` 내 스왑 설정을 `/home/ubuntu/data/swapfile`로 갱신하고 스토리지 마운트 이후 로드되도록 마운트 순서 정렬.
      - `systemctl daemon-reload` 및 `swapon -a` 검증 완료 (`home-ubuntu-data-swapfile.swap` 정상 active 상태 유지).
 
+#### 67) Windows 네이티브 토스트 알림(notify.ps1) 및 원클릭 동기화 스크립트(sync.bat) 탑재 (ver 1.1.12)
+- **배경**: 자동 동기화 및 배포 완료 시 Antigravity 완료 알림과 동일하게 윈도우 우측 하단 팝업(사운드 포함)으로 즉시 완료 상태를 인지할 수 있는 네이티브 알림 체계 요청.
+- **구축 내역**:
+  1. **PowerShell 기반 Windows Runtime 토스트 알림 모듈 ([`notify.ps1`](file:///C:/Users/최익석/Desktop/goofy-borg/notify.ps1))**:
+     - `Windows.UI.Notifications.ToastNotificationManager` 네이티브 WinRT API를 직접 호출하여 별도 외부 프로그램 없이 윈도우 시스템 표준 토스트 알림창 및 효과음 송출.
+  2. **원클릭 수집·검증·푸시·알림 일괄 실행 배치 파일 ([`sync.bat`](file:///C:/Users/최익석/Desktop/goofy-borg/sync.bat))**:
+     - 더블 클릭 한 번으로 뉴스/채용/공모전/알바 크롤러 4종 실행 ➔ 데이터 무결성 검증 ➔ Git 커밋 & 푸시 ➔ Windows 토스트 팝업 알림까지 원스톱 자동화.
+
 ---
 
 ## 🌿 3. Git 브랜치 현황
 
 | 브랜치명 | 상태 | 설명 |
 | :--- | :--- | :--- |
-| **`main`** | **최신 공식 배포 브랜치 (v1.1.11)** | GitHub Pages 및 JCloud 우분투 서버를 통해 라이브 서비스 중인 메인 브랜치 (신규 스토리지 Swap 이전 및 자동 배포 탑재) |
+| **`main`** | **최신 공식 배포 브랜치 (v1.1.12)** | GitHub Pages 및 JCloud 우분투 서버를 통해 라이브 서비스 중인 메인 브랜치 (Windows 토스트 알림 및 원클릭 sync 탑재) |
 | **`feature/footer-last-updated`** | **작업 완료 (main 병합됨)** | 푸터 업데이트 이전 및 초기 헤더 클린업 작업 브랜치 |
 
 - **온라인 라이브 서비스**: [https://chldlrtjr.github.io/civil-news-hub/](https://chldlrtjr.github.io/civil-news-hub/)
