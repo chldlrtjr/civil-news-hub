@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.1.10` (아웃바운드 실시간 무인 자동 배포(CI/CD) 데몬 civil-auto-deploy 탑재 / 누적 수정 65회 달성 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.1.11` (신규 추가 저장소(/dev/vdb)로 가상 램(Swap 4GB) 이전 및 루트 디스크 용량 3GB 확보 / 누적 수정 66회 달성 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -1019,13 +1019,27 @@ mindmap
   3. **원터치 설치 자동화 스크립트 제작 ([`install_auto_deploy.sh`](file:///home/ubuntu/workspace/install_auto_deploy.sh))**:
      - 서버 터미널에서 `bash install_auto_deploy.sh` 실행 시 권한 부여, 유닛 등록, daemon-reload 및 서비스 활성화를 원스톱으로 처리.
 
+#### 66) 신규 추가 볼륨(/dev/vdb)으로 가상 램(Swap 4GB) 이전 및 루트 디스크 용량 3GB 대폭 확보 (ver 1.1.11)
+- **요청 사항**: "가상 램 이번에 추가한 저장소로 옮기자"
+- **기존 상태 및 문제점**:
+  - 기본 루트 파티션(`/dev/vda4`, 9GB) 내에 3GB 크기의 가상 램 스왑 파일(`/swapfile`)이 상주하여 디스크 사용률이 86%(잔여 1.3GB)에 육박, 용량 고갈 위험에 노출됨.
+  - 신규 블록 스토리지(`/dev/vdb`, 10GB)가 `/home/ubuntu/data`에 추가되었으나 사용률 1%로 미활용 상태.
+- **작업 및 개선 내역**:
+  1. **신규 4GB 스왑 파일 생성 및 즉시 활성화**:
+     - 신규 저장소 경로 `/home/ubuntu/data/swapfile`에 4GB 스왑 파일 생성(`sudo fallocate -l 4G`), 권한 600 설정 및 스왑 포맷(`mkswap`) 후 즉각 활성화(`swapon`).
+  2. **기존 루트 스왑 비활성화 및 영구 삭제**:
+     - 기존 루트의 `/swapfile`을 안전하게 비활성화(`swapoff`) 후 삭제(`rm -f`)하여 루트 파티션 잔여 공간을 **1.3GB(86% 사용) ➔ 4.3GB(51% 사용)**로 약 3GB 이상 대폭 확보.
+  3. **부팅 자동 마운트(/etc/fstab) 및 systemd 동기화**:
+     - `/etc/fstab` 내 스왑 설정을 `/home/ubuntu/data/swapfile`로 갱신하고 스토리지 마운트 이후 로드되도록 마운트 순서 정렬.
+     - `systemctl daemon-reload` 및 `swapon -a` 검증 완료 (`home-ubuntu-data-swapfile.swap` 정상 active 상태 유지).
+
 ---
 
 ## 🌿 3. Git 브랜치 현황
 
 | 브랜치명 | 상태 | 설명 |
 | :--- | :--- | :--- |
-| **`main`** | **최신 공식 배포 브랜치 (v1.1.10)** | GitHub Pages 및 JCloud 우분투 서버를 통해 라이브 서비스 중인 메인 브랜치 (GitHub Webhook 실시간 자동 배포 탑재) |
+| **`main`** | **최신 공식 배포 브랜치 (v1.1.11)** | GitHub Pages 및 JCloud 우분투 서버를 통해 라이브 서비스 중인 메인 브랜치 (신규 스토리지 Swap 이전 및 자동 배포 탑재) |
 | **`feature/footer-last-updated`** | **작업 완료 (main 병합됨)** | 푸터 업데이트 이전 및 초기 헤더 클린업 작업 브랜치 |
 
 - **온라인 라이브 서비스**: [https://chldlrtjr.github.io/civil-news-hub/](https://chldlrtjr.github.io/civil-news-hub/)
