@@ -8,7 +8,6 @@ let selectedCareer = 'all';      // 전체, 신입, 경력
 let selectedRegion = 'ALL';      // 전체, 수도권, 충청, 영남, 호남, 전국, 해외
 let jobBookmarks = new Set();
 let isJobBookmarkView = false;
-let isJobUrgentFilterActive = false;
 
 // 가벼운 디바운스 및 Lucide 국소 렌더링 헬퍼
 function debounce(func, wait = 180) {
@@ -97,17 +96,11 @@ async function loadJobsData() {
     // [동적 카테고리 동기화] 새로운 채용 카테고리가 등장할 경우 카테고리 탭 목록에 자동 추가하여 전체 건수 합산 일치 보장
     syncJobCategories(data.categories);
 
-    // 메타데이터 업데이트
-    const lastUpdatedEl = document.getElementById('jobLastUpdated');
-    if (lastUpdatedEl) lastUpdatedEl.textContent = data.last_updated_display || '방금 전';
-
+    // 푸터 메타데이터 업데이트
     const footerUpdatedEl = document.getElementById('footerLastUpdated');
     if (footerUpdatedEl && data.last_updated_display && (!footerUpdatedEl.textContent || footerUpdatedEl.textContent === '확인 중...')) {
       footerUpdatedEl.textContent = data.last_updated_display;
     }
-
-    const totalCountEl = document.getElementById('jobTotalCount');
-    if (totalCountEl) totalCountEl.textContent = `${allJobs.length}건`;
 
     // 전역 북마크 모드 동기화
     if (window.isGlobalBookmarkMode) {
@@ -177,21 +170,6 @@ function getUrgentJobs() {
     return !dday.isClosed && dday.isUrgent;
   });
 }
-
-// 3-2. 긴급 마감 임박 공고 배너 (알림 제거됨)
-function renderJobUrgentBanner() {
-  const container = document.getElementById('jobUrgentBannerContainer');
-  if (container) {
-    container.innerHTML = '';
-    container.classList.add('hidden');
-  }
-}
-
-// 3-3. 퀵 필터 토글 함수 (레거시 안전 처리)
-window.toggleJobUrgentFilter = function() {
-  isJobUrgentFilterActive = false;
-  renderJobs();
-};
 
 // 4. 카테고리 탭 렌더링
 let JOB_CATEGORIES = [
@@ -431,13 +409,7 @@ function filterAndSortJobs() {
     list = list.filter(j => matchJobRegion(j, selectedRegion));
   }
 
-  // (2-2) 마감 임박 (D-3) 퀵 필터
-  if (isJobUrgentFilterActive) {
-    list = list.filter(j => {
-      const ddayInfo = calculateDday(j.deadline_date, j.period);
-      return !ddayInfo.isClosed && ddayInfo.isUrgent;
-    });
-  }
+
 
   // (3) 검색어 필터
   if (jobSearchQuery) {
@@ -712,8 +684,6 @@ function renderJobs() {
 
   const filtered = filterAndSortJobs();
 
-  // 상단 긴급 배너 렌더링 동기화
-  renderJobUrgentBanner();
 
   if (notice) {
     if (isJobBookmarkView) {
@@ -1160,34 +1130,6 @@ function showJobLoading(show) {
 
 // 11. 이벤트 리스너 등록
 function setupJobEventListeners() {
-  // 검색어 입력 (180ms 디바운스 적용으로 타이핑 렉 원천 차단)
-  const searchInput = document.getElementById('jobSearchInput');
-  const clearBtn = document.getElementById('clearJobSearchBtn');
-  if (searchInput && clearBtn) {
-    const handleJobSearch = debounce((query) => {
-      jobSearchQuery = query;
-      renderJobs();
-    }, 180);
-
-    searchInput.addEventListener('input', (e) => {
-      const val = e.target.value.trim();
-      if (val) {
-        clearBtn.classList.remove('hidden');
-      } else {
-        clearBtn.classList.add('hidden');
-      }
-      handleJobSearch(val);
-    });
-
-    clearBtn.addEventListener('click', () => {
-      searchInput.value = '';
-      jobSearchQuery = '';
-      clearBtn.classList.add('hidden');
-      searchInput.focus();
-      renderJobs();
-    });
-  }
-
   // 정렬 선택
   const sortSelect = document.getElementById('jobSortSelect');
   if (sortSelect) {

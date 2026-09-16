@@ -386,8 +386,10 @@ def scrape_jbnu_albas(max_pages=2):
         "total_count": len(all_jobs),
         "jobs": all_jobs
     }
-    with open(JBNU_JSON_PATH, "w", encoding="utf-8") as f:
+    temp_path = JBNU_JSON_PATH + ".tmp"
+    with open(temp_path, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, indent=2)
+    os.replace(temp_path, JBNU_JSON_PATH)
 
     print(f"✅ [JBNU Alba] 전북대 아르바이트 {len(all_jobs)}건 수집 및 정제 완료 -> {JBNU_JSON_PATH}")
     return payload

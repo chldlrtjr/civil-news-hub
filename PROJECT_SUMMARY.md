@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.1.5` (전북대학교 아르바이트 캘린더 날짜 클릭 시 해당 날짜 알바만 나열 필터링 기능 탑재 / 누적 수정 60회 달성 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.1.7` (레거시 미완성 코드 및 비사용 자산 전면 정비 완료 / 누적 수정 62회 달성 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -13,6 +13,7 @@
 | :--- | :--- | :--- |
 | **운영 및 개발 원칙** | [`GEMINI.md`](file:///home/ubuntu/workspace/GEMINI.md) | 팩트 기반 공모전 수집 규칙, 카테고리 탭 고정 규격, 모바일 무경계 원칙, 북마크 표준 |
 | **프로젝트 종합 현황** | [`PROJECT_SUMMARY.md`](file:///home/ubuntu/workspace/PROJECT_SUMMARY.md) | 지금까지 구현된 전체 기능, 상세 논의 내역, 브랜치 작업, 향후 로드맵 |
+| **이슈 및 문제 해결 기록** | [`ISSUES.md`](file:///home/ubuntu/workspace/ISSUES.md) | 발생 문제, 원인 분석, 조치 결과 및 재발 방지 대책 공식 기록 |
 | **취업 대비 포트폴리오 가이드** | [`NOTION_PORTFOLIO_GUIDE.md`](file:///home/ubuntu/workspace/NOTION_PORTFOLIO_GUIDE.md) | 10대 기술 스택, 6대 핵심 기능 및 STAR 문제 해결 사례 총망라 |
 
 ---
@@ -972,8 +973,22 @@ mindmap
     - **3) 원클릭 전체 날짜 복귀 및 토글 지원**:
       - 이미 선택된 날짜 셀을 다시 누르거나, 타임라인 헤더 우측의 `[🔄 전체 날짜 보기]` 버튼을 누르면 즉시 이번 달 전체 일정 목록으로 원클릭 복원.
       - 일정이 없는 날짜를 누르더라도 친절한 안내 문구와 함께 `[이번 달 전체 일정 (N건) 보기]` 복귀 버튼 제공.
+- **(63) 전 파일 대상 미완성 구현·불필요한 코드·문제 코드 전면 검토 및 일괄 삭제 정비 (ver 1.1.7)**:
+  - **사용자 요청 사항**: "지금부터 파일내에 구현하다가 만것들 필요 없는 코드들 문제 있는 코드들 싹 다 검토해서 삭제하자"
+  - **조치 내역**:
+    - **1) 백엔드 크롤러 레거시 및 데드 코드 전면 정리**:
+      - `scraper.py`: 공모전 전담 파이프라인(`contest_scraper.py`, `contest_notice_parser.py`)으로 분리된 이후 남아있던 205라인의 미사용 정적 목업(`FEATURED_CONTESTS`), 매핑 규칙, 정규식 추출 함수(`extract_contest_prize`, `extract_contest_period`) 완전 삭제.
+      - `job_scraper.py`: 구글 뉴스 RSS 호출 후 결과를 전혀 처리하지 않고 버리던 미완성 루프(`fetch_rss_for_jobs`, `clean_html`, `job_queries` 루프)를 완전히 제거하여 크롤링 속도 및 네트워크 효율 대폭 개선.
+    - **2) 프론트엔드 미완성 위젯 및 가상 DOM 잔재 전면 삭제**:
+      - `index.html` & `static/index.html`: JS 연동 없이 정적 펄스 스켈레톤만 무한 깜빡이던 미완성 `weeklyTopNewsWidget` HTML 블록 전면 삭제.
+      - `static/app.js` & `app.js`: 삭제된 `#refreshBtn`, `#newsSearchInput`, `#clearNewsSearchBtn`, `#newsTotalCount`, `#newsLastUpdated` 등의 비존재 요소 쿼리 및 이벤트 리스너 일괄 제거.
+      - `static/contests.js`: 삭제된 `#contestSearchInput`, `#clearContestSearchBtn`, `#contestLastUpdatedTime`, `#contestActiveCountBadge` 및 미사용 함수 `renderContestUrgentBanner`, `toggleContestUrgentFilter`, 미사용 변수 `isContestUrgentFilterActive` 전면 삭제.
+      - `static/jobs.js`: 삭제된 `#jobSearchInput`, `#clearJobSearchBtn`, `#jobLastUpdated`, `#jobTotalCount` 및 미사용 함수 `renderJobUrgentBanner`, `toggleJobUrgentFilter`, 미사용 변수 `isJobUrgentFilterActive` 전면 삭제.
+    - **3) 비사용 이미지 에셋 및 불필요한 복제 파일 영구 정리**:
+      - `static/architecture_korean.jpg`: `static/architecture_diagram.jpg`와 100% 동일한 중복 파일(493KB) 삭제.
+      - 미사용 3D 로봇 프로토타입 이미지 7종(`ai_robot_circle_full.png`, `ai_robot_circle_head.png`, `ai_robot_full.png`, `ai_robot_full_transparent.png`, `ai_robot_transparent.png`, 루트 중복 png) 영구 삭제.
     - **4) 캐시 버스팅 및 PWA 서비스 워커 갱신**:
-      - 내부 버전 `v1.1.5` 자동 증가, PWA 서비스 워커 `civil-news-hub-v1.1.5`, HTML/스크립트 캐시 버스터 `?v=20260915_v115` 일괄 동기화.
+      - 내부 버전 `v1.1.7` 자동 증가, PWA 서비스 워커 `civil-news-hub-v1.1.7`, HTML/스크립트 캐시 버스터 `?v=20260917_v117` 일괄 동기화.
 
 ---
 
@@ -981,7 +996,7 @@ mindmap
 
 | 브랜치명 | 상태 | 설명 |
 | :--- | :--- | :--- |
-| **`main`** | **최신 공식 배포 브랜치 (v1.1.5)** | GitHub Pages를 통해 라이브 서비스 중인 메인 브랜치 (전북대 알바 캘린더 날짜별 단독 필터링 탑재, 토목 뉴스, 채용, 공모전 통합) |
+| **`main`** | **최신 공식 배포 브랜치 (v1.1.7)** | GitHub Pages를 통해 라이브 서비스 중인 메인 브랜치 (레거시 코드 전면 정비, 전북대 알바 캘린더 날짜별 단독 필터링 탑재, 토목 뉴스, 채용, 공모전 통합) |
 | **`feature/footer-last-updated`** | **작업 완료 (main 병합됨)** | 푸터 업데이트 이전 및 초기 헤더 클린업 작업 브랜치 |
 
 - **온라인 라이브 서비스**: [https://chldlrtjr.github.io/civil-news-hub/](https://chldlrtjr.github.io/civil-news-hub/)

@@ -462,36 +462,6 @@ def is_job_expired(job, now_kst):
     except Exception:
         today_str = now_kst.strftime("%Y-%m-%d")
         return deadline < today_str
-
-def fetch_rss_for_jobs(term):
-    """구글 뉴스 RSS를 통한 기업별 최신 공채 기사 및 공고 수집"""
-    encoded_q = urllib.parse.quote(f'{term} when:14d')
-    url = f"https://news.google.com/rss/search?q={encoded_q}&hl=ko&gl=KR&ceid=KR:ko"
-    
-    req = urllib.request.Request(
-        url,
-        headers={
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-        }
-    )
-    
-    try:
-        with urllib.request.urlopen(req, timeout=8) as response:
-            content = response.read()
-            root = ET.fromstring(content)
-            return root.findall("./channel/item")
-    except Exception as e:
-        print(f"    [채용 RSS 수집 에러 ({term})]: {e}")
-        return []
-
-def clean_html(text):
-    """HTML 태그 제거"""
-    if not text:
-        return ""
-    clean = re.sub(r'<.*?>', '', text)
-    clean = clean.replace('&quot;', '"').replace('&apos;', "'").replace('&amp;', '&').replace('&lt;', '<').replace('&gt;', '>')
-    return clean.strip()
-
 def scrape_civil_jobs():
     """토목 채용 공고 정밀 수집 및 검증 마감일 필터링"""
     print("=" * 60)
@@ -511,41 +481,6 @@ def scrape_civil_jobs():
             continue
             
         collected_jobs.append(job)
-
-    # 2. 실시간 공채 RSS 검색어 실행 (토목 관련 주요 기업 신규 공채 포착)
-    job_queries = [
-        "도로공사 채용", "수자원공사 채용", "철도공단 채용", "현대건설 채용 토목",
-        "대우건설 채용 토목", "도화엔지니어링 채용", "국토안전관리원 채용"
-    ]
-    
-    print("  [*] 주요 기업/기관 실시간 채용 동향 파악 중...")
-    for q in job_queries:
-        items = fetch_rss_for_jobs(q)
-        for item in items[:2]:
-            raw_title = item.find("title").text if item.find("title") is not None else ""
-            raw_desc = item.find("description").text if item.find("description") is not None else ""
-            title_clean = clean_html(raw_title)
-            
-            # 토목/채용 관련성 검증
-            if not any(k in title_clean for k in ["채용", "공채", "모집", "인턴"]):
-                continue
-            if not any(k in (title_clean + " " + raw_desc) for k in ["토목", "인프라", "시공", "설계", "엔지니어"]):
-                continue
-                
-            # 회사 매핑
-            matched_company = None
-            for comp_name in COMPANY_REGISTRY.keys():
-                if comp_name in title_clean:
-                    matched_company = comp_name
-                    break
-            
-            if not matched_company:
-                continue
-                
-            # 이미 등록된 동일 회사의 활성 공고가 있으면 업데이트만 보강
-            existing = [j for j in collected_jobs if j["company"] == matched_company]
-            if existing:
-                continue
 
     print(f"  [+] 유효 활성 채용 공고 총 {len(collected_jobs)}건 정제 완료.")
     
@@ -569,8 +504,10 @@ def scrape_civil_jobs():
     }
     
     os.makedirs(DATA_DIR, exist_ok=True)
-    with open(JOBS_JSON_PATH, "w", encoding="utf-8") as f:
+    temp_path = JOBS_JSON_PATH + ".tmp"
+    with open(temp_path, "w", encoding="utf-8") as f:
         json.dump(jobs_data, f, ensure_ascii=False, indent=2)
+    os.replace(temp_path, JOBS_JSON_PATH)
         
     print(f"  [✓] 채용 데이터베이스 저장 완료: {JOBS_JSON_PATH}")
     print("=" * 60)

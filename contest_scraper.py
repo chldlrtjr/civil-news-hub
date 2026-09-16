@@ -165,8 +165,10 @@ def scrape_civil_contests():
     }
 
     os.makedirs(DATA_DIR, exist_ok=True)
-    with open(CONTESTS_JSON_PATH, "w", encoding="utf-8") as f:
+    temp_path = CONTESTS_JSON_PATH + ".tmp"
+    with open(temp_path, "w", encoding="utf-8") as f:
         json.dump(contests_data, f, ensure_ascii=False, indent=2)
+    os.replace(temp_path, CONTESTS_JSON_PATH)
 
     print(f"\n✅ 팩트 기반 검증 완료된 총 {len(active_contests)}건의 공모전 저장 완료! ({CONTESTS_JSON_PATH})")
     return contests_data

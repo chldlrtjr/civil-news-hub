@@ -8,7 +8,6 @@ let contestSearchQuery = '';
 let contestSortOption = 'closingSoon'; // closingSoon | latest
 let contestBookmarks = new Set();
 let isContestBookmarkView = false;
-let isContestUrgentFilterActive = false;
 let currentModalContest = null;
 let calendarCurrentYear = new Date().getFullYear();
 let calendarCurrentMonth = new Date().getMonth();
@@ -109,17 +108,10 @@ async function loadContestsData() {
     });
     window.allContests = allContests;
 
-    // 메타데이터 표시
-    const updatedEl = document.getElementById('contestLastUpdatedTime');
-    if (updatedEl) updatedEl.textContent = `업데이트: ${data.last_updated_display || '실시간'}`;
-
     const footerUpdatedEl = document.getElementById('footerLastUpdated');
     if (footerUpdatedEl && data.last_updated_display && (!footerUpdatedEl.textContent || footerUpdatedEl.textContent === '확인 중...')) {
       footerUpdatedEl.textContent = data.last_updated_display;
     }
-
-    const activeCountBadge = document.getElementById('contestActiveCountBadge');
-    if (activeCountBadge) activeCountBadge.textContent = allContests.length;
 
     // 전역 북마크 모드 동기화
     if (window.isGlobalBookmarkMode) {
@@ -236,22 +228,6 @@ function getUrgentContests() {
   });
 }
 
-// 3-2. 긴급 마감 임박 공모전 배너 (알림 제거됨)
-function renderContestUrgentBanner() {
-  const container = document.getElementById('contestUrgentBannerContainer');
-  if (container) {
-    container.innerHTML = '';
-    container.classList.add('hidden');
-  }
-}
-
-// 3-3. 퀵 필터 토글 함수 (레거시 안전 처리)
-window.toggleContestUrgentFilter = function() {
-  isContestUrgentFilterActive = false;
-  renderContests();
-};
-
-
 // 참가대상 판별 및 매칭 헬퍼
 function matchContestTarget(contest, targetKey) {
   if (!targetKey || targetKey === 'ALL') return true;
@@ -302,14 +278,7 @@ function getFilteredContests() {
     list = list.filter(c => matchContestTarget(c, contestActiveTarget));
   }
 
-  // 마감 임박 (D-3) 퀵 필터
-  if (isContestUrgentFilterActive) {
-    list = list.filter(c => {
-      if (c.status === '접수마감') return false;
-      const dday = parseDdayFromPeriod(c.period, c.status);
-      return !dday.isClosed && dday.isUrgent;
-    });
-  }
+
 
   // 검색어 필터
   if (contestSearchQuery.trim()) {
@@ -497,8 +466,6 @@ function renderContests() {
   const emptyState = document.getElementById('contestEmptyState');
   if (!grid || !emptyState) return;
 
-  // 상단 긴급 배너 동기화
-  renderContestUrgentBanner();
 
   const notice = document.getElementById('contestResultCountNotice');
   const filtered = getFilteredContests();
@@ -1068,37 +1035,6 @@ function copyContestPromptFallback(text) {
 
 // 7. 이벤트 리스너 설정
 function setupContestEventListeners() {
-  // 검색창 입력 (180ms 디바운스 적용으로 타이핑 렉 원천 차단)
-  const searchInput = document.getElementById('contestSearchInput');
-  const clearSearchBtn = document.getElementById('clearContestSearchBtn');
-  if (searchInput) {
-    const handleContestSearch = debounce((query) => {
-      contestSearchQuery = query;
-      renderContests();
-    }, 180);
-
-    searchInput.addEventListener('input', (e) => {
-      const val = e.target.value.trim();
-      if (clearSearchBtn) {
-        if (val) {
-          clearSearchBtn.classList.remove('hidden');
-        } else {
-          clearSearchBtn.classList.add('hidden');
-        }
-      }
-      handleContestSearch(val);
-    });
-  }
-
-  if (clearSearchBtn) {
-    clearSearchBtn.addEventListener('click', () => {
-      if (searchInput) searchInput.value = '';
-      contestSearchQuery = '';
-      clearSearchBtn.classList.add('hidden');
-      renderContests();
-    });
-  }
-
   // 상태 필터 버튼 그룹 (전체, 접수중, 접수예정, 상시)
   const statusGroup = document.getElementById('contestStatusFilterGroup');
   if (statusGroup) {

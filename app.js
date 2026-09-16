@@ -360,8 +360,13 @@ async function loadNewsData() {
       clearTimeout(timeoutId);
       if (!res.ok) throw new Error('API failed');
     } catch (e) {
-      res = await fetch('./data/news.json?t=' + Date.now());
-      if (!res.ok) throw new Error('Static news.json failed with status ' + res.status);
+      try {
+        res = await fetch('./data/news.json?t=' + Date.now());
+        if (!res.ok) throw new Error('Status ' + res.status);
+      } catch (err2) {
+        res = await fetch('data/news.json?t=' + Date.now());
+      }
+      if (!res.ok) throw new Error('Static news.json failed with status ' + (res ? res.status : 'unknown'));
     }
 
     const data = await res.json();
@@ -372,15 +377,9 @@ async function loadNewsData() {
     // [동적 카테고리 동기화] 새로운 카테고리가 등장할 경우 카테고리 탭 목록에 자동 추가하여 전체 건수 합산 일치 보장
     syncNewsCategories();
 
-    // 메타데이터 업데이트
-    const updatedEl = document.getElementById('newsLastUpdated');
-    if (updatedEl) updatedEl.textContent = data.last_updated_display || '방금 전';
-
+    // 푸터 메타데이터 업데이트
     const footerUpdatedEl = document.getElementById('footerLastUpdated');
     if (footerUpdatedEl) footerUpdatedEl.textContent = data.last_updated_display || '방금 전';
-    
-    const countEl = document.getElementById('newsTotalCount');
-    if (countEl) countEl.textContent = `${allArticles.length}건`;
 
     // AI 챗봇 실시간 기사 건수 동기화
     if (window.updateChatbotArticleCount) {
@@ -608,10 +607,6 @@ function resetNewsKeywordAndSearch() {
   newsSearchQuery = '';
   activeNewsCategory = 'all';
   searchDisplayedCount = SEARCH_PAGE_SIZE;
-  const input = document.getElementById('newsSearchInput');
-  if (input) input.value = '';
-  const clearBtn = document.getElementById('clearNewsSearchBtn');
-  if (clearBtn) clearBtn.classList.add('hidden');
   renderNewsKeywordChips();
   updateNewsCategoryTabStyles('all');
   renderArticles();
@@ -1670,70 +1665,8 @@ function setupNewsEventListeners() {
   const themeToggle = document.getElementById('themeToggle');
   if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
 
-  // 새로고침 버튼
-  const refreshBtn = document.getElementById('refreshBtn');
-  if (refreshBtn) {
-    refreshBtn.addEventListener('click', () => {
-      const icon = document.getElementById('refreshIcon');
-      if (icon) icon.classList.add('animate-spin');
-      
-      if (currentMainTab === 'news') {
-        loadNewsData().then(() => {
-          showToast('최신 뉴스를 갱신했습니다.');
-          setTimeout(() => { if (icon) icon.classList.remove('animate-spin'); }, 500);
-        });
-      } else if (currentMainTab === 'jobs') {
-        if (typeof loadJobsData === 'function') {
-          loadJobsData().then(() => {
-            showToast('최신 채용 공고를 갱신했습니다.');
-            setTimeout(() => { if (icon) icon.classList.remove('animate-spin'); }, 500);
-          });
-        }
-      } else if (currentMainTab === 'contests') {
-        if (typeof loadContestsData === 'function') {
-          loadContestsData().then(() => {
-            showToast('최신 공모전을 갱신했습니다.');
-            setTimeout(() => { if (icon) icon.classList.remove('animate-spin'); }, 500);
-          });
-        }
-      }
-    });
-  }
-
   // 북마크 탭 버튼 스타일 초기화
   updateBookmarkTabStyle();
-
-  // 뉴스 검색창 (180ms 디바운스 적용으로 타이핑 렉 원천 차단)
-  const searchInput = document.getElementById('newsSearchInput');
-  const clearBtn = document.getElementById('clearNewsSearchBtn');
-  if (searchInput && clearBtn) {
-    const handleNewsSearch = debounce((query) => {
-      newsSearchQuery = query;
-      categoryDisplayedCount = {};
-      searchDisplayedCount = SEARCH_PAGE_SIZE;
-      renderArticles();
-    }, 180);
-
-    searchInput.addEventListener('input', (e) => {
-      const val = e.target.value.trim();
-      if (val) {
-        clearBtn.classList.remove('hidden');
-      } else {
-        clearBtn.classList.add('hidden');
-      }
-      handleNewsSearch(val);
-    });
-
-    clearBtn.addEventListener('click', () => {
-      searchInput.value = '';
-      newsSearchQuery = '';
-      categoryDisplayedCount = {};
-      searchDisplayedCount = SEARCH_PAGE_SIZE;
-      clearBtn.classList.add('hidden');
-      searchInput.focus();
-      renderArticles();
-    });
-  }
 
   // 뉴스 정렬
   const sortSelect = document.getElementById('newsSortSelect');
