@@ -1391,9 +1391,18 @@ function updateGnbTabStyles(activeTab) {
   const hatBtn = document.getElementById('gnbHatBtn');
   if (hatBtn) {
     if (activeTab === 'home') {
-      hatBtn.className = 'w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/40 ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-900 scale-105 transition cursor-pointer flex-shrink-0';
+      hatBtn.className = 'w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/40 ring-2 ring-emerald-500 ring-offset-2 dark:ring-offset-slate-900 scale-105 transition-all duration-200 cursor-pointer flex-shrink-0';
+      hatBtn.setAttribute('title', '전북대 알바 (JBNU Alba) - 클릭 시 메인으로 복귀');
+      hatBtn.innerHTML = '<i data-lucide="coffee" class="w-4 h-4 sm:w-6 sm:h-6 transition-transform duration-200"></i>';
     } else {
-      hatBtn.className = 'w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 hover:scale-105 transition cursor-pointer flex-shrink-0';
+      hatBtn.className = 'w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 hover:scale-105 transition-all duration-200 cursor-pointer flex-shrink-0';
+      hatBtn.setAttribute('title', '전북대 알바 (JBNU Alba)');
+      hatBtn.innerHTML = '<i data-lucide="hard-hat" class="w-4 h-4 sm:w-6 sm:h-6 transition-transform duration-200"></i>';
+    }
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+      window.lucide.createIcons({
+        root: hatBtn
+      });
     }
   }
 
@@ -1414,6 +1423,15 @@ function updateGnbTabStyles(activeTab) {
     }
   });
 }
+
+// GNB 알바 버튼 원클릭 토글 핸들러 (누르면 알바로 전환, 알바에서 다시 누르면 직전 탭으로 복귀)
+window.handleGnbHatClick = function() {
+  if (currentMainTab === 'home') {
+    window.switchMainTab(lastActiveTab || 'news');
+  } else {
+    window.switchMainTab('home');
+  }
+};
 
 function updateMobileNavStyles(activeTab) {
   const tabs = [
