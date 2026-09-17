@@ -1337,12 +1337,14 @@ window.switchMainTab = function(tabName, updateHash = true) {
   } catch (e) {}
 
   const panelHome = document.getElementById('tabPanelHome');
+  const panelSwUniv = document.getElementById('tabPanelSwUniv');
   const panelNews = document.getElementById('tabPanelNews');
   const panelJobs = document.getElementById('tabPanelJobs');
   const panelContests = document.getElementById('tabPanelContests');
   const panelMyPage = document.getElementById('tabPanelMyPage');
 
   if (panelHome) panelHome.classList.toggle('hidden', tabName !== 'home');
+  if (panelSwUniv) panelSwUniv.classList.toggle('hidden', tabName !== 'swuniv');
   if (panelNews) panelNews.classList.toggle('hidden', tabName !== 'news');
   if (panelJobs) panelJobs.classList.toggle('hidden', tabName !== 'jobs');
   if (panelContests) panelContests.classList.toggle('hidden', tabName !== 'contests');
@@ -1351,6 +1353,10 @@ window.switchMainTab = function(tabName, updateHash = true) {
   if (tabName === 'home') {
     if (typeof window.initJbnuAlba === 'function') {
       window.initJbnuAlba();
+    }
+  } else if (tabName === 'swuniv') {
+    if (typeof window.initSwUniv === 'function') {
+      window.initSwUniv();
     }
   } else if (tabName === 'news') {
     isNewsBookmarkView = false;
@@ -1389,12 +1395,12 @@ window.switchMainTab = function(tabName, updateHash = true) {
 
 function updateGnbTabStyles(activeTab) {
   const hatBtn = document.getElementById('gnbHatBtn');
-  const isAlbaMode = (activeTab === 'home');
+  const isAlbaMode = (activeTab === 'home' || activeTab === 'swuniv');
 
   if (hatBtn) {
     if (isAlbaMode) {
       hatBtn.className = 'w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/40 ring-2 ring-emerald-500 ring-offset-2 dark:ring-offset-slate-900 scale-105 transition-all duration-200 cursor-pointer flex-shrink-0';
-      hatBtn.setAttribute('title', '전북대 알바 (JBNU Alba) - 클릭 시 메인으로 복귀');
+      hatBtn.setAttribute('title', '전북대 알바 / SW사업단 - 클릭 시 토목 메인으로 복귀');
       hatBtn.innerHTML = '<i data-lucide="coffee" class="w-4 h-4 sm:w-6 sm:h-6 transition-transform duration-200"></i>';
     } else {
       hatBtn.className = 'w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 hover:scale-105 transition-all duration-200 cursor-pointer flex-shrink-0';
@@ -1409,6 +1415,7 @@ function updateGnbTabStyles(activeTab) {
   }
 
   const tabAlba = document.getElementById('gnbTabAlba');
+  const tabSwUniv = document.getElementById('gnbTabSwUniv');
   const tabs = [
     { id: 'gnbTabNews', key: 'news' },
     { id: 'gnbTabJobs', key: 'jobs' },
@@ -1416,16 +1423,30 @@ function updateGnbTabStyles(activeTab) {
   ];
 
   if (isAlbaMode) {
-    // 알바 모드: 기존 토목뉴스, 채용공고문, 공모전 버튼들 숨김
+    // 알바/학교 모드: 기존 토목뉴스, 채용공고문, 공모전 버튼들 숨김
     tabs.forEach(t => {
       const el = document.getElementById(t.id);
       if (el) el.classList.add('hidden');
     });
 
-    // 아르바이트 페이지 버튼 단독 노출
+    // 아르바이트 버튼
     if (tabAlba) {
       tabAlba.classList.remove('hidden');
-      tabAlba.className = 'px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-base font-bold tracking-tight text-emerald-600 dark:text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.45)] dark:drop-shadow-[0_0_10px_rgba(52,211,153,0.75)] transition flex items-center justify-center cursor-pointer flex-shrink-0 bg-transparent';
+      if (activeTab === 'home') {
+        tabAlba.className = 'px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-base font-bold tracking-tight text-emerald-600 dark:text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.45)] dark:drop-shadow-[0_0_10px_rgba(52,211,153,0.75)] transition flex items-center justify-center cursor-pointer flex-shrink-0 bg-transparent';
+      } else {
+        tabAlba.className = 'px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-base font-bold tracking-tight text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300 transition flex items-center justify-center cursor-pointer flex-shrink-0 bg-transparent drop-shadow-none';
+      }
+    }
+
+    // SW중심대학사업단 버튼
+    if (tabSwUniv) {
+      tabSwUniv.classList.remove('hidden');
+      if (activeTab === 'swuniv') {
+        tabSwUniv.className = 'px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-base font-bold tracking-tight text-indigo-600 dark:text-indigo-400 drop-shadow-[0_0_8px_rgba(99,102,241,0.45)] dark:drop-shadow-[0_0_10px_rgba(129,140,248,0.75)] transition flex items-center justify-center cursor-pointer flex-shrink-0 bg-transparent';
+      } else {
+        tabSwUniv.className = 'px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-base font-bold tracking-tight text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300 transition flex items-center justify-center cursor-pointer flex-shrink-0 bg-transparent drop-shadow-none';
+      }
     }
   } else {
     // 일반 모드: 토목뉴스, 채용공고문, 공모전 버튼 복원 노출
@@ -1441,8 +1462,9 @@ function updateGnbTabStyles(activeTab) {
       }
     });
 
-    // 아르바이트 버튼 숨김
+    // 아르바이트 & SW사업단 버튼 숨김
     if (tabAlba) tabAlba.classList.add('hidden');
+    if (tabSwUniv) tabSwUniv.classList.add('hidden');
   }
 
   if (window.lucide && typeof window.lucide.createIcons === 'function') {
@@ -1453,7 +1475,7 @@ function updateGnbTabStyles(activeTab) {
 
 // GNB 알바 버튼 원클릭 토글 핸들러 (누르면 알바로 전환, 알바에서 다시 누르면 직전 탭으로 복귀)
 window.handleGnbHatClick = function() {
-  if (currentMainTab === 'home') {
+  if (currentMainTab === 'home' || currentMainTab === 'swuniv') {
     window.switchMainTab(lastActiveTab || 'news');
   } else {
     window.switchMainTab('home');
@@ -1461,8 +1483,9 @@ window.handleGnbHatClick = function() {
 };
 
 function updateMobileNavStyles(activeTab) {
-  const isAlbaMode = (activeTab === 'home');
+  const isAlbaMode = (activeTab === 'home' || activeTab === 'swuniv');
   const mobAlba = document.getElementById('mobileTabAlba');
+  const mobSwUniv = document.getElementById('mobileTabSwUniv');
   const tabs = [
     { id: 'mobileTabNews', key: 'news', activeColor: 'text-blue-600 dark:text-blue-400' },
     { id: 'mobileTabJobs', key: 'jobs', activeColor: 'text-blue-600 dark:text-blue-400' },
@@ -1471,15 +1494,30 @@ function updateMobileNavStyles(activeTab) {
   ];
 
   if (isAlbaMode) {
-    // 알바 모드: 모바일 하단바에서도 토목 뉴스, 채용 공고, 공모전 숨김
+    // 알바/학교 모드: 모바일 하단바에서도 토목 뉴스, 채용 공고, 공모전 숨김
     ['mobileTabNews', 'mobileTabJobs', 'mobileTabContests'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.classList.add('hidden');
     });
+
     if (mobAlba) {
       mobAlba.classList.remove('hidden');
-      mobAlba.className = 'flex-1 relative flex flex-col items-center justify-center py-1 px-1 text-emerald-600 dark:text-emerald-400 font-bold transition cursor-pointer';
+      if (activeTab === 'home') {
+        mobAlba.className = 'flex-1 relative flex flex-col items-center justify-center py-1 px-1 text-emerald-600 dark:text-emerald-400 font-bold transition cursor-pointer';
+      } else {
+        mobAlba.className = 'flex-1 relative flex flex-col items-center justify-center py-1 px-1 text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition cursor-pointer';
+      }
     }
+
+    if (mobSwUniv) {
+      mobSwUniv.classList.remove('hidden');
+      if (activeTab === 'swuniv') {
+        mobSwUniv.className = 'flex-1 relative flex flex-col items-center justify-center py-1 px-1 text-indigo-600 dark:text-indigo-400 font-bold transition cursor-pointer';
+      } else {
+        mobSwUniv.className = 'flex-1 relative flex flex-col items-center justify-center py-1 px-1 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition cursor-pointer';
+      }
+    }
+
     const mobBookmark = document.getElementById('mobileBookmarkBtn');
     if (mobBookmark) {
       mobBookmark.className = 'flex-1 relative flex flex-col items-center justify-center py-1 px-1 text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 font-medium transition cursor-pointer';
@@ -1491,6 +1529,7 @@ function updateMobileNavStyles(activeTab) {
       if (el) el.classList.remove('hidden');
     });
     if (mobAlba) mobAlba.classList.add('hidden');
+    if (mobSwUniv) mobSwUniv.classList.add('hidden');
 
     tabs.forEach(t => {
       const el = document.getElementById(t.id);
@@ -1515,11 +1554,12 @@ window.updateGlobalBookmarkCount = function() {
   const nBookmarks = window.newsBookmarks || (typeof newsBookmarks !== 'undefined' ? newsBookmarks : null);
   const jBookmarks = window.jobBookmarks || (typeof jobBookmarks !== 'undefined' ? jobBookmarks : null);
   const cBookmarks = window.contestBookmarks || (typeof contestBookmarks !== 'undefined' ? contestBookmarks : null);
+  const swCount = (typeof window.getSwBookmarksCount === 'function') ? window.getSwBookmarksCount() : 0;
 
   const newsCount = nBookmarks ? nBookmarks.size : 0;
   const jobsCount = jBookmarks ? jBookmarks.size : 0;
   const contestsCount = cBookmarks ? cBookmarks.size : 0;
-  const totalCount = newsCount + jobsCount + contestsCount;
+  const totalCount = newsCount + jobsCount + contestsCount + swCount;
 
   const countEl = document.getElementById('bookmarkCount');
   if (countEl) countEl.textContent = totalCount;
@@ -1598,8 +1638,10 @@ function initTabRouting() {
     savedTab = localStorage.getItem('civil_last_tab') || 'news';
   } catch (e) {}
 
-  if (hash === 'home') {
+  if (hash === 'home' || hash === 'alba') {
     switchMainTab('home', false);
+  } else if (hash === 'swuniv' || hash === 'sw_program' || hash === 'sw') {
+    switchMainTab('swuniv', false);
   } else if (hash === 'jobs') {
     switchMainTab('jobs', false);
   } else if (hash === 'contests') {
@@ -1615,7 +1657,8 @@ function initTabRouting() {
 
   window.addEventListener('hashchange', () => {
     const newHash = (window.location.hash || '').replace('#', '').toLowerCase();
-    if (newHash === 'home') switchMainTab('home', false);
+    if (newHash === 'home' || newHash === 'alba') switchMainTab('home', false);
+    else if (newHash === 'swuniv' || newHash === 'sw_program' || newHash === 'sw') switchMainTab('swuniv', false);
     else if (newHash === 'jobs') switchMainTab('jobs', false);
     else if (newHash === 'contests') switchMainTab('contests', false);
     else if (newHash === 'mypage') switchMainTab('mypage', false);

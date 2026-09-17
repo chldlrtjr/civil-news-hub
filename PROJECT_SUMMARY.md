@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.1.15` (아르바이트 모드에서 '토목 메인' 바로가기 버튼 완전 삭제 및 '아르바이트' 단독 탭 피드 정비 / 누적 수정 70회 달성 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.1.16` (전북대 SW중심대학사업단 신규 페이지 탭 및 프로그램 크롤링 엔진·프론트엔드 피드 구축 / 누적 수정 71회 달성 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -1079,13 +1079,35 @@ mindmap
   4. **캐시 버스팅 갱신**:
      - 스크립트 및 iframe 로드 버전을 `v1115`(`?v=20260917_v1115`)로 갱신하여 클라이언트 브라우저 즉시 반영 보장.
 
+#### 71) 전북대학교 SW중심대학사업단 신규 페이지 탭 및 프로그램 크롤링 엔진·프론트엔드 피드 구축 (ver 1.1.16)
+- **요청 사항**: "전북대 알바에서 새로운 페이지를 추가할게 이름은 SW중심대학사업단이야 https://swuniv.jbnu.ac.kr/main/jbnusw?gc=Program&do=list&page=1 여기에 있는 프로그램들을 크롤링 해서 띄워줘"
+- **조치 내역**:
+  1. **SW중심대학사업단 전담 자동 크롤링 엔진 개발 ([`swuniv_scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/swuniv_scraper.py))**:
+     - 공식 프로그램 신청 게시판(`swuniv.jbnu.ac.kr`) 실시간 수집 파이프라인 수립.
+     - 캡스톤디자인, 멘토링, 신기술특강, 플랫폼 관리 장학생 등 주요 프로그램 블록 단위 정밀 파싱.
+     - 교육(활동)기간, 신청기간, 교육장소, 정원, 마일리지/포인트 메타데이터 전수 정제.
+     - D-Day 및 모집 상태(신청하기/접수중/마감임박/오늘마감/접수예정/접수마감) 실시간 판별 엔진 탑재.
+     - 수집 데이터 `data/swuniv_programs.json` 및 `static/data/swuniv_programs.json` 자동 저장.
+  2. **프론트엔드 전담 모듈 개발 ([`swuniv.js`](file:///C:/Users/최익석/Desktop/goofy-borg/swuniv.js), [`static/swuniv.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/swuniv.js))**:
+     - GEMINI.md 시안 B 기반 미니멀 언더라인 바 탭(SW융합, 산학협력, 교육, SW가치확산, 교육환경지원, SW기초, SW전공 등) 동적 생성 및 건수 100% 일치 보장.
+     - 최신 등록순 / 마감 임박순 / 포인트 높은순 정렬 필터 탑재.
+     - 포스터 썸네일, 카테고리 뱃지, D-Day 배지, 신청 바로가기 및 표준 북마크 리본 버튼(`<i data-lucide="bookmark"></i>`) 연동.
+  3. **전북대 알바/학교 모드 GNB 및 모바일 하단 네비게이션 동적 전환 연동 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`app.js`](file:///C:/Users/최익석/Desktop/goofy-borg/app.js))**:
+     - 알바/학교 모드 진입 시 상단 GNB에 `[아르바이트]`와 `[SW중심대학사업단]` 탭이 나란히 노출되며 원클릭 실시간 무로딩 전환 지원.
+     - 모바일 하단바(`mobileBottomNav`)에서도 `[아르바이트]`, `[SW사업단]`, `[마이페이지]`로 동적 최적화.
+     - URL 해시 라우팅(`#swuniv`) 및 PWA/재방문 히스토리 동기화.
+  4. **모바일 뷰어 및 수집 파이프라인 동기화 ([`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html), [`sync.bat`](file:///C:/Users/최익석/Desktop/goofy-borg/sync.bat), [`cron_scrape.sh`](file:///C:/Users/최익석/Desktop/goofy-borg/cron_scrape.sh))**:
+     - 갤럭시 모바일 뷰어 상단 중앙 스위처에 `SW사업단` 바로가기 버튼 탑재.
+     - `sync.bat` 및 `cron_scrape.sh`에 SW사업단 수집 4/6 및 5/7 단계 추가.
+     - 캐시 버스팅 파라미터 `v1116`(`?v=20260917_v1116`) 일괄 갱신.
+
 ---
 
 ## 🌿 3. Git 브랜치 현황
 
 | 브랜치명 | 상태 | 설명 |
 | :--- | :--- | :--- |
-| **`main`** | **최신 공식 배포 브랜치 (v1.1.15)** | GitHub Pages 및 JCloud 우분투 서버를 통해 라이브 서비스 중인 메인 브랜치 (알바 모드 시 '토목 메인' 버튼 삭제 및 '아르바이트' 단독 탭 클린 피드 탑재) |
+| **`main`** | **최신 공식 배포 브랜치 (v1.1.16)** | GitHub Pages 및 JCloud 우분투 서버를 통해 라이브 서비스 중인 메인 브랜치 (전북대 SW중심대학사업단 신규 페이지 탭 및 프로그램 크롤링 피드 탑재) |
 | **`feature/footer-last-updated`** | **작업 완료 (main 병합됨)** | 푸터 업데이트 이전 및 초기 헤더 클린업 작업 브랜치 |
 
 - **온라인 라이브 서비스**: [https://chldlrtjr.github.io/civil-news-hub/](https://chldlrtjr.github.io/civil-news-hub/)

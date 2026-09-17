@@ -30,16 +30,20 @@ echo "[3/5] 채용 공고 수집 중 (job_scraper.py)..." >> "$LOG_FILE"
 "$SCRIPT_DIR/venv/bin/python3" job_scraper.py >> "$LOG_FILE" 2>&1
 
 # 4. 전북대학교 아르바이트 공고 크롤링
-echo "[4/6] 전북대 아르바이트 수집 및 정제 중 (jbnu_scraper.py)..." >> "$LOG_FILE"
+echo "[4/7] 전북대 아르바이트 수집 및 정제 중 (jbnu_scraper.py)..." >> "$LOG_FILE"
 "$SCRIPT_DIR/venv/bin/python3" jbnu_scraper.py >> "$LOG_FILE" 2>&1
 
-# 5. 공모전 데이터 무결성 전수 검증 (GEMINI.md Rule 1-⑦)
-echo "[5/6] 공모전 무결성 전수 검증 중 (test_contests_integrity.py)..." >> "$LOG_FILE"
+# 5. 전북대학교 SW중심대학사업단 프로그램 크롤링
+echo "[5/7] 전북대 SW사업단 프로그램 수집 중 (swuniv_scraper.py)..." >> "$LOG_FILE"
+"$SCRIPT_DIR/venv/bin/python3" swuniv_scraper.py >> "$LOG_FILE" 2>&1
+
+# 6. 공모전 데이터 무결성 전수 검증 (GEMINI.md Rule 1-⑦)
+echo "[6/7] 공모전 무결성 전수 검증 중 (test_contests_integrity.py)..." >> "$LOG_FILE"
 "$SCRIPT_DIR/venv/bin/python3" test_contests_integrity.py >> "$LOG_FILE" 2>&1
 
-# 6. GitHub 자동 배포 (data 변경분 commit + push → GitHub Pages 자동 반영)
-echo "[6/6] GitHub 자동 배포 중..." >> "$LOG_FILE"
-git add data/news.json data/contests.json data/jobs.json data/jbnu_albas.json >> "$LOG_FILE" 2>&1
+# 7. GitHub 자동 배포 (data 변경분 commit + push → GitHub Pages 자동 반영)
+echo "[7/7] GitHub 자동 배포 중..." >> "$LOG_FILE"
+git add data/news.json data/contests.json data/jobs.json data/jbnu_albas.json data/swuniv_programs.json >> "$LOG_FILE" 2>&1
 
 if git diff --cached --quiet; then
   echo "  ℹ️  데이터 변경 없음 — push 건너뜀" >> "$LOG_FILE"

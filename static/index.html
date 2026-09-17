@@ -75,7 +75,7 @@
           </button>
           
           <nav class="flex items-center space-x-1 sm:space-x-1.5 min-w-0" aria-label="메인 네비게이션">
-            <!-- 0. 아르바이트 탭 (알바 모드 시 단독 노출) -->
+            <!-- 0. 아르바이트 탭 (알바/학교 모드 시 노출) -->
             <button 
               id="gnbTabAlba" 
               onclick="switchMainTab('home')" 
@@ -83,6 +83,16 @@
               title="아르바이트"
             >
               <span>아르바이트</span>
+            </button>
+
+            <!-- 0-1. SW중심대학사업단 탭 (알바/학교 모드 시 노출) -->
+            <button 
+              id="gnbTabSwUniv" 
+              onclick="switchMainTab('swuniv')" 
+              class="hidden px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-base font-bold tracking-tight text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300 transition flex items-center justify-center cursor-pointer flex-shrink-0 bg-transparent"
+              title="SW중심대학사업단"
+            >
+              <span>SW중심대학사업단</span>
             </button>
 
 
@@ -223,6 +233,73 @@
     <div id="jbnuAlbaContainer" class="hidden">
       <div id="jbnuAlbaGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
         <!-- jbnu_alba.js에서 렌더링 -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 0-1. 전북대학교 SW중심대학사업단 프로그램 패널 -->
+  <!-- ========================================== -->
+  <section id="tabPanelSwUniv" class="hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <!-- 상단 헤더 타이틀 -->
+    <div class="pb-4 border-b border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 text-white flex items-center justify-center font-black text-xl shadow-md shadow-indigo-500/20 flex-shrink-0">
+          💻
+        </div>
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            SW중심대학사업단
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-extrabold">JBNU SW Univ</span>
+          </h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">전북대학교 SW중심대학사업단 공식 프로그램 실시간 수집 · 캡스톤디자인, 멘토링, 특강 및 장학생 선발</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="https://swuniv.jbnu.ac.kr/main/jbnusw?gc=Program&do=list&page=1" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold transition">
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          <span>SW사업단 공식 신청 바로가기</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- 카테고리 탭 (상단 고정 Sticky Navigation - 시안 B: 미니멀 언더라인 바) -->
+    <div class="sticky top-0 sm:top-16 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-0 mt-0 mb-4 sm:my-4 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 shadow-xs transition-colors">
+      <div class="max-w-7xl mx-auto flex items-center overflow-x-auto scrollbar-none category-scroll-container" style="touch-action: pan-x; overscroll-behavior: none; overscroll-behavior-x: none;">
+        <div id="swunivCategoryTabs" class="flex items-center gap-1 sm:gap-3 min-w-max h-full" style="touch-action: pan-x;">
+          <!-- swuniv.js에서 동적 탭 렌더링 -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 필터 및 정렬 옵션 바 -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400 mb-4 px-1">
+      <div class="flex items-center gap-2">
+        <span id="swunivResultCountNotice" class="font-medium text-slate-700 dark:text-slate-300">
+          프로그램을 불러오는 중입니다...
+        </span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <!-- 정렬 드롭다운 -->
+        <select id="swunivSortSelect" onchange="window.handleSwSortChange(this.value)" class="bg-white dark:bg-slate-900 text-xs text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500 shadow-sm cursor-pointer">
+          <option value="recent" selected>📅 최신 등록순</option>
+          <option value="deadline">⏱️ 마감 임박순 (D-Day순)</option>
+          <option value="point_high">⭐ 포인트 높은순</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 로딩 인디케이터 -->
+    <div id="swunivLoadingIndicator" class="flex flex-col items-center justify-center py-24 text-center">
+      <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600 mb-3"></div>
+      <p class="text-sm text-slate-500 dark:text-slate-400">전북대학교 SW중심대학사업단 프로그램을 불러오는 중입니다...</p>
+    </div>
+
+    <!-- 프로그램 카드 그리드 컨테이너 -->
+    <div id="swunivContainer" class="hidden">
+      <div id="swunivGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+        <!-- swuniv.js에서 렌더링 -->
       </div>
     </div>
   </section>
@@ -1047,10 +1124,16 @@
 
   <!-- 모바일 전용 하단 고정 네비게이션 바 (Mobile Bottom Navigation Bar) -->
   <nav id="mobileBottomNav" class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800/80 px-2 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] flex items-center justify-around shadow-lg transition-colors" aria-label="모바일 하단 네비게이션">
-    <!-- 0. 아르바이트 (알바 모드 시 노출) -->
+    <!-- 0. 아르바이트 (알바/학교 모드 시 노출) -->
     <button id="mobileTabAlba" type="button" onclick="switchMainTab('home')" class="hidden flex-1 flex flex-col items-center justify-center py-1 px-1 text-emerald-600 dark:text-emerald-400 font-bold transition cursor-pointer" title="아르바이트">
       <i data-lucide="coffee" class="w-5 h-5 mb-0.5"></i>
       <span class="text-[10px] tracking-tight whitespace-nowrap">아르바이트</span>
+    </button>
+
+    <!-- 0-1. SW중심대학사업단 (알바/학교 모드 시 노출) -->
+    <button id="mobileTabSwUniv" type="button" onclick="switchMainTab('swuniv')" class="hidden flex-1 flex flex-col items-center justify-center py-1 px-1 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition cursor-pointer" title="SW중심대학사업단">
+      <i data-lucide="laptop" class="w-5 h-5 mb-0.5"></i>
+      <span class="text-[10px] tracking-tight whitespace-nowrap">SW사업단</span>
     </button>
 
 
@@ -1187,12 +1270,13 @@
     <span id="toastMessage">알림 메시지</span>
   </div>
 
-  <!-- 프론트엔드 스크립트 로드 (전북대 알바 & SPA 마스터 컨트롤러 & 채용 & 공모전 & AI 챗봇) -->
-  <script src="./static/jbnu_alba.js?v=20260917_v1115"></script>
-  <script src="./static/app.js?v=20260917_v1115"></script>
-  <script src="./static/jobs.js?v=20260917_v1115"></script>
-  <script src="./static/contests.js?v=20260917_v1115"></script>
-  <script src="./static/chatbot.js?v=20260917_v1115"></script>
+  <!-- 프론트엔드 스크립트 로드 (전북대 알바 & SW중심대학사업단 & SPA 마스터 컨트롤러 & 채용 & 공모전 & AI 챗봇) -->
+  <script src="./static/jbnu_alba.js?v=20260917_v1116"></script>
+  <script src="./static/swuniv.js?v=20260917_v1116"></script>
+  <script src="./static/app.js?v=20260917_v1116"></script>
+  <script src="./static/jobs.js?v=20260917_v1116"></script>
+  <script src="./static/contests.js?v=20260917_v1116"></script>
+  <script src="./static/chatbot.js?v=20260917_v1116"></script>
 
   <script>
     if ('serviceWorker' in navigator && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {

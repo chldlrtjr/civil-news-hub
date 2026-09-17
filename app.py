@@ -22,6 +22,7 @@ NEWS_JSON_PATH = os.path.join(DATA_DIR, "news.json")
 CONTESTS_JSON_PATH = os.path.join(DATA_DIR, "contests.json")
 JOBS_JSON_PATH = os.path.join(DATA_DIR, "jobs.json")
 JBNU_JSON_PATH = os.path.join(DATA_DIR, "jbnu_albas.json")
+SWUNIV_JSON_PATH = os.path.join(DATA_DIR, "swuniv_programs.json")
 
 PORT = int(os.environ.get("PORT", 5000))
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.6-flash")
@@ -157,6 +158,22 @@ def get_jbnu_albas():
         except Exception:
             pass
     resp = send_file(JBNU_JSON_PATH, mimetype="application/json; charset=utf-8")
+    resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    resp.headers["Pragma"] = "no-cache"
+    resp.headers["Expires"] = "0"
+    return resp
+
+@app.route("/api/swuniv-programs")
+@app.route("/api/swuniv")
+@app.route("/data/swuniv_programs.json")
+def get_swuniv_programs():
+    if not os.path.exists(SWUNIV_JSON_PATH):
+        try:
+            import swuniv_scraper
+            swuniv_scraper.save_swuniv_programs()
+        except Exception:
+            pass
+    resp = send_file(SWUNIV_JSON_PATH, mimetype="application/json; charset=utf-8")
     resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     resp.headers["Pragma"] = "no-cache"
     resp.headers["Expires"] = "0"
