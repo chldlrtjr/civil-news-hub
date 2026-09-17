@@ -70,12 +70,12 @@
       
       <!-- 좌측 타이틀 & 갤럭시 브랜딩 -->
       <div class="flex items-center gap-3">
-        <a href="./index.html" class="flex items-center gap-2 text-white font-bold text-sm sm:text-base hover:text-blue-400 transition" title="데스크탑 버전으로 이동">
+        <button type="button" onclick="handleMobileBrandClick()" class="flex items-center gap-2 text-white font-bold text-sm sm:text-base hover:text-emerald-400 transition cursor-pointer text-left" title="전북대학교 아르바이트로 이동">
           <span class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow">
             <i data-lucide="hard-hat" class="w-4 h-4"></i>
           </span>
           <span class="tracking-tight">Civil News Hub</span>
-        </a>
+        </button>
         <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex items-center gap-1.5">
           <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
           Galaxy S24 모바일 뷰
@@ -170,7 +170,7 @@
 
       <!-- 갤럭시 화면 본체 (iframe) -->
       <div id="screenContainer" class="flex-1 w-full relative overflow-hidden bg-slate-900 rounded-b-[40px]">
-        <iframe id="mobileFrame" src="./index.html?v=20260917_v1117#news" title="Civil News Hub Galaxy Mobile View"></iframe>
+        <iframe id="mobileFrame" src="./index.html?v=20260917_v1121#news" title="Civil News Hub Galaxy Mobile View"></iframe>
       </div>
 
       <!-- 갤럭시 One UI 하단 네비게이션 제스처 바 -->
@@ -277,6 +277,14 @@
       }
 
       history.replaceState(null, null, `#${tab}`);
+    }
+
+    function handleMobileBrandClick() {
+      if (currentTab === 'home' || currentTab === 'swuniv') {
+        setTab('news');
+      } else {
+        setTab('home');
+      }
     }
 
     let currentDeviceWidth = 412;

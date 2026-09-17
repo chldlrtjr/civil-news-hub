@@ -1399,12 +1399,12 @@ function updateGnbTabStyles(activeTab) {
 
   if (hatBtn) {
     if (isAlbaMode) {
-      hatBtn.className = 'w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/40 ring-2 ring-emerald-500 ring-offset-2 dark:ring-offset-slate-900 scale-105 transition-all duration-200 cursor-pointer flex-shrink-0';
-      hatBtn.setAttribute('title', '전북대 알바 / SW사업단 - 클릭 시 토목 메인으로 복귀');
+      hatBtn.className = 'w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 hover:scale-105 transition-all duration-200 cursor-pointer flex-shrink-0';
+      hatBtn.setAttribute('title', '토목 뉴스 홈으로 복귀');
       hatBtn.innerHTML = '<i data-lucide="coffee" class="w-4 h-4 sm:w-6 sm:h-6 transition-transform duration-200"></i>';
     } else {
       hatBtn.className = 'w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 hover:scale-105 transition-all duration-200 cursor-pointer flex-shrink-0';
-      hatBtn.setAttribute('title', '전북대 알바 (JBNU Alba)');
+      hatBtn.setAttribute('title', '전북대학교 아르바이트로 이동');
       hatBtn.innerHTML = '<i data-lucide="hard-hat" class="w-4 h-4 sm:w-6 sm:h-6 transition-transform duration-200"></i>';
     }
     if (window.lucide && typeof window.lucide.createIcons === 'function') {
@@ -1417,15 +1417,15 @@ function updateGnbTabStyles(activeTab) {
   const tabAlba = document.getElementById('gnbTabAlba');
   const tabSwUniv = document.getElementById('gnbTabSwUniv');
   const tabs = [
-    { id: 'gnbTabNews', key: 'news' },
-    { id: 'gnbTabJobs', key: 'jobs' },
-    { id: 'gnbTabContests', key: 'contests' }
+    { id: 'gnbTabNews', key: 'news', activeColor: 'text-blue-600 dark:text-blue-400 drop-shadow-[0_0_8px_rgba(37,99,235,0.45)] dark:drop-shadow-[0_0_10px_rgba(96,165,250,0.75)]' },
+    { id: 'gnbTabJobs', key: 'jobs', activeColor: 'text-blue-600 dark:text-blue-400 drop-shadow-[0_0_8px_rgba(37,99,235,0.45)] dark:drop-shadow-[0_0_10px_rgba(96,165,250,0.75)]' },
+    { id: 'gnbTabContests', key: 'contests', activeColor: 'text-amber-500 drop-shadow-[0_0_8px_rgba(245,158,11,0.45)] dark:drop-shadow-[0_0_10px_rgba(251,191,36,0.75)]' }
   ];
 
   if (isAlbaMode) {
-    // 알바/학교 모드: 기존 토목뉴스, 채용공고문, 공모전 버튼들 숨김
-    tabs.forEach(t => {
-      const el = document.getElementById(t.id);
+    // 전북대 알바/학교 모드: 토목 뉴스, 채용 공고, 공모전 버튼 모두 숨김
+    ['gnbTabNews', 'gnbTabJobs', 'gnbTabContests'].forEach(id => {
+      const el = document.getElementById(id);
       if (el) el.classList.add('hidden');
     });
 
@@ -1456,7 +1456,7 @@ function updateGnbTabStyles(activeTab) {
       el.classList.remove('hidden');
       const isActive = t.key === activeTab;
       if (isActive) {
-        el.className = 'px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-base font-bold tracking-tight text-blue-600 dark:text-blue-400 drop-shadow-[0_0_8px_rgba(37,99,235,0.45)] dark:drop-shadow-[0_0_10px_rgba(96,165,250,0.75)] transition flex items-center justify-center cursor-pointer flex-shrink-0 bg-transparent';
+        el.className = `px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-base font-bold tracking-tight ${t.activeColor} transition flex items-center justify-center cursor-pointer flex-shrink-0 bg-transparent`;
       } else {
         el.className = 'px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-base font-bold tracking-tight text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300 transition flex items-center justify-center cursor-pointer flex-shrink-0 bg-transparent drop-shadow-none';
       }
@@ -1473,10 +1473,12 @@ function updateGnbTabStyles(activeTab) {
   }
 }
 
-// GNB 알바 버튼 원클릭 토글 핸들러 (누르면 알바로 전환, 알바에서 다시 누르면 직전 탭으로 복귀)
+// GNB 로고/안전모 아이콘 클릭 핸들러:
+// 뉴스/일반 페이지에서 클릭 시 -> 전북대학교 아르바이트(home)로 이동!
+// 전북대 알바/학교 모드에서 클릭 시 -> 토목 뉴스(news)로 복귀!
 window.handleGnbHatClick = function() {
   if (currentMainTab === 'home' || currentMainTab === 'swuniv') {
-    window.switchMainTab(lastActiveTab || 'news');
+    window.switchMainTab('news');
   } else {
     window.switchMainTab('home');
   }
@@ -1486,6 +1488,7 @@ function updateMobileNavStyles(activeTab) {
   const isAlbaMode = (activeTab === 'home' || activeTab === 'swuniv');
   const mobAlba = document.getElementById('mobileTabAlba');
   const mobSwUniv = document.getElementById('mobileTabSwUniv');
+  const mobNews = document.getElementById('mobileTabNews');
   const tabs = [
     { id: 'mobileTabNews', key: 'news', activeColor: 'text-blue-600 dark:text-blue-400' },
     { id: 'mobileTabJobs', key: 'jobs', activeColor: 'text-blue-600 dark:text-blue-400' },
@@ -1494,7 +1497,7 @@ function updateMobileNavStyles(activeTab) {
   ];
 
   if (isAlbaMode) {
-    // 알바/학교 모드: 모바일 하단바에서도 토목 뉴스, 채용 공고, 공모전 숨김
+    // 전북대 알바/학교 모드: 토목 뉴스, 채용 공고, 공모전 탭 모두 숨김
     ['mobileTabNews', 'mobileTabJobs', 'mobileTabContests'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.classList.add('hidden');
