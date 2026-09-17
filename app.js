@@ -1409,7 +1409,6 @@ function updateGnbTabStyles(activeTab) {
   }
 
   const tabAlba = document.getElementById('gnbTabAlba');
-  const returnBtn = document.getElementById('gnbReturnMainBtn');
   const tabs = [
     { id: 'gnbTabNews', key: 'news' },
     { id: 'gnbTabJobs', key: 'jobs' },
@@ -1423,13 +1422,10 @@ function updateGnbTabStyles(activeTab) {
       if (el) el.classList.add('hidden');
     });
 
-    // 아르바이트 페이지 버튼 및 토목 복귀 버튼 노출
+    // 아르바이트 페이지 버튼 단독 노출
     if (tabAlba) {
       tabAlba.classList.remove('hidden');
       tabAlba.className = 'px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-base font-bold tracking-tight text-emerald-600 dark:text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.45)] dark:drop-shadow-[0_0_10px_rgba(52,211,153,0.75)] transition flex items-center justify-center cursor-pointer flex-shrink-0 bg-transparent';
-    }
-    if (returnBtn) {
-      returnBtn.classList.remove('hidden');
     }
   } else {
     // 일반 모드: 토목뉴스, 채용공고문, 공모전 버튼 복원 노출
@@ -1445,9 +1441,8 @@ function updateGnbTabStyles(activeTab) {
       }
     });
 
-    // 아르바이트 버튼 및 복귀 버튼 숨김
+    // 아르바이트 버튼 숨김
     if (tabAlba) tabAlba.classList.add('hidden');
-    if (returnBtn) returnBtn.classList.add('hidden');
   }
 
   if (window.lucide && typeof window.lucide.createIcons === 'function') {
@@ -1468,7 +1463,6 @@ window.handleGnbHatClick = function() {
 function updateMobileNavStyles(activeTab) {
   const isAlbaMode = (activeTab === 'home');
   const mobAlba = document.getElementById('mobileTabAlba');
-  const mobReturn = document.getElementById('mobileTabReturn');
   const tabs = [
     { id: 'mobileTabNews', key: 'news', activeColor: 'text-blue-600 dark:text-blue-400' },
     { id: 'mobileTabJobs', key: 'jobs', activeColor: 'text-blue-600 dark:text-blue-400' },
@@ -1486,9 +1480,6 @@ function updateMobileNavStyles(activeTab) {
       mobAlba.classList.remove('hidden');
       mobAlba.className = 'flex-1 relative flex flex-col items-center justify-center py-1 px-1 text-emerald-600 dark:text-emerald-400 font-bold transition cursor-pointer';
     }
-    if (mobReturn) {
-      mobReturn.classList.remove('hidden');
-    }
     const mobBookmark = document.getElementById('mobileBookmarkBtn');
     if (mobBookmark) {
       mobBookmark.className = 'flex-1 relative flex flex-col items-center justify-center py-1 px-1 text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 font-medium transition cursor-pointer';
@@ -1500,7 +1491,6 @@ function updateMobileNavStyles(activeTab) {
       if (el) el.classList.remove('hidden');
     });
     if (mobAlba) mobAlba.classList.add('hidden');
-    if (mobReturn) mobReturn.classList.add('hidden');
 
     tabs.forEach(t => {
       const el = document.getElementById(t.id);
