@@ -1389,8 +1389,10 @@ window.switchMainTab = function(tabName, updateHash = true) {
 
 function updateGnbTabStyles(activeTab) {
   const hatBtn = document.getElementById('gnbHatBtn');
+  const isAlbaMode = (activeTab === 'home');
+
   if (hatBtn) {
-    if (activeTab === 'home') {
+    if (isAlbaMode) {
       hatBtn.className = 'w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/40 ring-2 ring-emerald-500 ring-offset-2 dark:ring-offset-slate-900 scale-105 transition-all duration-200 cursor-pointer flex-shrink-0';
       hatBtn.setAttribute('title', '전북대 알바 (JBNU Alba) - 클릭 시 메인으로 복귀');
       hatBtn.innerHTML = '<i data-lucide="coffee" class="w-4 h-4 sm:w-6 sm:h-6 transition-transform duration-200"></i>';
@@ -1406,22 +1408,52 @@ function updateGnbTabStyles(activeTab) {
     }
   }
 
+  const tabAlba = document.getElementById('gnbTabAlba');
+  const returnBtn = document.getElementById('gnbReturnMainBtn');
   const tabs = [
     { id: 'gnbTabNews', key: 'news' },
     { id: 'gnbTabJobs', key: 'jobs' },
     { id: 'gnbTabContests', key: 'contests' }
   ];
 
-  tabs.forEach(t => {
-    const el = document.getElementById(t.id);
-    if (!el) return;
-    const isActive = t.key === activeTab;
-    if (isActive) {
-      el.className = 'px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-base font-bold tracking-tight text-blue-600 dark:text-blue-400 drop-shadow-[0_0_8px_rgba(37,99,235,0.45)] dark:drop-shadow-[0_0_10px_rgba(96,165,250,0.75)] transition flex items-center justify-center cursor-pointer flex-shrink-0 bg-transparent';
-    } else {
-      el.className = 'px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-base font-bold tracking-tight text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300 transition flex items-center justify-center cursor-pointer flex-shrink-0 bg-transparent drop-shadow-none';
+  if (isAlbaMode) {
+    // 알바 모드: 기존 토목뉴스, 채용공고문, 공모전 버튼들 숨김
+    tabs.forEach(t => {
+      const el = document.getElementById(t.id);
+      if (el) el.classList.add('hidden');
+    });
+
+    // 아르바이트 페이지 버튼 및 토목 복귀 버튼 노출
+    if (tabAlba) {
+      tabAlba.classList.remove('hidden');
+      tabAlba.className = 'px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-base font-bold tracking-tight text-emerald-600 dark:text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.45)] dark:drop-shadow-[0_0_10px_rgba(52,211,153,0.75)] transition flex items-center justify-center cursor-pointer flex-shrink-0 bg-transparent';
     }
-  });
+    if (returnBtn) {
+      returnBtn.classList.remove('hidden');
+    }
+  } else {
+    // 일반 모드: 토목뉴스, 채용공고문, 공모전 버튼 복원 노출
+    tabs.forEach(t => {
+      const el = document.getElementById(t.id);
+      if (!el) return;
+      el.classList.remove('hidden');
+      const isActive = t.key === activeTab;
+      if (isActive) {
+        el.className = 'px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-base font-bold tracking-tight text-blue-600 dark:text-blue-400 drop-shadow-[0_0_8px_rgba(37,99,235,0.45)] dark:drop-shadow-[0_0_10px_rgba(96,165,250,0.75)] transition flex items-center justify-center cursor-pointer flex-shrink-0 bg-transparent';
+      } else {
+        el.className = 'px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-base font-bold tracking-tight text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300 transition flex items-center justify-center cursor-pointer flex-shrink-0 bg-transparent drop-shadow-none';
+      }
+    });
+
+    // 아르바이트 버튼 및 복귀 버튼 숨김
+    if (tabAlba) tabAlba.classList.add('hidden');
+    if (returnBtn) returnBtn.classList.add('hidden');
+  }
+
+  if (window.lucide && typeof window.lucide.createIcons === 'function') {
+    const nav = document.querySelector('nav[aria-label="메인 네비게이션"]');
+    if (nav) window.lucide.createIcons({ root: nav });
+  }
 }
 
 // GNB 알바 버튼 원클릭 토글 핸들러 (누르면 알바로 전환, 알바에서 다시 누르면 직전 탭으로 복귀)
@@ -1434,6 +1466,9 @@ window.handleGnbHatClick = function() {
 };
 
 function updateMobileNavStyles(activeTab) {
+  const isAlbaMode = (activeTab === 'home');
+  const mobAlba = document.getElementById('mobileTabAlba');
+  const mobReturn = document.getElementById('mobileTabReturn');
   const tabs = [
     { id: 'mobileTabNews', key: 'news', activeColor: 'text-blue-600 dark:text-blue-400' },
     { id: 'mobileTabJobs', key: 'jobs', activeColor: 'text-blue-600 dark:text-blue-400' },
@@ -1441,16 +1476,48 @@ function updateMobileNavStyles(activeTab) {
     { id: 'mobileBookmarkBtn', key: 'mypage', activeColor: 'text-amber-500' }
   ];
 
-  tabs.forEach(t => {
-    const el = document.getElementById(t.id);
-    if (!el) return;
-    const isActive = t.key === activeTab;
-    if (isActive) {
-      el.className = `flex-1 relative flex flex-col items-center justify-center py-1 px-1 ${t.activeColor} font-bold transition cursor-pointer`;
-    } else {
-      el.className = 'flex-1 relative flex flex-col items-center justify-center py-1 px-1 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition cursor-pointer';
+  if (isAlbaMode) {
+    // 알바 모드: 모바일 하단바에서도 토목 뉴스, 채용 공고, 공모전 숨김
+    ['mobileTabNews', 'mobileTabJobs', 'mobileTabContests'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('hidden');
+    });
+    if (mobAlba) {
+      mobAlba.classList.remove('hidden');
+      mobAlba.className = 'flex-1 relative flex flex-col items-center justify-center py-1 px-1 text-emerald-600 dark:text-emerald-400 font-bold transition cursor-pointer';
     }
-  });
+    if (mobReturn) {
+      mobReturn.classList.remove('hidden');
+    }
+    const mobBookmark = document.getElementById('mobileBookmarkBtn');
+    if (mobBookmark) {
+      mobBookmark.className = 'flex-1 relative flex flex-col items-center justify-center py-1 px-1 text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 font-medium transition cursor-pointer';
+    }
+  } else {
+    // 일반 모드: 토목 뉴스, 채용 공고, 공모전 복원
+    ['mobileTabNews', 'mobileTabJobs', 'mobileTabContests'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('hidden');
+    });
+    if (mobAlba) mobAlba.classList.add('hidden');
+    if (mobReturn) mobReturn.classList.add('hidden');
+
+    tabs.forEach(t => {
+      const el = document.getElementById(t.id);
+      if (!el) return;
+      const isActive = t.key === activeTab;
+      if (isActive) {
+        el.className = `flex-1 relative flex flex-col items-center justify-center py-1 px-1 ${t.activeColor} font-bold transition cursor-pointer`;
+      } else {
+        el.className = 'flex-1 relative flex flex-col items-center justify-center py-1 px-1 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition cursor-pointer';
+      }
+    });
+  }
+
+  if (window.lucide && typeof window.lucide.createIcons === 'function') {
+    const mobNav = document.getElementById('mobileBottomNav');
+    if (mobNav) window.lucide.createIcons({ root: mobNav });
+  }
 }
 
 // 통합 북마크 뱃지 카운터

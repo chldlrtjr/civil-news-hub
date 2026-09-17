@@ -75,6 +75,27 @@
           </button>
           
           <nav class="flex items-center space-x-1 sm:space-x-1.5 min-w-0" aria-label="메인 네비게이션">
+            <!-- 0. 아르바이트 탭 (알바 모드 시 단독 노출) -->
+            <button 
+              id="gnbTabAlba" 
+              onclick="switchMainTab('home')" 
+              class="hidden px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-base font-bold tracking-tight text-emerald-600 dark:text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.45)] dark:drop-shadow-[0_0_10px_rgba(52,211,153,0.75)] transition flex items-center justify-center cursor-pointer flex-shrink-0 bg-transparent"
+              title="아르바이트"
+            >
+              <span>아르바이트</span>
+            </button>
+
+            <!-- 0-1. 토목 복귀 버튼 (알바 모드 시 우측에 함께 표시되어 직관적 원클릭 복귀 지원) -->
+            <button 
+              id="gnbReturnMainBtn" 
+              onclick="handleGnbHatClick()" 
+              class="hidden px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition flex items-center gap-1 cursor-pointer flex-shrink-0"
+              title="토목 메인(뉴스/채용/공모전)으로 복귀"
+            >
+              <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+              <span>토목 메인</span>
+            </button>
+
             <!-- 1. 토목 뉴스 탭 -->
             <button 
               id="gnbTabNews" 
@@ -1036,6 +1057,18 @@
 
   <!-- 모바일 전용 하단 고정 네비게이션 바 (Mobile Bottom Navigation Bar) -->
   <nav id="mobileBottomNav" class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800/80 px-2 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] flex items-center justify-around shadow-lg transition-colors" aria-label="모바일 하단 네비게이션">
+    <!-- 0. 아르바이트 (알바 모드 시 노출) -->
+    <button id="mobileTabAlba" type="button" onclick="switchMainTab('home')" class="hidden flex-1 flex flex-col items-center justify-center py-1 px-1 text-emerald-600 dark:text-emerald-400 font-bold transition cursor-pointer" title="아르바이트">
+      <i data-lucide="coffee" class="w-5 h-5 mb-0.5"></i>
+      <span class="text-[10px] tracking-tight whitespace-nowrap">아르바이트</span>
+    </button>
+
+    <!-- 0-1. 토목 메인 복귀 (알바 모드 시 노출) -->
+    <button id="mobileTabReturn" type="button" onclick="handleGnbHatClick()" class="hidden flex-1 flex flex-col items-center justify-center py-1 px-1 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition cursor-pointer" title="토목 메인으로 복귀">
+      <i data-lucide="arrow-left" class="w-5 h-5 mb-0.5"></i>
+      <span class="text-[10px] tracking-tight whitespace-nowrap">토목 메인</span>
+    </button>
+
     <!-- 1. 토목 뉴스 -->
     <button id="mobileTabNews" type="button" onclick="switchMainTab('news')" class="flex-1 flex flex-col items-center justify-center py-1 px-1 text-blue-600 dark:text-blue-400 font-bold transition cursor-pointer" title="토목 뉴스 브리핑">
       <i data-lucide="newspaper" class="w-5 h-5 mb-0.5"></i>
@@ -1170,11 +1203,11 @@
   </div>
 
   <!-- 프론트엔드 스크립트 로드 (전북대 알바 & SPA 마스터 컨트롤러 & 채용 & 공모전 & AI 챗봇) -->
-  <script src="./static/jbnu_alba.js?v=20260917_v118"></script>
-  <script src="./static/app.js?v=20260917_v118"></script>
-  <script src="./static/jobs.js?v=20260917_v118"></script>
-  <script src="./static/contests.js?v=20260917_v118"></script>
-  <script src="./static/chatbot.js?v=20260917_v118"></script>
+  <script src="./static/jbnu_alba.js?v=20260917_v119"></script>
+  <script src="./static/app.js?v=20260917_v119"></script>
+  <script src="./static/jobs.js?v=20260917_v119"></script>
+  <script src="./static/contests.js?v=20260917_v119"></script>
+  <script src="./static/chatbot.js?v=20260917_v119"></script>
 
   <script>
     if ('serviceWorker' in navigator && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
