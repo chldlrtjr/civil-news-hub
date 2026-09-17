@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.1.16` (전북대 SW중심대학사업단 신규 페이지 탭 및 프로그램 크롤링 엔진·프론트엔드 피드 구축 / 누적 수정 71회 달성 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.1.17` (전북대 SW중심대학사업단 접수마감 프로그램 자동 제외 및 다중 방어선 구축 / 누적 수정 72회 달성 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -1097,9 +1097,21 @@ mindmap
      - 모바일 하단바(`mobileBottomNav`)에서도 `[아르바이트]`, `[SW사업단]`, `[마이페이지]`로 동적 최적화.
      - URL 해시 라우팅(`#swuniv`) 및 PWA/재방문 히스토리 동기화.
   4. **모바일 뷰어 및 수집 파이프라인 동기화 ([`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html), [`sync.bat`](file:///C:/Users/최익석/Desktop/goofy-borg/sync.bat), [`cron_scrape.sh`](file:///C:/Users/최익석/Desktop/goofy-borg/cron_scrape.sh))**:
-     - 갤럭시 모바일 뷰어 상단 중앙 스위처에 `SW사업단` 바로가기 버튼 탑재.
-     - `sync.bat` 및 `cron_scrape.sh`에 SW사업단 수집 4/6 및 5/7 단계 추가.
-     - 캐시 버스팅 파라미터 `v1116`(`?v=20260917_v1116`) 일괄 갱신.
+#### 72) 전북대학교 SW중심대학사업단 접수마감 프로그램 자동 내림 및 실시간 방어선 구축 (ver 1.1.17)
+- **요청 사항**: "sw 중심사업단 마감 한건 안보이게 해줘"
+- **배경 및 원인 분석**:
+  - 초기 수집 시 게시판 전체 페이지의 과거 종료 프로그램까지 수집되어 총 39건 중 36건의 마감 프로그램이 목록에 노출됨.
+  - GEMINI.md Rule 1-⑤ (접수마감 자동 내림 절대 원칙)에 부합하도록 마감된 프로그램을 원천 배제 처리 요구.
+- **조치 내역**:
+  1. **수집 엔진 필터링 게이트 탑재 ([`swuniv_scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/swuniv_scraper.py))**:
+     - 수집 루프에서 `final_status == "접수마감"`, `dday_badge == "마감"`, `days_left < 0`, `"마감" in raw_status_text` 조건 검출 시 파이프라인에서 즉시 `continue`로 원천 제외.
+     - `data/swuniv_programs.json` 및 `static/data/swuniv_programs.json`에 현재 신청 가능한 유효/예정 프로그램(3건)만 저장되도록 정제.
+  2. **프론트엔드 실시간 3차 방어선 구축 ([`swuniv.js`](file:///C:/Users/최익석/Desktop/goofy-borg/swuniv.js), [`static/swuniv.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/swuniv.js))**:
+     - 클라이언트 로딩 시 브라우저 KST 기준 마감일(`deadline_date < todayKstStr`) 경과 여부 및 마감 상태 실시간 재연산 필터 적용.
+     - `getFilteredAndSortedPrograms()` 내 방어적 필터링을 통해 마감 프로그램이 0.001초도 화면에 노출되지 않도록 영구 차단.
+     - 카테고리 탭 자동 동기화(현재 선택 카테고리에 유효 프로그램이 없을 시 '전체'로 자동 안전 리셋) 및 건수 안내 문구 최적화.
+  3. **캐시 버스팅 갱신**:
+     - 스크립트 로드 버전을 `v1117`(`?v=20260917_v1117`)로 갱신하여 클라이언트 브라우저 즉각 반영 보장.
 
 ---
 
@@ -1107,7 +1119,7 @@ mindmap
 
 | 브랜치명 | 상태 | 설명 |
 | :--- | :--- | :--- |
-| **`main`** | **최신 공식 배포 브랜치 (v1.1.16)** | GitHub Pages 및 JCloud 우분투 서버를 통해 라이브 서비스 중인 메인 브랜치 (전북대 SW중심대학사업단 신규 페이지 탭 및 프로그램 크롤링 피드 탑재) |
+| **`main`** | **최신 공식 배포 브랜치 (v1.1.17)** | GitHub Pages 및 JCloud 우분투 서버를 통해 라이브 서비스 중인 메인 브랜치 (전북대 SW중심대학사업단 접수마감 프로그램 자동 제외 및 실시간 방어선 구축) |
 | **`feature/footer-last-updated`** | **작업 완료 (main 병합됨)** | 푸터 업데이트 이전 및 초기 헤더 클린업 작업 브랜치 |
 
 - **온라인 라이브 서비스**: [https://chldlrtjr.github.io/civil-news-hub/](https://chldlrtjr.github.io/civil-news-hub/)

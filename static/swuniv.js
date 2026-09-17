@@ -81,7 +81,23 @@
 
       if (!resp || !resp.ok) throw new Error('Data fetch failed');
       const data = await resp.json();
-      allPrograms = data.programs || [];
+      const rawPrograms = data.programs || [];
+
+      // [GEMINI.md 절대 원칙: 마감 프로그램 자동 내림 및 실시간 3차 방어선]
+      // 1. 접수마감 상태 원천 배제
+      // 2. D-Day 마감(days_left < 0) 원천 배제
+      // 3. 브라우저 실시간 KST 기준 마감일 경과 시 즉시 원천 배제
+      const nowKst = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
+      const todayKstStr = nowKst.getFullYear() + '-' + String(nowKst.getMonth() + 1).padStart(2, '0') + '-' + String(nowKst.getDate()).padStart(2, '0');
+
+      allPrograms = rawPrograms.filter(p => {
+        if (!p) return false;
+        if (p.status === '접수마감' || p.dday === '마감') return false;
+        if (p.raw_status && p.raw_status.includes('마감')) return false;
+        if (p.days_left !== undefined && p.days_left < 0) return false;
+        if (p.deadline_date && p.deadline_date < todayKstStr) return false;
+        return true;
+      });
     } catch (err) {
       console.error('❌ SW중심대학사업단 데이터 로드 실패:', err);
       allPrograms = [];
@@ -118,6 +134,11 @@
         categoryList.push(cat);
       }
     });
+
+    // 현재 선택된 카테고리가 목록에 없으면 'all'로 리셋
+    if (!categoryList.includes(currentCategory)) {
+      currentCategory = 'all';
+    }
 
     const categoryEmojiMap = {
       'all': '✨',
@@ -164,6 +185,9 @@
   function getFilteredAndSortedPrograms() {
     let list = [...allPrograms];
 
+    // 마감 프로그램 추가 방어 필터 (런타임 재검증)
+    list = list.filter(p => p.status !== '접수마감' && p.dday !== '마감' && (p.days_left === undefined || p.days_left >= 0));
+
     // 1. 카테고리 필터
     if (currentCategory !== 'all') {
       list = list.filter(p => (p.category || '일반') === currentCategory);
@@ -204,14 +228,14 @@
 
     if (countNotice) {
       const catLabel = currentCategory === 'all' ? '전체' : currentCategory;
-      countNotice.innerHTML = `총 <strong class="text-indigo-600 dark:text-indigo-400 font-bold">${list.length}</strong>건의 SW 프로그램이 있습니다. (${catLabel})`;
+      countNotice.innerHTML = `진행 중인 SW 프로그램 <strong class="text-indigo-600 dark:text-indigo-400 font-bold">${list.length}</strong>건 (${catLabel})`;
     }
 
     if (list.length === 0) {
       grid.innerHTML = `
         <div class="col-span-full py-16 text-center text-slate-400 dark:text-slate-500">
           <i data-lucide="inbox" class="w-10 h-10 mx-auto mb-2 opacity-50"></i>
-          <p class="text-sm">선택한 카테고리에 해당하는 프로그램이 없습니다.</p>
+          <p class="text-sm">현재 진행 중인 프로그램이 없습니다.</p>
         </div>
       `;
       safeCreateIcons(grid);

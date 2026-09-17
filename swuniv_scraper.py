@@ -200,6 +200,11 @@ def fetch_swuniv_programs(max_pages=4):
             else:
                 dday_badge = dday_info["dday"]
 
+            # [GEMINI.md Rule 1-⑤ 절대 원칙] 마감 항목 자동 내림(게시 제외)
+            # 모집 기간이 종료된(접수마감/days_left < 0/dday='마감') 프로그램은 원천 배제하여 유효 프로그램만 수집 및 노출
+            if final_status == "접수마감" or dday_badge == "마감" or dday_info.get("days_left", 0) < 0 or "마감" in raw_status_text:
+                continue
+
             program_obj = {
                 "id": program_id,
                 "title": title,
