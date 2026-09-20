@@ -1,60 +1,42 @@
 {
-  "updated_at": "2026-09-20 07:00",
-  "total_count": 3,
+  "updated_at": "2026-09-21 07:00",
+  "total_count": 2,
   "programs": [
     {
       "id": "VUnIqOEbEeUQ",
       "title": "2026학년도 2학기 AI융합캡스톤 지원",
       "category": "SW융합",
-      "thumbnail": "https://swuniv.jbnu.ac.kr/r/VV9GUomDnasd?t=1789855221",
+      "thumbnail": "https://swuniv.jbnu.ac.kr/r/VV9GUomDnasd?t=1789941620",
       "link": "https://swuniv.jbnu.ac.kr/main/jbnusw?gc=Program&do=view&page=1&program_id=VUnIqOEbEeUQ",
       "raw_status": "신청하기",
       "status": "마감임박",
-      "dday": "D-2",
-      "days_left": 2,
+      "dday": "D-1",
+      "days_left": 1,
       "deadline_date": "2026-09-22",
       "activity_period": "26.09.21(월) ~ 26.12.04(금)",
       "apply_period": "26.09.15(화) ~ 26.09.22(화)",
       "location": "-",
       "capacity": "무제한",
       "point": "20",
-      "collected_at": "2026-09-20 07:00"
-    },
-    {
-      "id": "VSuQ6X2CDTJM",
-      "title": "제3회 호남권 SW 창업 아이디어 경진대회 참가자 모집",
-      "category": "산학협력",
-      "thumbnail": "https://swuniv.jbnu.ac.kr/r/VTI7h8KKoAU1?t=1789855221",
-      "link": "https://swuniv.jbnu.ac.kr/main/jbnusw?gc=Program&do=view&page=1&program_id=VSuQ6X2CDTJM",
-      "raw_status": "신청하기",
-      "status": "오늘마감",
-      "dday": "D-Day",
-      "days_left": 0,
-      "deadline_date": "2026-09-20",
-      "activity_period": "26.09.29(화) ~ 26.09.30(수)",
-      "apply_period": "26.08.25(화) ~ 26.09.20(일)",
-      "location": "전주 왕의지밀",
-      "capacity": "무제한",
-      "point": "30",
-      "collected_at": "2026-09-20 07:00"
+      "collected_at": "2026-09-21 07:00"
     },
     {
       "id": "VV9jbL4qRmH9",
       "title": "2026학년도 2학기 SW산학멘토링 프로그램",
       "category": "산학협력",
-      "thumbnail": "https://swuniv.jbnu.ac.kr/r/VV9jbRJ58to9?t=1789855221",
+      "thumbnail": "https://swuniv.jbnu.ac.kr/r/VV9jbRJ58to9?t=1789941620",
       "link": "https://swuniv.jbnu.ac.kr/main/jbnusw?gc=Program&do=view&page=1&program_id=VV9jbL4qRmH9",
-      "raw_status": "접수대기",
-      "status": "접수예정",
-      "dday": "D-1",
-      "days_left": 501,
+      "raw_status": "신청하기",
+      "status": "접수중",
+      "dday": "D-7",
+      "days_left": 7,
       "deadline_date": "2026-09-28",
       "activity_period": "26.10.01(목) ~ 26.11.30(월)",
       "apply_period": "26.09.21(월) ~ 26.09.28(월)",
       "location": "-",
       "capacity": "무제한",
       "point": "10",
-      "collected_at": "2026-09-20 07:00"
+      "collected_at": "2026-09-21 07:00"
     }
   ]
 }
