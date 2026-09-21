@@ -1,42 +1,24 @@
 {
-  "updated_at": "2026-09-21 07:00",
-  "total_count": 2,
+  "updated_at": "2026-09-22 07:00",
+  "total_count": 1,
   "programs": [
-    {
-      "id": "VUnIqOEbEeUQ",
-      "title": "2026학년도 2학기 AI융합캡스톤 지원",
-      "category": "SW융합",
-      "thumbnail": "https://swuniv.jbnu.ac.kr/r/VV9GUomDnasd?t=1789941620",
-      "link": "https://swuniv.jbnu.ac.kr/main/jbnusw?gc=Program&do=view&page=1&program_id=VUnIqOEbEeUQ",
-      "raw_status": "신청하기",
-      "status": "마감임박",
-      "dday": "D-1",
-      "days_left": 1,
-      "deadline_date": "2026-09-22",
-      "activity_period": "26.09.21(월) ~ 26.12.04(금)",
-      "apply_period": "26.09.15(화) ~ 26.09.22(화)",
-      "location": "-",
-      "capacity": "무제한",
-      "point": "20",
-      "collected_at": "2026-09-21 07:00"
-    },
     {
       "id": "VV9jbL4qRmH9",
       "title": "2026학년도 2학기 SW산학멘토링 프로그램",
       "category": "산학협력",
-      "thumbnail": "https://swuniv.jbnu.ac.kr/r/VV9jbRJ58to9?t=1789941620",
+      "thumbnail": "https://swuniv.jbnu.ac.kr/r/VV9jbRJ58to9?t=1790028024",
       "link": "https://swuniv.jbnu.ac.kr/main/jbnusw?gc=Program&do=view&page=1&program_id=VV9jbL4qRmH9",
       "raw_status": "신청하기",
       "status": "접수중",
-      "dday": "D-7",
-      "days_left": 7,
+      "dday": "D-6",
+      "days_left": 6,
       "deadline_date": "2026-09-28",
       "activity_period": "26.10.01(목) ~ 26.11.30(월)",
       "apply_period": "26.09.21(월) ~ 26.09.28(월)",
       "location": "-",
       "capacity": "무제한",
       "point": "10",
-      "collected_at": "2026-09-21 07:00"
+      "collected_at": "2026-09-22 07:00"
     }
   ]
 }
