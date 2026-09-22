@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-09-22 07:00:22",
-  "last_updated_display": "09월 22일 07:00",
+  "last_updated": "2026-09-23 07:00:19",
+  "last_updated_display": "09월 23일 07:00",
   "total_count": 5,
   "featured_count": 5,
   "categories": [
@@ -67,8 +67,8 @@
       "link": "https://www.kwater.or.kr/wis/wq/index.do?w2xPath=/wis/ui/index.xml&&ntfDivCd=PBLANC&&targetMenuId=WISWS02120701&&tabId=203030&&pbanno=WS260098",
       "is_active": true,
       "dday_info": {
-        "text": "D-1",
-        "days": 1,
+        "text": "오늘마감",
+        "days": 0,
         "is_urgent": true,
         "is_closed": false
       }
@@ -121,8 +121,8 @@
       "link": "https://innobranch.com/front/challenge/detail/1451",
       "is_active": true,
       "dday_info": {
-        "text": "D-8",
-        "days": 8,
+        "text": "D-7",
+        "days": 7,
         "is_urgent": false,
         "is_closed": false
       }
@@ -191,8 +191,8 @@
       "link": "https://www.ex-contest.co.kr/design26",
       "is_active": true,
       "dday_info": {
-        "text": "D-37",
-        "days": 37,
+        "text": "D-36",
+        "days": 36,
         "is_urgent": false,
         "is_closed": false
       }
@@ -251,8 +251,8 @@
       "link": "https://safecontest.kr/summary",
       "is_active": true,
       "dday_info": {
-        "text": "D-21",
-        "days": 21,
+        "text": "D-20",
+        "days": 20,
         "is_urgent": false,
         "is_closed": false
       }
@@ -305,8 +305,8 @@
       "link": "https://www.kr.or.kr/boardCnts/view.do?boardID=52&boardSeq=1122113",
       "is_active": true,
       "dday_info": {
-        "text": "D-100",
-        "days": 100,
+        "text": "D-99",
+        "days": 99,
         "is_urgent": false,
         "is_closed": false
       }
