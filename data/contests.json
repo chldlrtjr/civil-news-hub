@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-09-23 07:00:19",
-  "last_updated_display": "09월 23일 07:00",
-  "total_count": 5,
-  "featured_count": 5,
+  "last_updated": "2026-09-24 07:00:17",
+  "last_updated_display": "09월 24일 07:00",
+  "total_count": 4,
+  "featured_count": 4,
   "categories": [
     "ALL",
     "스마트·기술",
@@ -12,67 +12,6 @@
     "철도·인프라"
   ],
   "contests": [
-    {
-      "id": "fc-water-startup2026",
-      "title": "2026 대한민국 물산업 혁신 창업대전",
-      "organizer": "환경부 · 한국수자원공사 (K-water)",
-      "category": "수자원·환경",
-      "badge_color": "cyan",
-      "prize": "기후에너지환경부 장관상 · 총 상금 2,000만원",
-      "prize_details": [
-        {
-          "rank": "대상",
-          "award": "기후에너지환경부 장관상",
-          "prize": "1팀 (상금 1,000만원)"
-        },
-        {
-          "rank": "최우수상",
-          "award": "한국수자원공사 사장상",
-          "prize": "2팀 (각 300만원)"
-        },
-        {
-          "rank": "우수상",
-          "award": "한국수자원공사 사장상",
-          "prize": "4팀 (각 100만원)"
-        }
-      ],
-      "benefits": [
-        "K-water 물산업 혁신창업 랩(대전 본원/판교) 무상 입주 공간 지원",
-        "한국수자원공사 댐·정수장·하천 실물 인프라 현장 테스트베드(PoC) 무상 제공",
-        "중기부 TIPS(팁스) 추천 연계 및 벤처캐피탈(VC) 실질 투자유치 IR 매칭",
-        "해외 글로벌 물 포럼(IWA, ACE 등) K-water 공동관 전시 참가 전액 지원"
-      ],
-      "target": "대학생, 일반인(아이디어부문) / 초기 스타트업(사업화부문)",
-      "target_details": "[아이디어 부문] 물산업에 관심 있는 대학(원)생 및 예비창업자 / [사업화 부문] 창업 7년 이내 스타트업 및 중소기업",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.08.25 ~ 09.23 (18:00 마감)",
-      "deadline_date": "2026-09-23",
-      "deadline_time": "18:00",
-      "fields": [
-        "기후위기 대응 스마트 물관리 (AI·IoT)",
-        "탄소중립 수자원 인프라 및 수상태양광",
-        "하천 유역 수해 예방 및 지능형 댐",
-        "스마트 관망 및 AI 누수 감지"
-      ],
-      "submission_info": "참가신청서, 사업/아이디어 제안서(양식 HWP/PDF 10매 이내), 비즈니스 모델 요약 PPT",
-      "evaluation_steps": [
-        "1차 서면평가 (아이디어 20팀, 사업화 20팀)",
-        "2차 발표평가 (18팀 선발)",
-        "전문가 멘토링 & 부트캠프",
-        "최종 파이널 데모데이 및 시상식"
-      ],
-      "contact": "대한민국 물산업 창업대전 운영사무국 (042-629-2512, 2513 / startupwater@kwater.or.kr)",
-      "description": "기후위기 대응 스마트 물관리, 탄소중립 및 물-에너지 융합 인프라를 선도할 유망 스타트업과 혁신 아이디어 발굴 공모전",
-      "link": "https://www.kwater.or.kr/wis/wq/index.do?w2xPath=/wis/ui/index.xml&&ntfDivCd=PBLANC&&targetMenuId=WISWS02120701&&tabId=203030&&pbanno=WS260098",
-      "is_active": true,
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
     {
       "id": "fc-sk-contech2026",
       "title": "SK에코플랜트 2026 콘테크 미트업 데이 공모전",
@@ -121,8 +60,8 @@
       "link": "https://innobranch.com/front/challenge/detail/1451",
       "is_active": true,
       "dday_info": {
-        "text": "D-7",
-        "days": 7,
+        "text": "D-6",
+        "days": 6,
         "is_urgent": false,
         "is_closed": false
       }
@@ -191,8 +130,8 @@
       "link": "https://www.ex-contest.co.kr/design26",
       "is_active": true,
       "dday_info": {
-        "text": "D-36",
-        "days": 36,
+        "text": "D-35",
+        "days": 35,
         "is_urgent": false,
         "is_closed": false
       }
@@ -251,8 +190,8 @@
       "link": "https://safecontest.kr/summary",
       "is_active": true,
       "dday_info": {
-        "text": "D-20",
-        "days": 20,
+        "text": "D-19",
+        "days": 19,
         "is_urgent": false,
         "is_closed": false
       }
@@ -305,8 +244,8 @@
       "link": "https://www.kr.or.kr/boardCnts/view.do?boardID=52&boardSeq=1122113",
       "is_active": true,
       "dday_info": {
-        "text": "D-99",
-        "days": 99,
+        "text": "D-98",
+        "days": 98,
         "is_urgent": false,
         "is_closed": false
       }
