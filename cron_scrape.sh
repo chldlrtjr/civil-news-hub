@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# Civil News Hub - Auto Scraper + Deploy (매일 07, 11, 15, 19, 23시 KST 실행)
+# Civil News Hub - Auto Scraper + Deploy (매시간 정각 KST 실행)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 

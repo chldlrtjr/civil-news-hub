@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.1.27` (JCloud 백엔드 프로세스 튜닝: Gunicorn gthread 동시성 최적화, auto deploy git ls-remote 경량화, cron nice CPU 양보 / 누적 수정 82회 달성 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.1.28` (크롤링 수집 주기 1시간마다(매시간 정각)로 단축 및 자동화 스케줄 동기화 / 누적 수정 83회 달성 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -1245,13 +1245,25 @@ mindmap
   5. **원터치 튜닝 배포 스크립트 제공 ([`apply_jcloud_tuning.sh`](file:///C:/Users/최익석/Desktop/goofy-borg/apply_jcloud_tuning.sh))**:
      - JCloud 우분투 서버에서 `bash apply_jcloud_tuning.sh` 실행 한 번으로 서비스 등록, daemon-reload, restart, 헬스체크까지 일괄 적용 지원.
 
+#### 83) 크롤링 수집 주기 1시간마다(매시간 정각)로 전면 단축 및 자동화 스케줄 동기화 (ver 1.1.28)
+- **요청 사항**: "크롤링 주기를 1시간마다로 바꾸자"
+- **배경 및 개선 목적**:
+  - 기존 1일 5회(07, 11, 15, 19, 23시) 크롤링 체계에서 최신 토목 뉴스, 채용 공고, 공모전 및 알바 정보를 24시간 실시간에 가깝게 사용자에게 제공하기 위해 수집 주기를 1시간마다(매시간 정각)로 전면 개편.
+- **조치 내역**:
+  1. **GitHub Actions 스케줄 개편 ([`.github/workflows/daily_crawl.yml`](file:///C:/Users/최익석/Desktop/goofy-borg/.github/workflows/daily_crawl.yml))**:
+     - 기존 `0 2,6,10,14,22 * * *`에서 매시간 정각 실행되는 `0 * * * *` cron 스케줄로 변경.
+  2. **Ubuntu 로컬/서버 스케줄러 동기화 ([`cron_scrape.sh`](file:///C:/Users/최익석/Desktop/goofy-borg/cron_scrape.sh))**:
+     - 상단 헤더 안내 주석을 `매시간 정각 KST 실행`으로 변경.
+  3. **원클릭 Crontab 갱신 지원 ([`apply_jcloud_tuning.sh`](file:///C:/Users/최익석/Desktop/goofy-borg/apply_jcloud_tuning.sh))**:
+     - JCloud 서버에서 `apply_jcloud_tuning.sh` 실행 시 crontab에 등록된 `cron_scrape.sh`를 자동으로 감지하여 `0 * * * *` (매시간 정각) 스케줄로 즉각 갱신하도록 자동화 코드 탑재.
+
 ---
 
 ## 🌿 3. Git 브랜치 현황
 
 | 브랜치명 | 상태 | 설명 |
 | :--- | :--- | :--- |
-| **`main`** | **최신 공식 배포 브랜치 (v1.1.27)** | GitHub Pages 및 JCloud 우분투 서버를 통해 라이브 서비스 중인 메인 브랜치 (사용자 명시 지시 없는 임의 Git Push 원천 차단 규칙 적용) |
+| **`main`** | **최신 공식 배포 브랜치 (v1.1.28)** | GitHub Pages 및 JCloud 우분투 서버를 통해 라이브 서비스 중인 메인 브랜치 (사용자 명시 지시 없는 임의 Git Push 원천 차단 규칙 적용) |
 | **`feature/footer-last-updated`** | **작업 완료 (main 병합됨)** | 푸터 업데이트 이전 및 초기 헤더 클린업 작업 브랜치 |
 
 - **온라인 라이브 서비스**: [https://chldlrtjr.github.io/civil-news-hub/](https://chldlrtjr.github.io/civil-news-hub/)

@@ -50,6 +50,12 @@ else
     echo "  ℹ️  응답 수신 (상태 확인): $HEALTH_CHECK"
 fi
 
+# 5. 크롤링 주기 1시간마다 (0 * * * *) 자동 갱신
+echo "⏰ 5. Crontab 크롤링 스케줄 (매시간 정각: 0 * * * *) 점검 및 등록 중..."
+CRON_JOB="0 * * * * $SCRIPT_DIR/cron_scrape.sh"
+(crontab -l 2>/dev/null | grep -v "cron_scrape.sh"; echo "$CRON_JOB") | crontab -
+echo "  ✅ Crontab 스케줄 등록 완료: $(crontab -l 2>/dev/null | grep 'cron_scrape.sh')"
+
 echo ""
 echo "=================================================================="
 echo "📊 [프로세스 상태 요약]"
@@ -58,8 +64,9 @@ systemctl status civil-news-hub.service --no-pager -n 3
 echo "------------------------------------------------------------------"
 systemctl status civil-auto-deploy.service --no-pager -n 3
 echo "=================================================================="
-echo "🎉 [완료] 백엔드 프로세스 튜닝이 성공적으로 적용되었습니다!"
+echo "🎉 [완료] 백엔드 프로세스 튜닝 및 크롤링 스케줄이 성공적으로 적용되었습니다!"
 echo "   - Gunicorn 워커: 2 workers, 4 threads (gthread, 90s timeout)"
 echo "   - 자동 배포 감시: git ls-remote 기반 60초 주기 (I/O 부하 최소화)"
+echo "   - 크롤링 주기: 매 1시간마다 정각 (0 * * * * cron_scrape.sh)"
 echo "   - 크롤링 배치: nice -n 10 CPU 양보 및 잔여 프로세스 자동 소거"
 echo "=================================================================="
