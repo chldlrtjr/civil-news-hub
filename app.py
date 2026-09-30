@@ -24,7 +24,7 @@ JOBS_JSON_PATH = os.path.join(DATA_DIR, "jobs.json")
 JBNU_JSON_PATH = os.path.join(DATA_DIR, "jbnu_albas.json")
 SWUNIV_JSON_PATH = os.path.join(DATA_DIR, "swuniv_programs.json")
 
-PORT = int(os.environ.get("PORT", 5000))
+PORT = int(os.environ.get("PORT", 8000))
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.6-flash")
 
 
