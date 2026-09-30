@@ -1486,69 +1486,78 @@ window.handleGnbHatClick = function() {
 
 function updateMobileNavStyles(activeTab) {
   const isAlbaMode = (activeTab === 'home' || activeTab === 'swuniv');
-  const mobAlba = document.getElementById('mobileTabAlba');
-  const mobSwUniv = document.getElementById('mobileTabSwUniv');
-  const mobNews = document.getElementById('mobileTabNews');
+  
+  // 1. 모바일 상단 헤더 바 UI 동적 업데이트
+  const mobBrandTitle = document.getElementById('mobileBrandTitle');
+  const mobQuickBtn = document.getElementById('mobileQuickAlbaBtn');
+  const mobQuickText = document.getElementById('mobileQuickAlbaText');
+  const mobQuickIcon = document.getElementById('mobileQuickAlbaIcon');
+  const mobHatBtn = document.getElementById('mobileHatBtn');
+
+  if (isAlbaMode) {
+    if (mobBrandTitle) mobBrandTitle.textContent = (activeTab === 'swuniv') ? 'SW중심대학사업단' : '전북대 알바';
+    if (mobQuickBtn) {
+      mobQuickBtn.className = 'flex items-center gap-1 px-2.5 py-1 text-xs font-bold rounded-lg text-blue-700 dark:text-blue-300 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 border border-blue-300/80 dark:border-blue-700/80 transition shadow-xs cursor-pointer active:scale-95';
+      mobQuickBtn.title = '토목 뉴스로 복귀';
+      mobQuickBtn.onclick = () => window.switchMainTab('news');
+    }
+    if (mobQuickText) mobQuickText.textContent = '토목 뉴스';
+    if (mobQuickIcon) mobQuickIcon.textContent = '📰';
+    if (mobHatBtn) {
+      mobHatBtn.className = 'w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-sm flex-shrink-0 hover:scale-105 active:scale-95 transition cursor-pointer';
+      mobHatBtn.innerHTML = '<i data-lucide="coffee" class="w-4 h-4"></i>';
+    }
+  } else {
+    if (mobBrandTitle) mobBrandTitle.textContent = 'Civil News Hub';
+    if (mobQuickBtn) {
+      mobQuickBtn.className = 'flex items-center gap-1 px-2.5 py-1 text-xs font-bold rounded-lg text-emerald-700 dark:text-emerald-300 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 border border-emerald-300/80 dark:border-emerald-700/80 transition shadow-xs cursor-pointer active:scale-95';
+      mobQuickBtn.title = '전북대학교 아르바이트 바로가기';
+      mobQuickBtn.onclick = () => window.switchMainTab('home');
+    }
+    if (mobQuickText) mobQuickText.textContent = '전북대 알바';
+    if (mobQuickIcon) mobQuickIcon.textContent = '🎓';
+    if (mobHatBtn) {
+      mobHatBtn.className = 'w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-sm flex-shrink-0 hover:scale-105 active:scale-95 transition cursor-pointer';
+      mobHatBtn.innerHTML = '<i data-lucide="hard-hat" class="w-4 h-4"></i>';
+    }
+  }
+
+  // 2. 모바일 하단 네비게이션 탭 (5대 핵심 메뉴 상시 지원)
   const tabs = [
     { id: 'mobileTabNews', key: 'news', activeColor: 'text-blue-600 dark:text-blue-400' },
     { id: 'mobileTabJobs', key: 'jobs', activeColor: 'text-blue-600 dark:text-blue-400' },
     { id: 'mobileTabContests', key: 'contests', activeColor: 'text-amber-500' },
+    { id: 'mobileTabAlba', key: 'home', activeColor: 'text-emerald-600 dark:text-emerald-400' },
     { id: 'mobileBookmarkBtn', key: 'mypage', activeColor: 'text-amber-500' }
   ];
 
-  if (isAlbaMode) {
-    // 전북대 알바/학교 모드: 토목 뉴스, 채용 공고, 공모전 탭 모두 숨김
-    ['mobileTabNews', 'mobileTabJobs', 'mobileTabContests'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.classList.add('hidden');
-    });
-
-    if (mobAlba) {
-      mobAlba.classList.remove('hidden');
-      if (activeTab === 'home') {
-        mobAlba.className = 'flex-1 relative flex flex-col items-center justify-center py-1 px-1 text-emerald-600 dark:text-emerald-400 font-bold transition cursor-pointer';
-      } else {
-        mobAlba.className = 'flex-1 relative flex flex-col items-center justify-center py-1 px-1 text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition cursor-pointer';
-      }
+  tabs.forEach(t => {
+    const el = document.getElementById(t.id);
+    if (!el) return;
+    el.classList.remove('hidden');
+    const isActive = (t.key === activeTab) || (t.key === 'home' && activeTab === 'swuniv');
+    if (isActive) {
+      el.className = `flex-1 relative flex flex-col items-center justify-center py-1 px-0.5 ${t.activeColor} font-bold transition cursor-pointer`;
+    } else {
+      el.className = 'flex-1 relative flex flex-col items-center justify-center py-1 px-0.5 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition cursor-pointer';
     }
+  });
 
-    if (mobSwUniv) {
+  const mobSwUniv = document.getElementById('mobileTabSwUniv');
+  if (mobSwUniv) {
+    if (activeTab === 'swuniv') {
       mobSwUniv.classList.remove('hidden');
-      if (activeTab === 'swuniv') {
-        mobSwUniv.className = 'flex-1 relative flex flex-col items-center justify-center py-1 px-1 text-indigo-600 dark:text-indigo-400 font-bold transition cursor-pointer';
-      } else {
-        mobSwUniv.className = 'flex-1 relative flex flex-col items-center justify-center py-1 px-1 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition cursor-pointer';
-      }
+      mobSwUniv.className = 'flex-1 relative flex flex-col items-center justify-center py-1 px-0.5 text-indigo-600 dark:text-indigo-400 font-bold transition cursor-pointer';
+    } else {
+      mobSwUniv.classList.add('hidden');
     }
-
-    const mobBookmark = document.getElementById('mobileBookmarkBtn');
-    if (mobBookmark) {
-      mobBookmark.className = 'flex-1 relative flex flex-col items-center justify-center py-1 px-1 text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 font-medium transition cursor-pointer';
-    }
-  } else {
-    // 일반 모드: 토목 뉴스, 채용 공고, 공모전 복원
-    ['mobileTabNews', 'mobileTabJobs', 'mobileTabContests'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.classList.remove('hidden');
-    });
-    if (mobAlba) mobAlba.classList.add('hidden');
-    if (mobSwUniv) mobSwUniv.classList.add('hidden');
-
-    tabs.forEach(t => {
-      const el = document.getElementById(t.id);
-      if (!el) return;
-      const isActive = t.key === activeTab;
-      if (isActive) {
-        el.className = `flex-1 relative flex flex-col items-center justify-center py-1 px-1 ${t.activeColor} font-bold transition cursor-pointer`;
-      } else {
-        el.className = 'flex-1 relative flex flex-col items-center justify-center py-1 px-1 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition cursor-pointer';
-      }
-    });
   }
 
   if (window.lucide && typeof window.lucide.createIcons === 'function') {
     const mobNav = document.getElementById('mobileBottomNav');
     if (mobNav) window.lucide.createIcons({ root: mobNav });
+    const mobHeader = document.getElementById('mobileHeader');
+    if (mobHeader) window.lucide.createIcons({ root: mobHeader });
   }
 }
 
@@ -1782,9 +1791,11 @@ window.renderMyPage = renderMyPage;
 
 // 10. 뉴스 이벤트 리스너 설정
 function setupNewsEventListeners() {
-  // 테마 토글
+  // 테마 토글 (데스크탑 & 모바일)
   const themeToggle = document.getElementById('themeToggle');
   if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
+  const mobThemeToggle = document.getElementById('mobileThemeToggle');
+  if (mobThemeToggle) mobThemeToggle.addEventListener('click', toggleTheme);
 
   // 북마크 탭 버튼 스타일 초기화
   updateBookmarkTabStyle();

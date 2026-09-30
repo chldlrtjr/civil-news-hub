@@ -63,6 +63,37 @@
 </head>
 <body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
 
+  <!-- 모바일 전용 상단 헤더 바 (Mobile Header: md 미만 스마트폰 화면 전용) -->
+  <header id="mobileHeader" class="md:hidden sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 px-3 py-2 transition-colors shadow-xs">
+    <div class="flex items-center justify-between gap-2">
+      <!-- 좌측: 로고 & 안전모 토글 버튼 -->
+      <div class="flex items-center gap-2 min-w-0">
+        <button id="mobileHatBtn" onclick="handleGnbHatClick()" class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-sm flex-shrink-0 hover:scale-105 active:scale-95 transition cursor-pointer" title="전북대학교 아르바이트 바로가기">
+          <i data-lucide="hard-hat" class="w-4 h-4"></i>
+        </button>
+        <span id="mobileBrandTitle" class="text-sm font-extrabold tracking-tight text-slate-900 dark:text-white truncate">Civil News Hub</span>
+      </div>
+
+      <!-- 우측: [전북대 알바] 바로가기 퀵 버튼 + 다크모드 토글 -->
+      <div class="flex items-center gap-1.5 flex-shrink-0">
+        <button 
+          id="mobileQuickAlbaBtn" 
+          onclick="handleGnbHatClick()" 
+          class="flex items-center gap-1 px-2.5 py-1 text-xs font-bold rounded-lg text-emerald-700 dark:text-emerald-300 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 border border-emerald-300/80 dark:border-emerald-700/80 transition shadow-xs cursor-pointer active:scale-95"
+          title="전북대학교 아르바이트 바로가기"
+        >
+          <span id="mobileQuickAlbaIcon">🎓</span>
+          <span id="mobileQuickAlbaText">전북대 알바</span>
+        </button>
+
+        <button id="mobileThemeToggle" aria-label="테마 전환" class="p-1.5 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer">
+          <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+          <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
   <!-- 상단 네비게이션 헤더 (SPA 탭 전환: 데스크탑 전용, 모바일에서는 하단바로 대체) -->
   <header class="hidden md:block sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 transition-colors shadow-sm">
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
@@ -189,17 +220,8 @@
       </div>
     </div>
 
-    <!-- 카테고리 탭 (상단 고정 Sticky Navigation - 시안 B: 미니멀 언더라인 바) -->
-    <div class="sticky top-0 sm:top-16 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-0 mt-0 mb-4 sm:my-4 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 shadow-xs transition-colors">
-      <div class="max-w-7xl mx-auto flex items-center overflow-x-auto scrollbar-none category-scroll-container" style="touch-action: pan-x; overscroll-behavior: none; overscroll-behavior-x: none;">
-        <div id="jbnuAlbaCategoryTabs" class="flex items-center gap-1 sm:gap-3 min-w-max h-full" style="touch-action: pan-x;">
-          <!-- jbnu_alba.js에서 동적 탭 렌더링 -->
-        </div>
-      </div>
-    </div>
-
     <!-- 필터 및 정렬 옵션 바 -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400 mb-4 px-1">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400 mt-4 mb-4 px-1">
       <div class="flex items-center gap-2">
         <span id="jbnuAlbaResultCountNotice" class="font-medium text-slate-700 dark:text-slate-300">
           알바 공고를 불러오는 중입니다...
@@ -1129,44 +1151,43 @@
     </div>
   </footer>
 
-  <!-- 모바일 전용 하단 고정 네비게이션 바 (Mobile Bottom Navigation Bar) -->
-  <nav id="mobileBottomNav" class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800/80 px-2 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] flex items-center justify-around shadow-lg transition-colors" aria-label="모바일 하단 네비게이션">
-    <!-- 0. 아르바이트 (알바/학교 모드 시 노출) -->
-    <button id="mobileTabAlba" type="button" onclick="switchMainTab('home')" class="hidden flex-1 flex flex-col items-center justify-center py-1 px-1 text-emerald-600 dark:text-emerald-400 font-bold transition cursor-pointer" title="아르바이트">
-      <i data-lucide="coffee" class="w-5 h-5 mb-0.5"></i>
-      <span class="text-[10px] tracking-tight whitespace-nowrap">아르바이트</span>
-    </button>
-
-    <!-- 0-1. SW중심대학사업단 (알바/학교 모드 시 노출) -->
-    <button id="mobileTabSwUniv" type="button" onclick="switchMainTab('swuniv')" class="hidden flex-1 flex flex-col items-center justify-center py-1 px-1 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition cursor-pointer" title="SW중심대학사업단">
-      <i data-lucide="laptop" class="w-5 h-5 mb-0.5"></i>
-      <span class="text-[10px] tracking-tight whitespace-nowrap">SW사업단</span>
-    </button>
-
-
+  <!-- 모바일 전용 하단 고정 네비게이션 바 (Mobile Bottom Navigation Bar: 5대 핵심 메뉴 상시 접근) -->
+  <nav id="mobileBottomNav" class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800/80 px-1 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] flex items-center justify-around shadow-lg transition-colors" aria-label="모바일 하단 네비게이션">
     <!-- 1. 토목 뉴스 -->
-    <button id="mobileTabNews" type="button" onclick="switchMainTab('news')" class="flex-1 flex flex-col items-center justify-center py-1 px-1 text-blue-600 dark:text-blue-400 font-bold transition cursor-pointer" title="토목 뉴스 브리핑">
+    <button id="mobileTabNews" type="button" onclick="switchMainTab('news')" class="flex-1 flex flex-col items-center justify-center py-1 px-0.5 text-blue-600 dark:text-blue-400 font-bold transition cursor-pointer" title="토목 뉴스 브리핑">
       <i data-lucide="newspaper" class="w-5 h-5 mb-0.5"></i>
       <span class="text-[10px] tracking-tight whitespace-nowrap">토목 뉴스</span>
     </button>
 
     <!-- 2. 채용 공고문 -->
-    <button id="mobileTabJobs" type="button" onclick="switchMainTab('jobs')" class="flex-1 flex flex-col items-center justify-center py-1 px-1 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition cursor-pointer" title="채용 공고문">
+    <button id="mobileTabJobs" type="button" onclick="switchMainTab('jobs')" class="flex-1 flex flex-col items-center justify-center py-1 px-0.5 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition cursor-pointer" title="채용 공고문">
       <i data-lucide="briefcase" class="w-5 h-5 mb-0.5"></i>
       <span class="text-[10px] tracking-tight whitespace-nowrap">채용 공고</span>
     </button>
 
     <!-- 3. 공모전 -->
-    <button id="mobileTabContests" type="button" onclick="switchMainTab('contests')" class="flex-1 flex flex-col items-center justify-center py-1 px-1 text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 font-medium transition cursor-pointer" title="토목 공모전 & 경진대회">
+    <button id="mobileTabContests" type="button" onclick="switchMainTab('contests')" class="flex-1 flex flex-col items-center justify-center py-1 px-0.5 text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 font-medium transition cursor-pointer" title="토목 공모전 & 경진대회">
       <i data-lucide="trophy" class="w-5 h-5 mb-0.5"></i>
       <span class="text-[10px] tracking-tight whitespace-nowrap">공모전</span>
     </button>
 
-    <!-- 4. 마이페이지 (북마크) 필터 -->
-    <button id="mobileBookmarkBtn" type="button" onclick="switchMainTab('mypage')" class="flex-1 relative flex flex-col items-center justify-center py-1 px-1 text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 font-medium transition cursor-pointer" title="마이페이지 모아보기">
+    <!-- 4. 전북대 알바 (상시 노출) -->
+    <button id="mobileTabAlba" type="button" onclick="switchMainTab('home')" class="flex-1 flex flex-col items-center justify-center py-1 px-0.5 text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition cursor-pointer" title="전북대학교 아르바이트">
+      <i data-lucide="coffee" class="w-5 h-5 mb-0.5"></i>
+      <span class="text-[10px] tracking-tight whitespace-nowrap">전북대 알바</span>
+    </button>
+
+    <!-- 4-1. SW사업단 (알바/학교 모드 시 보조 노출) -->
+    <button id="mobileTabSwUniv" type="button" onclick="switchMainTab('swuniv')" class="hidden flex-1 flex flex-col items-center justify-center py-1 px-0.5 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition cursor-pointer" title="SW중심대학사업단">
+      <i data-lucide="laptop" class="w-5 h-5 mb-0.5"></i>
+      <span class="text-[10px] tracking-tight whitespace-nowrap">SW사업단</span>
+    </button>
+
+    <!-- 5. 마이페이지 (북마크) -->
+    <button id="mobileBookmarkBtn" type="button" onclick="switchMainTab('mypage')" class="flex-1 relative flex flex-col items-center justify-center py-1 px-0.5 text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 font-medium transition cursor-pointer" title="마이페이지 모아보기">
       <i data-lucide="bookmark" class="w-5 h-5 mb-0.5"></i>
       <span class="text-[10px] tracking-tight whitespace-nowrap">마이페이지</span>
-      <span id="mobileBookmarkBadge" class="hidden absolute top-0.5 right-2 px-1 py-0.2 rounded-full text-[9px] font-bold bg-amber-500 text-white min-w-[14px] text-center">0</span>
+      <span id="mobileBookmarkBadge" class="hidden absolute top-0.5 right-1 px-1 py-0.2 rounded-full text-[9px] font-bold bg-amber-500 text-white min-w-[14px] text-center">0</span>
     </button>
   </nav>
 
@@ -1278,12 +1299,12 @@
   </div>
 
   <!-- 프론트엔드 스크립트 로드 (전북대 알바 & SW중심대학사업단 & SPA 마스터 컨트롤러 & 채용 & 공모전 & AI 챗봇) -->
-  <script src="./static/jbnu_alba.js?v=20260917_v1121"></script>
-  <script src="./static/swuniv.js?v=20260917_v1121"></script>
-  <script src="./static/app.js?v=20260917_v1121"></script>
-  <script src="./static/jobs.js?v=20260917_v1121"></script>
-  <script src="./static/contests.js?v=20260917_v1121"></script>
-  <script src="./static/chatbot.js?v=20260917_v1121"></script>
+  <script src="./static/jbnu_alba.js?v=20260930_v1125"></script>
+  <script src="./static/swuniv.js?v=20260930_v1125"></script>
+  <script src="./static/app.js?v=20260930_v1125"></script>
+  <script src="./static/jobs.js?v=20260930_v1125"></script>
+  <script src="./static/contests.js?v=20260930_v1125"></script>
+  <script src="./static/chatbot.js?v=20260930_v1125"></script>
 
   <script>
     if ('serviceWorker' in navigator && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {

@@ -77,59 +77,15 @@
     }
   }
 
-  // 카테고리 탭 렌더링 (GEMINI.md 시안 B: 미니멀 언더라인 바 규격)
+  // 카테고리 탭 (제거 완료 - 방어용 빈 함수 유지)
   function renderAlbaCategoryTabs() {
     const tabContainer = document.getElementById('jbnuAlbaCategoryTabs');
-    if (!tabContainer) return;
-
-    // 카테고리별 건수 집계
-    const counts = { all: allAlbas.length };
-    const categories = [
-      { id: 'all', name: '전체', emoji: '✨' },
-      { id: '교육', name: '학원·과외', emoji: '📚' },
-      { id: '사무', name: '사무·행정', emoji: '💼' },
-      { id: '제조', name: '제조·물류', emoji: '🏭' },
-      { id: '외식', name: '카페·식당', emoji: '☕' },
-      { id: '매장', name: '매장·서비스', emoji: '🏬' },
-      { id: '기타', name: '일반·기타', emoji: '📌' }
-    ];
-
-    allAlbas.forEach(job => {
-      const catId = job.category_id || '기타';
-      counts[catId] = (counts[catId] || 0) + 1;
-    });
-
-    let html = '';
-    categories.forEach(cat => {
-      const count = counts[cat.id] || 0;
-      const isActive = currentAlbaCategory === cat.id;
-
-      if (isActive) {
-        html += `
-          <button onclick="window.selectAlbaCategory('${cat.id}')"
-            class="alba-cat-tab border-b-2 border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 font-semibold py-3 px-3 text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer flex-shrink-0 -mb-px">
-            <span>${cat.emoji} ${cat.name}</span>
-            <span class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 font-semibold">${count}</span>
-          </button>
-        `;
-      } else {
-        html += `
-          <button onclick="window.selectAlbaCategory('${cat.id}')"
-            class="alba-cat-tab border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-semibold py-3 px-3 text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer flex-shrink-0 -mb-px">
-            <span>${cat.emoji} ${cat.name}</span>
-            <span class="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-semibold">${count}</span>
-          </button>
-        `;
-      }
-    });
-
-    tabContainer.innerHTML = html;
+    if (tabContainer) tabContainer.innerHTML = '';
   }
 
-  // 카테고리 선택
+  // 카테고리 선택 (하위 호환성 유지)
   window.selectAlbaCategory = function(catId) {
     currentAlbaCategory = catId;
-    renderAlbaCategoryTabs();
     renderAlbaCards();
   };
 
@@ -145,11 +101,8 @@
     const countNotice = document.getElementById('jbnuAlbaResultCountNotice');
     if (!grid) return;
 
-    // 필터링
-    let filtered = allAlbas.filter(job => {
-      if (currentAlbaCategory === 'all') return true;
-      return (job.category_id || '기타') === currentAlbaCategory;
-    });
+    // 카테고리 필터 없이 전체 공고 대상
+    let filtered = [...allAlbas];
 
     // 정렬
     filtered.sort((a, b) => {
@@ -180,8 +133,7 @@
           <div class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-3 text-2xl">
             🔍
           </div>
-          <p class="font-bold text-slate-700 dark:text-slate-300">해당 분류의 알바 공고가 없습니다.</p>
-          <p class="text-xs text-slate-400 mt-1">다른 카테고리를 선택해 보세요.</p>
+          <p class="font-bold text-slate-700 dark:text-slate-300">현재 등록된 알바 공고가 없습니다.</p>
         </div>
       `;
       return;
@@ -218,24 +170,20 @@
         <article class="bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:shadow-md hover:border-emerald-400 dark:hover:border-emerald-600 transition flex flex-col justify-between group cursor-pointer"
           onclick="window.open('${job.link}', '_blank', 'noopener,noreferrer')">
           <div class="space-y-3.5">
-            <!-- 1행: 카테고리 뱃지 & D-day -->
+            <!-- 1행: D-Day 뱃지 & 조회수 -->
             <div class="flex items-center justify-between">
-              <span class="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                <span>${job.category_emoji || '📚'}</span>
-                <span>${job.category_name || '학원·과외'}</span>
-              </span>
               <span class="text-xs px-2.5 py-1 rounded-full ${ddayClass}">
                 ${job.dday || '접수중'}
+              </span>
+              <span class="flex items-center gap-1 text-xs text-slate-400 dark:text-slate-500 font-medium">
+                <i data-lucide="eye" class="w-3.5 h-3.5"></i> ${job.views || '0'}
               </span>
             </div>
 
             <!-- 2행: 기업/상호명 -->
-            <div class="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500">
-              <span class="font-extrabold text-blue-600 dark:text-blue-400 truncate max-w-[200px]">
+            <div class="text-xs">
+              <span class="font-extrabold text-blue-600 dark:text-blue-400 truncate block">
                 ${job.company || '전북대 인근'}
-              </span>
-              <span class="flex items-center gap-1">
-                <i data-lucide="eye" class="w-3.5 h-3.5"></i> ${job.views || '0'}
               </span>
             </div>
 
@@ -788,7 +736,7 @@
                       ${typeLabel}
                     </span>
                     <span class="text-[11px] font-bold text-slate-700 dark:text-slate-300">
-                      ${ev.job.category_emoji || '📌'} ${escapeAlbaHtml(ev.job.company || '전북대')}
+                      ${escapeAlbaHtml(ev.job.company || '전북대')}
                     </span>
                   </div>
                   <h5 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">

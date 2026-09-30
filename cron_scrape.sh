@@ -43,7 +43,7 @@ echo "[6/7] 공모전 무결성 전수 검증 중 (test_contests_integrity.py)..
 
 # 7. GitHub 자동 배포 (data 변경분 commit + push → GitHub Pages 자동 반영)
 echo "[7/7] GitHub 자동 배포 중..." >> "$LOG_FILE"
-git add data/news.json data/contests.json data/jobs.json data/jbnu_albas.json data/swuniv_programs.json >> "$LOG_FILE" 2>&1
+git add data/news.json data/contests.json data/jobs.json data/jbnu_albas.json data/swuniv_programs.json static/data/swuniv_programs.json >> "$LOG_FILE" 2>&1
 
 if git diff --cached --quiet; then
   echo "  ℹ️  데이터 변경 없음 — push 건너뜀" >> "$LOG_FILE"
