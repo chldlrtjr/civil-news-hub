@@ -1,0 +1,17 @@
+[Unit]
+Description=Civil News Hub Flask & Gunicorn WSGI Server (JCloud Production)
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/workspace
+Environment="PATH=/home/ubuntu/workspace/venv/bin"
+ExecStart=/home/ubuntu/workspace/venv/bin/gunicorn -c /home/ubuntu/workspace/gunicorn.conf.py app:app
+Restart=always
+RestartSec=3
+StandardOutput=append:/home/ubuntu/workspace/gunicorn.log
+StandardError=append:/home/ubuntu/workspace/gunicorn.log
+
+[Install]
+WantedBy=multi-user.target

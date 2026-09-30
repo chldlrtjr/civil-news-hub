@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.1.26` (터미널 독립 백그라운드 상시 구동 지원(run_background.bat, stop_server.bat) / 누적 수정 81회 달성 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.1.27` (JCloud 백엔드 프로세스 튜닝: Gunicorn gthread 동시성 최적화, auto deploy git ls-remote 경량화, cron nice CPU 양보 / 누적 수정 82회 달성 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -1217,13 +1217,41 @@ mindmap
   3. **캐시 버스팅 및 브랜치 동기화**:
      - 스크립트 로드 파라미터 및 `mobile.html` iframe 버전을 `v1125`(`?v=20260930_v1125`)로 갱신.
 
+#### 81) Windows 로컬 환경 터미널 독립 백그라운드 상시 구동 지원 (ver 1.1.26)
+- `run_background.bat`: PowerShell `Start-Process -WindowStyle Hidden`을 활용하여 콘솔 창을 닫아도 백그라운드에서 8000 포트 Flask 서버가 지속 유지되도록 지원.
+- `stop_server.bat`: 8000번 포트를 점유 중인 프로세스 PID를 자동 조회하여 안전하게 종료하는 유틸리티 제공.
+
+#### 82) JCloud 2GB VM 백엔드 프로세스 전면 튜닝 및 최적화 (ver 1.1.27)
+- **요청 사항**:
+  - Gunicorn `gthread` 모델 전환 및 메모리 누수 방지 (`--workers 2 --threads 4 --worker-class gthread --max-requests 1000 --max-requests-jitter 100 --timeout 90`)
+  - `auto_deploy_watcher.sh`의 `git ls-remote` 전환 및 감시 주기 완화 (30초 → 60초)
+  - 크롤링 배치 `cron_scrape.sh`에 `nice -n 10` CPU 우선권 양보 및 잔여 크롬 프로세스 정리 (`pkill -f "chrome|chromium"`)
+  - Nginx 프록시 버퍼 최적화 (`proxy_buffers 8 16k; proxy_buffer_size 32k;`)
+- **조치 내역**:
+  1. **Gunicorn WSGI 설정 표준화 ([`gunicorn.conf.py`](file:///C:/Users/최익석/Desktop/goofy-borg/gunicorn.conf.py), [`civil-news-hub.service`](file:///C:/Users/최익석/Desktop/goofy-borg/civil-news-hub.service))**:
+     - 기존 sync 워커 3개(각 110MB+ RAM 점유, I/O 블로킹)에서 `gthread` 워커 모델(2 워커 * 4 스레드 = 최대 8개 동시 요청 비차단 처리)로 개편.
+     - `--max-requests 1000 --max-requests-jitter 100`을 부여하여 파이썬 장기 가동 메모리 누수를 원천 방지하고 주기적 자동 리사이클링 보장.
+     - `--timeout 90`으로 Gemini AI 요약 및 챗봇 응답 지연 시 조기 워커 타임아웃 종료 방지.
+     - 하트비트 임시 디렉토리를 RAM 기반 `/dev/shm`으로 지정하여 디스크 I/O 병목 제거.
+  2. **자동 배포 감시 데몬 초경량화 ([`auto_deploy_watcher.sh`](file:///C:/Users/최익석/Desktop/goofy-borg/auto_deploy_watcher.sh))**:
+     - 30초마다 git fetch(하루 2,880회 디스크 I/O)를 치던 방식을 `git ls-remote origin refs/heads/main`으로 교체.
+     - 원격의 최신 커밋 해시(문자열 단 한 줄)만 가볍게 조회하고 변경 시에만 `deploy.sh`를 실행하도록 개선하여 디스크 I/O와 네트워크 트래픽을 최소화하고 감시 주기를 60초로 완화.
+  3. **크롤링 배치 파이프라인 프로세스 우선권 양보 ([`cron_scrape.sh`](file:///C:/Users/최익석/Desktop/goofy-borg/cron_scrape.sh))**:
+     - 5대 수집기 스크립트 실행 시 `nice -n 10`을 부여하여 크롤링 실행 중에도 실시간 웹 서빙(Gunicorn/Nginx)에 CPU 우선권을 양보하도록 최적화.
+     - 스크립트 간 1초 간격(`sleep 1`)을 두어 일시적 메모리 폭증 방지.
+     - 파이프라인 종료 시점에 `pkill -f "chrome|chromium"` 방어 코드를 탑재하여 예외 발생 시 잔여 헤드리스 브라우저 프로세스로 인한 메모리 잠식 영구 차단.
+  4. **Nginx 프록시 버퍼 및 타임아웃 최적화 템플릿 제공 ([`nginx_jcloud_tuning.conf`](file:///C:/Users/최익석/Desktop/goofy-borg/nginx_jcloud_tuning.conf))**:
+     - `proxy_buffers 8 16k; proxy_buffer_size 32k;` 및 `proxy_read_timeout 90s;` 탑재.
+  5. **원터치 튜닝 배포 스크립트 제공 ([`apply_jcloud_tuning.sh`](file:///C:/Users/최익석/Desktop/goofy-borg/apply_jcloud_tuning.sh))**:
+     - JCloud 우분투 서버에서 `bash apply_jcloud_tuning.sh` 실행 한 번으로 서비스 등록, daemon-reload, restart, 헬스체크까지 일괄 적용 지원.
+
 ---
 
 ## 🌿 3. Git 브랜치 현황
 
 | 브랜치명 | 상태 | 설명 |
 | :--- | :--- | :--- |
-| **`main`** | **최신 공식 배포 브랜치 (v1.1.25)** | GitHub Pages 및 JCloud 우분투 서버를 통해 라이브 서비스 중인 메인 브랜치 (사용자 명시 지시 없는 임의 Git Push 원천 차단 규칙 적용) |
+| **`main`** | **최신 공식 배포 브랜치 (v1.1.27)** | GitHub Pages 및 JCloud 우분투 서버를 통해 라이브 서비스 중인 메인 브랜치 (사용자 명시 지시 없는 임의 Git Push 원천 차단 규칙 적용) |
 | **`feature/footer-last-updated`** | **작업 완료 (main 병합됨)** | 푸터 업데이트 이전 및 초기 헤더 클린업 작업 브랜치 |
 
 - **온라인 라이브 서비스**: [https://chldlrtjr.github.io/civil-news-hub/](https://chldlrtjr.github.io/civil-news-hub/)
