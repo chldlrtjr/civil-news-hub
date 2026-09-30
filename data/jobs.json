@@ -1,7 +1,7 @@
 {
-  "last_updated": "2026-09-30 23:00",
-  "last_updated_display": "2026년 09월 30일 23:00",
-  "total_count": 5,
+  "last_updated": "2026-10-01 00:01",
+  "last_updated_display": "2026년 10월 01일 00:01",
+  "total_count": 4,
   "categories": [
     {
       "id": "all",
@@ -25,42 +25,6 @@
     }
   ],
   "jobs": [
-    {
-      "id": "job-daewoo-2026-02",
-      "company": "대우건설",
-      "category_id": "builder",
-      "category_name": "대형 건설사",
-      "badge_color": "indigo",
-      "title": "2026년 토목사업본부 신입사원 공개채용",
-      "fields": [
-        "터널·지하공간 시공",
-        "도로·철도 구조물",
-        "스마트 토공관리"
-      ],
-      "career": "신입",
-      "education": "대졸 이상 (토목관련 전공자)",
-      "location": "서울 을지로 본사 및 전국 현장",
-      "period": "2026.09.14 ~ 09.30 (23:59 마감)",
-      "deadline_date": "2026-09-30",
-      "salary": "초봉 5,300만원 수준 (현장수당 별도)",
-      "tags": [
-        "1군 건설사",
-        "해저터널 특화",
-        "인재육성",
-        "숙소 지원"
-      ],
-      "link": "https://recruit.daewooenc.com/",
-      "summary": "세계 최고 수준의 해저터널 및 고난도 교량 시공 노하우를 계승할 신입 토목 엔지니어를 선발합니다.",
-      "qualifications": "토목공학 학사 이상, 토목기사/건설안전기사 자격증 우대, 공인어학성적 보유자",
-      "steps": [
-        "서류전형",
-        "온라인 인적성검사",
-        "1차 직무면접",
-        "2차 인성면접",
-        "신체검사",
-        "최종합격"
-      ]
-    },
     {
       "id": "job-dlenc-2026-03",
       "company": "DL이앤씨",

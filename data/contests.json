@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-09-30 23:00:33",
-  "last_updated_display": "09월 30일 23:00",
-  "total_count": 4,
-  "featured_count": 4,
+  "last_updated": "2026-10-01 00:01:01",
+  "last_updated_display": "10월 01일 00:01",
+  "total_count": 3,
+  "featured_count": 3,
   "categories": [
     "ALL",
     "스마트·기술",
@@ -12,60 +12,6 @@
     "철도·인프라"
   ],
   "contests": [
-    {
-      "id": "fc-sk-contech2026",
-      "title": "SK에코플랜트 2026 콘테크 미트업 데이 공모전",
-      "organizer": "SK에코플랜트 · 연구개발특구진흥재단",
-      "category": "스마트·기술",
-      "badge_color": "indigo",
-      "prize": "공동 R&D 자금 지원 및 사업화·투자유치 협력 기회 (총 1억원 규모)",
-      "prize_details": [
-        {
-          "rank": "선정 기업",
-          "award": "SK에코플랜트 파트너십",
-          "prize": "기술개발(R&D) 및 실증 PoC 자금 차등 지원 (팀당 최대 3,000만원)"
-        },
-        {
-          "rank": "투자 유치",
-          "award": "SK 증권 및 벤처펀드",
-          "prize": "우수 혁신 기술 보유 기업 지분 투자 심사 연계"
-        }
-      ],
-      "benefits": [
-        "SK에코플랜트 실제 국내외 건설·인프라 현장 테스트베드(PoC) 무상 적용",
-        "공동 특허 출원 및 사업화 우선 협상권 보장",
-        "연구개발특구진흥재단 공공 R&D 정부지원사업 과제 매칭 지원"
-      ],
-      "target": "스마트 건설 스타트업 및 중소·중견기업",
-      "target_details": "스마트건설, 탄소중립, 친환경 인프라 분야 혁신 기술을 보유한 스타트업, 중소기업 및 예비창업팀",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.09.07 ~ 09.30 (23:59 마감)",
-      "deadline_date": "2026-09-30",
-      "deadline_time": "23:59",
-      "fields": [
-        "AI 데이터센터 설계 및 인프라 시공",
-        "OSC (탈현장 모듈러 시공 공법)",
-        "시공 자동화 로봇 및 원격 무인화",
-        "폐기물 업사이클링 친환경 인프라"
-      ],
-      "submission_info": "참가신청서 및 회사/기술소개서(자유양식 PDF 20장 이내 IR Pitch Deck)",
-      "evaluation_steps": [
-        "서류심사 (기술 적격성 평가)",
-        "1:1 실무 밋업 심사",
-        "최종 피칭 및 PoC 협약 체결"
-      ],
-      "contact": "SK에코플랜트 이노베이션팀 (contech@sk.com)",
-      "description": "AI 데이터센터, OSC(탈현장 시공), 시공 자동화 로봇, 안전 및 친환경 인프라 혁신 솔루션을 발굴하는 오픈 이노베이션 공모전",
-      "link": "https://innobranch.com/front/challenge/detail/1451",
-      "is_active": true,
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
     {
       "id": "fc-ex-design26",
       "title": "제15회 도로경관디자인 대전",
