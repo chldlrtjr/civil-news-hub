@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.1.28` (크롤링 수집 주기 1시간마다(매시간 정각)로 단축 및 자동화 스케줄 동기화 / 누적 수정 83회 달성 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.1.30` (모바일 뷰 시뮬레이터 Flexbox 높이 붕괴(수축) 원천 차단 및 S24 Ultra 886px/956px 고정 락 적용 / 누적 수정 85회 달성 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -1257,13 +1257,42 @@ mindmap
   3. **원클릭 Crontab 갱신 지원 ([`apply_jcloud_tuning.sh`](file:///C:/Users/최익석/Desktop/goofy-borg/apply_jcloud_tuning.sh))**:
      - JCloud 서버에서 `apply_jcloud_tuning.sh` 실행 시 crontab에 등록된 `cron_scrape.sh`를 자동으로 감지하여 `0 * * * *` (매시간 정각) 스케줄로 즉각 갱신하도록 자동화 코드 탑재.
 
+#### 84) 모바일 뷰 시뮬레이터 Galaxy S24 Ultra 단독 고정 및 오르카 등 웹뷰 과도한 축소 방지 (ver 1.1.29)
+- **요청 사항**: "S24 Ultra만 쓰고 모바일 뷰 화면이 오르카에서 볼때만 이상하게 작아지는데 이거 수정해줘"
+- **배경 및 원인 분석**:
+  - 기존 기기 프리셋(Z Flip, S24, S24 Ultra) 중 S24 Ultra를 주력 기기로 고정 요청.
+  - 오르카(Orca) 등 낮은 브라우저 창이나 분할창/웹뷰 환경에서 `fitPhoneToViewport()`가 뷰포트 높이에 맞추기 위해 강제로 `scale(0.55)`까지 과도하게 축소하여 글씨가 개미처럼 쪼그라들던 문제 발생.
+- **조치 내역 ([`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html), [`static/mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/mobile.html))**:
+  1. **Galaxy S24 Ultra 단독 적용**:
+     - 상단 기기 선택기에서 Z Flip, Galaxy S24 버튼을 제거하고, `Galaxy S24 Ultra` (432 × 956px) 단독 기기로 고정.
+     - 상단 헤더 배지 및 하단 안내 라벨을 Galaxy S24 Ultra 규격으로 동기화.
+  2. **오르카 환경 과도한 축소 원천 차단 (100% 1:1 원본 기본 모드)**:
+     - 기본 모드를 `isFitMode = false` (100% 실제 크기 원본 모드)로 전환하여 오르카 창에서도 `scale: none`으로 선명하고 시원한 1:1 해상도 유지.
+     - 가용 높이가 부족하더라도 스크롤로 편안하게 볼 수 있도록 개선하고 글자가 왜곡되거나 쪼그라드는 현상 원천 제거.
+     - 필요 시 상단 `[100% 크기]` 토글 버튼을 통해 `[화면 맞춤]`으로 전환할 수 있도록 지원하며, 화면 맞춤 시에도 가독성 보호를 위해 최소 스케일 하한을 0.82로 안전하게 제한.
+  3. **창 너비 480px 이하 반응형 모바일 지원**:
+     - `@media (max-width: 480px)`에서 외곽 베젤 및 라운드를 자동 해제하여 스마트폰이나 좁은 창에서도 100% 화면에 꽉 차게 표시되도록 최적화.
+
+#### 85) 모바일 뷰 시뮬레이터 Flexbox 높이 붕괴(수축) 원천 차단 및 S24 Ultra 고정 높이 락 (ver 1.1.30)
+- **요청 사항**: 오르카 브라우저에서 모바일 화면이 가로로 납작하게 찌그러져 렌더링되던 문제 긴급 수정
+- **배경 및 원인 분석**:
+  - 사용자 스크린샷 확인 결과: `phoneWrapper` 내의 `screenContainer`에 Tailwind 클래스 `flex-1`(`flex: 1 1 0%`)이 적용되어 있어, 오르카 웹뷰 렌더링 엔진에서 부모의 flex 수축 계산 시 인라인 높이(`height: 886px`)가 무시되고 세로 높이가 150px 남짓으로 붕괴(shrink)되어 납작한 팬케이크처럼 눌리는 현상 발생.
+- **조치 내역 ([`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html), [`static/mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/mobile.html))**:
+  1. **`flex-1` 제거 및 `flex-shrink-0 !important;` 강제**:
+     - `screenContainer`에서 높이 붕괴의 주원인이던 `flex-1` 클래스를 영구 삭제하고, `flex-shrink: 0 !important;`를 적용하여 어떠한 상황에서도 축소되지 않도록 차단.
+  2. **3중 높이 락(Lock) 적용 (CSS + HTML + JS)**:
+     - `phoneWrapper`: 전체 높이 `height: 956px; min-height: 956px; flex-shrink: 0;` 명시.
+     - `screenContainer`: 스크린 높이 `height: 886px; min-height: 886px; flex-shrink: 0;` 명시.
+     - `mobileFrame` (iframe): `width: 100% !important; height: 100% !important; min-height: 100% !important; display: block;`로 꽉 찬 높이 보장.
+     - 상단 상태바(`h-[42px]`)와 하단 제스처바(`h-[28px]`)에도 `flex-shrink-0`을 지정하여 42 + 886 + 28 = 956px 완벽 일치.
+
 ---
 
 ## 🌿 3. Git 브랜치 현황
 
 | 브랜치명 | 상태 | 설명 |
 | :--- | :--- | :--- |
-| **`main`** | **최신 공식 배포 브랜치 (v1.1.28)** | GitHub Pages 및 JCloud 우분투 서버를 통해 라이브 서비스 중인 메인 브랜치 (사용자 명시 지시 없는 임의 Git Push 원천 차단 규칙 적용) |
+| **`main`** | **최신 공식 배포 브랜치 (v1.1.30)** | GitHub Pages 및 JCloud 우분투 서버를 통해 라이브 서비스 중인 메인 브랜치 (사용자 명시 지시 없는 임의 Git Push 원천 차단 규칙 적용) |
 | **`feature/footer-last-updated`** | **작업 완료 (main 병합됨)** | 푸터 업데이트 이전 및 초기 헤더 클린업 작업 브랜치 |
 
 - **온라인 라이브 서비스**: [https://chldlrtjr.github.io/civil-news-hub/](https://chldlrtjr.github.io/civil-news-hub/)
