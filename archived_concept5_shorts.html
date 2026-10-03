@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Civil Shorts · 숏폼 버티컬 카드 & 인터랙티브 덱 [보관본]</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Pretendard Font -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* 3D 카드 플립 */
+    .flip-card {
+      perspective: 1200px;
+    }
+    .flip-card-inner {
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    .flip-card.flipped .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+    .flip-card-front, .flip-card-back {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .flip-card-back {
+      transform: rotateY(180deg);
+    }
+  </style>
+</head>
+<body class="bg-black text-slate-100 min-h-screen flex flex-col items-center justify-center font-sans antialiased selection:bg-rose-500 selection:text-white p-3 sm:p-6 overflow-hidden">
+
+  <!-- 상단 보관 안내 배너 -->
+  <div class="w-full max-w-sm sm:max-w-md mb-3 flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-slate-300 backdrop-blur-md">
+    <div class="flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+      <span class="font-bold text-white">보관된 아키타입: 숏폼 버티컬 카드덱</span>
+    </div>
+    <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">ARCHIVED</span>
+  </div>
+
+  <!-- 모바일 프레임 컨테이너 (9:16 인스타 릴스 / 틱톡 비율) -->
+  <main class="relative w-full max-w-sm sm:max-w-md h-[680px] sm:h-[720px] bg-slate-950 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col">
+    
+    <!-- 상단 스토리 진행 바 & 헤더 -->
+    <header class="absolute top-0 inset-x-0 z-30 p-3.5 bg-gradient-to-b from-black/95 via-black/70 to-transparent">
+      <!-- 5개 스토리 인디케이터 바 -->
+      <div class="flex items-center gap-1.5 mb-2.5">
+        <div id="storyBar0" class="h-1 flex-1 rounded-full bg-rose-500 transition-colors duration-300"></div>
+        <div id="storyBar1" class="h-1 flex-1 rounded-full bg-slate-700 transition-colors duration-300"></div>
+        <div id="storyBar2" class="h-1 flex-1 rounded-full bg-slate-700 transition-colors duration-300"></div>
+        <div id="storyBar3" class="h-1 flex-1 rounded-full bg-slate-700 transition-colors duration-300"></div>
+        <div id="storyBar4" class="h-1 flex-1 rounded-full bg-slate-700 transition-colors duration-300"></div>
+      </div>
+
+      <div class="flex items-center justify-between text-xs text-white">
+        <span class="font-black flex items-center gap-1.5 text-rose-400">
+          <i data-lucide="flame" class="w-4 h-4 fill-current"></i>
+          CIVIL SHORTS · 30초 브리핑
+        </span>
+        <span id="shortsCounter" class="text-[11px] font-mono text-slate-400 bg-slate-900/80 px-2 py-0.5 rounded-full border border-slate-800">
+          1 / 5
+        </span>
+      </div>
+    </header>
+
+    <!-- 중앙 카드 덱 영역 -->
+    <div class="flex-1 relative flex items-center justify-center p-4 pt-16 pb-16">
+      
+      <!-- 3D FLIP CARD CONTAINER -->
+      <div id="shortsFlipCard" class="flip-card w-full h-full cursor-pointer" onclick="handleCardAreaClick(event)">
+        <div class="flip-card-inner relative w-full h-full">
+          
+          <!-- [앞면: 1초 만에 꽂히는 비주얼 & 3줄 브리핑] -->
+          <div class="flip-card-front absolute inset-0 rounded-2xl p-6 flex flex-col justify-between border border-slate-800 shadow-xl overflow-hidden" id="shortsFrontCard" style="background: radial-gradient(circle at top right, #1e1b4b, #030712);">
+            <div class="absolute -right-12 -top-12 w-48 h-48 rounded-full bg-rose-500/10 blur-3xl pointer-events-none"></div>
+            
+            <div>
+              <div class="flex items-center gap-2 mb-3.5">
+                <span id="shortsCategoryBadge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40">
+                  ⚡ 지반·터널 긴급속보
+                </span>
+                <span id="shortsSourceBadge" class="text-xs text-slate-400 font-mono">뉴시스 1시간 전</span>
+              </div>
+              
+              <h2 id="shortsTitle" class="text-xl sm:text-2xl font-black text-white leading-tight mb-4 tracking-tight">
+                영동양수발전소 4.8km 배수터널 양방향 굴착 관통!
+              </h2>
+
+              <!-- 3줄 핵심 AI 브리핑 -->
+              <div id="shortsSummaryList" class="space-y-3 text-xs sm:text-sm text-slate-200 leading-relaxed">
+                <div class="flex items-start gap-2.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-rose-400 mt-2 flex-shrink-0"></span>
+                  <span>대심도 지하 암반 4.8km 양방향 동시 굴착 성공</span>
+                </div>
+                <div class="flex items-start gap-2.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-rose-400 mt-2 flex-shrink-0"></span>
+                  <span>중심선 관통 오차 2cm 미만 역대급 정밀도 달성</span>
+                </div>
+                <div class="flex items-start gap-2.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-rose-400 mt-2 flex-shrink-0"></span>
+                  <span>2030년 준공 시 500MW 청정에너지 저장 전력망 가동</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 하단 힌트 안내 -->
+            <div class="pt-3.5 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+              <span class="flex items-center gap-1.5 text-rose-400 font-semibold">
+                <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
+                터치/클릭 시 뒷면 AI 심층 분석
+              </span>
+              <span class="font-mono text-[10px] text-slate-500">TAP TO FLIP</span>
+            </div>
+          </div>
+
+          <!-- [뒷면: AI 심층 분석 & 데이터 스펙] -->
+          <div class="flip-card-back absolute inset-0 rounded-2xl p-6 flex flex-col justify-between bg-slate-900 border border-cyan-500/40 shadow-xl overflow-hidden">
+            <div>
+              <div class="flex items-center justify-between mb-3.5 pb-2.5 border-b border-slate-800">
+                <span class="text-xs font-bold text-cyan-400 flex items-center gap-1.5">
+                  <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                  AI 기술적 심층 분석 (Deep Insight)
+                </span>
+                <span class="text-[11px] text-slate-400">터치 시 앞면 복귀</span>
+              </div>
+
+              <h3 id="shortsBackTitle" class="text-sm sm:text-base font-bold text-white mb-2 leading-snug">
+                엔지니어가 주목해야 할 시공 포인트
+              </h3>
+              
+              <p id="shortsBackDesc" class="text-xs text-slate-300 leading-relaxed mb-4">
+                영동양수 배수터널은 단층 파쇄대 구간을 다수 통과함에도 첨단 3차원 TSP 탄성파 지반탐사와 무진동 정밀 발파 공법을 적용하여 무사고 관통을 이뤄냈습니다.
+              </p>
+
+              <div class="space-y-2 text-xs font-mono">
+                <div class="p-2.5 rounded-lg bg-black/60 border border-slate-800 flex justify-between items-center">
+                  <span class="text-slate-500">발주처 / 사업비</span>
+                  <span id="shortsOrg" class="text-slate-200 font-bold">한국수력원자력 / 1.2조원</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-black/60 border border-slate-800 flex justify-between items-center">
+                  <span class="text-slate-500">관련 자격증 기출</span>
+                  <span id="shortsExam" class="text-cyan-300 font-bold">토목시공기술사 (터널파쇄대)</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-800 flex items-center justify-between">
+              <a id="shortsSourceLink" href="https://news.google.com" target="_blank" onclick="event.stopPropagation()" class="text-xs font-bold text-cyan-400 hover:underline flex items-center gap-1">
+                <span>공식 원문 페이지 열기</span>
+                <i data-lucide="external-link" class="w-3 h-3"></i>
+              </a>
+              <span class="text-[11px] text-slate-400 px-2 py-1 rounded bg-slate-800">
+                카드 닫기
+              </span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 우측 플로팅 인터랙션 레일 (TikTok / Reels 스타일) -->
+      <aside class="absolute right-5 bottom-20 z-30 flex flex-col items-center gap-3">
+        
+        <!-- 좋아요 / 공감 버튼 -->
+        <button onclick="event.stopPropagation(); toggleShortsHeart();" class="group flex flex-col items-center gap-0.5 cursor-pointer">
+          <div id="shortsHeartBtn" class="w-10 h-10 rounded-full bg-slate-900/90 border border-slate-700 hover:border-rose-500 text-slate-300 hover:text-rose-500 flex items-center justify-center transition shadow-lg">
+            <i id="shortsHeartIcon" data-lucide="heart" class="w-5 h-5 transition-transform duration-200 group-hover:scale-110"></i>
+          </div>
+          <span id="shortsHeartCount" class="text-[10px] font-bold text-slate-300">142</span>
+        </button>
+
+        <!-- 3D 카드 플립 버튼 -->
+        <button onclick="event.stopPropagation(); flipShortsCard();" class="flex flex-col items-center gap-0.5 cursor-pointer" title="AI 심층 분석 보기">
+          <div class="w-10 h-10 rounded-full bg-cyan-600/90 hover:bg-cyan-500 text-slate-950 flex items-center justify-center transition shadow-lg font-bold">
+            <i data-lucide="sparkles" class="w-5 h-5"></i>
+          </div>
+          <span class="text-[10px] font-bold text-cyan-300">분석</span>
+        </button>
+
+        <!-- 북마크 버튼 -->
+        <button onclick="event.stopPropagation(); toggleShortsBookmark();" class="flex flex-col items-center gap-0.5 cursor-pointer">
+          <div id="shortsBookmarkBtn" class="w-10 h-10 rounded-full bg-slate-900/90 border border-slate-700 hover:border-amber-400 text-slate-300 hover:text-amber-400 flex items-center justify-center transition shadow-lg">
+            <i data-lucide="bookmark" class="w-5 h-5"></i>
+          </div>
+          <span class="text-[10px] font-bold text-slate-300">저장</span>
+        </button>
+
+        <!-- 10초 음성 듣기 -->
+        <button onclick="event.stopPropagation(); playShortsAudio();" class="flex flex-col items-center gap-0.5 cursor-pointer" title="10초 음성 듣기">
+          <div id="shortsAudioBtn" class="w-10 h-10 rounded-full bg-slate-900/90 border border-slate-700 hover:border-emerald-400 text-slate-300 hover:text-emerald-400 flex items-center justify-center transition shadow-lg">
+            <i data-lucide="volume-2" class="w-5 h-5"></i>
+          </div>
+          <span class="text-[10px] font-bold text-slate-300">듣기</span>
+        </button>
+
+      </aside>
+
+    </div>
+
+    <!-- 하단 탐색 컨트롤러 바 (이전 / 다음) -->
+    <footer class="absolute bottom-0 inset-x-0 z-30 p-3 bg-gradient-to-t from-black via-black/90 to-transparent flex items-center justify-between text-xs">
+      <button onclick="prevShortsSlide()" class="px-3.5 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:bg-slate-800 text-slate-300 flex items-center gap-1 transition cursor-pointer">
+        <i data-lucide="chevron-up" class="w-4 h-4"></i>
+        <span>이전 카드</span>
+      </button>
+
+      <span class="text-[11px] text-slate-500 font-mono hidden sm:inline">
+        키보드 [↑ / ↓] 지원
+      </span>
+
+      <button onclick="nextShortsSlide()" class="px-4 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold flex items-center gap-1 transition cursor-pointer shadow-md">
+        <span>다음 카드</span>
+        <i data-lucide="chevron-down" class="w-4 h-4"></i>
+      </button>
+    </footer>
+
+  </main>
+
+  <script>
+    const SHORTS_DATA = [
+      {
+        cat: '⚡ 지반·터널 긴급속보',
+        source: '뉴시스 1시간 전',
+        title: '영동양수발전소 4.8km 배수터널 양방향 굴착 관통!',
+        bullets: [
+          '대심도 지하 암반 4.8km 양방향 동시 굴착 성공',
+          '중심선 관통 오차 2cm 미만 역대급 정밀도 달성',
+          '2030년 준공 시 500MW 청정에너지 저장 전력망 가동'
+        ],
+        backTitle: '엔지니어가 주목해야 할 시공 포인트',
+        backDesc: '영동양수 배수터널은 단층 파쇄대 구간을 다수 통과함에도 첨단 3차원 TSP 탄성파 지반탐사와 무진동 정밀 발파 공법을 적용하여 무사고 관통을 이뤄냈습니다.',
+        org: '한국수력원자력 / 1.2조원',
+        exam: '토목시공기술사 (터널파쇄대)',
+        link: 'https://news.google.com'
+      },
+      {
+        cat: '💼 2026 채용 숏폼',
+        source: 'DL이앤씨 공식 공고',
+        title: 'DL이앤씨 토목사업본부 국내 전 현장 수시채용',
+        bullets: [
+          '신입 초봉 5,400만원 + 국내 현장 체재비 및 특수수당',
+          '현수교·사장교 특수교량 및 대심도 터널 현장소장/공무',
+          'BIM 기반 3D 현장설계 역량 보유자 서류 면제급 우대'
+        ],
+        backTitle: 'AI 채용 면접 예상 질문 3선',
+        backDesc: '1. TBM 굴착 시 막장면 토압 불균형 발생 시 대처 방안은?\n2. 스마트 턴키 현장에서 BIM 모델과 실제 시공 오차를 줄이기 위한 방안은?',
+        org: '대형 건설사 / 상시채용',
+        exam: '토목기사 필수 (BIM 우대)',
+        link: 'jobs.html'
+      },
+      {
+        cat: '🏆 장관상 공모전 숏폼',
+        source: '한국도로공사 공고',
+        title: '제15회 도로경관디자인 대전 (국토교통부 장관상)',
+        bullets: [
+          '총상금 2,240만원 · 대상 500만원 (국토부 장관상)',
+          '전 국민 누구나 (대학생 부문, 일반 부문 분리 평가)',
+          '수상작 실제 고속도로 설계 및 방음벽·나들목에 즉시 반영'
+        ],
+        backTitle: '작년 1등 수상자의 합격 치트키',
+        backDesc: '단순한 심미적 디자인을 넘어 태양광 방음벽 발전 효율과 친환경 탄소 흡수 식재를 결합한 [기능형 경관 설계안]이 심사위원 만점을 기록했습니다.',
+        org: '한국도로공사 / D-28 마감',
+        exam: '공모전 수상 시 도로공사 가산점',
+        link: 'contests.html'
+      },
+      {
+        cat: '📊 시장 인포그래픽 숏폼',
+        source: '한국건설기술연구원',
+        title: '2026 건설 원자재 시세 긴급 진단',
+        bullets: [
+          '철근 D10 톤당 78.5만원 소폭 반등 (▲1.2%)',
+          '포틀랜드 시멘트 톤당 11.2만원 보합세 유지',
+          '국토부 3분기 공공공사 표준시장단가 2.8% 인상 반영'
+        ],
+        backTitle: '공사비 현실화가 건설업계에 미치는 영향',
+        backDesc: '공공 공사 유찰 사태가 잇따르자 국토교통부가 적정 공사비 보장 대책을 발표하며 유찰되었던 가덕도 등 대형 인프라 입찰 재개가 본격화되고 있습니다.',
+        org: '국토교통부 / 시장 분석',
+        exam: '적산 및 표준시장단가 산정',
+        link: '#'
+      },
+      {
+        cat: '🤖 스마트 신기술 숏폼',
+        source: '스마트건설 얼라이언스',
+        title: '도심 대심도 공사장에 투입된 4족 보행 로봇개',
+        bullets: [
+          '지하 50m 질식 위험 구역 라이다(LiDAR) 자율 스캔',
+          '유해가스 농도 0.1초 실시간 감지 및 지상 관제소 전송',
+          '스마트 안전관리 도입 현장 사고율 64% 급감'
+        ],
+        backTitle: 'BIM + Digital Twin 통합 관제',
+        backDesc: '현대건설과 SK에코플랜트가 영동대로 및 주요 터널 현장에 로봇 관제를 도입하면서 안전관리 패러다임이 인력 순찰에서 로봇 자율주행으로 대전환되었습니다.',
+        org: '국토진흥원 / 신기술 지정',
+        exam: '스마트건설안전기사 트렌드',
+        link: '#'
+      }
+    ];
+
+    let currentShortsIndex = 0;
+    let isShortsFlipped = false;
+    let shortsHeartLiked = false;
+
+    function renderShortsSlide(index) {
+      const data = SHORTS_DATA[index];
+      if (!data) return;
+
+      // 앞면
+      document.getElementById('shortsCategoryBadge').textContent = data.cat;
+      document.getElementById('shortsSourceBadge').textContent = data.source;
+      document.getElementById('shortsTitle').textContent = data.title;
+      
+      const bulletsHtml = data.bullets.map(b => `
+        <div class="flex items-start gap-2.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-rose-400 mt-2 flex-shrink-0"></span>
+          <span>${b}</span>
+        </div>
+      `).join('');
+      document.getElementById('shortsSummaryList').innerHTML = bulletsHtml;
+
+      // 뒷면
+      document.getElementById('shortsBackTitle').textContent = data.backTitle;
+      document.getElementById('shortsBackDesc').textContent = data.backDesc;
+      document.getElementById('shortsOrg').textContent = data.org;
+      document.getElementById('shortsExam').textContent = data.exam;
+      document.getElementById('shortsSourceLink').href = data.link;
+
+      // 상단 프로그레스 바
+      for (let i = 0; i < 5; i++) {
+        const bar = document.getElementById(`storyBar${i}`);
+        if (i <= index) {
+          bar.classList.add('bg-rose-500');
+          bar.classList.remove('bg-slate-700');
+        } else {
+          bar.classList.remove('bg-rose-500');
+          bar.classList.add('bg-slate-700');
+        }
+      }
+      document.getElementById('shortsCounter').textContent = `${index + 1} / ${SHORTS_DATA.length}`;
+
+      // 플립 리셋
+      if (isShortsFlipped) {
+        flipShortsCard();
+      }
+      
+      // 하트 리셋
+      shortsHeartLiked = false;
+      document.getElementById('shortsHeartIcon').classList.remove('fill-rose-500', 'text-rose-500');
+      document.getElementById('shortsHeartCount').textContent = `${140 + index * 12}`;
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function nextShortsSlide() {
+      if (currentShortsIndex < SHORTS_DATA.length - 1) {
+        currentShortsIndex++;
+      } else {
+        currentShortsIndex = 0;
+      }
+      renderShortsSlide(currentShortsIndex);
+    }
+
+    function prevShortsSlide() {
+      if (currentShortsIndex > 0) {
+        currentShortsIndex--;
+        renderShortsSlide(currentShortsIndex);
+      }
+    }
+
+    function handleCardAreaClick(e) {
+      flipShortsCard();
+    }
+
+    function flipShortsCard() {
+      isShortsFlipped = !isShortsFlipped;
+      const card = document.getElementById('shortsFlipCard');
+      card.classList.toggle('flipped', isShortsFlipped);
+    }
+
+    function toggleShortsHeart() {
+      shortsHeartLiked = !shortsHeartLiked;
+      const icon = document.getElementById('shortsHeartIcon');
+      const count = document.getElementById('shortsHeartCount');
+      let val = parseInt(count.textContent);
+
+      if (shortsHeartLiked) {
+        icon.classList.add('fill-rose-500', 'text-rose-500');
+        count.textContent = val + 1;
+        if (window.confetti) {
+          confetti({ particleCount: 25, spread: 45, origin: { x: 0.8, y: 0.7 } });
+        }
+      } else {
+        icon.classList.remove('fill-rose-500', 'text-rose-500');
+        count.textContent = val - 1;
+      }
+    }
+
+    function toggleShortsBookmark() {
+      const btn = document.getElementById('shortsBookmarkBtn');
+      btn.classList.toggle('text-amber-400');
+      btn.classList.toggle('border-amber-400');
+    }
+
+    function playShortsAudio() {
+      const btn = document.getElementById('shortsAudioBtn');
+      btn.classList.toggle('text-emerald-400');
+      btn.classList.toggle('border-emerald-400');
+    }
+
+    // 키보드 내비게이션
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+        nextShortsSlide();
+      } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+        prevShortsSlide();
+      } else if (e.key === ' ') {
+        e.preventDefault();
+        flipShortsCard();
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) lucide.createIcons();
+      renderShortsSlide(0);
+    });
+  </script>
+</body>
+</html>

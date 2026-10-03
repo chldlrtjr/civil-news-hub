@@ -1,444 +1,572 @@
-<!DOCTYPE html>
-<html lang="ko" class="dark">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Civil News Hub · 갤럭시 모바일 뷰 시뮬레이터</title>
-  
-  <!-- Tailwind CSS & Lucide Icons -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-  
-  <!-- 파비콘 -->
-  <link rel="icon" type="image/svg+xml" href="./static/favicon.svg">
-  <link rel="alternate icon" href="./favicon.svg">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Civil News Hub 모바일</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<script src="./static/data_adapter.js?v=20261003_1327"></script>
+<style>
+/* Layout: one phone-width column (max 440px, centered on bigger screens) — large page title, list rows instead of cards, details in a bottom sheet, 5-tab bar fixed at the bottom */
+:root{
+  --out:#DCE3EA; --bg:#F2F5F8; --surface:#FFFFFF; --surface-2:#E9EEF3; --ink:#0F2A44; --muted:#5B6C7E; --line:#D8E0E8;
+  --accent:#D9480F; --accent-soft:#FFE8DB; --ok:#2B8A3E; --ok-soft:#E2F2E5; --scrim:rgba(5,15,25,.45); --shadow:0 1px 3px rgba(15,42,68,.14);
+  --c-general:#5B6C7E; --c-road:#3F66A8; --c-water:#1F8585; --c-tunnel:#8B6440; --c-smart:#6A55C9;
+  --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  /* type scale: minor third (1.2) from a 16px phone base */
+  --t-label:12px; --t-small:14px; --t-body:16px; --t-lead:18px; --t-h3:21px; --t-h2:26px; --t-h1:32px;
+  --bar-h:52px; --tab-h:58px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --out:#060E17; --bg:#0A1521; --surface:#112131; --surface-2:#1A2F44; --ink:#E4ECF4; --muted:#93A5B8; --line:#233850;
+  --accent:#FF7A2E; --accent-soft:#3A2012; --ok:#69DB7C; --ok-soft:#14301C; --scrim:rgba(0,0,0,.6); --shadow:0 1px 3px rgba(0,0,0,.5);
+  --c-general:#9AABBD; --c-road:#7FA3E0; --c-water:#4FC2C2; --c-tunnel:#C99C70; --c-smart:#A794F0;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --out:#060E17; --bg:#0A1521; --surface:#112131; --surface-2:#1A2F44; --ink:#E4ECF4; --muted:#93A5B8; --line:#233850;
+  --accent:#FF7A2E; --accent-soft:#3A2012; --ok:#69DB7C; --ok-soft:#14301C; --scrim:rgba(0,0,0,.6); --shadow:0 1px 3px rgba(0,0,0,.5);
+  --c-general:#9AABBD; --c-road:#7FA3E0; --c-water:#4FC2C2; --c-tunnel:#C99C70; --c-smart:#A794F0;
+  color-scheme:dark}
 
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'sans-serif'],
-          }
-        }
-      }
-    }
-  </script>
-  <style>
-    iframe {
-      border: none;
-      width: 100% !important;
-      height: 100% !important;
-      min-height: 100% !important;
-      display: block;
-      background: #0f172a;
-    }
-    #phoneWrapper {
-      width: 432px;
-      height: 956px;
-      min-height: 956px;
-      flex-shrink: 0 !important;
-    }
-    #screenContainer {
-      height: 886px;
-      min-height: 886px;
-      flex-shrink: 0 !important;
-    }
-    /* 갤럭시 티타늄 메탈 베젤 그림자 */
-    .galaxy-frame {
-      box-shadow: 
-        0 0 0 1px rgba(255, 255, 255, 0.1),
-        0 0 0 10px #1e293b,
-        0 0 0 12px #334155,
-        0 25px 60px -10px rgba(0, 0, 0, 0.85);
-    }
-    @media (max-width: 480px) {
-      .galaxy-frame {
-        box-shadow: none !important;
-        border-radius: 0 !important;
-      }
-      #phoneWrapper {
-        width: 100% !important;
-        border-radius: 0 !important;
-      }
-      #screenContainer {
-        border-radius: 0 !important;
-      }
-    }
-    /* 펀치홀 카메라 */
-    .punch-hole {
-      width: 11px;
-      height: 11px;
-      background: #020617;
-      border-radius: 9999px;
-      box-shadow: inset 0 0 2px 1px rgba(255, 255, 255, 0.15), 0 0 1px 1px rgba(0,0,0,0.6);
-      position: relative;
-    }
-    .punch-hole::after {
-      content: '';
-      position: absolute;
-      top: 2px;
-      left: 2.5px;
-      width: 3px;
-      height: 3px;
-      background: rgba(59, 130, 246, 0.6);
-      border-radius: 50%;
-    }
-  </style>
-</head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans select-none overflow-x-hidden">
+*{box-sizing:border-box}
+body{background:var(--out);color:var(--ink);font-family:var(--f-body);font-size:var(--t-body);line-height:1.5;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{margin:0;text-wrap:balance}
+.num{font-family:var(--f-body);font-variant-numeric:tabular-nums}
 
-  <!-- 상단 컨트롤 툴바 -->
-  <header class="bg-slate-900/95 backdrop-blur-md border-b border-slate-800 px-4 py-3 sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
-      
-      <!-- 좌측 타이틀 & 갤럭시 브랜딩 -->
-      <div class="flex items-center gap-3">
-        <button type="button" onclick="handleMobileBrandClick()" class="flex items-center gap-2 text-white font-bold text-sm sm:text-base hover:text-emerald-400 transition cursor-pointer text-left" title="전북대학교 아르바이트로 이동">
-          <span class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow">
-            <i data-lucide="hard-hat" class="w-4 h-4"></i>
-          </span>
-          <span class="tracking-tight">Civil News Hub</span>
-        </button>
-        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex items-center gap-1.5">
-          <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-          Galaxy S24 Ultra 모바일 뷰
-        </span>
-      </div>
+.app{max-width:440px;margin:0 auto;min-height:100vh;background:var(--bg);padding-bottom:calc(var(--tab-h) + env(safe-area-inset-bottom,0px) + 24px)}
+@media (min-width:480px){.app{border-inline:1px solid var(--line)}}
 
+/* top bar: small title fades in once the large title scrolls away */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;height:var(--bar-h);display:flex;align-items:center;padding:0 6px 0 16px;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:border-color .2s}
+.bar.scrolled{border-bottom-color:var(--line)}
+.bar-title{flex:1;font-size:var(--t-body);font-weight:700;opacity:0;transition:opacity .2s}
+.bar.scrolled .bar-title{opacity:1}
+.brand{font-family:var(--f-body);font-size:var(--t-small);font-weight:700;background:var(--ink);color:var(--bg);padding:3px 6px;border-radius:5px;margin-right:10px}
+.ibtn{width:44px;height:44px;border:0;background:none;border-radius:12px;display:grid;place-items:center}
+.ibtn svg{width:22px;height:22px}
+.ibtn:active{background:var(--surface-2)}
 
+.page-head{padding:4px 16px 18px}
+.page-head h1{font-size:var(--t-h1);font-weight:700;letter-spacing:-.02em;line-height:1.2}
+.page-head p{margin:6px 0 0;color:var(--muted);font-size:var(--t-small)}
 
-      <!-- 우측 디바이스 제어 (S24 Ultra 단독 및 배율 제어) -->
-      <div class="flex items-center gap-2">
-        <!-- Galaxy S24 Ultra 단독 배지 -->
-        <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-xs text-slate-300">
-          <i data-lucide="smartphone" class="w-3.5 h-3.5 text-blue-400"></i>
-          <span class="font-bold text-white">S24 Ultra</span>
-          <span class="text-slate-400 text-[11px]">432×956</span>
-        </div>
+.sec{margin-top:28px}
+.sec:first-of-type{margin-top:0}
+.sec-h{display:flex;justify-content:space-between;align-items:center;padding:0 16px 8px;min-height:44px}
+.sec-h h2{font-size:var(--t-lead);font-weight:700}
+.sec-h small{font-size:var(--t-small);color:var(--muted);font-weight:500;margin-left:6px}
+.more{border:0;background:none;color:var(--accent);font-size:var(--t-small);font-weight:600;min-height:44px;padding:0 0 0 12px}
+.note{padding:0 16px 10px;margin:0;font-size:var(--t-small);color:var(--muted)}
 
-        <!-- 100% 원본 / 화면 맞춤 배율 토글 버튼 -->
-        <button onclick="toggleFitMode()" id="fitModeBtn" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-300 hover:text-white transition cursor-pointer" title="실제 크기(100%) / 화면 맞춤 전환">
-          <i data-lucide="scan" class="w-3.5 h-3.5 text-emerald-400"></i>
-          <span id="fitModeText">100% 크기</span>
-        </button>
+/* list rows */
+.list{background:var(--surface);border-block:1px solid var(--line)}
+.row{display:flex;gap:14px;align-items:flex-start;width:100%;text-align:left;background:none;border:0;padding:14px 16px;position:relative}
+.row+.row::before{content:"";position:absolute;top:0;left:16px;right:0;height:1px;background:var(--line)}
+button.row:active{background:var(--surface-2)}
+.row-main{flex:1;min-width:0}
+.row-meta{font-size:var(--t-small);color:var(--muted);display:flex;gap:4px 8px;flex-wrap:wrap;align-items:center}
+.row-title{font-size:var(--t-body);font-weight:600;line-height:1.45;margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.row-sub{font-size:var(--t-small);color:var(--muted);margin-top:4px}
+.row-sub.lede{display:-webkit-box;-webkit-line-clamp:var(--m-lede-lines,2);-webkit-box-orient:vertical;overflow:hidden;line-height:1.55}
+.row-sub b{color:var(--ink);font-weight:700}
+.cat{color:var(--cat);font-weight:700}
+.tagn{font-size:var(--t-small);font-weight:700;color:var(--ok);background:var(--ok-soft);padding:1px 7px;border-radius:5px}
+.lv{font-size:var(--t-small);font-weight:700;padding:1px 7px;border-radius:5px;background:var(--surface-2);color:var(--ink)}
 
-        <!-- 프레임 새로고침 -->
-        <button onclick="reloadFrame()" title="모바일 창 새로고침" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition cursor-pointer">
-          <i data-lucide="rotate-cw" id="reloadIcon" class="w-4 h-4"></i>
-        </button>
+.dd{flex:none;width:54px;height:54px;border-radius:14px;background:var(--surface-2);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.dd b{font-family:var(--f-body);font-size:var(--t-h3)}
+.dd span{font-size:var(--t-label);color:var(--muted);margin-top:4px}
+.dd.soon{background:var(--accent-soft);color:var(--accent)}
+.dd.soon span{color:var(--accent)}
+.dd.hot{background:var(--accent);color:#fff}
+.dd.hot span{color:#fff}
+.dd.today b{font-family:var(--f-body);font-size:var(--t-body)}
+.pd{flex:none;font-family:var(--f-body);font-size:var(--t-small);font-weight:700;padding:4px 8px;border-radius:8px;background:var(--surface-2);color:var(--muted);align-self:center}
+.pd.soon{background:var(--accent-soft);color:var(--accent)}
+.pd.hot{background:var(--accent);color:#fff}
+.logo{flex:none;width:46px;height:46px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:700;font-size:var(--t-lead)}
+.income{flex:none;text-align:right;align-self:center}
+.income b{display:block;font-family:var(--f-body);font-size:var(--t-lead);color:var(--ok)}
+.income span{font-size:var(--t-small);color:var(--muted)}
 
-        <!-- 스마트폰 QR 접속 버튼 -->
-        <button onclick="openQrModal()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-950/40 hover:bg-emerald-900/60 text-emerald-300 hover:text-emerald-200 text-xs font-semibold border border-emerald-800/80 transition cursor-pointer shadow-xs" title="내 스마트폰으로 이 화면 열기 (QR 코드)">
-          <i data-lucide="qr-code" class="w-3.5 h-3.5"></i>
-          <span>폰으로 접속</span>
-        </button>
+/* filters */
+.filters{position:sticky;top:calc(var(--bar-h) + env(safe-area-inset-top,0px));z-index:10;background:var(--bg);padding-bottom:12px;display:flex;flex-direction:column;gap:10px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:0 16px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips.wrap{flex-wrap:wrap}
+.chip{flex:none;min-height:40px;padding:0 15px;border-radius:20px;border:1px solid var(--line);background:var(--surface);font-size:var(--t-small);font-weight:500}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip:active{transform:scale(.97)}
+.seg{margin:0 16px;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--surface-2);border-radius:12px;padding:3px}
+.seg button{min-height:40px;border:0;background:none;border-radius:9px;font-size:var(--t-small);color:var(--muted);font-weight:500;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);font-weight:700;box-shadow:var(--shadow)}
 
-        <!-- 원본 데스크탑 버전으로 열기 -->
-        <a href="./index.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-medium border border-slate-700 transition" title="PC 데스크탑 화면으로 복귀">
-          <i data-lucide="monitor" class="w-3.5 h-3.5"></i>
-          <span class="hidden sm:inline">데스크탑 뷰</span>
-        </a>
-      </div>
+/* home: swipeable deadline tiles */
+.strip{display:grid;grid-auto-flow:column;grid-auto-columns:150px;gap:10px;overflow-x:auto;padding:0 16px 4px;scroll-snap-type:x mandatory;scroll-padding-inline:16px;scrollbar-width:none}
+.strip::-webkit-scrollbar{display:none}
+.tile{scroll-snap-align:start;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:6px;text-align:left;min-height:154px}
+.tile:active{background:var(--surface-2)}
+.tile .k{font-size:var(--t-small);font-weight:700;color:var(--kind)}
+.tile .n{font-family:var(--f-body);font-size:var(--t-h1);font-weight:700;line-height:1.1}
+.tile .n small{font-family:var(--f-body);font-size:var(--t-small);font-weight:500;color:var(--muted);margin-left:3px}
+.tile.hot .n{color:var(--accent)}
+.tile .t{font-size:var(--t-small);font-weight:500;line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.empty{margin:0 16px;padding:18px;border:1px dashed var(--line);border-radius:14px;color:var(--muted);font-size:var(--t-small);text-align:center}
+.foot-note{padding:28px 16px 0;margin:0;font-size:var(--t-small);color:var(--muted)}
 
-    </div>
+/* tab bar */
+.tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:440px;z-index:30;display:grid;grid-template-columns:repeat(5,1fr);background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabbar button{height:var(--tab-h);border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:var(--t-label);color:var(--muted)}
+.tabbar svg{width:24px;height:24px}
+.tabbar [aria-current="page"]{color:var(--ink);font-weight:700}
+.tabbar [aria-current="page"] svg{color:var(--accent)}
+
+/* bottom sheet */
+.scrim{position:fixed;inset:0;background:var(--scrim);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:50%;bottom:0;width:100%;max-width:440px;max-height:90%;z-index:50;background:var(--surface);border-radius:20px 20px 0 0;transform:translate(-50%,100%);transition:transform .28s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
+.sheet.on{transform:translate(-50%,0)}
+.sheet-grab{touch-action:none}
+.grip{display:flex;justify-content:center;padding:10px 0 2px}
+.grip i{width:40px;height:5px;border-radius:3px;background:var(--line)}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;padding:0 6px 0 20px;font-size:var(--t-small);font-weight:700;color:var(--muted)}
+.sheet-body{overflow-y:auto;overscroll-behavior:contain;padding:4px 20px 20px;display:flex;flex-direction:column;gap:18px}
+.sheet-body h2{font-size:var(--t-h3);line-height:1.4}
+.sheet-foot{display:flex;gap:10px;padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}
+.btn{flex:1;min-height:52px;border-radius:14px;border:0;font-weight:700;font-size:var(--t-body)}
+.btn.primary{background:var(--accent);color:#fff}
+.btn.ghost{background:var(--surface-2)}
+.btn.ghost[aria-pressed="true"]{color:var(--accent)}
+.btn:active{opacity:.85}
+.lede{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.55}
+.lede-full{margin:0;font-size:var(--t-body);line-height:1.75}
+.prize{font-family:var(--f-body);font-size:var(--t-h2);font-weight:700;letter-spacing:-.02em}
+.prize small{font-family:var(--f-body);font-size:var(--t-small);color:var(--muted);font-weight:500;margin-left:6px}
+.spec{margin:0;border-top:1px solid var(--line)}
+.spec div{display:grid;grid-template-columns:84px 1fr;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:var(--t-body)}
+.spec dt{color:var(--muted)}
+.spec dd{margin:0;font-weight:500;min-width:0}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s}
+.steps li{counter-increment:s;display:flex;align-items:center;gap:12px;padding:6px 0;font-size:var(--t-body);position:relative}
+.steps li::before{content:counter(s);width:28px;height:28px;flex:none;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-family:var(--f-body);font-size:var(--t-small);font-weight:700;background:var(--surface)}
+.steps li.ncs::before{border-color:var(--accent);color:var(--accent)}
+.steps li+li::after{content:"";position:absolute;left:13px;top:-8px;height:16px;width:2px;background:var(--line);z-index:-1}
+.sub-h{font-size:var(--t-small);font-weight:700;color:var(--muted);margin-bottom:8px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{font-size:var(--t-small);padding:5px 10px;border-radius:8px;background:var(--surface-2)}
+.cluster{list-style:none;margin:0;padding:0}
+.cluster li{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:var(--t-small)}
+.cluster b{flex:none;width:96px;font-weight:600}
+.cluster span{color:var(--muted);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* search */
+.search{position:fixed;inset:0;z-index:45;max-width:440px;margin:0 auto;background:var(--bg);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+.search-top{display:flex;gap:4px;align-items:center;padding:8px 6px 8px 16px}
+.field{flex:1;display:flex;align-items:center;gap:8px;background:var(--surface-2);border-radius:12px;padding:0 12px;height:44px;color:var(--muted)}
+.field svg{width:18px;height:18px;flex:none}
+.field input{flex:1;border:0;background:none;font:inherit;font-size:var(--t-body);color:var(--ink);outline:none;min-width:0}
+.cancel{border:0;background:none;min-height:44px;padding:0 10px;font-size:var(--t-body);color:var(--accent);font-weight:600}
+.search-res{overflow-y:auto;flex:1;padding:8px 0 32px}
+
+.toast{position:fixed;left:50%;bottom:calc(var(--tab-h) + env(safe-area-inset-bottom,0px) + 14px);transform:translate(-50%,16px);width:max-content;max-width:calc(100% - 32px);background:var(--ink);color:var(--bg);padding:12px 16px;border-radius:12px;font-size:var(--t-small);z-index:60;opacity:0;transition:.2s;pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media (prefers-reduced-motion:reduce){.sheet,.scrim,.toast,.bar,.bar-title{transition:none}}
+
+/* typography: one family (Plex Sans KR); page titles and headline figures get weight 700 and size, not a second face */
+body{word-break:keep-all;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;line-height:1.6}
+h1,h2,h3{line-height:1.3;letter-spacing:-.01em}
+.page-head h1,.dd b,.tile .n,.prize,.income b{font-weight:700;letter-spacing:-.01em}
+.page-head h1{line-height:1.15}
+.row-title,.sheet-body h2{line-height:1.45}
+</style>
+
+<div class="app">
+  <header class="bar" id="bar">
+    <span class="brand">CNH</span><span class="bar-title" id="bar-title">오늘</span>
+    <button class="ibtn" id="open-search" aria-label="검색"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+    <button class="ibtn" id="theme" aria-label="화면 테마 바꾸기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
   </header>
+  <main id="view"></main>
+</div>
 
-  <!-- 메인 갤럭시 디바이스 뷰어 컨테이너 -->
-  <main class="flex-1 flex flex-col items-center justify-start p-2 sm:p-6 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 overflow-y-auto">
-    <div id="phoneWrapper" class="relative transition-all duration-200 flex flex-col items-center galaxy-frame rounded-[40px] bg-slate-900 overflow-hidden my-4 sm:my-auto flex-shrink-0" style="width: 432px; height: 956px; min-height: 956px; max-width: 100%;">
-      
-      <!-- 갤럭시 One UI 상단 상태 표시줄 & 인피니티-O 펀치홀 카메라 -->
-      <div class="w-full bg-[#0f172a] h-[42px] px-6 flex items-center justify-between border-b border-slate-800/80 select-none flex-shrink-0">
-        <!-- 좌측: One UI 시계 및 알림 -->
-        <div class="flex items-center gap-2 text-slate-200">
-          <span id="statusBarTime" class="text-xs font-bold tracking-tight">12:30</span>
-          <span class="text-[10px] text-slate-500 font-medium">LTE</span>
-        </div>
+<nav class="tabbar" aria-label="하단 메뉴">
+  <button data-go="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11 12 4l9 7v9H3z"/></svg>오늘</button>
+  <button data-go="news"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h10M7 17h6"/></svg>뉴스</button>
+  <button data-go="contest"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/></svg>공모전</button>
+  <button data-go="jobs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V4h6v3"/></svg>채용</button>
+  <button data-go="jbnu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m2 9 10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/></svg>전북대</button>
+</nav>
 
-        <!-- 중앙: 갤럭시 시그니처 인피니티-O 펀치홀 카메라 -->
-        <div class="flex items-center justify-center">
-          <div class="punch-hole" title="Galaxy Front Camera"></div>
-        </div>
-
-        <!-- 우측: One UI 네트워크, 5G, 배터리 잔량 아이콘 -->
-        <div class="flex items-center gap-2 text-slate-300 text-[11px] font-medium">
-          <i data-lucide="wifi" class="w-3.5 h-3.5 text-slate-300"></i>
-          <span class="text-[10px] font-bold tracking-wider text-slate-300">5G</span>
-          <div class="flex items-center gap-1">
-            <span class="text-[10px]">98%</span>
-            <i data-lucide="battery" class="w-4 h-4 text-emerald-400"></i>
-          </div>
-        </div>
-      </div>
-
-      <!-- 갤럭시 화면 본체 (iframe) -->
-      <div id="screenContainer" class="w-full relative overflow-hidden bg-slate-900 rounded-b-[40px] flex-shrink-0" style="height: 886px; min-height: 886px;">
-        <iframe id="mobileFrame" src="./index.html?v=20260930_v1130#news" title="Civil News Hub Galaxy Mobile View"></iframe>
-      </div>
-
-      <!-- 갤럭시 One UI 하단 네비게이션 제스처 바 -->
-      <div class="w-full bg-[#0f172a] h-[28px] flex items-center justify-center border-t border-slate-800/80 flex-shrink-0">
-        <!-- One UI 제스처 힌트 라인 -->
-        <div class="w-36 h-1 bg-slate-400/70 rounded-full"></div>
-      </div>
-
-    </div>
-  </main>
-
-  <!-- 하단 디바이스 안내 라벨 -->
-  <footer class="pb-6 text-center text-xs text-slate-400 space-y-1">
-    <p id="deviceLabel" class="font-medium text-slate-300">
-      📱 Samsung Galaxy S24 Ultra (432 × 956px) · One UI 6.1 모바일 화면 규격
-    </p>
-    <p class="text-slate-500 text-[11px]">
-      실제 갤럭시 S24 Ultra와 100% 동일한 해상도 및 모바일 하단 네비게이션 바가 적용되어 있습니다.
-    </p>
-  </footer>
-
-  <!-- 스마트폰 모바일 접속 QR 코드 모달 -->
-  <div id="qrModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl relative text-center">
-      <button type="button" onclick="toggleQrModal(false)" class="absolute top-4 right-4 p-1.5 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer">
-        <i data-lucide="x" class="w-5 h-5"></i>
-      </button>
-
-      <div class="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-3">
-        <i data-lucide="smartphone" class="w-6 h-6"></i>
-      </div>
-
-      <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-1">
-        스마트폰에서 바로 열기
-      </h3>
-      <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
-        스마트폰 기본 카메라로 아래 QR 코드를 비추면 즉시 열립니다.
-      </p>
-
-      <!-- QR 코드 이미지 박스 -->
-      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 inline-block shadow-inner mb-4">
-        <img id="qrCodeImg" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://diverse-tattoo-exterior-reporting.trycloudflare.com/%23news" alt="Mobile QR Code" class="w-48 h-48 rounded-lg mx-auto block" />
-      </div>
-
-      <!-- 접속 주소 직접 복사 박스 -->
-      <div class="flex items-center justify-between bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-xl text-xs text-slate-700 dark:text-slate-300 mb-3 border border-slate-200 dark:border-slate-700">
-        <span id="localIpUrlText" class="font-mono truncate select-all">https://diverse-tattoo-exterior-reporting.trycloudflare.com/#news</span>
-        <button type="button" onclick="copyLocalIpUrl()" class="ml-2 px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-semibold flex-shrink-0 cursor-pointer text-[11px]">복사</button>
-      </div>
-
-      <!-- 실시간 라이브 터널 안내 -->
-      <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/40 text-left text-[11px] text-emerald-800 dark:text-emerald-300 space-y-1">
-        <p class="font-bold flex items-center gap-1 text-emerald-900 dark:text-emerald-200">
-          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-500"></i>
-          24시간 암호화 라이브 터널 연결됨:
-        </p>
-        <p>• Wi-Fi 제한 없이 스마트폰 <strong>LTE/5G 환경에서도 즉시 접속</strong> 가능합니다.</p>
-        <p>• 공식 GitHub 배포 링크: <a href="https://chldlrtjr.github.io/civil-news-hub/#news" target="_blank" class="underline font-bold text-blue-600 dark:text-blue-400">chldlrtjr.github.io</a></p>
-      </div>
-    </div>
+<div class="scrim" id="scrim"></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-title">
+  <div class="sheet-grab" id="grab">
+    <div class="grip"><i></i></div>
+    <div class="sheet-head"><span id="sh-kind"></span><button class="ibtn" id="sh-close" aria-label="닫기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
   </div>
+  <div class="sheet-body" id="sh-body"></div>
+  <div class="sheet-foot" id="sh-foot"></div>
+</section>
 
-  <script>
-    let currentTab = 'news';
+<div class="search" id="search" hidden>
+  <div class="search-top">
+    <label class="field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="뉴스, 공모전, 채용 찾기" aria-label="검색어" autocomplete="off"></label>
+    <button class="cancel" id="close-search">취소</button>
+  </div>
+  <div class="search-res" id="search-res"></div>
+</div>
+<div class="toast" id="toast" role="status"></div>
 
-    // URL 해시 확인
-    const initialHash = (window.location.hash || '').replace('#', '').toLowerCase();
-    if (['home', 'jobs', 'contests', 'news', 'mypage'].includes(initialHash)) {
-      currentTab = initialHash;
+<script>
+const $ = s => document.querySelector(s);
+const fmt = n => n.toLocaleString('ko-KR');
+const today = new Date(); today.setHours(0,0,0,0);
+const day = off => { const d = new Date(today); d.setDate(d.getDate()+off); return d; };
+const DAY = ['일','월','화','수','목','금','토'];
+const md = d => `${d.getMonth()+1}.${String(d.getDate()).padStart(2,'0')}(${DAY[d.getDay()]})`;
+const urg = off => off <= 3 ? 'hot' : off <= 7 ? 'soon' : '';
+
+/* ---------- 예시 데이터 ---------- */
+let CATS = [{id:'general',name:'토목종합'},{id:'road',name:'도로·철도'},{id:'water',name:'수자원·항만'},{id:'tunnel',name:'터널·지반'},{id:'smart',name:'스마트건설'}];
+const catName = id => CATS.find(c=>c.id===id).name;
+let TRENDS = ['광역급행철도','스마트건설','지반침하','BIM 의무화','SOC 예산','신항만','TBM','중대재해'];
+let NEWS = [
+  {cat:'road',src:'인프라타임즈',ago:'32분 전',n:12,title:'수도권 광역급행철도 신규 노선 착공 본격화… 1공구 공정률 18% 돌파',
+   lede:'수도권 광역급행철도 신규 노선이 민자 구간을 포함한 전 공구에서 착공을 마쳤다. 가장 먼저 공사에 들어간 1공구는 공정률 18%를 기록하며 계획보다 빠르게 진행되고 있다.'},
+  {cat:'smart',src:'건설저널',ago:'1시간 전',n:8,title:'스마트건설 기술 공공현장 적용 의무화 로드맵 발표',
+   lede:'정부가 300억 원 이상 공공공사에 스마트 안전장비를 단계적으로 의무화하는 로드맵을 내놨다. 드론 측량과 디지털트윈을 활용하는 현장에는 설계변경 인센티브도 준다.'},
+  {cat:'tunnel',src:'지반공학신문',ago:'2시간 전',n:5,title:'도심 지반침하 예방 위해 GPR 탐사 전국 확대',
+   lede:'도심 지반침하를 막기 위한 GPR(지표투과레이더) 탐사가 전국으로 확대된다. 노후 상하수도관이 묻힌 구간부터 탐사하고, 탐사 주기도 연 2회로 늘린다.'},
+  {cat:'water',src:'해양항만뉴스',ago:'3시간 전',n:3,title:'서해안 신항만 2단계 부두 실시설계 착수',
+   lede:'서해안 신항만 2단계 부두의 실시설계가 시작됐다. 5만 톤급 선석 2개 규모로, 연약지반을 어떤 공법으로 개량할지 비교 검토한 뒤 2028년 착공할 예정이다.'},
+  {cat:'general',src:'건설경제일보',ago:'4시간 전',n:9,title:'내년 SOC 예산 정부안 확정… 전년 대비 증액',
+   lede:'내년도 SOC 예산 정부안이 확정됐다. 전체 규모는 올해보다 늘었지만, 도로·철도 신규 사업보다 노후 시설 유지보수에 쓰이는 비중이 커진 것이 특징이다.'},
+  {cat:'smart',src:'디지털건설',ago:'5시간 전',n:4,title:'BIM 설계 의무화 대상 공공사업 확대, 설계사 인력 수요 증가',
+   lede:'BIM 설계를 의무로 적용해야 하는 공공사업의 사업비 기준이 낮아지면서 대상 사업이 크게 늘어난다. 설계엔지니어링사들은 BIM 전문 인력 채용에 나섰다.'},
+  {cat:'tunnel',src:'터널앤지반',ago:'6시간 전',n:6,title:'대심도 터널 안전기준 개정안 입법예고',
+   lede:'대심도 터널의 환기·방재 기준을 강화하는 안전기준 개정안이 입법예고됐다. 피난연결통로 간격을 줄이고, TBM 굴진 중 계측 데이터를 실시간으로 보고하도록 했다.'},
+  {cat:'road',src:'교통인프라',ago:'8시간 전',n:2,title:'호남권 고속철도 2단계 노반공사 발주',
+   lede:'호남권 고속철도 2단계 노반공사가 4개 공구로 나뉘어 발주됐다. 교량 구간 비중이 높아 입찰에 나선 업체들은 공기를 줄일 수 있는 프리캐스트 공법을 검토하고 있다.'},
+];
+const OTHER_SRC = ['건설경제일보','인프라타임즈','국토일보','엔지니어링데일리','지역신문 A','건설저널','연합 인프라','디지털건설','시공뉴스','토목신문','경제투데이','공공건설'];
+let CONTESTS = [
+  {id:'c1',title:'스마트시티 인프라 아이디어 공모전',org:'국토교통 스마트시티 추진단(예시)',award:'장관상',prize:3000,target:['대학생','일반'],start:-20,end:2,added:5},
+  {id:'c2',title:'도로안전 개선 아이디어 공모',org:'한빛도로공사(예시)',award:'사장상',prize:1500,target:['대학생','일반'],start:-14,end:5,added:9},
+  {id:'c3',title:'대학생 토목구조물 설계경진대회',org:'한국토목교육협회(예시)',award:'협회장상',prize:1000,target:['대학생'],start:-10,end:9,added:10},
+  {id:'c4',title:'스마트건설 기술 챌린지 2026',org:'스마트건설 얼라이언스(예시)',award:'장관상',prize:5000,target:['스타트업','일반'],start:-7,end:16,added:1},
+  {id:'c5',title:'수자원 데이터 활용 해커톤',org:'한결수자원공사(예시)',award:'사장상',prize:2000,target:['대학생','스타트업'],start:-3,end:24,added:0},
+  {id:'c6',title:'철도 안전 UCC·포스터 공모전',org:'대한철도공단(예시)',award:'이사장상',prize:800,target:['대학생','청소년'],start:-1,end:38,added:2},
+];
+let JOBS = [
+  {id:'j1',grp:'public',co:'한빛도로공사',color:'#1F6FB2',role:'토목직 (도로·교량)',lvl:'신입',steps:['서류','NCS','면접','최종'],end:3,loc:'경북 김천',welfare:['사택 제공','맞춤형 복지포인트','자기계발비']},
+  {id:'j2',grp:'public',co:'대한철도공단',color:'#2F7D4A',role:'토목 (궤도·노반)',lvl:'신입',steps:['서류','NCS','필기','면접'],end:11,loc:'대전',welfare:['통근버스','학자금 지원','순환근무 수당']},
+  {id:'j3',grp:'public',co:'누리주택도시공사',color:'#B5462E',role:'토목 (단지 조성)',lvl:'신입',steps:['서류','NCS','면접'],end:19,loc:'경남 진주',welfare:['사택 제공','육아휴직 3년']},
+  {id:'j4',grp:'major',co:'세움건설',color:'#34495E',role:'토목 시공관리 (현장)',lvl:'신입',steps:['서류','인적성','1차 면접','2차 면접'],end:6,loc:'전국 현장',welfare:['현장 숙소','해외근무 수당','자녀 학자금']},
+  {id:'j5',grp:'major',co:'한결E&C',color:'#7A4DB8',role:'인프라 공무 (견적·공정)',lvl:'경력',exp:'3년 이상',steps:['서류','면접','처우협의'],end:13,loc:'서울 본사',welfare:['성과급','건강검진','콘도 지원']},
+  {id:'j6',grp:'design',co:'누리엔지니어링',color:'#C07A12',role:'구조설계 (교량)',lvl:'경력',exp:'5년 이상',steps:['서류','실무 면접','임원 면접'],end:8,loc:'경기 성남',welfare:['유연근무','기술사 취득 지원']},
+  {id:'j7',grp:'design',co:'다온구조기술',color:'#157A7A',role:'지반·터널 설계',lvl:'신입',steps:['서류','과제','면접'],end:21,loc:'서울',welfare:['재택 주 1회','BIM 교육 지원']},
+];
+const GRP = {public:'공기업',major:'대형건설사',design:'설계사'};
+let ALBA = [
+  {title:'중앙도서관 열람실 근로',where:'중앙도서관',type:'hour',wage:10320,hours:15,end:4,tag:'근로장학'},
+  {title:'공과대학 행정실 사무 보조',where:'공과대학 1호관',type:'hour',wage:10500,hours:20,end:7,tag:'교내'},
+  {title:'토목공학과 연구실 CAD 도면 보조',where:'공대 7호관',type:'hour',wage:12000,hours:10,end:12,tag:'전공 연계'},
+  {title:'학생식당 배식 보조',where:'진수당',type:'hour',wage:10320,hours:12,end:2,tag:'교내'},
+  {title:'대동제 운영 스태프',where:'대운동장',type:'day',wage:90000,days:3,end:9,tag:'단기'},
+];
+let SW = [
+  {title:'JBNU 인프라 데이터 해커톤',kind:'해커톤',when:'11월 둘째 주, 무박 2일',end:10,seats:'40팀'},
+  {title:'현업 개발자 특강: 디지털트윈과 건설 데이터',kind:'특강',when:'매주 수요일 19:00',end:5,seats:'80명'},
+  {title:'1:1 커리어 멘토링 (SW·스마트건설)',kind:'멘토링',when:'4주 과정, 온라인',end:15,seats:'30명'},
+];
+
+// 즉시 로컬 캐시 복원 (새로고침 시 더미 데이터 노출 원천 차단: SWR 패턴)
+const _mCached = (typeof CivilData !== 'undefined' && typeof CivilData.getCached === 'function') ? CivilData.getCached() : null;
+if (_mCached) {
+  if (_mCached.TRENDS && _mCached.TRENDS.length) TRENDS = _mCached.TRENDS.map(t => Array.isArray(t) ? t[0] : t);
+  if (_mCached.NEWS && _mCached.NEWS.length) NEWS = _mCached.NEWS;
+  if (_mCached.CONTESTS && _mCached.CONTESTS.length) CONTESTS = _mCached.CONTESTS;
+  if (_mCached.JOBS && _mCached.JOBS.length) JOBS = _mCached.JOBS;
+  if (_mCached.ALBA && _mCached.ALBA.length) ALBA = _mCached.ALBA;
+  if (_mCached.SW && _mCached.SW.length) SW = _mCached.SW;
+}
+function monthly(a){
+  if (a.type === 'day') return a.wage * a.days;
+  const weekly = a.wage * a.hours + (a.hours >= 15 ? a.wage * a.hours / 5 : 0);
+  return Math.round(weekly * 4.345 / 100) * 100;
+}
+
+/* ---------- 저장 ---------- */
+let saved = new Set();
+try { saved = new Set(JSON.parse(localStorage.getItem('cnhm-saved') || '[]')); } catch(e){}
+function toggleSave(id){
+  saved.has(id) ? saved.delete(id) : saved.add(id);
+  try { localStorage.setItem('cnhm-saved', JSON.stringify([...saved])); } catch(e){}
+  document.querySelectorAll(`[data-save="${id}"]`).forEach(b=>{ b.setAttribute('aria-pressed', saved.has(id)); b.textContent = saved.has(id) ? '저장됨' : '저장'; });
+  toast(saved.has(id) ? '저장했어요. 오늘 탭에서 다시 볼 수 있어요.' : '저장을 취소했어요.');
+  if (tab === 'home') render(false);
+}
+
+/* ---------- 행 ---------- */
+const ddBox = off => `<div class="dd ${urg(off)} ${off===0?'today':''}"><b>${off===0?'오늘':off}</b><span>${off===0?'마감':'일 남음'}</span></div>`;
+const ddPill = off => `<span class="pd ${urg(off)}">${off===0?'오늘':'D-'+off}</span>`;
+const newsRow = (n,i) => `<button class="row" data-open="n:${i}"><div class="row-main">
+  <div class="row-meta"><span class="cat" style="--cat:var(--c-${n.cat})">${catName(n.cat)}</span><span>${n.src}</span><span>${n.ago}</span><span>관련 ${n.n}건</span></div>
+  <div class="row-title">${n.title}</div><div class="row-sub lede">${n.lede}</div></div></button>`;
+const contestRow = c => `<button class="row" data-open="c:${c.id}">${ddBox(c.end)}<div class="row-main">
+  <div class="row-meta"><span class="cat" style="--cat:var(--accent)">${c.award}</span><span>${c.target.join(', ')}</span>${c.added<=2?'<span class="tagn">새 공고</span>':''}</div>
+  <div class="row-title">${c.title}</div><div class="row-sub">총 상금 <b class="num">${fmt(c.prize)}만원</b></div></div></button>`;
+const jobRow = j => `<button class="row" data-open="j:${j.id}"><div class="logo" style="background:${j.color}">${j.co[0]}</div><div class="row-main">
+  <div class="row-meta"><span>${j.co} (예시)</span><span class="lv">${j.lvl}${j.exp?' '+j.exp:''}</span></div>
+  <div class="row-title">${j.role}</div><div class="row-sub">${j.loc}, 전형 ${j.steps.length}단계</div></div>${ddPill(j.end)}</button>`;
+const albaRow = a => `<div class="row"><div class="row-main">
+  <div class="row-meta"><span class="cat" style="--cat:var(--ok)">${a.tag}</span><span>${a.where}</span>${ddPill(a.end)}</div>
+  <div class="row-title">${a.title}</div>
+  <div class="row-sub">${a.type==='day'?`일급 <b class="num">${fmt(a.wage)}</b>원, ${a.days}일`:`시급 <b class="num">${fmt(a.wage)}</b>원, 주 ${a.hours}시간`}</div></div>
+  <div class="income"><b>₩${fmt(monthly(a))}</b><span>${a.type==='day'?'총 예상':'월 예상'}</span></div></div>`;
+const swRow = s => `<div class="row"><div class="row-main">
+  <div class="row-meta"><span class="cat" style="--cat:var(--c-smart)">${s.kind}</span><span>모집 ${s.seats}</span></div>
+  <div class="row-title">${s.title}</div><div class="row-sub">${s.when}</div></div>${ddPill(s.end)}</div>`;
+const list = rows => `<div class="list">${rows}</div>`;
+const head = (t, p) => `<div class="page-head"><h1>${t}</h1>${p?`<p>${p}</p>`:''}</div>`;
+
+/* ---------- 화면 ---------- */
+let tab = 'home', newsCat = 'all', target = '전체', sortBy = 'dday', jobGrp = 'public', lvl = '전체';
+const TITLES = {home:'오늘', news:'뉴스', contest:'공모전', jobs:'채용', jbnu:'전북대'};
+
+const VIEWS = {
+  home(){
+    const items = [
+      ...CONTESTS.map(c=>({k:'공모전',c:'var(--accent)',t:c.title,end:c.end,open:'c:'+c.id})),
+      ...JOBS.map(j=>({k:'채용',c:'var(--c-road)',t:`${j.co} ${j.role}`,end:j.end,open:'j:'+j.id})),
+      ...SW.map(s=>({k:'SW '+s.kind,c:'var(--c-smart)',t:s.title,end:s.end,go:'jbnu'})),
+    ].filter(x=>x.end>=0 && x.end<60).sort((a,b)=>a.end-b.end).slice(0,5);
+    const savedRows = [...CONTESTS.filter(c=>saved.has(c.id)).map(contestRow), ...JOBS.filter(j=>saved.has(j.id)).map(jobRow)].join('');
+    return head('오늘', `${today.getMonth()+1}월 ${today.getDate()}일 ${DAY[today.getDay()]}요일, 다가오는 주요 일정 ${items.length}개`) + `
+      <section class="sec"><div class="sec-h"><h2>마감 임박</h2></div>
+        <div class="strip">${items.map(x=>`<button class="tile ${x.end<=3?'hot':x.end<=7?'soon':''}" style="--kind:${x.c}" ${x.open?`data-open="${x.open}"`:`data-go="${x.go}"`}>
+          <span class="k">${x.k}</span><span class="n">${x.end===0?'오늘':x.end>=60?'상시':x.end}<small>${x.end===0?'마감':x.end>=60?'':'일 남음'}</small></span><span class="t">${x.t}</span></button>`).join('')}</div></section>
+      <section class="sec"><div class="sec-h"><h2>주요 뉴스</h2><button class="more" data-go="news">전체 보기</button></div>${list(NEWS.slice(0,4).map(newsRow).join(''))}</section>
+      <section class="sec"><div class="sec-h"><h2>지금 많이 찾는 키워드</h2></div>
+        <div class="chips wrap">${TRENDS.map(t=>`<button class="chip" data-q="${t}">#${t}</button>`).join('')}</div></section>
+      <section class="sec"><div class="sec-h"><h2>저장한 항목<small>${saved.size}</small></h2></div>
+        ${savedRows ? list(savedRows) : '<p class="empty">공모전이나 채용 공고를 열고 저장을 누르면 여기에 모여요.</p>'}</section>
+      <p class="foot-note">프로토타입 화면이에요. 기사, 공모전, 채용, 알바는 모두 예시 데이터이고 날짜는 오늘을 기준으로 계산해요.</p>`;
+  },
+  news(){
+    const rows = NEWS.map((n,i)=>[n,i]).filter(([n])=>newsCat==='all'||n.cat===newsCat);
+    return head('뉴스', `오늘 수집한 기사 ${NEWS.reduce((s,n)=>s+n.n,0)}건을 이슈 ${NEWS.length}개로 묶었어요`) + `
+      <div class="filters"><div class="chips">${[{id:'all',name:'전체'},...CATS].map(c=>`<button class="chip" data-cat="${c.id}" aria-pressed="${c.id===newsCat}">${c.name}</button>`).join('')}</div></div>
+      ${list(rows.map(([n,i])=>newsRow(n,i)).join(''))}`;
+  },
+  contest(){
+    let rows = CONTESTS.filter(c=>c.end>=0 && (target==='전체'||c.target.includes(target)));
+    rows.sort(sortBy==='prize'?(a,b)=>b.prize-a.prize : sortBy==='new'?(a,b)=>a.added-b.added : (a,b)=>a.end-b.end);
+    return head('공모전', `지금 접수 중인 공모전 ${rows.length}개`) + `
+      <div class="filters">
+        <div class="chips">${['전체','대학생','스타트업','일반','청소년'].map(t=>`<button class="chip" data-tg="${t}" aria-pressed="${t===target}">${t}</button>`).join('')}</div>
+        <div class="seg">${[['dday','마감 임박순'],['prize','상금 높은순'],['new','최신순']].map(([k,v])=>`<button data-sort="${k}" aria-pressed="${k===sortBy}">${v}</button>`).join('')}</div>
+      </div>
+      ${rows.length ? list(rows.map(contestRow).join('')) : '<p class="empty">이 대상으로 열린 공모전이 아직 없어요. 다른 대상을 골라 보세요.</p>'}`;
+  },
+  jobs(){
+    const rows = JOBS.filter(j=>j.grp===jobGrp&&(lvl==='전체'||j.lvl===lvl)).sort((a,b)=>a.end-b.end);
+    return head('채용', `토목 전공자를 뽑는 공고 ${JOBS.length}개`) + `
+      <div class="filters">
+        <div class="seg">${Object.entries(GRP).map(([k,v])=>`<button data-grp="${k}" aria-pressed="${k===jobGrp}">${v} ${JOBS.filter(j=>j.grp===k).length}</button>`).join('')}</div>
+        <div class="chips">${['전체','신입','경력'].map(l=>`<button class="chip" data-lvl="${l}" aria-pressed="${l===lvl}">${l}</button>`).join('')}</div>
+      </div>
+      ${rows.length ? list(rows.map(jobRow).join('')) : '<p class="empty">이 조건의 공고가 아직 없어요. 신입·경력 필터를 바꿔 보세요.</p>'}`;
+  },
+  jbnu(){
+    return head('전북대', '전북대학교 학생을 위한 교내 알바와 SW 프로그램') + `
+      <section class="sec"><div class="sec-h"><h2>캠퍼스 알바</h2></div>
+        <p class="note">예상 수입은 주 15시간 이상이면 주휴수당을 넣어 한 달 4.345주로 계산했어요.</p>
+        ${list([...ALBA].sort((a,b)=>a.end-b.end).map(albaRow).join(''))}</section>
+      <section class="sec"><div class="sec-h"><h2>SW 중심대학사업단</h2></div>${list([...SW].sort((a,b)=>a.end-b.end).map(swRow).join(''))}</section>`;
+  },
+};
+
+function render(toTop = true){
+  $('#view').innerHTML = VIEWS[tab]();
+  $('#bar-title').textContent = TITLES[tab];
+  document.querySelectorAll('.tabbar [data-go]').forEach(b=> b.dataset.go===tab ? b.setAttribute('aria-current','page') : b.removeAttribute('aria-current'));
+  if (toTop) window.scrollTo({top:0});
+  onScroll();
+  requestAnimationFrame(() => { fitMobileNewsLines(); requestAnimationFrame(fitMobileNewsLines); });
+}
+function fitMobileNewsLines(){
+  document.querySelectorAll('#view .row').forEach(r => {
+    const t = r.querySelector('.row-title'), lede = r.querySelector('.row-sub.lede');
+    if (!t || !lede) return;
+    const h = t.getBoundingClientRect().height || t.offsetHeight || 0;
+    if (h <= 0) return;
+    const style = getComputedStyle(t);
+    let lh = parseFloat(style.lineHeight);
+    if (isNaN(lh) || lh <= 0) lh = (parseFloat(style.fontSize) || 15) * 1.45;
+    const lines = Math.min(2, Math.max(1, Math.round(h / lh)));
+    lede.style.setProperty('--m-lede-lines', Math.max(1, 4 - lines));
+  });
+}
+function go(t){
+  if (!VIEWS[t]) t = 'home';
+  tab = t;
+  if (location.hash.slice(1) !== t) history.replaceState(null,'','#'+t);
+  render();
+}
+function rerender(){ const y = scrollY; render(false); window.scrollTo({top:y}); }
+
+/* ---------- 바텀시트 ---------- */
+let lastFocus = null;
+function openSheet(key){
+  const [type,id] = key.split(':');
+  let kind = '', body = '', foot = '';
+  const dummy = '<button class="btn primary" data-dummy>LABEL</button>';
+  if (type==='n'){
+    const n = NEWS[+id];
+    kind = catName(n.cat);
+    const clusterHtml = (n.clusters && n.clusters.length)
+      ? n.clusters.map(c => `<li><a href="${c.link || '#'}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;width:100%;border-bottom:1px solid var(--line)"><b style="flex:none;font-weight:600">${c.publisher} ↗</b><span style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:var(--t-small)">${c.title}</span></a></li>`).join('')
+      : Array.from({length:n.n},(_,k)=>`<li><div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)"><b style="flex:none;width:96px;font-weight:600">${OTHER_SRC[(+id+k)%OTHER_SRC.length]}</b><span style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:var(--t-small)">${n.title}</span></div></li>`).join('');
+
+    body = `<div><div class="row-meta"><span>${n.src}</span><span>${n.ago}</span></div><h2 id="sh-title" style="margin-top:6px">${n.title}</h2></div>
+      <p class="lede-full">${n.lede}</p>
+      ${n.n > 0 ? `<div><div class="sub-h" style="font-weight:700;margin:16px 0 8px">같은 보도자료로 쓴 기사 ${n.n}건</div><ul class="cluster" style="list-style:none;padding:0;margin:0">${clusterHtml}</ul></div>` : ''}`;
+    foot = `<a href="${n.link || '#'}" target="_blank" rel="noopener noreferrer" class="btn primary" style="text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;width:100%">원문 기사 보기 ↗</a>`;
+  } else if (type==='c'){
+    const c = CONTESTS.find(x=>x.id===id);
+    kind = '공모전';
+    body = `<div style="display:flex;gap:14px;align-items:center">${ddBox(c.end)}<h2 id="sh-title">${c.title}</h2></div>
+      <div class="prize">${fmt(c.prize)}만원<small>총 상금</small></div>
+      <dl class="spec">
+        <div><dt>주최</dt><dd>${c.org}</dd></div>
+        <div><dt>훈격</dt><dd>${c.award}</dd></div>
+        <div><dt>참가 대상</dt><dd>${c.target.join(', ')}</dd></div>
+        <div><dt>접수 기간</dt><dd class="num">${md(day(c.start))} ~ ${md(day(c.end))}</dd></div>
+        <div><dt>시상</dt><dd>대상 1팀, 최우수 2팀, 우수 3팀, 장려 5팀</dd></div>
+        <div><dt>제출물</dt><dd>기획서(PDF, 10쪽 이내), 발표 영상 3분</dd></div>
+      </dl>`;
+    foot = `<button class="btn ghost" data-save="${c.id}" aria-pressed="${saved.has(c.id)}">${saved.has(c.id)?'저장됨':'저장'}</button><a href="${c.link || '#'}" target="_blank" rel="noopener noreferrer" class="btn" style="text-decoration:none;display:grid;place-items:center">공식 접수처 바로가기 ↗</a>`;
+  } else {
+    const j = JOBS.find(x=>x.id===id);
+    kind = GRP[j.grp] + ' 채용';
+    body = `<div style="display:flex;gap:14px;align-items:center"><div class="logo" style="background:${j.color}">${j.co[0]}</div><div><div class="row-meta"><span>${j.co} (예시)</span></div><h2 id="sh-title">${j.role}</h2></div></div>
+      <dl class="spec">
+        <div><dt>지원 자격</dt><dd>${j.lvl}${j.exp?' ('+j.exp+')':''}, 토목 관련 전공</dd></div>
+        <div><dt>근무지</dt><dd>${j.loc}</dd></div>
+        <div><dt>마감</dt><dd><span class="num">${md(day(j.end))} 18:00</span> ${ddPill(j.end)}</dd></div>
+        <div><dt>우대</dt><dd>토목기사, 건설안전기사, BIM 활용 경험</dd></div>
+      </dl>
+      <div><div class="sub-h">전형 절차</div><ol class="steps">${j.steps.map(s=>`<li class="${s==='NCS'?'ncs':''}">${s}</li>`).join('')}</ol></div>
+      <div><div class="sub-h">복리후생</div><div class="pills">${j.welfare.map(w=>`<span class="pill">${w}</span>`).join('')}</div></div>`;
+    foot = `<button class="btn ghost" data-save="${j.id}" aria-pressed="${saved.has(j.id)}">${saved.has(j.id)?'저장됨':'저장'}</button><a href="${j.link || '#'}" target="_blank" rel="noopener noreferrer" class="btn" style="text-decoration:none;display:grid;place-items:center">채용 공고 지원하기 ↗</a>`;
+  }
+  $('#sh-kind').textContent = kind; $('#sh-body').innerHTML = body; $('#sh-foot').innerHTML = foot;
+  $('#sh-body').scrollTop = 0;
+  lastFocus = document.activeElement;
+  $('#sheet').classList.add('on'); $('#scrim').classList.add('on');
+  $('#sh-close').focus({preventScroll:true});
+}
+function closeSheet(){
+  const s = $('#sheet'); s.style.transform = ''; s.classList.remove('on'); $('#scrim').classList.remove('on');
+  lastFocus && lastFocus.focus && lastFocus.focus({preventScroll:true});
+}
+// 손잡이를 아래로 끌어 닫기
+let y0 = null;
+$('#grab').addEventListener('touchstart', e=>{ y0 = e.touches[0].clientY; $('#sheet').style.transition = 'none'; }, {passive:true});
+$('#grab').addEventListener('touchmove', e=>{ if (y0===null) return; const dy = Math.max(0, e.touches[0].clientY - y0); $('#sheet').style.transform = `translate(-50%,${dy}px)`; }, {passive:true});
+$('#grab').addEventListener('touchend', e=>{
+  if (y0===null) return; const dy = e.changedTouches[0].clientY - y0; y0 = null;
+  const s = $('#sheet'); s.style.transition = '';
+  if (dy > 90) closeSheet(); else s.style.transform = '';
+});
+
+/* ---------- 검색 ---------- */
+function openSearch(q = ''){
+  $('#search').hidden = false; $('#q').value = q; runSearch(); $('#q').focus();
+  document.body.style.overflow = 'hidden';
+}
+function closeSearch(){ $('#search').hidden = true; document.body.style.overflow = ''; }
+function runSearch(){
+  const q = $('#q').value.trim().toLowerCase();
+  const el = $('#search-res');
+  if (!q){
+    el.innerHTML = `<div class="sec-h"><h2>많이 찾는 키워드</h2></div><div class="chips wrap">${TRENDS.map(t=>`<button class="chip" data-q="${t}">#${t}</button>`).join('')}</div>`;
+    return;
+  }
+  const has = s => s.toLowerCase().includes(q);
+  const groups = [
+    ['뉴스', NEWS.map((n,i)=>[n,i]).filter(([n])=>has(n.title)||has(n.lede)).map(([n,i])=>newsRow(n,i))],
+    ['공모전', CONTESTS.filter(c=>has(c.title)||has(c.org)).map(contestRow)],
+    ['채용', JOBS.filter(j=>has(j.co)||has(j.role)).map(jobRow)],
+    ['전북대 알바', ALBA.filter(a=>has(a.title)||has(a.where)).map(albaRow)],
+  ].filter(g=>g[1].length);
+  el.innerHTML = groups.length
+    ? groups.map(([t,rows])=>`<section class="sec"><div class="sec-h"><h2>${t}<small>${rows.length}</small></h2></div>${list(rows.join(''))}</section>`).join('')
+    : `<p class="empty" style="margin-top:12px">'${$('#q').value.trim()}'와 맞는 항목이 없어요. 더 짧은 단어로 찾아 보세요.</p>`;
+}
+$('#q').addEventListener('input', runSearch);
+
+/* ---------- 이벤트 ---------- */
+let tt;
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(()=>t.classList.remove('on'), 2400); }
+
+document.addEventListener('click', e=>{
+  const t = e.target.closest('button'); if (!t) return;
+  const d = t.dataset;
+  if (d.save) return toggleSave(d.save);
+  if ('dummy' in d) return toast('예시 데이터라서 실제 페이지로 연결되지 않아요.');
+  if (d.open) return openSheet(d.open);
+  if (d.go){ closeSearch(); return go(d.go); }
+  if (d.q) return openSearch(d.q);
+  if (d.cat){ newsCat = d.cat; return rerender(); }
+  if (d.tg){ target = d.tg; return rerender(); }
+  if (d.sort){ sortBy = d.sort; return rerender(); }
+  if (d.grp){ jobGrp = d.grp; return rerender(); }
+  if (d.lvl){ lvl = d.lvl; return rerender(); }
+});
+$('#scrim').onclick = closeSheet;
+$('#sh-close').onclick = closeSheet;
+$('#open-search').onclick = () => openSearch();
+$('#close-search').onclick = closeSearch;
+document.addEventListener('keydown', e=>{
+  if (e.key !== 'Escape') return;
+  if ($('#sheet').classList.contains('on')) closeSheet(); else if (!$('#search').hidden) closeSearch();
+});
+function onScroll(){ $('#bar').classList.toggle('scrolled', scrollY > 44); }
+addEventListener('scroll', onScroll, {passive:true});
+
+$('#theme').onclick = ()=>{
+  const r = document.documentElement;
+  const dark = r.dataset.theme ? r.dataset.theme==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  r.dataset.theme = dark ? 'light' : 'dark';
+  try { localStorage.setItem('cnhm-theme', r.dataset.theme); } catch(e){}
+};
+try { const th = localStorage.getItem('cnhm-theme'); if (th) document.documentElement.dataset.theme = th; } catch(e){}
+
+go(location.hash.slice(1) || 'home');
+
+/* ---------- 모바일 실시간 크롤링 데이터 연동 엔진 ---------- */
+async function syncMobileStandaloneLiveData(){
+  if (typeof CivilData === 'undefined') return;
+  try {
+    const live = await CivilData.loadAll();
+    if (live) {
+      if (live.TRENDS && live.TRENDS.length) TRENDS = live.TRENDS.map(t=>t[0]);
+      if (live.NEWS && live.NEWS.length) NEWS = live.NEWS;
+      if (live.CONTESTS && live.CONTESTS.length) CONTESTS = live.CONTESTS;
+      if (live.JOBS && live.JOBS.length) JOBS = live.JOBS;
+      if (live.ALBA && live.ALBA.length) ALBA = live.ALBA;
+      if (live.SW && live.SW.length) SW = live.SW;
+
+      if (typeof rerender === 'function') rerender();
+      else if (typeof render === 'function') render(false);
     }
+  } catch(e) {
+    console.warn('Mobile standalone live sync error:', e);
+  }
+}
+syncMobileStandaloneLiveData();
 
-    const frame = document.getElementById('mobileFrame');
-    const phoneWrapper = document.getElementById('phoneWrapper');
-    const screenContainer = document.getElementById('screenContainer');
-    const deviceLabel = document.getElementById('deviceLabel');
-
-    function setTab(tab) {
-      currentTab = tab;
-      
-      const tabs = ['home', 'swuniv', 'news', 'jobs', 'contests', 'mypage'];
-      tabs.forEach(t => {
-        const btn = document.getElementById(`tabBtn${t.charAt(0).toUpperCase() + t.slice(1)}`);
-        if (btn) {
-          if (t === tab) {
-            const activeColor = (t === 'home') ? 'bg-emerald-600 text-white shadow-sm' :
-                                (t === 'swuniv') ? 'bg-indigo-600 text-white shadow-sm' :
-                                (t === 'contests' || t === 'mypage') ? 'bg-amber-600 text-white shadow-sm' :
-                                'bg-blue-600 text-white shadow-sm';
-            btn.className = `px-3 py-1.5 rounded-lg transition ${activeColor} flex items-center gap-1.5 cursor-pointer`;
-          } else {
-            btn.className = 'px-3 py-1.5 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer';
-          }
-        }
-      });
-
-      try {
-        if (frame.contentWindow && frame.contentWindow.switchMainTab) {
-          frame.contentWindow.switchMainTab(tab);
-        } else {
-          frame.src = `./index.html#${tab}`;
-        }
-      } catch (e) {
-        frame.src = `./index.html#${tab}`;
-      }
-
-      history.replaceState(null, null, `#${tab}`);
-    }
-
-    function handleMobileBrandClick() {
-      if (currentTab === 'home' || currentTab === 'swuniv') {
-        setTab('news');
-      } else {
-        setTab('home');
-      }
-    }
-
-    const S24_ULTRA_WIDTH = 432;
-    const S24_ULTRA_HEIGHT = 956;
-    let isFitMode = false; // 기본값: 100% 실제 크기 원본 모드 (오르카 등에서 이상하게 작아지는 현상 원천 차단)
-
-    function fitPhoneToViewport() {
-      const wrapper = document.getElementById('phoneWrapper');
-      if (!wrapper) return;
-
-      // 100% 실제 크기 모드이거나 모바일/좁은 창(innerWidth <= 480)에서는 강제 축소 없이 자연스러운 1:1 배율 유지
-      if (!isFitMode || window.innerWidth <= 480) {
-        wrapper.style.transform = 'none';
-        wrapper.style.transformOrigin = 'top center';
-        wrapper.style.marginBottom = '0px';
-        return;
-      }
-
-      // 화면 맞춤 모드일 때만 가용 높이에 맞추되, 최소 0.82 미만으로 과도하게 축소되지 않도록 보호
-      const header = document.querySelector('header');
-      const footer = document.querySelector('footer');
-      const headerH = header ? header.offsetHeight : 60;
-      const footerH = footer ? footer.offsetHeight : 40;
-      const padding = 24;
-
-      const availableH = window.innerHeight - headerH - footerH - padding;
-      const targetH = S24_ULTRA_HEIGHT;
-
-      if (availableH < targetH && availableH > 320) {
-        const scale = Math.min(1, Math.max(0.82, (availableH / targetH) * 0.96));
-        wrapper.style.transform = `scale(${scale})`;
-        wrapper.style.transformOrigin = 'top center';
-        const reduced = targetH * (1 - scale);
-        wrapper.style.marginBottom = `-${reduced}px`;
-      } else {
-        wrapper.style.transform = 'none';
-        wrapper.style.transformOrigin = 'top center';
-        wrapper.style.marginBottom = '0px';
-      }
-    }
-
-    function toggleFitMode() {
-      isFitMode = !isFitMode;
-      const textEl = document.getElementById('fitModeText');
-      const btnEl = document.getElementById('fitModeBtn');
-      if (textEl && btnEl) {
-        if (isFitMode) {
-          textEl.textContent = '화면 맞춤';
-          btnEl.className = 'flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-600 text-white font-bold transition shadow-xs cursor-pointer text-xs';
-        } else {
-          textEl.textContent = '100% 크기';
-          btnEl.className = 'flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-300 hover:text-white transition cursor-pointer';
-        }
-      }
-      fitPhoneToViewport();
-    }
-
-    function reloadFrame() {
-      const icon = document.getElementById('reloadIcon');
-      if (icon) icon.classList.add('animate-spin');
-      frame.src = `./index.html?t=${Date.now()}#${currentTab}`;
-      setTimeout(() => {
-        if (icon) icon.classList.remove('animate-spin');
-      }, 500);
-    }
-
-    // localhost 개발 환경에서 오래된 Service Worker 캐시 자동 정리
-    if ('serviceWorker' in navigator && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-      navigator.serviceWorker.getRegistrations().then(regs => {
-        for (let r of regs) r.unregister();
-      });
-      if ('caches' in window) {
-        caches.keys().then(names => names.forEach(n => caches.delete(n)));
-      }
-    }
-
-    // 갤럭시 실시간 시계 업데이트
-    function updateClock() {
-      const now = new Date();
-      const h = String(now.getHours()).padStart(2, '0');
-      const m = String(now.getMinutes()).padStart(2, '0');
-      const clockEl = document.getElementById('statusBarTime');
-      if (clockEl) clockEl.textContent = `${h}:${m}`;
-    }
-    updateClock();
-    setInterval(updateClock, 30000);
-
-    // QR 모달 제어
-    window.openQrModal = async function() {
-      const modal = document.getElementById('qrModal');
-      const qrImg = document.getElementById('qrCodeImg');
-      const urlText = document.getElementById('localIpUrlText');
-      if (!modal) return;
-
-      try {
-        const res = await fetch('/api/network-info');
-        if (res.ok) {
-          const info = await res.json();
-          if (info.mobile_url) {
-            if (urlText) urlText.textContent = info.mobile_url;
-            if (qrImg) qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(info.mobile_url)}`;
-          }
-        }
-      } catch (e) {}
-
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      if (window.lucide) window.lucide.createIcons();
-    };
-
-    window.toggleQrModal = function(show) {
-      const modal = document.getElementById('qrModal');
-      if (!modal) return;
-      if (show) {
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        if (window.lucide) window.lucide.createIcons();
-      } else {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-      }
-    };
-
-    window.copyLocalIpUrl = function() {
-      const urlText = document.getElementById('localIpUrlText');
-      const text = (urlText && urlText.textContent) || 'https://diverse-tattoo-exterior-reporting.trycloudflare.com/#news';
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(() => {
-          alert('모바일 접속 주소가 클립보드에 복사되었습니다.');
-        });
-      } else {
-        prompt('모바일 접속 주소:', text);
-      }
-    };
-
-    // 기본값: Galaxy S24 Ultra 단독 적용 (432 × 956)
-    window.addEventListener('resize', fitPhoneToViewport);
-    window.addEventListener('load', fitPhoneToViewport);
-
-    phoneWrapper.style.width = S24_ULTRA_WIDTH + 'px';
-    phoneWrapper.style.height = S24_ULTRA_HEIGHT + 'px';
-    phoneWrapper.style.minHeight = S24_ULTRA_HEIGHT + 'px';
-    screenContainer.style.height = (S24_ULTRA_HEIGHT - 70) + 'px';
-    screenContainer.style.minHeight = (S24_ULTRA_HEIGHT - 70) + 'px';
-    fitPhoneToViewport();
-    setTab(currentTab);
-
-    if (window.lucide) window.lucide.createIcons();
-  </script>
-</body>
-</html>
+</script>
+</body></html>

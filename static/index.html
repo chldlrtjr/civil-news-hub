@@ -1,1320 +1,1571 @@
-<!DOCTYPE html>
-<html lang="ko" class="dark">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Civil News Hub | 토목 뉴스 브리핑 & 채용·공모전 올인원 허브</title>
-  
-  <!-- 모바일 웹앱 & PWA 메타 태그 -->
-  <meta name="theme-color" content="#0f172a">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="토목허브">
-  <meta name="description" content="토목·인프라·건설 엔지니어링 최신 뉴스 브리핑, 실시간 채용 공고문 및 팩트 검증된 공모전 대시보드">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Civil News Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<script src="./static/data_adapter.js?v=20261003_1327"></script>
+<style>
+/* Layout: plain solid ground, sticky header + tab nav, dashboard = main column + deadline rail; phones get a bottom tab bar and bottom-sheet drawer */
+:root{
+  --bg:#F2F5F8; --surface:#FFFFFF; --surface-2:#E9EEF3; --ink:#0F2A44; --muted:#5B6C7E; --line:#D8E0E8;
+  --accent:#D9480F; --accent-soft:#FFE8DB; --shadow:0 1px 2px rgba(15,42,68,.06),0 8px 24px rgba(15,42,68,.06);
+  --c-general:#5B6C7E; --c-road:#3F66A8; --c-water:#1F8585; --c-tunnel:#8B6440; --c-smart:#6A55C9;
+  --ok:#2B8A3E; --warn:#E67700;
+  --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  /* type scale: minor third (1.2) from a 15px base, sized for a dense dashboard */
+  --t-label:12px; --t-small:14px; --t-body:15px; --t-lead:17px; --t-h3:20px; --t-h2:24px; --t-h1:30px;
+  --r:10px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0A1521; --surface:#112131; --surface-2:#172B3F; --ink:#E4ECF4; --muted:#93A5B8; --line:#233850;
+  --accent:#FF7A2E; --accent-soft:#3A2012; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  --c-general:#9AABBD; --c-road:#7FA3E0; --c-water:#4FC2C2; --c-tunnel:#C99C70; --c-smart:#A794F0; --ok:#69DB7C; --warn:#FFA94D;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0A1521; --surface:#112131; --surface-2:#172B3F; --ink:#E4ECF4; --muted:#93A5B8; --line:#233850;
+  --accent:#FF7A2E; --accent-soft:#3A2012; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  --c-general:#9AABBD; --c-road:#7FA3E0; --c-water:#4FC2C2; --c-tunnel:#C99C70; --c-smart:#A794F0; --ok:#69DB7C; --warn:#FFA94D;
+  color-scheme:dark}
 
-  <!-- PWA 매니페스트 및 파비콘 -->
-  <link rel="manifest" href="./manifest.json">
-  <link rel="icon" type="image/svg+xml" href="./static/favicon.svg">
-  <link rel="alternate icon" href="./favicon.svg">
-  <link rel="apple-touch-icon" href="./static/favicon.svg">
+*{box-sizing:border-box}
+/* 탭마다 페이지 길이가 달라도 화면이 좌우로 밀리지 않게 스크롤바를 늘 띄워 둬요 */
+html{overflow-y:scroll;background:var(--bg)}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:var(--t-body);line-height:1.55;min-height:100%}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+h1,h2,h3{text-wrap:balance;margin:0}
+#ca .mono{font-family:var(--f-body);font-variant-numeric:tabular-nums}
+#ca .wrap{max-width:1200px;margin:0 auto;padding-inline:20px}
 
-  <!-- Preconnect CDN (DNS 및 핸드셰이크 사전 가속) -->
-  <link rel="preconnect" href="https://cdn.tailwindcss.com">
-  <link rel="preconnect" href="https://unpkg.com">
-  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+/* header */
+#ca header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+#ca .top-row{display:flex;align-items:center;gap:20px;height:60px}
+#ca .logo{display:flex;align-items:baseline;gap:8px;font-weight:700;letter-spacing:.02em;white-space:nowrap}
+#ca .logo b{font-family:var(--f-body);font-size:var(--t-small);background:var(--ink);color:var(--bg);padding:3px 6px;border-radius:4px}
+#ca .logo span{font-size:var(--t-lead)}
+#ca nav.tabs{display:flex;gap:4px;flex:1}
+#ca nav.tabs button{background:none;border:0;padding:8px 12px;border-radius:8px;font-weight:500;color:var(--muted)}
+#ca nav.tabs button[aria-current="page"]{color:var(--ink);background:var(--surface-2)}
+#ca nav.tabs .jb{font-size:var(--t-label);font-weight:700;color:var(--accent);margin-left:4px;vertical-align:2px}
+#ca .icon-btn{background:none;border:1px solid var(--line);width:36px;height:36px;border-radius:8px;display:grid;place-items:center;color:var(--muted)}
+#ca .icon-btn svg{width:18px;height:18px}
+#ca .search{display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:0 10px;height:36px;width:220px;color:var(--muted)}
+#ca .search input{border:0;background:none;outline:none;font:inherit;font-size:var(--t-small);color:var(--ink);width:100%;min-width:0}
+#ca .search svg{width:16px;height:16px;flex:none}
+/* clear button takes the magnifier slot on the left once there is a search term */
+#ca .q-clear{border:0;background:var(--surface-2);color:var(--muted);width:22px;height:22px;border-radius:50%;padding:0;display:grid;place-items:center;flex:none}
+#ca .q-clear:hover{background:var(--ink);color:var(--bg)}
+#ca .q-clear svg{width:12px;height:12px}
+#ca .search.has-q .q-icon{display:none}
+#ca .tag[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+#ca .tag[aria-pressed="true"] .rk,#ca .tag[aria-pressed="true"] .up{color:inherit}
 
-  <!-- Tailwind CSS & Lucide Icons (직접 UMD 로드로 302 리다이렉트 지연 제거) -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@0.441.0/dist/umd/lucide.min.js"></script>
-  
-  <!-- Pretendard Font -->
-  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+/* ticker */
+#ca .ticker{display:flex;align-items:center;gap:12px;height:44px;overflow:hidden}
+#ca .ticker-label{font-size:var(--t-label);font-weight:700;letter-spacing:.08em;color:var(--accent);white-space:nowrap;display:flex;align-items:center;gap:6px}
+#ca .ticker-label i{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 1.6s infinite}
+#ca .tags{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;min-width:0}
+#ca .tags::-webkit-scrollbar{display:none}
+#ca .tag{white-space:nowrap;border:1px solid var(--line);background:var(--surface);padding:4px 10px;border-radius:999px;font-size:var(--t-small);display:flex;gap:6px;align-items:center}
+#ca .tag .rk{font-family:var(--f-body);font-size:var(--t-label);color:var(--muted)}
+#ca .tag .up{font-size:var(--t-label);color:var(--accent)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
-  <!-- 커스텀 스타일 (테일윈드 보완) -->
-  <link rel="stylesheet" href="./static/style.css?v=20260915_1845">
+#ca .notice{font-size:var(--t-small);color:var(--muted);padding-block:10px 0}
 
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'sans-serif'],
-          },
-          colors: {
-            brand: {
-              50: '#eff6ff',
-              100: '#dbeafe',
-              500: '#3b82f6',
-              600: '#2563eb',
-              700: '#1d4ed8',
-              800: '#1e40af',
-              900: '#1e3a8a',
-            }
-          }
-        }
+#ca main{padding-block:20px 100px}
+#ca .view[hidden]{display:none}
+#ca .sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px}
+#ca .sec-head h2{font-size:var(--t-lead);font-weight:700}
+#ca .sec-head .more{background:none;border:0;color:var(--muted);font-size:var(--t-small);padding:0}
+#ca .sec-head .more:hover{color:var(--accent)}
+#ca .eyebrow{font-size:var(--t-label);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+/* home */
+#ca .home-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px;align-items:start}
+#ca .home-main{display:flex;flex-direction:column;gap:32px;min-width:0}
+#ca .rail{position:sticky;top:120px;display:flex;flex-direction:column;gap:16px}
+#ca .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+
+#ca .briefing{display:grid;grid-template-columns:1.35fr 1fr;gap:16px}
+#ca .briefing .news.lead h3{font-size:var(--t-h3);line-height:1.4}
+#ca .side-news{display:flex;flex-direction:column;gap:12px}
+#ca .side-news .news{padding:14px}
+#ca .side-news .news .lede,#ca .side-news .news .cluster-wrap{display:none}
+#ca .briefing .news .cluster-wrap{margin-top:auto}
+
+/* news */
+#ca .news{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+#ca .news-meta{display:flex;gap:10px;align-items:center;font-size:var(--t-small);color:var(--muted);flex-wrap:wrap}
+#ca .cat{display:inline-flex;align-items:center;gap:6px;font-weight:600;color:var(--cat)}
+#ca .cat::before{content:"";width:8px;height:8px;background:var(--cat);border-radius:2px}
+#ca .news h3{font-size:var(--t-lead);line-height:1.45;font-weight:700;letter-spacing:-.01em;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#ca .lede{margin:0;font-size:var(--t-small);color:var(--muted);line-height:1.6;display:-webkit-box;-webkit-line-clamp:var(--lede-lines,2);-webkit-box-orient:vertical;overflow:hidden}
+#ca .cluster-btn{align-self:flex-start;background:none;border:1px dashed var(--line);border-radius:6px;padding:5px 10px;font-size:var(--t-small);color:var(--muted);display:flex;align-items:center;gap:6px}
+#ca .cluster-btn:hover{border-color:var(--ink);color:var(--ink)}
+#ca .cluster-btn .n{font-family:var(--f-body);font-weight:700;color:var(--ink)}
+#ca .cluster-btn svg{width:14px;height:14px;transition:transform .2s}
+#ca .cluster-btn[aria-expanded="true"] svg{transform:rotate(180deg)}
+/* related outlets float above the button as a popover, so opening it never pushes the page around */
+#ca .cluster-wrap{position:relative}
+#ca .cluster{position:absolute;left:0;bottom:calc(100% + 8px);z-index:25;width:max-content;max-width:min(340px,calc(100vw - 48px));margin:0;padding:10px;list-style:none;display:flex;flex-wrap:wrap;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+#ca .cluster li{font-size:var(--t-small);font-weight:500;padding:0;border-radius:6px;background:var(--surface-2);white-space:nowrap;transition:all .15s}
+#ca .cluster li:hover{background:var(--ink);color:var(--bg)}
+#ca .cluster li a{color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:4px;padding:4px 9px}
+
+#ca .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+#ca .chips{display:flex;gap:6px;flex-wrap:wrap}
+#ca .chip{border:1px solid var(--line);background:var(--surface);padding:6px 12px;border-radius:999px;font-size:var(--t-small);font-weight:500;display:flex;align-items:center;gap:6px}
+#ca .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+#ca .chip .dot{width:8px;height:8px;border-radius:2px;background:var(--cat)}
+#ca .spacer{flex:1}
+#ca .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+#ca .seg button{border:0;background:none;padding:6px 12px;font-size:var(--t-small);color:var(--muted)}
+#ca .seg button[aria-pressed="true"]{background:var(--surface-2);color:var(--ink);font-weight:600}
+#ca select{font:inherit;font-size:var(--t-small);border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:6px 10px}
+
+#ca .news-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
+#ca .news-grid.list{grid-template-columns:1fr;gap:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+#ca .news-grid.list .news:first-child{border-radius:var(--r) var(--r) 0 0}
+#ca .news-grid.list .news:last-child{border-radius:0 0 var(--r) var(--r);border-bottom:0}
+#ca .news-grid.list .news{border:0;border-bottom:1px solid var(--line);border-radius:0;padding:12px 16px;gap:6px}
+#ca .news-grid.list .news .lede{display:none}
+#ca .news-grid.list .news h3{font-size:var(--t-lead)}
+/* card view: cards in a row stretch to the same height, so the related-articles button sits on one line at the bottom */
+#ca .news-grid:not(.list) .news .cluster-wrap{margin-top:auto}
+/* title + excerpt always fill four lines: a 1-line title gets a 3-line excerpt (line count set by fitNewsLines) */
+#ca .news-grid:not(.list) .news .lede,#ca .briefing .news.lead .lede{-webkit-line-clamp:var(--lede-lines,2)}
+
+/* d-day */
+#ca .dday{font-family:var(--f-body);font-weight:700;font-size:var(--t-small);padding:3px 8px;border-radius:6px;background:var(--surface-2);color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+#ca .dday.soon{border:1px solid var(--accent);color:var(--accent);background:transparent}
+#ca .dday.hot{background:var(--accent);color:#fff;animation:pulse 1.8s infinite}
+@media (prefers-reduced-motion:reduce){#ca .dday.hot,#ca .ticker-label i{animation:none}}
+
+/* contest */
+#ca .counter{display:flex;align-items:baseline;gap:8px;margin-bottom:16px}
+#ca .counter strong{font-family:var(--f-body);font-size:var(--t-h2);color:var(--accent)}
+#ca .counter span{color:var(--muted);font-size:var(--t-small)}
+#ca .contest-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+#ca .h-scroll{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(250px,280px);gap:14px;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x mandatory}
+#ca .h-scroll>*{scroll-snap-align:start}
+#ca .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:10px;text-align:left;transition:border-color .15s,transform .15s;min-width:0}
+#ca .card.click{cursor:pointer}
+@media (hover:hover){#ca .card.click:hover{border-color:var(--ink);transform:translateY(-2px)}}
+#ca .card.click:active{border-color:var(--ink)}
+#ca .m-only{display:none}
+#ca .sort{display:flex;align-items:center;gap:8px}
+#ca .card-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+#ca .prize{font-family:var(--f-body);font-weight:700;font-size:var(--t-h3);letter-spacing:-.02em}
+#ca .prize small{font-family:var(--f-body);font-size:var(--t-small);color:var(--muted);font-weight:500;margin-left:4px}
+#ca .card h3{font-size:var(--t-body);line-height:1.45;font-weight:600}
+#ca .card.title-first h3{font-size:var(--t-lead);font-weight:700;line-height:1.4;letter-spacing:-.01em}
+#ca .prize-line{font-size:var(--t-small);color:var(--muted)}
+#ca .prize-line b{color:var(--ink);font-weight:700}
+#ca .pills{display:flex;gap:5px;flex-wrap:wrap}
+#ca .pill{font-size:var(--t-label);padding:2px 8px;border-radius:5px;background:var(--surface-2);color:var(--muted);font-weight:500}
+#ca .pill.award{background:var(--accent-soft);color:var(--accent);font-weight:600}
+#ca .pill.new{background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok);font-weight:600}
+#ca .pill.exp{background:color-mix(in srgb,var(--c-road) 15%,transparent);color:var(--c-road);font-weight:600}
+#ca .meta{font-size:var(--t-small);color:var(--muted);display:flex;justify-content:space-between;gap:8px;margin-top:auto;padding-top:8px;border-top:1px solid var(--line)}
+#ca .bm{background:none;border:0;padding:4px;color:var(--muted);display:grid;place-items:center;border-radius:6px}
+#ca .bm svg{width:18px;height:18px}
+#ca .bm[aria-pressed="true"]{color:var(--accent)}
+#ca .bm[aria-pressed="true"] svg{fill:currentColor}
+#ca .news-meta .bm{margin-left:auto}
+#ca .card-top-r{display:flex;align-items:center;gap:4px}
+#ca [data-item].flash{animation:flash 1.8s ease-out}
+@keyframes flash{0%,45%{box-shadow:0 0 0 3px var(--accent)}100%{box-shadow:0 0 0 3px transparent}}
+/* saved items: header button with count, list opens in the side drawer */
+#ca .saved-btn{position:relative}
+#ca .saved-btn .count{position:absolute;top:-7px;right:-7px;min-width:19px;height:19px;padding:0 5px;border-radius:10px;background:var(--accent);color:#fff;font-size:var(--t-label);font-weight:700;display:grid;place-items:center;line-height:1}
+#ca .saved-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+#ca .saved-list li{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+#ca .saved-row{flex:1;min-width:0;text-align:left;background:none;border:0;padding:0;display:flex;flex-direction:column;gap:2px}
+#ca .saved-kind{font-size:var(--t-label);font-weight:700;color:var(--k)}
+#ca .saved-t{font-weight:600;line-height:1.4}
+#ca .saved-sub{font-size:var(--t-small);color:var(--muted)}
+#ca .saved-row:hover .saved-t{text-decoration:underline}
+#ca .saved-empty{margin:0;color:var(--muted);font-size:var(--t-small)}
+#ca .back{align-self:flex-start;background:none;border:0;padding:4px 0;color:var(--muted);font-size:var(--t-small);font-weight:600}
+#ca .back:hover{color:var(--ink)}
+
+/* jobs */
+#ca .job-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
+#ca .co{display:flex;align-items:center;gap:10px;min-width:0}
+#ca .logo-mark{width:38px;height:38px;border-radius:8px;display:grid;place-items:center;font-weight:700;color:#fff;flex:none;font-size:var(--t-body)}
+#ca .co-name{font-weight:600;font-size:var(--t-small)}
+#ca .co-type{font-size:var(--t-small);color:var(--muted)}
+#ca .steps{display:flex;align-items:center;gap:0;font-size:var(--t-label);overflow-x:auto}
+#ca .step{display:flex;align-items:center;gap:0;white-space:nowrap;color:var(--muted)}
+#ca .step b{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line);font-family:var(--f-body);font-size:var(--t-label);margin-right:5px;background:var(--surface)}
+#ca .step.ncs b{border-color:var(--accent);color:var(--accent)}
+#ca .step+.step::before{content:"";width:14px;height:1.5px;background:var(--line);margin:0 6px}
+
+/* rail timeline */
+#ca .tl{list-style:none;margin:0;padding:0;position:relative}
+#ca .tl::before{content:"";position:absolute;left:5px;top:8px;bottom:8px;width:1.5px;background:var(--line)}
+#ca .tl li{position:relative;padding:8px 0 8px 22px;display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+#ca .tl li::before{content:"";position:absolute;left:0;top:14px;width:12px;height:12px;border-radius:50%;background:var(--surface);border:2px solid var(--kind)}
+#ca .tl .tl-body{flex:1;min-width:0}
+#ca .tl .kind{font-size:var(--t-label);font-weight:700;color:var(--kind);letter-spacing:.04em}
+#ca .tl .t{font-size:var(--t-small);font-weight:500;line-height:1.4}
+#ca .tl li:hover .t{text-decoration:underline}
+#ca .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#ca .stat{background:var(--surface-2);border-radius:8px;padding:10px 12px}
+#ca .stat .v{font-family:var(--f-body);font-size:var(--t-h3);font-weight:700}
+#ca .stat .l{font-size:var(--t-small);color:var(--muted)}
+
+/* jbnu */
+#ca .jb-hero{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+#ca .jb-hero h2{font-size:var(--t-h3)}
+#ca .jb-hero p{margin:4px 0 0;color:var(--muted);font-size:var(--t-small)}
+#ca .alba-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-bottom:36px}
+#ca .income{font-family:var(--f-body);font-size:var(--t-h2);font-weight:700;color:var(--ok);letter-spacing:-.02em}
+#ca .income-l{font-size:var(--t-small);color:var(--muted)}
+#ca .wage-row{display:flex;gap:14px;font-size:var(--t-small);color:var(--muted)}
+#ca .wage-row b{color:var(--ink);font-family:var(--f-body);font-weight:500}
+
+/* drawer */
+#ca .scrim{position:fixed;inset:0;background:rgba(5,15,25,.45);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s}
+#ca .scrim.on{opacity:1;pointer-events:auto}
+#ca .drawer{position:fixed;top:0;right:0;bottom:0;width:min(460px,100%);background:var(--surface);z-index:50;transform:translateX(100%);transition:transform .25s ease;display:flex;flex-direction:column;border-left:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+#ca .drawer.on{transform:none}
+#ca .drawer-head{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line)}
+#ca .drawer-body{padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:18px;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+#ca .drawer-body h2{font-size:var(--t-h3);line-height:1.4}
+#ca dl.spec{display:grid;grid-template-columns:88px 1fr;gap:10px 12px;margin:0;font-size:var(--t-small)}
+#ca dl.spec dt{color:var(--muted)}
+#ca dl.spec dd{margin:0;font-weight:500}
+#ca .cta{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:12px;font-weight:600;font-size:var(--t-body)}
+#ca .cta.ghost{background:none;color:var(--ink);border:1px solid var(--line)}
+#ca .row{display:flex;gap:10px}
+#ca .row>*{flex:1}
+
+#ca .toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:var(--t-small);z-index:60;opacity:0;transition:.2s;pointer-events:none;max-width:calc(100% - 32px)}
+#ca .toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* bottom bar (mobile) */
+#ca .bottom-bar{display:none}
+
+@media (max-width:980px){
+  #ca .home-grid{grid-template-columns:1fr}
+  #ca .rail{position:static;order:-1}
+  #ca .rail .stats{display:none}
+}
+/* phone: header hides on scroll down, search opens on demand, horizontal strips instead of stacked panels, 44px+ touch targets */
+@media (max-width:760px){
+  body{-webkit-tap-highlight-color:transparent}
+  #ca .wrap{padding-inline:16px}
+  #ca nav.tabs,#ca .search{display:none}
+  #ca .m-only{display:grid}
+  #ca header.top{transition:transform .22s ease}
+  #ca header.top.hide{transform:translateY(calc(-100% - env(safe-area-inset-top,0px)))}
+  #ca .top-row{height:auto;min-height:56px;flex-wrap:wrap;gap:8px 10px;padding-block:8px}
+  #ca .logo{margin-right:auto}
+  #ca .icon-btn{width:44px;height:44px}
+  #ca header.top.search-open .search{display:flex;order:3;width:100%;height:46px}
+  #ca .search input,#ca select{font-size:var(--t-body)}
+  #ca .ticker{height:42px}
+  #ca .tag{padding:6px 12px}
+  #ca .q-clear{width:32px;height:32px}
+  #ca .notice{padding-block:12px 0}
+  #ca main{padding-block:12px calc(96px + env(safe-area-inset-bottom,0px))}
+
+  /* home: deadlines become a swipeable strip above the briefing */
+  #ca .home-main{gap:28px}
+  #ca .rail .panel{background:none;border:0;padding:0}
+  #ca .tl{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(190px,64%);gap:10px;overflow-x:auto;margin-inline:-16px;padding:2px 16px 6px;scroll-snap-type:x mandatory;scrollbar-width:none}
+  #ca .tl::-webkit-scrollbar{display:none}
+  #ca .tl::before,#ca .tl li::before{display:none}
+  #ca .tl li{scroll-snap-align:start;flex-direction:column;gap:8px;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--kind);border-radius:var(--r)}
+  #ca .tl .dday{order:-1}
+  #ca .tl .t{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  #ca .briefing{grid-template-columns:1fr}
+  #ca .briefing .news.lead h3{font-size:var(--t-lead)}
+  #ca .side-news{gap:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+  #ca .side-news .news{border:0;border-radius:0;border-bottom:1px solid var(--line);padding:14px 16px}
+  #ca .side-news .news:last-child{border-bottom:0}
+  #ca .h-scroll{grid-auto-columns:78%;margin-inline:-16px;padding-inline:16px;scroll-padding-inline:16px;scrollbar-width:none}
+  #ca .h-scroll::-webkit-scrollbar{display:none}
+
+  /* toolbars: chips scroll sideways, segmented controls fill the width */
+  #ca .toolbar{flex-direction:column;align-items:stretch;gap:10px}
+  #ca .toolbar .spacer{display:none}
+  #ca .chips{flex-wrap:nowrap;overflow-x:auto;margin-inline:-16px;padding-inline:16px;scrollbar-width:none}
+  #ca .chips::-webkit-scrollbar{display:none}
+  #ca .chip{flex:none;min-height:40px;padding:8px 14px}
+  #ca .seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr}
+  #ca .seg button{min-height:42px;padding:8px 4px;font-size:var(--t-small);white-space:nowrap}
+  #ca .sort select{flex:1;min-height:42px}
+
+  #ca .news-grid,#ca .job-grid,#ca .contest-grid,#ca .alba-grid{grid-template-columns:1fr}
+  #ca .news{padding:16px}
+  #ca .cluster-btn{min-height:40px;padding:8px 12px}
+  #ca .bm{width:44px;height:44px;margin:-10px -10px -10px 0}
+  #ca .card{padding:16px}
+  #ca .counter{flex-wrap:wrap;gap:4px 8px}
+  #ca .jb-hero{margin-bottom:16px}
+
+  /* drawer: actions stay pinned at the bottom of the sheet */
+  #ca .drawer-body{padding-bottom:0;overscroll-behavior:contain}
+  #ca .drawer-body .row{position:sticky;bottom:0;margin:auto -20px 0;padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line)}
+  #ca .cta{min-height:48px}
+  #ca .drawer-head{padding:6px 12px 6px 20px}
+  #ca .bottom-bar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+  #ca .bottom-bar button{background:none;border:0;padding:8px 0 10px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:var(--t-label);color:var(--muted)}
+  #ca .bottom-bar button svg{width:20px;height:20px}
+  #ca .bottom-bar button[aria-current="page"]{color:var(--accent);font-weight:600}
+  #ca .drawer{top:auto;left:0;width:100%;max-height:86%;border-left:0;border-top:1px solid var(--line);border-radius:16px 16px 0 0;transform:translateY(100%);padding-top:0}
+  #ca .drawer::before{content:"";width:40px;height:4px;border-radius:2px;background:var(--line);margin:8px auto 0}
+}
+
+/* typography: one family (Plex Sans KR); section titles and headline figures get weight 700 and size, not a second face */
+body{word-break:keep-all;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;line-height:1.6}
+h1,h2,h3{line-height:1.3;letter-spacing:-.01em}
+#ca .logo span,#ca .sec-head h2,#ca .jb-hero h2,#ca .prize,#ca .counter strong,#ca .stat .v,#ca .income{font-weight:700;letter-spacing:-.01em}
+#ca .sec-head h2{font-size:var(--t-h3)}
+#ca .news h3,#ca .card h3{line-height:1.45}
+#ca .drawer-body{line-height:1.6}
+</style>
+<style>
+/* phone layout: every rule is scoped to #m so it never touches the computer layout (#ca) */
+/* Layout: one phone-width column (max 440px, centered on bigger screens) — large page title, list rows instead of cards, details in a bottom sheet, 5-tab bar fixed at the bottom */
+#m{
+  --out:#DCE3EA; --bg:#F2F5F8; --surface:#FFFFFF; --surface-2:#E9EEF3; --ink:#0F2A44; --muted:#5B6C7E; --line:#D8E0E8;
+  --accent:#D9480F; --accent-soft:#FFE8DB; --ok:#2B8A3E; --ok-soft:#E2F2E5; --scrim:rgba(5,15,25,.45); --shadow:0 1px 3px rgba(15,42,68,.14);
+  --c-general:#5B6C7E; --c-road:#3F66A8; --c-water:#1F8585; --c-tunnel:#8B6440; --c-smart:#6A55C9;
+  --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  /* type scale: minor third (1.2) from a 16px phone base */
+  --t-label:12px; --t-small:14px; --t-body:16px; --t-lead:18px; --t-h3:21px; --t-h2:26px; --t-h1:32px;
+  --bar-h:52px; --tab-h:58px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #m{
+  --out:#060E17; --bg:#0A1521; --surface:#112131; --surface-2:#1A2F44; --ink:#E4ECF4; --muted:#93A5B8; --line:#233850;
+  --accent:#FF7A2E; --accent-soft:#3A2012; --ok:#69DB7C; --ok-soft:#14301C; --scrim:rgba(0,0,0,.6); --shadow:0 1px 3px rgba(0,0,0,.5);
+  --c-general:#9AABBD; --c-road:#7FA3E0; --c-water:#4FC2C2; --c-tunnel:#C99C70; --c-smart:#A794F0;
+  color-scheme:dark}}
+:root[data-theme="dark"] #m{
+  --out:#060E17; --bg:#0A1521; --surface:#112131; --surface-2:#1A2F44; --ink:#E4ECF4; --muted:#93A5B8; --line:#233850;
+  --accent:#FF7A2E; --accent-soft:#3A2012; --ok:#69DB7C; --ok-soft:#14301C; --scrim:rgba(0,0,0,.6); --shadow:0 1px 3px rgba(0,0,0,.5);
+  --c-general:#9AABBD; --c-road:#7FA3E0; --c-water:#4FC2C2; --c-tunnel:#C99C70; --c-smart:#A794F0;
+  color-scheme:dark}
+
+#m *{box-sizing:border-box}
+#m{background:var(--out);color:var(--ink);font-family:var(--f-body);font-size:var(--t-body);line-height:1.5;-webkit-tap-highlight-color:transparent}
+#m button{font:inherit;color:inherit;cursor:pointer}
+#m :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#m h1,#m h2,#m h3{margin:0;text-wrap:balance}
+#m .num{font-family:var(--f-body);font-variant-numeric:tabular-nums}
+
+#m .app{max-width:440px;margin:0 auto;min-height:100vh;background:var(--bg);padding-bottom:calc(var(--tab-h) + env(safe-area-inset-bottom,0px) + 24px)}
+@media (min-width:480px){#m .app{border-inline:1px solid var(--line)}}
+
+/* top bar: small title fades in once the large title scrolls away */
+#m .bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;height:var(--bar-h);display:flex;align-items:center;padding:0 6px 0 16px;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:border-color .2s}
+#m .bar.scrolled{border-bottom-color:var(--line)}
+#m .bar-title{flex:1;font-size:var(--t-body);font-weight:700;opacity:0;transition:opacity .2s}
+#m .bar.scrolled .bar-title{opacity:1}
+#m .brand{font-family:var(--f-body);font-size:var(--t-small);font-weight:700;background:var(--ink);color:var(--bg);padding:3px 6px;border-radius:5px;margin-right:10px}
+#m .ibtn{width:44px;height:44px;border:0;background:none;border-radius:12px;display:grid;place-items:center}
+#m .ibtn svg{width:22px;height:22px}
+#m .ibtn:active{background:var(--surface-2)}
+
+#m .page-head{padding:4px 16px 18px}
+#m .page-head h1{font-size:var(--t-h1);font-weight:700;letter-spacing:-.02em;line-height:1.2}
+#m .page-head p{margin:6px 0 0;color:var(--muted);font-size:var(--t-small)}
+
+#m .sec{margin-top:28px}
+#m .sec:first-of-type{margin-top:0}
+#m .sec-h{display:flex;justify-content:space-between;align-items:center;padding:0 16px 8px;min-height:44px}
+#m .sec-h h2{font-size:var(--t-lead);font-weight:700}
+#m .sec-h small{font-size:var(--t-small);color:var(--muted);font-weight:500;margin-left:6px}
+#m .more{border:0;background:none;color:var(--accent);font-size:var(--t-small);font-weight:600;min-height:44px;padding:0 0 0 12px}
+#m .note{padding:0 16px 10px;margin:0;font-size:var(--t-small);color:var(--muted)}
+
+/* list rows */
+#m .list{background:var(--surface);border-block:1px solid var(--line)}
+#m .row{display:flex;gap:14px;align-items:flex-start;width:100%;text-align:left;background:none;border:0;padding:14px 16px;position:relative}
+#m .row+.row::before{content:"";position:absolute;top:0;left:16px;right:0;height:1px;background:var(--line)}
+#m button.row:active{background:var(--surface-2)}
+#m .row-main{flex:1;min-width:0}
+#m .row-meta{font-size:var(--t-small);color:var(--muted);display:flex;gap:4px 8px;flex-wrap:wrap;align-items:center}
+#m .row-title{font-size:var(--t-body);font-weight:600;line-height:1.45;margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#m .row-sub{font-size:var(--t-small);color:var(--muted);margin-top:4px}
+#m .row-sub.lede{display:-webkit-box;-webkit-line-clamp:var(--m-lede-lines,2);-webkit-box-orient:vertical;overflow:hidden;line-height:1.55}
+#m .row-sub b{color:var(--ink);font-weight:700}
+#m .cat{color:var(--cat);font-weight:700}
+#m .tagn{font-size:var(--t-small);font-weight:700;color:var(--ok);background:var(--ok-soft);padding:1px 7px;border-radius:5px}
+#m .lv{font-size:var(--t-small);font-weight:700;padding:1px 7px;border-radius:5px;background:var(--surface-2);color:var(--ink)}
+
+#m .dd{flex:none;width:54px;height:54px;border-radius:14px;background:var(--surface-2);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+#m .dd b{font-family:var(--f-body);font-size:var(--t-h3)}
+#m .dd span{font-size:var(--t-label);color:var(--muted);margin-top:4px}
+#m .dd.soon{background:var(--accent-soft);color:var(--accent)}
+#m .dd.soon span{color:var(--accent)}
+#m .dd.hot{background:var(--accent);color:#fff}
+#m .dd.hot span{color:#fff}
+#m .dd.today b{font-family:var(--f-body);font-size:var(--t-body)}
+#m .pd{flex:none;font-family:var(--f-body);font-size:var(--t-small);font-weight:700;padding:4px 8px;border-radius:8px;background:var(--surface-2);color:var(--muted);align-self:center}
+#m .pd.soon{background:var(--accent-soft);color:var(--accent)}
+#m .pd.hot{background:var(--accent);color:#fff}
+#m .logo{flex:none;width:46px;height:46px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:700;font-size:var(--t-lead)}
+#m .income{flex:none;text-align:right;align-self:center}
+#m .income b{display:block;font-family:var(--f-body);font-size:var(--t-lead);color:var(--ok)}
+#m .income span{font-size:var(--t-small);color:var(--muted)}
+#m .save-i{flex:none;align-self:center;width:40px;height:40px;margin:-8px -10px -8px 0;display:grid;place-items:center;background:none;border:0;border-radius:8px;color:var(--muted)}
+#m .save-i svg{width:20px;height:20px}
+#m .save-i[aria-pressed="true"]{color:var(--accent)}
+#m .save-i[aria-pressed="true"] svg{fill:currentColor}
+
+/* filters */
+#m .filters{position:sticky;top:calc(var(--bar-h) + env(safe-area-inset-top,0px));z-index:10;background:var(--bg);padding-bottom:12px;display:flex;flex-direction:column;gap:10px}
+#m .chips{display:flex;gap:8px;overflow-x:auto;padding:0 16px;scrollbar-width:none}
+#m .chips::-webkit-scrollbar{display:none}
+#m .chips.wrap{flex-wrap:wrap}
+#m .chip{flex:none;min-height:40px;padding:0 15px;border-radius:20px;border:1px solid var(--line);background:var(--surface);font-size:var(--t-small);font-weight:500}
+#m .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+#m .chip:active{transform:scale(.97)}
+#m .seg{margin:0 16px;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--surface-2);border-radius:12px;padding:3px}
+#m .seg button{min-height:40px;border:0;background:none;border-radius:9px;font-size:var(--t-small);color:var(--muted);font-weight:500;white-space:nowrap}
+#m .seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);font-weight:700;box-shadow:var(--shadow)}
+
+/* home: swipeable deadline tiles */
+#m .strip{display:grid;grid-auto-flow:column;grid-auto-columns:150px;gap:10px;overflow-x:auto;padding:0 16px 4px;scroll-snap-type:x mandatory;scroll-padding-inline:16px;scrollbar-width:none}
+#m .strip::-webkit-scrollbar{display:none}
+#m .tile{scroll-snap-align:start;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:6px;text-align:left;min-height:154px}
+#m .tile:active{background:var(--surface-2)}
+#m .tile .k{font-size:var(--t-small);font-weight:700;color:var(--kind)}
+#m .tile .n{font-family:var(--f-body);font-size:var(--t-h1);font-weight:700;line-height:1.1}
+#m .tile .n small{font-family:var(--f-body);font-size:var(--t-small);font-weight:500;color:var(--muted);margin-left:3px}
+#m .tile.hot .n{color:var(--accent)}
+#m .tile .t{font-size:var(--t-small);font-weight:500;line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+#m .empty{margin:0 16px;padding:18px;border:1px dashed var(--line);border-radius:14px;color:var(--muted);font-size:var(--t-small);text-align:center}
+#m .foot-note{padding:28px 16px 0;margin:0;font-size:var(--t-small);color:var(--muted)}
+
+/* tab bar */
+#m .tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:440px;z-index:30;display:grid;grid-template-columns:repeat(5,1fr);background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+#m .tabbar button{height:var(--tab-h);border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:var(--t-label);color:var(--muted)}
+#m .tabbar svg{width:24px;height:24px}
+#m .tabbar [aria-current="page"]{color:var(--ink);font-weight:700}
+#m .tabbar [aria-current="page"] svg{color:var(--accent)}
+
+/* bottom sheet */
+#m .scrim{position:fixed;inset:0;background:var(--scrim);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s}
+#m .scrim.on{opacity:1;pointer-events:auto}
+#m .sheet{position:fixed;left:50%;bottom:0;width:100%;max-width:440px;max-height:90%;z-index:50;background:var(--surface);border-radius:20px 20px 0 0;transform:translate(-50%,100%);transition:transform .28s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
+#m .sheet.on{transform:translate(-50%,0)}
+#m .sheet-grab{touch-action:none}
+#m .grip{display:flex;justify-content:center;padding:10px 0 2px}
+#m .grip i{width:40px;height:5px;border-radius:3px;background:var(--line)}
+#m .sheet-head{display:flex;justify-content:space-between;align-items:center;padding:0 6px 0 20px;font-size:var(--t-small);font-weight:700;color:var(--muted)}
+#m .sheet-body{overflow-y:auto;overscroll-behavior:contain;padding:4px 20px 20px;display:flex;flex-direction:column;gap:18px}
+#m .sheet-body h2{font-size:var(--t-h3);line-height:1.4}
+#m .sheet-foot{display:flex;gap:10px;padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}
+#m .btn{flex:1;min-height:52px;border-radius:14px;border:0;font-weight:700;font-size:var(--t-body)}
+#m .btn.primary{background:var(--accent);color:#fff}
+#m .btn.ghost{background:var(--surface-2)}
+#m .btn.ghost[aria-pressed="true"]{color:var(--accent)}
+#m .btn:active{opacity:.85}
+#m .lede{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.55}
+#m .lede-full{margin:0;font-size:var(--t-body);line-height:1.75}
+#m .prize{font-family:var(--f-body);font-size:var(--t-h2);font-weight:700;letter-spacing:-.02em}
+#m .prize small{font-family:var(--f-body);font-size:var(--t-small);color:var(--muted);font-weight:500;margin-left:6px}
+#m .spec{margin:0;border-top:1px solid var(--line)}
+#m .spec div{display:grid;grid-template-columns:84px 1fr;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:var(--t-body)}
+#m .spec dt{color:var(--muted)}
+#m .spec dd{margin:0;font-weight:500;min-width:0}
+#m .steps{list-style:none;margin:0;padding:0;counter-reset:s}
+#m .steps li{counter-increment:s;display:flex;align-items:center;gap:12px;padding:6px 0;font-size:var(--t-body);position:relative}
+#m .steps li::before{content:counter(s);width:28px;height:28px;flex:none;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-family:var(--f-body);font-size:var(--t-small);font-weight:700;background:var(--surface)}
+#m .steps li.ncs::before{border-color:var(--accent);color:var(--accent)}
+#m .steps li+li::after{content:"";position:absolute;left:13px;top:-8px;height:16px;width:2px;background:var(--line);z-index:-1}
+#m .sub-h{font-size:var(--t-small);font-weight:700;color:var(--muted);margin-bottom:8px}
+#m .pills{display:flex;flex-wrap:wrap;gap:6px}
+#m .pill{font-size:var(--t-small);padding:5px 10px;border-radius:8px;background:var(--surface-2)}
+#m .cluster{list-style:none;margin:0;padding:0}
+#m .cluster li{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:var(--t-small)}
+#m .cluster b{flex:none;width:96px;font-weight:600}
+#m .cluster span{color:var(--muted);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* search */
+#m .search{position:fixed;inset:0;z-index:45;max-width:440px;margin:0 auto;background:var(--bg);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+#m .search-top{display:flex;gap:4px;align-items:center;padding:8px 6px 8px 16px}
+#m .field{flex:1;display:flex;align-items:center;gap:8px;background:var(--surface-2);border-radius:12px;padding:0 12px;height:44px;color:var(--muted)}
+#m .field svg{width:18px;height:18px;flex:none}
+#m .field input{flex:1;border:0;background:none;font:inherit;font-size:var(--t-body);color:var(--ink);outline:none;min-width:0}
+#m .cancel{border:0;background:none;min-height:44px;padding:0 10px;font-size:var(--t-body);color:var(--accent);font-weight:600}
+#m .search-res{overflow-y:auto;flex:1;padding:8px 0 32px}
+
+#m .toast{position:fixed;left:50%;bottom:calc(var(--tab-h) + env(safe-area-inset-bottom,0px) + 14px);transform:translate(-50%,16px);width:max-content;max-width:calc(100% - 32px);background:var(--ink);color:var(--bg);padding:12px 16px;border-radius:12px;font-size:var(--t-small);z-index:60;opacity:0;transition:.2s;pointer-events:none}
+#m .toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media (prefers-reduced-motion:reduce){#m .sheet,#m .scrim,#m .toast,#m .bar,#m .bar-title{transition:none}}
+
+/* typography: one family (Plex Sans KR); page titles and headline figures get weight 700 and size, not a second face */
+#m{word-break:keep-all;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;line-height:1.6}
+#m h1,#m h2,#m h3{line-height:1.3;letter-spacing:-.01em}
+#m .page-head h1,#m .dd b,#m .tile .n,#m .prize,#m .income b{font-weight:700;letter-spacing:-.01em}
+#m .page-head h1{line-height:1.15}
+#m .row-title,#m .sheet-body h2{line-height:1.45}
+</style>
+
+
+<div id="ca">
+<header class="top">
+  <div class="wrap top-row">
+    <div class="logo"><b>CNH</b><span>Civil News Hub</span></div>
+    <nav class="tabs" aria-label="주요 메뉴">
+      <button data-go="home">홈</button>
+      <button data-go="news">뉴스</button>
+      <button data-go="contest">공모전</button>
+      <button data-go="jobs">채용</button>
+      <button data-go="jbnu">전북대<span class="jb">JBNU</span></button>
+    </nav>
+    <label class="search"><button type="button" class="q-clear" id="q-clear" aria-label="검색어 지우고 전체 보기" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 6l12 12M18 6 6 18"/></svg></button><svg class="q-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" placeholder="뉴스·공모전·채용 검색" aria-label="통합 검색"></label>
+    <button class="icon-btn m-only" id="search-btn" aria-label="검색 열기" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+    <button class="icon-btn saved-btn" id="saved-btn" data-saved aria-label="저장한 항목 보기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"/></svg><span class="count" id="saved-count" hidden></span></button>
+    <button class="icon-btn" id="theme" aria-label="테마 전환"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+  </div>
+  <div class="wrap ticker">
+    <div class="ticker-label"><i></i>실시간 트렌딩</div>
+    <div class="tags" id="trend"></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <p class="notice" id="live-notice">실시간 자동 수집 데이터: 주요 토목 분야별 브리핑 (136건), 채용 공고, 팩트 검증 공모전</p>
+
+  <section class="view" id="v-home">
+    <div class="home-grid">
+      <div class="home-main">
+        <div>
+          <div class="sec-head"><h2>오늘의 브리핑</h2><button class="more" data-go="news">뉴스 전체 보기 →</button></div>
+          <div class="briefing" id="briefing"></div>
+        </div>
+        <div>
+          <div class="sec-head"><h2>진행 중 공모전</h2><button class="more" data-go="contest">전체 보기 →</button></div>
+          <div class="h-scroll" id="home-contests"></div>
+        </div>
+        <div>
+          <div class="sec-head"><h2>채용 하이라이트</h2><button class="more" data-go="jobs">채용관 →</button></div>
+          <div class="toolbar"><div class="seg" id="home-job-seg"></div></div>
+          <div class="job-grid" id="home-jobs"></div>
+        </div>
+      </div>
+      <aside class="rail">
+        <div class="panel">
+          <div class="sec-head" style="margin-bottom:6px"><h2 style="font-size:var(--t-body)">마감 임박</h2><span class="eyebrow">D-Day 순</span></div>
+          <ul class="tl" id="deadlines"></ul>
+        </div>
+        <div class="panel stats" id="stats"></div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="view" id="v-news" hidden>
+    <div class="toolbar">
+      <div class="chips" id="cat-chips"></div>
+      <div class="spacer"></div>
+      <div class="seg" id="view-mode">
+        <button data-mode="card" aria-pressed="true">카드</button>
+        <button data-mode="list" aria-pressed="false">리스트</button>
+      </div>
+    </div>
+    <div class="news-grid" id="news-list"></div>
+  </section>
+
+  <section class="view" id="v-contest" hidden>
+    <div class="counter"><strong class="mono" id="contest-count">0</strong><span>건의 공모전이 접수 중입니다. 마감된 공모전은 자동으로 사라집니다.</span></div>
+    <div class="toolbar">
+      <div class="chips" id="target-chips"></div>
+      <div class="spacer"></div>
+      <div class="sort"><label class="eyebrow" for="sort">정렬</label>
+      <select id="sort"><option value="dday">마감 임박순</option><option value="prize">상금 높은순</option><option value="new">최신 등록순</option></select></div>
+    </div>
+    <div class="contest-grid" id="contest-list"></div>
+  </section>
+
+  <section class="view" id="v-jobs" hidden>
+    <div class="toolbar"><div class="seg" id="job-seg"></div><div class="spacer"></div><div class="chips" id="lvl-chips"></div></div>
+    <div class="job-grid" id="job-list"></div>
+  </section>
+
+  <section class="view" id="v-jbnu" hidden>
+    <div class="jb-hero">
+      <div><span class="eyebrow">전북대학교 전용</span><h2>캠퍼스 알바</h2><p>예상 월 수입은 주휴수당을 포함해 월 4.345주 기준으로 계산했어요.</p></div>
+    </div>
+    <div class="alba-grid" id="alba-list"></div>
+    <div class="sec-head"><h2>SW 중심대학사업단 프로그램</h2></div>
+    <div class="contest-grid" id="sw-list"></div>
+  </section>
+</main>
+
+<nav class="bottom-bar" aria-label="하단 메뉴">
+  <button data-go="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11 12 4l9 7v9H3z"/></svg>홈</button>
+  <button data-go="news"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h10M7 17h6"/></svg>뉴스</button>
+  <button data-go="contest"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/></svg>공모전</button>
+  <button data-go="jobs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V4h6v3"/></svg>채용</button>
+  <button data-go="jbnu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m2 9 10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/></svg>전북대</button>
+</nav>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dr-title">
+  <div class="drawer-head"><span class="eyebrow" id="dr-kind">상세</span><button class="icon-btn" id="dr-close" aria-label="닫기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="drawer-body" id="dr-body"></div>
+</aside>
+<div class="toast" id="toast" role="status"></div>
+</div>
+
+
+<div id="m" hidden>
+
+<div class="app">
+  <header class="bar" id="m-bar">
+    <span class="brand">CNH</span><span class="bar-title" id="m-bar-title">오늘</span>
+    <button class="ibtn" id="m-open-search" aria-label="검색"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+    <button class="ibtn" id="m-theme" aria-label="화면 테마 바꾸기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+  </header>
+  <main id="m-view"></main>
+</div>
+
+<nav class="tabbar" aria-label="하단 메뉴">
+  <button data-go="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11 12 4l9 7v9H3z"/></svg>오늘</button>
+  <button data-go="news"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h10M7 17h6"/></svg>뉴스</button>
+  <button data-go="contest"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/></svg>공모전</button>
+  <button data-go="jobs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V4h6v3"/></svg>채용</button>
+  <button data-go="jbnu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m2 9 10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/></svg>전북대</button>
+</nav>
+
+<div class="scrim" id="m-scrim"></div>
+<section class="sheet" id="m-sheet" role="dialog" aria-modal="true" aria-labelledby="sh-title">
+  <div class="sheet-grab" id="m-grab">
+    <div class="grip"><i></i></div>
+    <div class="sheet-head"><span id="m-sh-kind"></span><button class="ibtn" id="m-sh-close" aria-label="닫기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  </div>
+  <div class="sheet-body" id="m-sh-body"></div>
+  <div class="sheet-foot" id="m-sh-foot"></div>
+</section>
+
+<div class="search" id="m-search" hidden>
+  <div class="search-top">
+    <label class="field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="m-q" type="search" placeholder="뉴스, 공모전, 채용 찾기" aria-label="검색어" autocomplete="off"></label>
+    <button class="cancel" id="m-close-search">취소</button>
+  </div>
+  <div class="search-res" id="m-search-res"></div>
+</div>
+<div class="toast" id="m-toast" role="status"></div>
+
+</div>
+
+<script>
+/* ---------- 공용 북마크: 두 화면이 같은 목록을 쓰고, 로그인한 사람은 기기 사이에서도 동기화돼요 ---------- */
+const saved = new Set();
+const savedListeners = [];
+try { JSON.parse(localStorage.getItem('cnh-saved') || '[]').forEach(id => saved.add(id)); } catch(e){}
+let savedRef = null, savedWriteT = null, savedWriting = false, savedAgain = false;
+function storeSavedLocal(){ try { localStorage.setItem('cnh-saved', JSON.stringify([...saved])); } catch(e){} }
+function notifySaved(){ savedListeners.forEach(f => { try { f(); } catch(e){} }); }
+async function writeSavedRemote(){
+  if (!savedRef) return;
+  if (savedWriting){ savedAgain = true; return; }
+  savedWriting = true;
+  try { await savedRef.set({ids: [...saved]}); }
+  catch(e){ if (!e || e.code !== 'unavailable') savedRef = null; }
+  savedWriting = false;
+  if (savedAgain){ savedAgain = false; writeSavedRemote(); }
+}
+function persistSaved(){
+  storeSavedLocal(); notifySaved();
+  clearTimeout(savedWriteT); savedWriteT = setTimeout(writeSavedRemote, 300);
+}
+(async () => {
+  if (!window.claude || typeof window.claude.use !== 'function') return;
+  const [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+  if (!db || !user) return;
+  const uid = await user.id();
+  if (!uid) return;
+  const ref = db.doc('data/users/' + uid + '/saved');
+  let first = true;
+  ref.onSnapshot(snap => {
+    const body = snap.exists ? snap.data() : null;
+    const remote = body && Array.isArray(body.ids) ? body.ids : [];
+    if (first){
+      // 처음 연결할 때는 이 브라우저에 있던 북마크와 합쳐요
+      first = false; savedRef = ref;
+      const before = saved.size;
+      remote.forEach(id => saved.add(id));
+      const needsWrite = saved.size !== remote.length;
+      if (saved.size !== before){ storeSavedLocal(); notifySaved(); }
+      if (needsWrite) writeSavedRemote();
+      return;
+    }
+    if (snap.metadata.hasPendingWrites) return;
+    if (remote.length === saved.size && remote.every(id => saved.has(id))) return;
+    saved.clear(); remote.forEach(id => saved.add(id));
+    storeSavedLocal(); notifySaved();
+  }, () => { savedRef = null; });
+})();
+</script>
+<script>
+const $ = s => document.querySelector(s);
+const fmt = n => n.toLocaleString('ko-KR');
+const today = new Date(); today.setHours(0,0,0,0);
+const day = off => { const d = new Date(today); d.setDate(d.getDate()+off); return d; };
+const md = d => `${d.getMonth()+1}.${String(d.getDate()).padStart(2,'0')}`;
+const DAY = ['일','월','화','수','목','금','토'];
+function ddayBadge(off){
+  if (off === 0) return `<span class="dday hot">D-DAY</span>`;
+  if (off >= 60) return `<span class="dday">상시</span>`;
+  const cls = off <= 3 ? 'hot' : off <= 7 ? 'soon' : '';
+  return `<span class="dday ${cls}">D-${off}</span>`;
+}
+const ICON = {
+  bm:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"/></svg>',
+  chev:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>'
+};
+
+/* ---------- 예시 데이터 ---------- */
+let CATS = [
+  {id:'general',name:'토목종합'},{id:'road',name:'도로·철도'},{id:'water',name:'수자원·항만'},
+  {id:'tunnel',name:'터널·지반'},{id:'smart',name:'스마트건설'}
+];
+const catName = id => CATS.find(c=>c.id===id).name;
+let TRENDS = [['광역급행철도',1],['스마트건설',1],['지반침하',1],['BIM 의무화',0],['SOC 예산',1],['신항만',0],['TBM',1],['중대재해',0]];
+let NEWS = [
+  {cat:'road',src:'인프라타임즈',ago:'32분 전',n:12,title:'수도권 광역급행철도 신규 노선 착공 본격화… 1공구 공정률 18% 돌파',
+   lede:'수도권 광역급행철도 신규 노선이 민자 구간을 포함한 전 공구에서 착공을 마쳤다. 가장 먼저 공사에 들어간 1공구는 공정률 18%를 기록하며 계획보다 빠르게 진행되고 있다.'},
+  {cat:'smart',src:'건설저널',ago:'1시간 전',n:8,title:'스마트건설 기술 공공현장 적용 의무화 로드맵 발표',
+   lede:'정부가 300억 원 이상 공공공사에 스마트 안전장비를 단계적으로 의무화하는 로드맵을 내놨다. 드론 측량과 디지털트윈을 활용하는 현장에는 설계변경 인센티브도 준다.'},
+  {cat:'tunnel',src:'지반공학신문',ago:'2시간 전',n:5,title:'도심 지반침하 예방 위해 GPR 탐사 전국 확대',
+   lede:'도심 지반침하를 막기 위한 GPR(지표투과레이더) 탐사가 전국으로 확대된다. 노후 상하수도관이 묻힌 구간부터 탐사하고, 탐사 주기도 연 2회로 늘린다.'},
+  {cat:'water',src:'해양항만뉴스',ago:'3시간 전',n:3,title:'서해안 신항만 2단계 부두 실시설계 착수',
+   lede:'서해안 신항만 2단계 부두의 실시설계가 시작됐다. 5만 톤급 선석 2개 규모로, 연약지반을 어떤 공법으로 개량할지 비교 검토한 뒤 2028년 착공할 예정이다.'},
+  {cat:'general',src:'건설경제일보',ago:'4시간 전',n:9,title:'내년 SOC 예산 정부안 확정… 전년 대비 증액',
+   lede:'내년도 SOC 예산 정부안이 확정됐다. 전체 규모는 올해보다 늘었지만, 도로·철도 신규 사업보다 노후 시설 유지보수에 쓰이는 비중이 커진 것이 특징이다.'},
+  {cat:'smart',src:'디지털건설',ago:'5시간 전',n:4,title:'BIM 설계 의무화 대상 공공사업 확대, 설계사 인력 수요 증가',
+   lede:'BIM 설계를 의무로 적용해야 하는 공공사업의 사업비 기준이 낮아지면서 대상 사업이 크게 늘어난다. 설계엔지니어링사들은 BIM 전문 인력 채용에 나섰다.'},
+  {cat:'tunnel',src:'터널앤지반',ago:'6시간 전',n:6,title:'대심도 터널 안전기준 개정안 입법예고',
+   lede:'대심도 터널의 환기·방재 기준을 강화하는 안전기준 개정안이 입법예고됐다. 피난연결통로 간격을 줄이고, TBM 굴진 중 계측 데이터를 실시간으로 보고하도록 했다.'},
+  {cat:'road',src:'교통인프라',ago:'8시간 전',n:2,title:'호남권 고속철도 2단계 노반공사 발주',
+   lede:'호남권 고속철도 2단계 노반공사가 4개 공구로 나뉘어 발주됐다. 교량 구간 비중이 높아 입찰에 나선 업체들은 공기를 줄일 수 있는 프리캐스트 공법을 검토하고 있다.'},
+];
+const OTHER_SRC = ['건설경제일보','인프라타임즈','국토일보','엔지니어링데일리','지역신문 A','건설저널','연합 인프라','디지털건설','시공뉴스','토목신문','경제투데이','공공건설'];
+
+let CONTESTS = [
+  {id:'c1',title:'스마트시티 인프라 아이디어 공모전',org:'국토교통 스마트시티 추진단(예시)',award:'장관상',prize:3000,target:['대학생','일반'],start:-20,end:2,added:5},
+  {id:'c2',title:'도로안전 개선 아이디어 공모',org:'한빛도로공사(예시)',award:'사장상',prize:1500,target:['대학생','일반'],start:-14,end:5,added:9},
+  {id:'c3',title:'대학생 토목구조물 설계경진대회',org:'한국토목교육협회(예시)',award:'협회장상',prize:1000,target:['대학생'],start:-10,end:9,added:10},
+  {id:'c4',title:'스마트건설 기술 챌린지 2026',org:'스마트건설 얼라이언스(예시)',award:'장관상',prize:5000,target:['스타트업','일반'],start:-7,end:16,added:1},
+  {id:'c5',title:'수자원 데이터 활용 해커톤',org:'한결수자원공사(예시)',award:'사장상',prize:2000,target:['대학생','스타트업'],start:-3,end:24,added:0},
+  {id:'c6',title:'철도 안전 UCC·포스터 공모전',org:'대한철도공단(예시)',award:'이사장상',prize:800,target:['대학생','청소년'],start:-1,end:38,added:2},
+];
+let JOBS = [
+  {id:'j1',grp:'public',co:'한빛도로공사',color:'#1F6FB2',role:'토목직 (도로·교량)',lvl:'신입',steps:['서류','NCS','면접','최종'],end:3,loc:'경북 김천',welfare:['사택 제공','맞춤형 복지포인트','자기계발비']},
+  {id:'j2',grp:'public',co:'대한철도공단',color:'#2F7D4A',role:'토목 (궤도·노반)',lvl:'신입',steps:['서류','NCS','필기','면접'],end:11,loc:'대전',welfare:['통근버스','학자금 지원','순환근무 수당']},
+  {id:'j3',grp:'public',co:'누리주택도시공사',color:'#B5462E',role:'토목 (단지 조성)',lvl:'신입',steps:['서류','NCS','면접'],end:19,loc:'경남 진주',welfare:['사택 제공','육아휴직 3년']},
+  {id:'j4',grp:'major',co:'세움건설',color:'#34495E',role:'토목 시공관리 (현장)',lvl:'신입',steps:['서류','인적성','1차 면접','2차 면접'],end:6,loc:'전국 현장',welfare:['현장 숙소','해외근무 수당','자녀 학자금']},
+  {id:'j5',grp:'major',co:'한결E&C',color:'#7A4DB8',role:'인프라 공무 (견적·공정)',lvl:'경력',exp:'3년 이상',steps:['서류','면접','처우협의'],end:13,loc:'서울 본사',welfare:['성과급','건강검진','콘도 지원']},
+  {id:'j6',grp:'design',co:'누리엔지니어링',color:'#C07A12',role:'구조설계 (교량)',lvl:'경력',exp:'5년 이상',steps:['서류','실무 면접','임원 면접'],end:8,loc:'경기 성남',welfare:['유연근무','기술사 취득 지원']},
+  {id:'j7',grp:'design',co:'다온구조기술',color:'#157A7A',role:'지반·터널 설계',lvl:'신입',steps:['서류','과제','면접'],end:21,loc:'서울',welfare:['재택 주 1회','BIM 교육 지원']},
+];
+const GRP = {public:'공기업',major:'대형건설사',design:'설계엔지니어링'};
+let ALBA = [
+  {title:'중앙도서관 열람실 근로',where:'중앙도서관',type:'hour',wage:10320,hours:15,end:4,tag:'근로장학'},
+  {title:'공과대학 행정실 사무 보조',where:'공과대학 1호관',type:'hour',wage:10500,hours:20,end:7,tag:'교내'},
+  {title:'토목공학과 연구실 CAD 도면 보조',where:'공대 7호관',type:'hour',wage:12000,hours:10,end:12,tag:'전공 연계'},
+  {title:'학생식당 배식 보조',where:'진수당',type:'hour',wage:10320,hours:12,end:2,tag:'교내'},
+  {title:'대동제 운영 스태프',where:'대운동장',type:'day',wage:90000,days:3,end:9,tag:'단기'},
+];
+let SW = [
+  {title:'JBNU 인프라 데이터 해커톤',kind:'해커톤',when:'11월 둘째 주 · 무박 2일',end:10,seats:'40팀'},
+  {title:'현업 개발자 특강: 디지털트윈과 건설 데이터',kind:'특강',when:'매주 수 19:00',end:5,seats:'80명'},
+  {title:'1:1 커리어 멘토링 (SW·스마트건설)',kind:'멘토링',when:'4주 과정 · 온라인',end:15,seats:'30명'},
+];
+// 북마크에 쓰는 고유 번호 (두 화면이 같은 순서라 같은 번호가 붙어요)
+NEWS.forEach((n,i)=>n.id='n'+(i+1)); ALBA.forEach((a,i)=>a.id='a'+(i+1)); SW.forEach((s,i)=>s.id='s'+(i+1));
+
+// 즉시 로컬 캐시 복원 (새로고침 시 더미 데이터 노출 원천 차단: SWR 패턴)
+const _cached = (typeof CivilData !== 'undefined' && typeof CivilData.getCached === 'function') ? CivilData.getCached() : null;
+if (_cached) {
+  if (_cached.TRENDS && _cached.TRENDS.length) TRENDS = _cached.TRENDS;
+  if (_cached.NEWS && _cached.NEWS.length) NEWS = _cached.NEWS;
+  if (_cached.CONTESTS && _cached.CONTESTS.length) CONTESTS = _cached.CONTESTS;
+  if (_cached.JOBS && _cached.JOBS.length) JOBS = _cached.JOBS;
+  if (_cached.ALBA && _cached.ALBA.length) ALBA = _cached.ALBA;
+  if (_cached.SW && _cached.SW.length) SW = _cached.SW;
+}
+
+/* ---------- 계산 ---------- */
+function monthly(a){
+  if (a.type === 'day') return a.wage * a.days;
+  const weekly = a.wage * a.hours + (a.hours >= 15 ? a.wage * a.hours / 5 : 0);
+  return Math.round(weekly * 4.345 / 100) * 100;
+}
+function toggleSave(id, btn){
+  saved.has(id) ? saved.delete(id) : saved.add(id);
+  persistSaved();
+  document.querySelectorAll(`[data-bm="${id}"]`).forEach(b => b.setAttribute('aria-pressed', saved.has(id)));
+  toast(saved.has(id) ? '저장했어요. 오른쪽 위 북마크 버튼에서 모아 볼 수 있어요.' : '저장을 취소했어요.');
+  updateSavedCount();
+  if (drawerMode === 'saved') openSaved();
+}
+function updateSavedCount(){
+  const n = savedItems().length, el = $('#saved-count');
+  el.hidden = !n; el.textContent = n;
+  $('#saved-btn').setAttribute('aria-label', n ? `저장한 항목 ${n}개 보기` : '저장한 항목 보기');
+}
+function savedItems(){
+  return [
+    ...CONTESTS.filter(c=>saved.has(c.id)).map(c=>({id:c.id,open:'contest:'+c.id,kind:'공모전',k:'var(--accent)',t:c.title,sub:`${c.org} · 총 상금 ${fmt(c.prize)}만원`,end:c.end})),
+    ...JOBS.filter(j=>saved.has(j.id)).map(j=>({id:j.id,open:'job:'+j.id,kind:GRP[j.grp]+' 채용',k:'var(--c-road)',t:`${j.co} ${j.role}`,sub:`${j.lvl} · ${j.loc}`,end:j.end})),
+    ...ALBA.filter(a=>saved.has(a.id)).map(a=>({id:a.id,go:'jbnu',kind:'전북대 알바',k:'var(--ok)',t:a.title,sub:`${a.where} · ${a.type==='day'?'일급':'시급'} ${fmt(a.wage)}원`,end:a.end})),
+    ...SW.filter(s=>saved.has(s.id)).map(s=>({id:s.id,go:'jbnu',kind:'전북대 SW '+s.kind,k:'var(--c-smart)',t:s.title,sub:`${s.when} · 모집 ${s.seats}`,end:s.end})),
+    // 뉴스는 마감이 없어서 맨 뒤에 둬요
+    ...NEWS.filter(n=>saved.has(n.id)).map(n=>({id:n.id,go:'news',kind:'뉴스 · '+catName(n.cat),k:`var(--c-${n.cat})`,t:n.title,sub:`${n.src} · ${n.ago}`,end:null})),
+  ].sort((a,b)=>(a.end??99)-(b.end??99));
+}
+const bmBtn = id => `<button class="bm" data-bm="${id}" aria-pressed="${saved.has(id)}" aria-label="저장">${ICON.bm}</button>`;
+
+/* ---------- 렌더 ---------- */
+function newsCard(n, i){
+  let cluster = '';
+  if (n.clusters && n.clusters.length) {
+    cluster = n.clusters.map(c => `<li><a href="${c.link || '#'}" target="_blank" rel="noopener noreferrer" title="${(c.title || '').replace(/"/g, '&quot;')} (기사 원문 열기)"><span>${c.publisher}</span><span style="font-size:10px;opacity:0.65">↗</span></a></li>`).join('');
+  } else if (n.n > 0) {
+    cluster = Array.from({length:n.n}, (_,k) => `<li>${OTHER_SRC[(i+k)%OTHER_SRC.length]}</li>`).join('');
+  }
+  return `<article class="news" data-item="${n.id}" style="--cat:var(--c-${n.cat})">
+    <div class="news-meta"><span class="cat">${catName(n.cat)}</span><span>${n.src} · ${n.ago}</span>${bmBtn(n.id)}</div>
+    <a href="${n.link || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:inherit"><h3 style="cursor:pointer" title="원문 기사 새 창 열기">${n.title}</h3></a>
+    <p class="lede">${n.lede}</p>
+    ${n.n > 0 ? `<div class="cluster-wrap">
+      <button class="cluster-btn" aria-expanded="false">같은 보도자료 기사 <span class="n">${n.n}</span>건 ${ICON.chev}</button>
+      <ul class="cluster" aria-label="같은 보도자료로 기사를 쓴 언론사" hidden>${cluster}</ul>
+    </div>` : ''}
+  </article>`;
+}
+function contestCard(c){
+  return `<article class="card click title-first" data-open="contest:${c.id}" tabindex="0">
+    <div class="card-top">${ddayBadge(c.end)}${bmBtn(c.id)}</div>
+    <h3>${c.title}</h3>
+    <div class="prize-line">총 상금 <b>${fmt(c.prize)}만원</b></div>
+    <div class="pills"><span class="pill award">${c.award}</span>${c.target.map(t=>`<span class="pill">${t}</span>`).join('')}${c.added<=2?'<span class="pill new">NEW</span>':''}</div>
+    <div class="meta"><span>${c.org}</span><span class="mono">~${md(day(c.end))}</span></div>
+  </article>`;
+}
+function jobCard(j){
+  return `<article class="card click" data-open="job:${j.id}" tabindex="0">
+    <div class="card-top">
+      <div class="co"><div class="logo-mark" style="background:${j.color}">${j.co[0]}</div><div><div class="co-name">${j.co}</div><div class="co-type">${GRP[j.grp]} · ${j.loc}</div></div></div>
+      <div class="card-top-r">${ddayBadge(j.end)}${bmBtn(j.id)}</div>
+    </div>
+    <h3>${j.role}</h3>
+    <div class="pills"><span class="pill ${j.lvl==='신입'?'new':'exp'}">${j.lvl}${j.exp?' '+j.exp:''}</span>${j.welfare.slice(0,2).map(w=>`<span class="pill">${w}</span>`).join('')}</div>
+    <div class="steps">${j.steps.map((s,k)=>`<span class="step ${s==='NCS'?'ncs':''}"><b>${k+1}</b>${s}</span>`).join('')}</div>
+  </article>`;
+}
+
+function renderHome(){
+  $('#briefing').innerHTML = newsCard(NEWS[0],0).replace('class="news"','class="news lead"') +
+    `<div class="side-news">${NEWS.slice(1,4).map((n,i)=>newsCard(n,i+1)).join('')}</div>`;
+  $('#home-contests').innerHTML = [...CONTESTS].sort((a,b)=>a.end-b.end).map(contestCard).join('');
+  renderHomeJobs('public');
+  const items = [
+    ...CONTESTS.map(c=>({k:'공모전',c:'var(--accent)',t:c.title,end:c.end,open:'contest:'+c.id})),
+    ...JOBS.map(j=>({k:'채용',c:'var(--c-road)',t:`${j.co} ${j.role}`,end:j.end,open:'job:'+j.id})),
+    ...SW.map(s=>({k:'SW '+s.kind,c:'var(--c-smart)',t:s.title,end:s.end,go:'jbnu'})),
+  ].filter(x=>x.end>=0 && x.end<60).sort((a,b)=>a.end-b.end).slice(0,7);
+  $('#deadlines').innerHTML = items.length ? items.map(x=>`<li style="--kind:${x.c}" ${x.open?`data-open="${x.open}"`:`data-go="${x.go}"`} tabindex="0">
+    <div class="tl-body"><div class="kind">${x.k}</div><div class="t">${x.t}</div></div>${ddayBadge(x.end)}</li>`).join('') : '<li class="empty" style="padding:16px 8px;text-align:center;color:var(--muted);font-size:var(--t-small);list-style:none">다가오는 마감 일정이 없어요</li>';
+  $('#stats').innerHTML = [
+    [CONTESTS.length,'접수 중 공모전'],[JOBS.length,'진행 중 채용'],[NEWS.length,'오늘 수집 기사'],[ALBA.length,'전북대 알바']
+  ].map(([v,l])=>`<div class="stat"><div class="v">${v}</div><div class="l">${l}</div></div>`).join('');
+  requestAnimationFrame(() => { fitNewsLines(); requestAnimationFrame(fitNewsLines); });
+}
+function renderHomeJobs(g){
+  $('#home-job-seg').innerHTML = Object.entries(GRP).map(([k,v])=>`<button data-hgrp="${k}" aria-pressed="${k===g}">${v}</button>`).join('');
+  $('#home-jobs').innerHTML = JOBS.filter(j=>j.grp===g).slice(0,2).map(jobCard).join('');
+}
+
+let newsCat = 'all', newsMode = 'card';
+function renderNews(){
+  $('#cat-chips').innerHTML = `<button class="chip" data-cat="all" aria-pressed="${newsCat==='all'}">전체</button>` +
+    CATS.map(c=>`<button class="chip" data-cat="${c.id}" style="--cat:var(--c-${c.id})" aria-pressed="${newsCat===c.id}"><span class="dot"></span>${c.name}</button>`).join('');
+  const q = $('#q').value.trim();
+  const list = NEWS.map((n,i)=>[n,i]).filter(([n])=>(newsCat==='all'||n.cat===newsCat)&&(!q||n.title.includes(q)));
+  const el = $('#news-list');
+  el.className = 'news-grid' + (newsMode==='list'?' list':'');
+  el.innerHTML = list.length ? list.map(([n,i])=>newsCard(n,i)).join('') : `<p class="notice">"${q}"에 해당하는 기사가 없어요. 다른 키워드로 검색해 보세요.</p>`;
+  requestAnimationFrame(() => { fitNewsLines(); requestAnimationFrame(fitNewsLines); });
+}
+// 제목 줄 수를 재서 본문 줄 수를 정해요 (제목 + 본문 = 4줄). 화면에 보일 때만 잴 수 있어요.
+function fitNewsLines(){
+  const isNewsHidden = !$('#v-news') || $('#v-news').hidden;
+  const isHomeHidden = !$('#v-home') || $('#v-home').hidden;
+  if (isNewsHidden && isHomeHidden) return;
+
+  const cards = document.querySelectorAll('#ca .news-grid:not(.list) .news, #ca .briefing .news.lead');
+  cards.forEach(c => {
+    const h = c.querySelector('h3'), lede = c.querySelector('.lede');
+    if (!h || !lede) return;
+    
+    const hHeight = h.getBoundingClientRect().height || h.offsetHeight || 0;
+    if (hHeight <= 0) return;
+
+    const style = getComputedStyle(h);
+    let lh = parseFloat(style.lineHeight);
+    if (isNaN(lh) || lh <= 0) {
+      const fs = parseFloat(style.fontSize) || 16;
+      lh = fs * 1.45;
+    }
+    
+    // 제목 줄 수 (최소 1줄, 최대 2줄 제한)
+    const lines = Math.min(2, Math.max(1, Math.round(hHeight / lh)));
+    // 제목이 1줄이면 본문 3줄, 제목이 2줄이면 본문 2줄 (합산 항상 정확히 4줄)
+    const ledeLines = Math.max(1, 4 - lines);
+    lede.style.setProperty('--lede-lines', ledeLines);
+  });
+}
+
+let target = '전체', sortBy = 'dday';
+function renderContests(){
+  const targets = ['전체','대학생','스타트업','일반','청소년'];
+  $('#target-chips').innerHTML = targets.map(t=>`<button class="chip" data-target="${t}" aria-pressed="${t===target}">${t}</button>`).join('');
+  const q = $('#q').value.trim();
+  let list = CONTESTS.filter(c=>c.end>=0 && (target==='전체'||c.target.includes(target)) && (!q||c.title.includes(q)));
+  list.sort(sortBy==='prize'?(a,b)=>b.prize-a.prize : sortBy==='new'?(a,b)=>a.added-b.added : (a,b)=>a.end-b.end);
+  $('#contest-count').textContent = list.length;
+  $('#contest-list').innerHTML = list.map(contestCard).join('') || '<p class="notice">조건에 맞는 공모전이 없어요. 참가대상 필터를 바꿔 보세요.</p>';
+}
+
+let jobGrp = 'public', lvl = '전체';
+function renderJobs(){
+  $('#job-seg').innerHTML = Object.entries(GRP).map(([k,v])=>`<button data-grp="${k}" aria-pressed="${k===jobGrp}">${v} <span class="mono">${JOBS.filter(j=>j.grp===k).length}</span></button>`).join('');
+  $('#lvl-chips').innerHTML = ['전체','신입','경력'].map(l=>`<button class="chip" data-lvl="${l}" aria-pressed="${l===lvl}">${l}</button>`).join('');
+  const list = JOBS.filter(j=>j.grp===jobGrp&&(lvl==='전체'||j.lvl===lvl)).sort((a,b)=>a.end-b.end);
+  $('#job-list').innerHTML = list.map(jobCard).join('') || '<p class="notice">이 조건의 공고가 아직 없어요.</p>';
+}
+
+function renderJbnu(){
+  $('#alba-list').innerHTML = ALBA.map(a=>`<article class="card" data-item="${a.id}">
+    <div class="card-top"><span class="pill">${a.tag}</span><div class="card-top-r">${ddayBadge(a.end)}${bmBtn(a.id)}</div></div>
+    <div><div class="income-l">${a.type==='day'?`총 예상 수입 (${a.days}일)`:'예상 월 수입'}</div><div class="income">₩${fmt(monthly(a))}</div></div>
+    <h3>${a.title}</h3>
+    <div class="wage-row">${a.type==='day'?`<span>일급 <b>${fmt(a.wage)}</b></span>`:`<span>시급 <b>${fmt(a.wage)}</b></span><span>주 <b>${a.hours}</b>시간</span>`}</div>
+    <div class="meta"><span>${a.where}</span><span>${a.type==='hour'&&a.hours>=15?'주휴수당 포함':a.type==='hour'?'주휴수당 없음':''}</span></div>
+  </article>`).join('');
+  $('#sw-list').innerHTML = SW.map(s=>`<article class="card" data-item="${s.id}">
+    <div class="card-top"><span class="pill award">${s.kind}</span><div class="card-top-r">${ddayBadge(s.end)}${bmBtn(s.id)}</div></div>
+    <h3>${s.title}</h3>
+    <div class="wage-row"><span>${s.when}</span></div>
+    <div class="meta"><span>모집 ${s.seats}</span><span class="mono">신청 ~${md(day(s.end))}</span></div>
+  </article>`).join('');
+}
+
+/* ---------- 드로어 ---------- */
+let lastFocus = null, drawerMode = null;
+function showDrawer(){
+  if (!$('#drawer').classList.contains('on')) lastFocus = document.activeElement;
+  $('#drawer').classList.add('on'); $('#scrim').classList.add('on');
+  $('#dr-close').focus();
+}
+function openSaved(){
+  const items = savedItems();
+  drawerMode = 'saved';
+  $('#dr-kind').textContent = '북마크';
+  $('#dr-body').innerHTML = `<h2 id="dr-title">저장한 항목 <span class="mono">${items.length}</span></h2>` + (items.length
+    ? `<ul class="saved-list">${items.map(x=>`<li style="--k:${x.k}"><button class="saved-row" ${x.open?`data-open="${x.open}" data-from-saved`:`data-go="${x.go}" data-focus="${x.id}"`}><span class="saved-kind">${x.kind}</span><span class="saved-t">${x.t}</span><span class="saved-sub">${x.sub}</span></button>${x.end==null?'':ddayBadge(x.end)}${bmBtn(x.id)}</li>`).join('')}</ul>`
+    : '<p class="saved-empty">아직 저장한 항목이 없어요. 뉴스·공모전·채용·전북대 카드의 북마크 아이콘을 누르면 여기에 모여요.</p>');
+  showDrawer();
+}
+function openDrawer(key, fromSaved){
+  drawerMode = 'item';
+  const [type,id] = key.split(':');
+  let html = '';
+  if (type==='contest'){
+    const c = CONTESTS.find(x=>x.id===id);
+    $('#dr-kind').textContent = '공모전 요강';
+    html = `<div class="card-top">${ddayBadge(c.end)}${bmBtn(c.id)}</div>
+      <h2 id="dr-title">${c.title}</h2>
+      <div class="prize">${fmt(c.prize)}만원<small>총 상금</small></div>
+      <dl class="spec">
+        <dt>주최</dt><dd>${c.org}</dd>
+        <dt>훈격</dt><dd>${c.award}</dd>
+        <dt>참가대상</dt><dd>${c.target.join(', ')}</dd>
+        <dt>접수기간</dt><dd class="mono">${md(day(c.start))}(${DAY[day(c.start).getDay()]}) ~ ${md(day(c.end))}(${DAY[day(c.end).getDay()]})</dd>
+        <dt>시상 내역</dt><dd>대상 1팀 · 최우수 2팀 · 우수 3팀 · 장려 5팀</dd>
+        <dt>제출물</dt><dd>기획서(PDF, 10쪽 이내), 발표 영상 3분</dd>
+      </dl>
+      <div class="row"><button class="cta ghost" data-bm="${c.id}" aria-pressed="${saved.has(c.id)}">저장하기</button><a href="${c.link || '#'}" target="_blank" rel="noopener noreferrer" class="cta" style="text-align:center;text-decoration:none;display:inline-block">공식 접수처 바로가기 ↗</a></div>`;
+  } else {
+    const j = JOBS.find(x=>x.id===id);
+    $('#dr-kind').textContent = GRP[j.grp] + ' 채용';
+    html = `<div class="card-top"><div class="co"><div class="logo-mark" style="background:${j.color}">${j.co[0]}</div><div><div class="co-name">${j.co}</div><div class="co-type">${j.loc}</div></div></div>${ddayBadge(j.end)}</div>
+      <h2 id="dr-title">${j.role}</h2>
+      <dl class="spec">
+        <dt>지원 자격</dt><dd>${j.lvl}${j.exp?' ('+j.exp+')':''} · 토목 관련 전공</dd>
+        <dt>마감</dt><dd class="mono">${md(day(j.end))}(${DAY[day(j.end).getDay()]}) 18:00</dd>
+        <dt>우대</dt><dd>토목기사, 건설안전기사, BIM 활용 경험</dd>
+      </dl>
+      <div><div class="eyebrow" style="margin-bottom:8px">전형 절차</div><div class="steps">${j.steps.map((s,k)=>`<span class="step ${s==='NCS'?'ncs':''}"><b>${k+1}</b>${s}</span>`).join('')}</div></div>
+      <div><div class="eyebrow" style="margin-bottom:8px">복리후생</div><div class="pills">${j.welfare.map(w=>`<span class="pill">${w}</span>`).join('')}</div></div>
+      <div class="row"><button class="cta ghost" data-bm="${j.id}" aria-pressed="${saved.has(j.id)}">공고 저장</button><a href="${j.link || '#'}" target="_blank" rel="noopener noreferrer" class="cta" style="text-align:center;text-decoration:none;display:inline-block">채용 공고 바로가기 ↗</a></div>`;
+  }
+  $('#dr-body').innerHTML = (fromSaved ? '<button class="back" data-saved>← 저장한 항목</button>' : '') + html;
+  showDrawer();
+}
+// 저장 목록에서 고른 카드로 스크롤하고 잠깐 강조해요. 필터나 검색에 가려져 있으면 풀어서 보여 줘요
+function focusItem(id){
+  let el = document.querySelector(`#ca [data-item="${id}"]`);
+  if (!el && id[0]==='n'){ newsCat = 'all'; $('#q').value = ''; renderNews(); syncSearchUI(); el = document.querySelector(`#ca [data-item="${id}"]`); }
+  if (!el) return;
+  el.scrollIntoView({block:'center', behavior:'smooth'});
+  el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+}
+function closeDrawer(){
+  drawerMode = null;
+  $('#drawer').classList.remove('on'); $('#scrim').classList.remove('on');
+  lastFocus && lastFocus.focus && lastFocus.focus();
+}
+
+/* ---------- 라우팅 & 이벤트 ---------- */
+const VIEWS = ['home','news','contest','jobs','jbnu'];
+function go(v){
+  if (!VIEWS.includes(v)) v = 'home';
+  VIEWS.forEach(x=>$('#v-'+x).hidden = x!==v);
+  document.querySelectorAll('#ca nav [data-go]').forEach(b=>{
+    if (b.dataset.go===v) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current');
+  });
+  if (location.hash.slice(1)!==v) history.replaceState(null,'','#'+v);
+  if (v==='news' || v==='home') {
+    requestAnimationFrame(() => { fitNewsLines(); requestAnimationFrame(fitNewsLines); });
+  }
+  window.scrollTo({top:0});
+}
+let tt;
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('on'),2400); }
+
+function closeClusters(){ document.querySelectorAll('.cluster-btn[aria-expanded="true"]').forEach(b=>{ b.setAttribute('aria-expanded','false'); b.nextElementSibling.hidden = true; }); }
+document.addEventListener('click', e=>{
+  if (e.target.closest('#m')) return;
+  if (!e.target.closest('.cluster-wrap')) closeClusters();
+  const bm = e.target.closest('[data-bm]'); if (bm){ e.stopPropagation(); toggleSave(bm.dataset.bm); return; }
+  const cb = e.target.closest('.cluster-btn');
+  if (cb){ const open = cb.getAttribute('aria-expanded')==='true'; closeClusters(); if (!open){ cb.setAttribute('aria-expanded','true'); cb.nextElementSibling.hidden = false; } return; }
+  const g = e.target.closest('[data-go]'); if (g){ go(g.dataset.go); if (g.dataset.focus){ closeDrawer(); focusItem(g.dataset.focus); } return; }
+  const sv = e.target.closest('[data-saved]'); if (sv){ openSaved(); return; }
+  const o = e.target.closest('[data-open]'); if (o){ openDrawer(o.dataset.open, 'fromSaved' in o.dataset); return; }
+  const c = e.target.closest('[data-cat]'); if (c){ newsCat=c.dataset.cat; renderNews(); return; }
+  const m = e.target.closest('[data-mode]'); if (m){ newsMode=m.dataset.mode; document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',b===m)); renderNews(); return; }
+  const t = e.target.closest('[data-target]'); if (t){ target=t.dataset.target; renderContests(); return; }
+  const gr = e.target.closest('[data-grp]'); if (gr){ jobGrp=gr.dataset.grp; renderJobs(); return; }
+  const hg = e.target.closest('[data-hgrp]'); if (hg){ renderHomeJobs(hg.dataset.hgrp); return; }
+  const l = e.target.closest('[data-lvl]'); if (l){ lvl=l.dataset.lvl; renderJobs(); return; }
+  const tr = e.target.closest('[data-trend]'); if (tr){
+    const again = $('#q').value.trim() === tr.dataset.trend;
+    $('#q').value = again ? '' : tr.dataset.trend; go('news'); newsCat='all'; renderNews(); syncSearchUI();
+    toast(again ? '뉴스 전체를 보여드려요.' : `"${tr.dataset.trend}" 키워드 기사만 보여드려요. 한 번 더 누르면 전체로 돌아가요.`); return;
+  }
+});
+document.addEventListener('keydown', e=>{
+  if (e.key==='Escape'){ closeClusters(); closeDrawer(); }
+  if ((e.key==='Enter'||e.key===' ') && e.target.matches('[data-open],.tl li')){ e.preventDefault(); e.target.click(); }
+});
+$('#scrim').onclick = closeDrawer; $('#dr-close').onclick = closeDrawer;
+$('#sort').onchange = e=>{ sortBy=e.target.value; renderContests(); };
+// 검색어가 있으면 지우기 버튼을 보여 주고, 같은 키워드의 트렌딩 태그를 눌린 상태로 표시해요
+function syncSearchUI(){
+  const q = $('#q').value.trim();
+  $('#q-clear').hidden = !q;
+  $('#ca .search').classList.toggle('has-q', !!q);
+  document.querySelectorAll('[data-trend]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.trend===q));
+}
+$('#q-clear').onclick = ()=>{
+  $('#q').value = ''; newsCat = 'all';
+  const v = VIEWS.find(x=>!$('#v-'+x).hidden);
+  if (v==='contest') renderContests(); else if (v==='news') renderNews();
+  syncSearchUI(); $('#q').focus();
+};
+$('#q').addEventListener('input', syncSearchUI);
+$('#q').addEventListener('input', ()=>{ const v = VIEWS.find(x=>!$('#v-'+x).hidden); if (v==='contest') renderContests(); else { if (v!=='news') go('news'); renderNews(); } });
+
+$('#trend').innerHTML = TRENDS.map(([t,up],i)=>`<button class="tag" data-trend="${t}" aria-pressed="false"><span class="rk">${i+1}</span>#${t}${up?'<span class="up">▲</span>':''}</button>`).join('');
+
+$('#theme').onclick = ()=>{
+  const r = document.documentElement;
+  const dark = r.dataset.theme ? r.dataset.theme==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  r.dataset.theme = dark ? 'light' : 'dark';
+  try { localStorage.setItem('cnh-theme', r.dataset.theme); } catch(e){}
+};
+try { const th = localStorage.getItem('cnh-theme'); if (th) document.documentElement.dataset.theme = th; } catch(e){}
+
+const phone = matchMedia('(max-width:760px)');
+$('#search-btn').onclick = ()=>{
+  const h = $('header.top'), open = !h.classList.contains('search-open');
+  h.classList.toggle('search-open', open);
+  $('#search-btn').setAttribute('aria-expanded', open);
+  $('#search-btn').setAttribute('aria-label', open ? '검색 닫기' : '검색 열기');
+  if (open) $('#q').focus();
+};
+let lastY = scrollY;
+addEventListener('scroll', ()=>{
+  const h = $('header.top'), y = scrollY;
+  const hide = phone.matches && y > lastY && y > 120 && !h.classList.contains('search-open') && document.activeElement !== $('#q');
+  if (Math.abs(y - lastY) > 6) { h.classList.toggle('hide', hide); lastY = y; }
+}, {passive:true});
+
+let fitT; addEventListener('resize', ()=>{ clearTimeout(fitT); fitT = setTimeout(() => requestAnimationFrame(fitNewsLines), 60); });
+document.fonts && document.fonts.ready.then(() => requestAnimationFrame(fitNewsLines));
+if (window.ResizeObserver) {
+  const ro = new ResizeObserver(() => requestAnimationFrame(fitNewsLines));
+  const nl = $('#news-list'); if (nl) ro.observe(nl);
+  const bf = $('#briefing'); if (bf) ro.observe(bf);
+}
+
+// 다른 화면이나 다른 기기에서 북마크가 바뀌면 버튼과 개수를 다시 맞춰요
+savedListeners.push(()=>{
+  document.querySelectorAll('#ca [data-bm]').forEach(b=>b.setAttribute('aria-pressed', saved.has(b.dataset.bm)));
+  updateSavedCount();
+  if (drawerMode === 'saved') openSaved();
+});
+if (_cached && _cached.meta) {
+  const notEl = $('#live-notice');
+  if (notEl) {
+    notEl.innerHTML = `🟢 <b>실시간 자동 수집 데이터 연동 완료</b> (토목 뉴스 <strong>${_cached.meta.newsCount}</strong>건, 채용 <strong>${_cached.meta.jobsCount}</strong>건, 공모전 <strong>${_cached.meta.contestsCount}</strong>건, 전북대 알바 <strong>${_cached.meta.albaCount}</strong>건 · 업데이트: ${_cached.meta.lastUpdated})`;
+  }
+}
+updateSavedCount();
+renderHome(); renderNews(); renderContests(); renderJobs(); renderJbnu();
+go(location.hash.slice(1) || 'home');
+
+/* ---------- 데스크톱 실시간 크롤링 데이터 연동 엔진 ---------- */
+async function syncDesktopLiveData(){
+  if (typeof CivilData === 'undefined') return;
+  try {
+    const live = await CivilData.loadAll();
+    if (live) {
+      if (live.TRENDS && live.TRENDS.length) TRENDS = live.TRENDS;
+      if (live.NEWS && live.NEWS.length) NEWS = live.NEWS;
+      if (live.CONTESTS && live.CONTESTS.length) CONTESTS = live.CONTESTS;
+      if (live.JOBS && live.JOBS.length) JOBS = live.JOBS;
+      if (live.ALBA && live.ALBA.length) ALBA = live.ALBA;
+      if (live.SW && live.SW.length) SW = live.SW;
+
+      const tEl = $('#trend');
+      if (tEl) {
+        tEl.innerHTML = TRENDS.map(([t,up],i)=>`<button class="tag" data-trend="${t}" aria-pressed="false"><span class="rk">${i+1}</span>#${t}${up?'<span class="up">▲</span>':''}</button>`).join('');
+      }
+
+      renderHome();
+      renderNews();
+      renderContests();
+      renderJobs();
+      renderJbnu();
+      updateSavedCount();
+
+      const notEl = $('#live-notice');
+      if (notEl && live.meta) {
+        notEl.innerHTML = `🟢 <b>실시간 자동 수집 데이터 연동 완료</b> (토목 뉴스 <strong>${live.meta.newsCount}</strong>건, 채용 <strong>${live.meta.jobsCount}</strong>건, 공모전 <strong>${live.meta.contestsCount}</strong>건, 전북대 알바 <strong>${live.meta.albaCount}</strong>건 · 업데이트: ${live.meta.lastUpdated})`;
       }
     }
-  </script>
-</head>
-<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
+  } catch(e) {
+    console.warn('Desktop live sync error:', e);
+  }
+}
+syncDesktopLiveData();
+</script>
+<script>
+(() => {
 
-  <!-- 모바일 전용 상단 헤더 바 (Mobile Header: md 미만 스마트폰 화면 전용) -->
-  <header id="mobileHeader" class="md:hidden sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 px-3 py-2 transition-colors shadow-xs">
-    <div class="flex items-center justify-between gap-2">
-      <!-- 좌측: 로고 & 안전모 토글 버튼 -->
-      <div class="flex items-center gap-2 min-w-0">
-        <button id="mobileHatBtn" onclick="handleGnbHatClick()" class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-sm flex-shrink-0 hover:scale-105 active:scale-95 transition cursor-pointer" title="전북대학교 아르바이트 바로가기">
-          <i data-lucide="hard-hat" class="w-4 h-4"></i>
-        </button>
-        <span id="mobileBrandTitle" class="text-sm font-extrabold tracking-tight text-slate-900 dark:text-white truncate">Civil News Hub</span>
+const $ = s => document.querySelector(s);
+const fmt = n => n.toLocaleString('ko-KR');
+const today = new Date(); today.setHours(0,0,0,0);
+const day = off => { const d = new Date(today); d.setDate(d.getDate()+off); return d; };
+const DAY = ['일','월','화','수','목','금','토'];
+const md = d => `${d.getMonth()+1}.${String(d.getDate()).padStart(2,'0')}(${DAY[d.getDay()]})`;
+const urg = off => off <= 3 ? 'hot' : off <= 7 ? 'soon' : '';
+
+/* ---------- 예시 데이터 ---------- */
+let CATS = [{id:'general',name:'토목종합'},{id:'road',name:'도로·철도'},{id:'water',name:'수자원·항만'},{id:'tunnel',name:'터널·지반'},{id:'smart',name:'스마트건설'}];
+const catName = id => CATS.find(c=>c.id===id).name;
+let TRENDS = ['광역급행철도','스마트건설','지반침하','BIM 의무화','SOC 예산','신항만','TBM','중대재해'];
+let NEWS = [
+  {cat:'road',src:'인프라타임즈',ago:'32분 전',n:12,title:'수도권 광역급행철도 신규 노선 착공 본격화… 1공구 공정률 18% 돌파',
+   lede:'수도권 광역급행철도 신규 노선이 민자 구간을 포함한 전 공구에서 착공을 마쳤다. 가장 먼저 공사에 들어간 1공구는 공정률 18%를 기록하며 계획보다 빠르게 진행되고 있다.'},
+  {cat:'smart',src:'건설저널',ago:'1시간 전',n:8,title:'스마트건설 기술 공공현장 적용 의무화 로드맵 발표',
+   lede:'정부가 300억 원 이상 공공공사에 스마트 안전장비를 단계적으로 의무화하는 로드맵을 내놨다. 드론 측량과 디지털트윈을 활용하는 현장에는 설계변경 인센티브도 준다.'},
+  {cat:'tunnel',src:'지반공학신문',ago:'2시간 전',n:5,title:'도심 지반침하 예방 위해 GPR 탐사 전국 확대',
+   lede:'도심 지반침하를 막기 위한 GPR(지표투과레이더) 탐사가 전국으로 확대된다. 노후 상하수도관이 묻힌 구간부터 탐사하고, 탐사 주기도 연 2회로 늘린다.'},
+  {cat:'water',src:'해양항만뉴스',ago:'3시간 전',n:3,title:'서해안 신항만 2단계 부두 실시설계 착수',
+   lede:'서해안 신항만 2단계 부두의 실시설계가 시작됐다. 5만 톤급 선석 2개 규모로, 연약지반을 어떤 공법으로 개량할지 비교 검토한 뒤 2028년 착공할 예정이다.'},
+  {cat:'general',src:'건설경제일보',ago:'4시간 전',n:9,title:'내년 SOC 예산 정부안 확정… 전년 대비 증액',
+   lede:'내년도 SOC 예산 정부안이 확정됐다. 전체 규모는 올해보다 늘었지만, 도로·철도 신규 사업보다 노후 시설 유지보수에 쓰이는 비중이 커진 것이 특징이다.'},
+  {cat:'smart',src:'디지털건설',ago:'5시간 전',n:4,title:'BIM 설계 의무화 대상 공공사업 확대, 설계사 인력 수요 증가',
+   lede:'BIM 설계를 의무로 적용해야 하는 공공사업의 사업비 기준이 낮아지면서 대상 사업이 크게 늘어난다. 설계엔지니어링사들은 BIM 전문 인력 채용에 나섰다.'},
+  {cat:'tunnel',src:'터널앤지반',ago:'6시간 전',n:6,title:'대심도 터널 안전기준 개정안 입법예고',
+   lede:'대심도 터널의 환기·방재 기준을 강화하는 안전기준 개정안이 입법예고됐다. 피난연결통로 간격을 줄이고, TBM 굴진 중 계측 데이터를 실시간으로 보고하도록 했다.'},
+  {cat:'road',src:'교통인프라',ago:'8시간 전',n:2,title:'호남권 고속철도 2단계 노반공사 발주',
+   lede:'호남권 고속철도 2단계 노반공사가 4개 공구로 나뉘어 발주됐다. 교량 구간 비중이 높아 입찰에 나선 업체들은 공기를 줄일 수 있는 프리캐스트 공법을 검토하고 있다.'},
+];
+const OTHER_SRC = ['건설경제일보','인프라타임즈','국토일보','엔지니어링데일리','지역신문 A','건설저널','연합 인프라','디지털건설','시공뉴스','토목신문','경제투데이','공공건설'];
+let CONTESTS = [
+  {id:'c1',title:'스마트시티 인프라 아이디어 공모전',org:'국토교통 스마트시티 추진단(예시)',award:'장관상',prize:3000,target:['대학생','일반'],start:-20,end:2,added:5},
+  {id:'c2',title:'도로안전 개선 아이디어 공모',org:'한빛도로공사(예시)',award:'사장상',prize:1500,target:['대학생','일반'],start:-14,end:5,added:9},
+  {id:'c3',title:'대학생 토목구조물 설계경진대회',org:'한국토목교육협회(예시)',award:'협회장상',prize:1000,target:['대학생'],start:-10,end:9,added:10},
+  {id:'c4',title:'스마트건설 기술 챌린지 2026',org:'스마트건설 얼라이언스(예시)',award:'장관상',prize:5000,target:['스타트업','일반'],start:-7,end:16,added:1},
+  {id:'c5',title:'수자원 데이터 활용 해커톤',org:'한결수자원공사(예시)',award:'사장상',prize:2000,target:['대학생','스타트업'],start:-3,end:24,added:0},
+  {id:'c6',title:'철도 안전 UCC·포스터 공모전',org:'대한철도공단(예시)',award:'이사장상',prize:800,target:['대학생','청소년'],start:-1,end:38,added:2},
+];
+let JOBS = [
+  {id:'j1',grp:'public',co:'한빛도로공사',color:'#1F6FB2',role:'토목직 (도로·교량)',lvl:'신입',steps:['서류','NCS','면접','최종'],end:3,loc:'경북 김천',welfare:['사택 제공','맞춤형 복지포인트','자기계발비']},
+  {id:'j2',grp:'public',co:'대한철도공단',color:'#2F7D4A',role:'토목 (궤도·노반)',lvl:'신입',steps:['서류','NCS','필기','면접'],end:11,loc:'대전',welfare:['통근버스','학자금 지원','순환근무 수당']},
+  {id:'j3',grp:'public',co:'누리주택도시공사',color:'#B5462E',role:'토목 (단지 조성)',lvl:'신입',steps:['서류','NCS','면접'],end:19,loc:'경남 진주',welfare:['사택 제공','육아휴직 3년']},
+  {id:'j4',grp:'major',co:'세움건설',color:'#34495E',role:'토목 시공관리 (현장)',lvl:'신입',steps:['서류','인적성','1차 면접','2차 면접'],end:6,loc:'전국 현장',welfare:['현장 숙소','해외근무 수당','자녀 학자금']},
+  {id:'j5',grp:'major',co:'한결E&C',color:'#7A4DB8',role:'인프라 공무 (견적·공정)',lvl:'경력',exp:'3년 이상',steps:['서류','면접','처우협의'],end:13,loc:'서울 본사',welfare:['성과급','건강검진','콘도 지원']},
+  {id:'j6',grp:'design',co:'누리엔지니어링',color:'#C07A12',role:'구조설계 (교량)',lvl:'경력',exp:'5년 이상',steps:['서류','실무 면접','임원 면접'],end:8,loc:'경기 성남',welfare:['유연근무','기술사 취득 지원']},
+  {id:'j7',grp:'design',co:'다온구조기술',color:'#157A7A',role:'지반·터널 설계',lvl:'신입',steps:['서류','과제','면접'],end:21,loc:'서울',welfare:['재택 주 1회','BIM 교육 지원']},
+];
+const GRP = {public:'공기업',major:'대형건설사',design:'설계사'};
+let ALBA = [
+  {title:'중앙도서관 열람실 근로',where:'중앙도서관',type:'hour',wage:10320,hours:15,end:4,tag:'근로장학'},
+  {title:'공과대학 행정실 사무 보조',where:'공과대학 1호관',type:'hour',wage:10500,hours:20,end:7,tag:'교내'},
+  {title:'토목공학과 연구실 CAD 도면 보조',where:'공대 7호관',type:'hour',wage:12000,hours:10,end:12,tag:'전공 연계'},
+  {title:'학생식당 배식 보조',where:'진수당',type:'hour',wage:10320,hours:12,end:2,tag:'교내'},
+  {title:'대동제 운영 스태프',where:'대운동장',type:'day',wage:90000,days:3,end:9,tag:'단기'},
+];
+let SW = [
+  {title:'JBNU 인프라 데이터 해커톤',kind:'해커톤',when:'11월 둘째 주, 무박 2일',end:10,seats:'40팀'},
+  {title:'현업 개발자 특강: 디지털트윈과 건설 데이터',kind:'특강',when:'매주 수요일 19:00',end:5,seats:'80명'},
+  {title:'1:1 커리어 멘토링 (SW·스마트건설)',kind:'멘토링',when:'4주 과정, 온라인',end:15,seats:'30명'},
+];
+// 북마크에 쓰는 고유 번호 (두 화면이 같은 순서라 같은 번호가 붙어요)
+NEWS.forEach((n,i)=>n.id='n'+(i+1)); ALBA.forEach((a,i)=>a.id='a'+(i+1)); SW.forEach((s,i)=>s.id='s'+(i+1));
+
+// 즉시 로컬 캐시 복원 (모바일 인라인 뷰)
+const _mCached = (typeof CivilData !== 'undefined' && typeof CivilData.getCached === 'function') ? CivilData.getCached() : null;
+if (_mCached) {
+  if (_mCached.TRENDS && _mCached.TRENDS.length) TRENDS = _mCached.TRENDS.map(t => Array.isArray(t) ? t[0] : t);
+  if (_mCached.NEWS && _mCached.NEWS.length) NEWS = _mCached.NEWS;
+  if (_mCached.CONTESTS && _mCached.CONTESTS.length) CONTESTS = _mCached.CONTESTS;
+  if (_mCached.JOBS && _mCached.JOBS.length) JOBS = _mCached.JOBS;
+  if (_mCached.ALBA && _mCached.ALBA.length) ALBA = _mCached.ALBA;
+  if (_mCached.SW && _mCached.SW.length) SW = _mCached.SW;
+}
+
+function monthly(a){
+  if (a.type === 'day') return a.wage * a.days;
+  const weekly = a.wage * a.hours + (a.hours >= 15 ? a.wage * a.hours / 5 : 0);
+  return Math.round(weekly * 4.345 / 100) * 100;
+}
+
+/* ---------- 저장 ---------- */
+function toggleSave(id){
+  saved.has(id) ? saved.delete(id) : saved.add(id);
+  persistSaved();
+  document.querySelectorAll(`[data-save="${id}"]`).forEach(b=>{ b.setAttribute('aria-pressed', saved.has(id)); if (!b.classList.contains('save-i')) b.textContent = saved.has(id) ? '저장됨' : '저장'; });
+  toast(saved.has(id) ? '저장했어요. 오늘 탭에서 다시 볼 수 있어요.' : '저장을 취소했어요.');
+}
+
+/* ---------- 행 ---------- */
+const saveIcon = id => `<button class="save-i" data-save="${id}" aria-pressed="${saved.has(id)}" aria-label="저장"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"/></svg></button>`;
+const ddBox = off => `<div class="dd ${urg(off)} ${off===0?'today':''}"><b>${off===0?'오늘':off}</b><span>${off===0?'마감':'일 남음'}</span></div>`;
+const ddPill = off => `<span class="pd ${urg(off)}">${off===0?'오늘':'D-'+off}</span>`;
+const newsRow = (n,i) => `<button class="row" data-open="n:${i}"><div class="row-main">
+  <div class="row-meta"><span class="cat" style="--cat:var(--c-${n.cat})">${catName(n.cat)}</span><span>${n.src}</span><span>${n.ago}</span><span>관련 ${n.n}건</span></div>
+  <div class="row-title">${n.title}</div><div class="row-sub lede">${n.lede}</div></div></button>`;
+const contestRow = c => `<button class="row" data-open="c:${c.id}">${ddBox(c.end)}<div class="row-main">
+  <div class="row-meta"><span class="cat" style="--cat:var(--accent)">${c.award}</span><span>${c.target.join(', ')}</span>${c.added<=2?'<span class="tagn">새 공고</span>':''}</div>
+  <div class="row-title">${c.title}</div><div class="row-sub">총 상금 <b class="num">${fmt(c.prize)}만원</b></div></div></button>`;
+const jobRow = j => `<button class="row" data-open="j:${j.id}"><div class="logo" style="background:${j.color}">${j.co[0]}</div><div class="row-main">
+  <div class="row-meta"><span>${j.co} (예시)</span><span class="lv">${j.lvl}${j.exp?' '+j.exp:''}</span></div>
+  <div class="row-title">${j.role}</div><div class="row-sub">${j.loc}, 전형 ${j.steps.length}단계</div></div>${ddPill(j.end)}</button>`;
+const albaRow = a => `<div class="row"><div class="row-main">
+  <div class="row-meta"><span class="cat" style="--cat:var(--ok)">${a.tag}</span><span>${a.where}</span>${ddPill(a.end)}</div>
+  <div class="row-title">${a.title}</div>
+  <div class="row-sub">${a.type==='day'?`일급 <b class="num">${fmt(a.wage)}</b>원, ${a.days}일`:`시급 <b class="num">${fmt(a.wage)}</b>원, 주 ${a.hours}시간`}</div></div>
+  <div class="income"><b>₩${fmt(monthly(a))}</b><span>${a.type==='day'?'총 예상':'월 예상'}</span></div>${saveIcon(a.id)}</div>`;
+const swRow = s => `<div class="row"><div class="row-main">
+  <div class="row-meta"><span class="cat" style="--cat:var(--c-smart)">${s.kind}</span><span>모집 ${s.seats}</span></div>
+  <div class="row-title">${s.title}</div><div class="row-sub">${s.when}</div></div>${ddPill(s.end)}${saveIcon(s.id)}</div>`;
+const list = rows => `<div class="list">${rows}</div>`;
+const head = (t, p) => `<div class="page-head"><h1>${t}</h1>${p?`<p>${p}</p>`:''}</div>`;
+
+/* ---------- 화면 ---------- */
+let tab = 'home', newsCat = 'all', target = '전체', sortBy = 'dday', jobGrp = 'public', lvl = '전체';
+const TITLES = {home:'오늘', news:'뉴스', contest:'공모전', jobs:'채용', jbnu:'전북대'};
+
+const VIEWS = {
+  home(){
+    const items = [
+      ...CONTESTS.map(c=>({k:'공모전',c:'var(--accent)',t:c.title,end:c.end,open:'c:'+c.id})),
+      ...JOBS.map(j=>({k:'채용',c:'var(--c-road)',t:`${j.co} ${j.role}`,end:j.end,open:'j:'+j.id})),
+      ...SW.map(s=>({k:'SW '+s.kind,c:'var(--c-smart)',t:s.title,end:s.end,go:'jbnu'})),
+    ].filter(x=>x.end>=0 && x.end<60).sort((a,b)=>a.end-b.end).slice(0,5);
+    const savedRows = [
+      ...CONTESTS.filter(c=>saved.has(c.id)).map(contestRow), ...JOBS.filter(j=>saved.has(j.id)).map(jobRow),
+      ...ALBA.filter(a=>saved.has(a.id)).map(albaRow), ...SW.filter(s=>saved.has(s.id)).map(swRow),
+      ...NEWS.map((n,i)=>[n,i]).filter(([n])=>saved.has(n.id)).map(([n,i])=>newsRow(n,i)),
+    ].join('');
+    return head('오늘', `${today.getMonth()+1}월 ${today.getDate()}일 ${DAY[today.getDay()]}요일, 다가오는 주요 일정 ${items.length}개`) + `
+      <section class="sec"><div class="sec-h"><h2>마감 임박</h2></div>
+        <div class="strip">${items.map(x=>`<button class="tile ${x.end<=3?'hot':x.end<=7?'soon':''}" style="--kind:${x.c}" ${x.open?`data-open="${x.open}"`:`data-go="${x.go}"`}>
+          <span class="k">${x.k}</span><span class="n">${x.end===0?'오늘':x.end>=60?'상시':x.end}<small>${x.end===0?'마감':x.end>=60?'':'일 남음'}</small></span><span class="t">${x.t}</span></button>`).join('')}</div></section>
+      <section class="sec"><div class="sec-h"><h2>주요 뉴스</h2><button class="more" data-go="news">전체 보기</button></div>${list(NEWS.slice(0,4).map(newsRow).join(''))}</section>
+      <section class="sec"><div class="sec-h"><h2>지금 많이 찾는 키워드</h2></div>
+        <div class="chips wrap">${TRENDS.map(t=>`<button class="chip" data-q="${t}">#${t}</button>`).join('')}</div></section>
+      <section class="sec"><div class="sec-h"><h2>저장한 항목<small>${saved.size}</small></h2></div>
+        ${savedRows ? list(savedRows) : '<p class="empty">뉴스·공모전·채용을 열고 저장을 누르거나, 전북대 항목의 북마크 아이콘을 누르면 여기에 모여요.</p>'}</section>
+      <p class="foot-note" id="m-live-notice">실시간 자동 수집 데이터 (토목 뉴스 136건, 채용, 공모전, 전북대 알바)</p>`;
+  },
+  news(){
+    const rows = NEWS.map((n,i)=>[n,i]).filter(([n])=>newsCat==='all'||n.cat===newsCat);
+    return head('뉴스', `오늘 수집한 기사 ${NEWS.reduce((s,n)=>s+n.n,0)}건을 이슈 ${NEWS.length}개로 묶었어요`) + `
+      <div class="filters"><div class="chips">${[{id:'all',name:'전체'},...CATS].map(c=>`<button class="chip" data-cat="${c.id}" aria-pressed="${c.id===newsCat}">${c.name}</button>`).join('')}</div></div>
+      ${list(rows.map(([n,i])=>newsRow(n,i)).join(''))}`;
+  },
+  contest(){
+    let rows = CONTESTS.filter(c=>c.end>=0 && (target==='전체'||c.target.includes(target)));
+    rows.sort(sortBy==='prize'?(a,b)=>b.prize-a.prize : sortBy==='new'?(a,b)=>a.added-b.added : (a,b)=>a.end-b.end);
+    return head('공모전', `지금 접수 중인 공모전 ${rows.length}개`) + `
+      <div class="filters">
+        <div class="chips">${['전체','대학생','스타트업','일반','청소년'].map(t=>`<button class="chip" data-tg="${t}" aria-pressed="${t===target}">${t}</button>`).join('')}</div>
+        <div class="seg">${[['dday','마감 임박순'],['prize','상금 높은순'],['new','최신순']].map(([k,v])=>`<button data-sort="${k}" aria-pressed="${k===sortBy}">${v}</button>`).join('')}</div>
       </div>
-
-      <!-- 우측: [전북대 알바] 바로가기 퀵 버튼 + 다크모드 토글 -->
-      <div class="flex items-center gap-1.5 flex-shrink-0">
-        <button 
-          id="mobileQuickAlbaBtn" 
-          onclick="handleGnbHatClick()" 
-          class="flex items-center gap-1 px-2.5 py-1 text-xs font-bold rounded-lg text-emerald-700 dark:text-emerald-300 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 border border-emerald-300/80 dark:border-emerald-700/80 transition shadow-xs cursor-pointer active:scale-95"
-          title="전북대학교 아르바이트 바로가기"
-        >
-          <span id="mobileQuickAlbaIcon">🎓</span>
-          <span id="mobileQuickAlbaText">전북대 알바</span>
-        </button>
-
-        <button id="mobileThemeToggle" aria-label="테마 전환" class="p-1.5 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer">
-          <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
-          <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
-        </button>
+      ${rows.length ? list(rows.map(contestRow).join('')) : '<p class="empty">이 대상으로 열린 공모전이 아직 없어요. 다른 대상을 골라 보세요.</p>'}`;
+  },
+  jobs(){
+    const rows = JOBS.filter(j=>j.grp===jobGrp&&(lvl==='전체'||j.lvl===lvl)).sort((a,b)=>a.end-b.end);
+    return head('채용', `토목 전공자를 뽑는 공고 ${JOBS.length}개`) + `
+      <div class="filters">
+        <div class="seg">${Object.entries(GRP).map(([k,v])=>`<button data-grp="${k}" aria-pressed="${k===jobGrp}">${v} ${JOBS.filter(j=>j.grp===k).length}</button>`).join('')}</div>
+        <div class="chips">${['전체','신입','경력'].map(l=>`<button class="chip" data-lvl="${l}" aria-pressed="${l===lvl}">${l}</button>`).join('')}</div>
       </div>
-    </div>
-  </header>
-
-  <!-- 상단 네비게이션 헤더 (SPA 탭 전환: 데스크탑 전용, 모바일에서는 하단바로 대체) -->
-  <header class="hidden md:block sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 transition-colors shadow-sm">
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-14 sm:h-16 gap-1">
-        
-        <!-- 로고 및 서비스 네비게이션 (SPA 3원 GNB 버튼) -->
-        <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
-          <button id="gnbHatBtn" onclick="handleGnbHatClick()" class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 flex-shrink-0 hover:scale-105 transition cursor-pointer" title="전북대학교 아르바이트 바로가기">
-            <i data-lucide="hard-hat" class="w-4 h-4 sm:w-6 sm:h-6"></i>
-          </button>
-          
-          <nav class="flex items-center space-x-1 sm:space-x-1.5 min-w-0" aria-label="메인 네비게이션">
-            <!-- 0. 아르바이트 탭 (알바/학교 모드 시 노출) -->
-            <button 
-              id="gnbTabAlba" 
-              onclick="switchMainTab('home')" 
-              class="hidden px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-base font-bold tracking-tight text-emerald-600 dark:text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.45)] dark:drop-shadow-[0_0_10px_rgba(52,211,153,0.75)] transition flex items-center justify-center cursor-pointer flex-shrink-0 bg-transparent"
-              title="아르바이트"
-            >
-              <span>아르바이트</span>
-            </button>
-
-            <!-- 0-1. SW중심대학사업단 탭 (알바/학교 모드 시 노출) -->
-            <button 
-              id="gnbTabSwUniv" 
-              onclick="switchMainTab('swuniv')" 
-              class="hidden px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-base font-bold tracking-tight text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300 transition flex items-center justify-center cursor-pointer flex-shrink-0 bg-transparent"
-              title="SW중심대학사업단"
-            >
-              <span>SW중심대학사업단</span>
-            </button>
-
-
-            <!-- 1. 토목 뉴스 탭 -->
-            <button 
-              id="gnbTabNews" 
-              onclick="switchMainTab('news')" 
-              class="px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-base font-bold tracking-tight text-blue-600 dark:text-blue-400 drop-shadow-[0_0_8px_rgba(37,99,235,0.45)] dark:drop-shadow-[0_0_10px_rgba(96,165,250,0.75)] transition flex items-center justify-center cursor-pointer flex-shrink-0 bg-transparent"
-            >
-              <span>토목 뉴스</span>
-            </button>
-
-            <!-- 2. 채용 공고문 탭 -->
-            <button 
-              id="gnbTabJobs" 
-              onclick="switchMainTab('jobs')" 
-              class="px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-base font-bold tracking-tight text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300 transition flex items-center justify-center cursor-pointer flex-shrink-0 bg-transparent drop-shadow-none"
-            >
-              <span>채용 공고문</span>
-            </button>
-
-            <!-- 3. 공모전 탭 -->
-            <button 
-              id="gnbTabContests" 
-              onclick="switchMainTab('contests')" 
-              class="px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-base font-bold tracking-tight text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300 transition flex items-center justify-center cursor-pointer flex-shrink-0 bg-transparent drop-shadow-none"
-            >
-              <span>공모전</span>
-            </button>
-          </nav>
-        </div>
-
-        <!-- 우측 액션 버튼들 -->
-        <div class="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-          
-          <!-- 마이페이지(북마크) 필터 버튼 -->
-          <button id="bookmarkTabBtn" onclick="window.toggleCurrentTabBookmark(undefined, event)" class="flex-shrink-0 flex items-center px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium transition border border-amber-300/90 dark:border-amber-700/60 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40 cursor-pointer shadow-xs" title="마이페이지 (저장한 항목)">
-            <span>마이페이지 (<span id="bookmarkCount">0</span>)</span>
-          </button>
-
-          <!-- 전북대 알바 바로가기 버튼 -->
-          <button onclick="switchMainTab('home')" class="hidden sm:flex items-center space-x-1 px-2 sm:px-2.5 py-1 sm:py-1.5 text-xs font-semibold rounded-lg text-emerald-700 dark:text-emerald-300 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800/80 transition flex-shrink-0 cursor-pointer shadow-xs" title="전북대학교 아르바이트 공고">
-            <span>🎓 전북대 알바</span>
-          </button>
-
-
-
-          <!-- 스마트폰 QR 접속 버튼 -->
-          <button onclick="openQrModal()" class="flex items-center space-x-1 px-2 sm:px-2.5 py-1 sm:py-1.5 text-xs font-medium rounded-lg text-emerald-700 dark:text-emerald-300 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800/80 transition flex-shrink-0 cursor-pointer shadow-xs" title="스마트폰 카메라로 찍어서 바로 열기">
-            <i data-lucide="qr-code" class="w-3.5 h-3.5"></i>
-            <span class="hidden sm:inline font-semibold">폰으로 보기</span>
-          </button>
-
-          <!-- 모바일 뷰 전환 버튼 (스마트폰 시뮬레이터) -->
-          <a href="./mobile.html" class="hidden sm:flex items-center space-x-1 px-2.5 py-1.5 text-xs font-medium rounded-lg text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition flex-shrink-0" title="스마트폰 모바일 뷰 시뮬레이터로 전환">
-            <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
-            <span>모바일 뷰</span>
-          </a>
-
-          <!-- 다크 모드 토글 -->
-          <button id="themeToggle" aria-label="테마 전환" class="p-1.5 sm:p-2 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex-shrink-0 cursor-pointer">
-            <i data-lucide="sun" class="w-4 h-4 sm:w-5 sm:h-5 hidden dark:block"></i>
-            <i data-lucide="moon" class="w-4 h-4 sm:w-5 sm:h-5 block dark:hidden"></i>
-          </button>
-        </div>
-
-      </div>
-    </div>
-  </header>
-
-  <!-- ========================================== -->
-  <!-- 0. 전북대학교 아르바이트 (JBNU Alba) 패널  -->
-  <!-- ========================================== -->
-  <section id="tabPanelHome" class="hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <!-- 상단 헤더 타이틀 -->
-    <div class="pb-4 border-b border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center font-black text-xl shadow-md shadow-emerald-500/20 flex-shrink-0">
-          🎓
-        </div>
-        <div>
-          <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            전북대학교 아르바이트
-            <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-extrabold">JBNU Alba</span>
-          </h2>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">전북대 공식 광장 실시간 수집 · 단기·일급 및 시급 맞춤 안내</p>
-        </div>
-      </div>
-      <div class="flex items-center gap-2">
-        <a href="https://www.jbnu.ac.kr/web/unvrslife/square/sub02/1.do" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold transition">
-          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-          <span>전북대 공식 광장 바로가기</span>
-        </a>
-      </div>
-    </div>
-
-    <!-- 필터 및 정렬 옵션 바 -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400 mt-4 mb-4 px-1">
-      <div class="flex items-center gap-2">
-        <span id="jbnuAlbaResultCountNotice" class="font-medium text-slate-700 dark:text-slate-300">
-          알바 공고를 불러오는 중입니다...
-        </span>
-      </div>
-
-      <div class="flex items-center gap-2">
-        <!-- 알바 일정 캘린더 모달 열기 버튼 -->
-        <button 
-          type="button" 
-          onclick="openAlbaCalendarModal()" 
-          class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 dark:text-emerald-300 border border-emerald-300/80 dark:border-emerald-700/80 transition cursor-pointer shadow-xs flex-shrink-0"
-          title="전북대 아르바이트 일정 캘린더 보기"
-        >
-          <i data-lucide="calendar-days" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400"></i>
-          <span>알바 캘린더</span>
-        </button>
-
-        <!-- 정렬 드롭다운 -->
-        <select id="jbnuAlbaSortSelect" onchange="window.handleAlbaSortChange(this.value)" class="bg-white dark:bg-slate-900 text-xs text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 shadow-sm cursor-pointer">
-          <option value="wage_high" selected>💰 급여 높은순</option>
-          <option value="deadline">⏱️ 마감 임박순 (D-Day순)</option>
-          <option value="views">👀 조회수 많은순</option>
-          <option value="recent">📅 최신 등록순</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- 로딩 인디케이터 -->
-    <div id="jbnuAlbaLoadingIndicator" class="flex flex-col items-center justify-center py-24 text-center">
-      <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-600 mb-3"></div>
-      <p class="text-sm text-slate-500 dark:text-slate-400">전북대학교 아르바이트 공고를 불러오는 중입니다...</p>
-    </div>
-
-    <!-- 알바 매소너리 카드 그리드 컨테이너 -->
-    <div id="jbnuAlbaContainer" class="hidden">
-      <div id="jbnuAlbaGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-        <!-- jbnu_alba.js에서 렌더링 -->
-      </div>
-    </div>
-  </section>
-
-  <!-- ========================================== -->
-  <!-- 0-1. 전북대학교 SW중심대학사업단 프로그램 패널 -->
-  <!-- ========================================== -->
-  <section id="tabPanelSwUniv" class="hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <!-- 상단 헤더 타이틀 -->
-    <div class="pb-4 border-b border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 text-white flex items-center justify-center font-black text-xl shadow-md shadow-indigo-500/20 flex-shrink-0">
-          💻
-        </div>
-        <div>
-          <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            SW중심대학사업단
-            <span class="text-xs px-2.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-extrabold">JBNU SW Univ</span>
-          </h2>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">전북대학교 SW중심대학사업단 공식 프로그램 실시간 수집 · 캡스톤디자인, 멘토링, 특강 및 장학생 선발</p>
-        </div>
-      </div>
-      <div class="flex items-center gap-2">
-        <a href="https://swuniv.jbnu.ac.kr/main/jbnusw?gc=Program&do=list&page=1" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold transition">
-          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-          <span>SW사업단 공식 신청 바로가기</span>
-        </a>
-      </div>
-    </div>
-
-    <!-- 카테고리 탭 (상단 고정 Sticky Navigation - 시안 B: 미니멀 언더라인 바) -->
-    <div class="sticky top-0 sm:top-16 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-0 mt-0 mb-4 sm:my-4 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 shadow-xs transition-colors">
-      <div class="max-w-7xl mx-auto flex items-center overflow-x-auto scrollbar-none category-scroll-container" style="touch-action: pan-x; overscroll-behavior: none; overscroll-behavior-x: none;">
-        <div id="swunivCategoryTabs" class="flex items-center gap-1 sm:gap-3 min-w-max h-full" style="touch-action: pan-x;">
-          <!-- swuniv.js에서 동적 탭 렌더링 -->
-        </div>
-      </div>
-    </div>
-
-    <!-- 필터 및 정렬 옵션 바 -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400 mb-4 px-1">
-      <div class="flex items-center gap-2">
-        <span id="swunivResultCountNotice" class="font-medium text-slate-700 dark:text-slate-300">
-          프로그램을 불러오는 중입니다...
-        </span>
-      </div>
-
-      <div class="flex items-center gap-2">
-        <!-- 정렬 드롭다운 -->
-        <select id="swunivSortSelect" onchange="window.handleSwSortChange(this.value)" class="bg-white dark:bg-slate-900 text-xs text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500 shadow-sm cursor-pointer">
-          <option value="recent" selected>📅 최신 등록순</option>
-          <option value="deadline">⏱️ 마감 임박순 (D-Day순)</option>
-          <option value="point_high">⭐ 포인트 높은순</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- 로딩 인디케이터 -->
-    <div id="swunivLoadingIndicator" class="flex flex-col items-center justify-center py-24 text-center">
-      <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600 mb-3"></div>
-      <p class="text-sm text-slate-500 dark:text-slate-400">전북대학교 SW중심대학사업단 프로그램을 불러오는 중입니다...</p>
-    </div>
-
-    <!-- 프로그램 카드 그리드 컨테이너 -->
-    <div id="swunivContainer" class="hidden">
-      <div id="swunivGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-        <!-- swuniv.js에서 렌더링 -->
-      </div>
-    </div>
-  </section>
-
-  <!-- ========================================== -->
-  <!-- 1. 토목 뉴스 탭 패널 (#tabPanelNews)       -->
-  <!-- ========================================== -->
-  <section id="tabPanelNews" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <!-- 서브 배너 & 업데이트 시각 정보 -->
-    <!-- 상단 타이틀 -->
-    <div class="pb-4 border-b border-slate-200 dark:border-slate-800/80">
-      <h2 class="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-        <button type="button" onclick="switchMainTab('home')" class="hover:scale-110 transition cursor-pointer flex items-center justify-center p-0.5 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-800/60" title="전북대학교 아르바이트 바로가기">
-          <i data-lucide="newspaper" class="w-5 h-5 text-blue-500"></i>
-        </button>
-        오늘의 토목 주요 기사 모아보기
-      </h2>
-    </div>
-
-    <!-- 오늘의 토목 핵심 키워드(#) 필터 칩 바 -->
-    <div class="mt-3.5 mb-2 overflow-x-auto pb-1 scrollbar-none" style="touch-action: pan-x; overscroll-behavior: none; overscroll-behavior-x: none;">
-      <div id="newsKeywordChips" class="flex items-center gap-1.5 text-xs min-w-max flex-nowrap whitespace-nowrap select-none" style="touch-action: pan-x;">
-        <!-- JS 동적 렌더링 -->
-      </div>
-    </div>
-
-    <!-- 카테고리 탭 (상단 고정 Sticky Navigation - 시안 B: 미니멀 언더라인 바) -->
-    <div id="categoryTabsSticky" class="sticky top-0 sm:top-16 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-0 mt-0 mb-4 sm:my-4 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 shadow-xs transition-colors">
-      <div class="max-w-7xl mx-auto flex items-center overflow-x-auto scrollbar-none category-scroll-container" style="touch-action: pan-x; overscroll-behavior: none; overscroll-behavior-x: none;">
-        <div id="newsCategoryTabs" class="flex items-center gap-1 sm:gap-3 min-w-max h-full" style="touch-action: pan-x;">
-          <!-- JS에서 동적 탭 렌더링 -->
-        </div>
-      </div>
-    </div>
-
-    <!-- 기사 리스트 영역 -->
-    <div class="mt-6">
-      <!-- 검색/필터 결과 안내 -->
-      <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-4 px-1">
-        <span id="newsResultCountNotice">기사를 불러오는 중입니다...</span>
-        <div class="flex items-center space-x-2">
-          <select id="newsSortSelect" class="bg-white dark:bg-slate-900 text-xs text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm cursor-pointer">
-            <option value="newest" selected>최신순</option>
-            <option value="views">🔥 조회순 (인기순)</option>
-            <option value="oldest">오래된순</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- 카테고리별 분할 섹션 컨테이너 -->
-      <div id="categorySectionsContainer" class="space-y-10 sm:space-y-14">
-        <!-- JS로 각 카테고리별 섹션 박스 및 6개씩 카드 렌더링 -->
-      </div>
-
-      <!-- 빈 상태 (기사 없음) -->
-      <div id="newsEmptyState" class="hidden flex-col items-center justify-center py-20 text-center">
-        <div class="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-4">
-          <i data-lucide="inbox" class="w-8 h-8"></i>
-        </div>
-        <h3 class="text-base font-semibold text-slate-700 dark:text-slate-300">검색된 기사가 없습니다</h3>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">다른 검색어를 입력하시거나 카테고리 필터를 변경해 보세요.</p>
-        <button id="newsResetFilterBtn" class="mt-4 px-4 py-2 text-xs font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition cursor-pointer">
-          전체 기사 보기
-        </button>
-      </div>
-
-      <!-- 로딩 인디케이터 -->
-      <div id="newsLoadingIndicator" class="flex flex-col items-center justify-center py-24 text-center">
-        <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-3"></div>
-        <p class="text-sm text-slate-500 dark:text-slate-400">토목 기사를 정리하고 있습니다...</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ========================================== -->
-  <!-- 2. 채용 공고문 탭 패널 (#tabPanelJobs)     -->
-  <!-- ========================================== -->
-  <section id="tabPanelJobs" class="hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <!-- 상단 타이틀 -->
-    <div class="pb-4 border-b border-slate-200 dark:border-slate-800/80">
-      <h2 class="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-        <i data-lucide="briefcase" class="w-5 h-5 text-blue-500"></i>
-        토목·건설 채용 공고문
-      </h2>
-    </div>
-
-
-    <!-- 카테고리 탭 (상단 고정 Sticky Navigation - 시안 B: 미니멀 언더라인 바) -->
-    <div class="sticky top-0 sm:top-16 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-0 mt-0 mb-4 sm:my-4 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 shadow-xs transition-colors">
-      <div class="max-w-7xl mx-auto flex items-center overflow-x-auto scrollbar-none category-scroll-container" style="touch-action: pan-x; overscroll-behavior: none; overscroll-behavior-x: none;">
-        <div id="jobCategoryTabs" class="flex items-center gap-1 sm:gap-3 min-w-max h-full" style="touch-action: pan-x;">
-          <!-- JS에서 동적 탭 렌더링 -->
-        </div>
-      </div>
-    </div>
-
-    <!-- 필터 및 정렬 옵션 바 -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400 mb-4 px-1">
-      <div class="flex items-center gap-2">
-        <span id="jobResultCountNotice" class="font-medium text-slate-700 dark:text-slate-300">
-          채용 공고를 불러오는 중입니다...
-        </span>
-      </div>
-
-      <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-
-        <!-- 경력 구분 필터 버튼 그룹 -->
-        <div class="inline-flex rounded-lg border border-slate-200 dark:border-slate-800 p-0.5 bg-slate-100 dark:bg-slate-900">
-          <button data-career="all" class="career-filter-btn px-2.5 py-1 text-xs font-semibold rounded-md bg-blue-600 text-white transition cursor-pointer">
-            전체
-          </button>
-          <button data-career="entry" class="career-filter-btn px-2.5 py-1 text-xs font-medium rounded-md bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 transition cursor-pointer">
-            신입/인턴
-          </button>
-          <button data-career="experienced" class="career-filter-btn px-2.5 py-1 text-xs font-medium rounded-md bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 transition cursor-pointer">
-            경력직
-          </button>
-        </div>
-
-        <!-- 정렬 드롭다운 -->
-        <select id="jobSortSelect" class="bg-white dark:bg-slate-900 text-xs text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm cursor-pointer">
-          <option value="deadline" selected>⏱️ 마감임박순 (D-Day순)</option>
-          <option value="salary_high">💰 연봉/급여 높은순</option>
-          <option value="salary_low">💰 연봉/급여 낮은순</option>
-          <option value="newest">최근 등록순</option>
-          <option value="company">기업명 가나다순</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- 근무지역 필터 칩 바 -->
-    <div class="mb-5 overflow-x-auto pb-1 scrollbar-none" style="touch-action: pan-x; overscroll-behavior: none; overscroll-behavior-x: none;">
-      <div id="regionFilterGroup" class="flex items-center gap-1.5 text-xs" style="touch-action: pan-x;">
-        <span class="text-slate-400 dark:text-slate-500 font-medium flex items-center gap-1 pr-1 flex-shrink-0">
-          <i data-lucide="map-pin" class="w-3.5 h-3.5 text-blue-500"></i>
-          <span>지역:</span>
-        </span>
-        <button data-region="ALL" class="region-pill active px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-600 text-white transition flex-shrink-0 cursor-pointer">
-          전체
-        </button>
-        <button data-region="capital" class="region-pill px-2.5 py-1 rounded-lg text-xs font-medium bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex-shrink-0 cursor-pointer">
-          서울·수도권
-        </button>
-        <button data-region="chungcheong" class="region-pill px-2.5 py-1 rounded-lg text-xs font-medium bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex-shrink-0 cursor-pointer">
-          충청·대전
-        </button>
-        <button data-region="yeongnam" class="region-pill px-2.5 py-1 rounded-lg text-xs font-medium bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex-shrink-0 cursor-pointer">
-          영남·대구·부산
-        </button>
-        <button data-region="honam" class="region-pill px-2.5 py-1 rounded-lg text-xs font-medium bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex-shrink-0 cursor-pointer">
-          호남·광주
-        </button>
-        <button data-region="nationwide" class="region-pill px-2.5 py-1 rounded-lg text-xs font-medium bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex-shrink-0 cursor-pointer">
-          전국·현장
-        </button>
-        <button data-region="overseas" class="region-pill px-2.5 py-1 rounded-lg text-xs font-medium bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex-shrink-0 cursor-pointer">
-          해외
-        </button>
-      </div>
-    </div>
-
-    <!-- 채용 로딩 인디케이터 -->
-    <div id="jobLoadingIndicator" class="flex flex-col items-center justify-center py-20">
-      <div class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-      <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">최신 채용 공고를 불러오는 중입니다...</p>
-    </div>
-
-    <!-- 채용 검색 결과 없음 상태 -->
-    <div id="jobEmptyState" class="hidden flex-col items-center justify-center py-20 text-center">
-      <div class="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-4">
-        <i data-lucide="inbox" class="w-8 h-8"></i>
-      </div>
-      <h3 class="text-base font-semibold text-slate-700 dark:text-slate-300 mb-1">
-        검색된 채용 공고가 없습니다
-      </h3>
-      <p class="text-xs text-slate-400 mb-4">
-        다른 검색어를 입력하시거나 카테고리 필터를 변경해 보세요.
-      </p>
-    </div>
-
-    <!-- 채용 카드 리스트 컨테이너 -->
-    <div id="jobListContainer"></div>
-  </section>
-
-  <!-- ========================================== -->
-  <!-- 3. 공모전 탭 패널 (#tabPanelContests)      -->
-  <!-- ========================================== -->
-  <section id="tabPanelContests" class="hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <!-- 상단 타이틀 -->
-    <div class="pb-4 border-b border-slate-200 dark:border-slate-800/80">
-      <h2 class="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-        <i data-lucide="trophy" class="w-5 h-5 text-amber-500"></i>
-        토목 공모전 & 경진대회 공고
-      </h2>
-    </div>
-
-    <!-- 분야(카테고리) 탭 (상단 고정 Sticky Navigation - 시안 B: 미니멀 언더라인 바 풀 블리드 통일) -->
-    <div class="sticky top-0 sm:top-16 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-0 mt-0 mb-4 sm:my-4 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 shadow-xs transition-colors">
-      <div class="max-w-7xl mx-auto flex items-center overflow-x-auto scrollbar-none category-scroll-container" style="touch-action: pan-x; overscroll-behavior: none; overscroll-behavior-x: none;">
-        <div id="contestCategoryTabs" class="flex items-center gap-1 sm:gap-3 min-w-max h-full" style="touch-action: pan-x;">
-          <!-- JS에서 동적 탭 렌더링 -->
-        </div>
-      </div>
-    </div>
-
-    <!-- 필터 및 정렬 옵션 바 (토목 뉴스/채용 기반 위치 및 좌우 너비 통일) -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400 mb-4 px-1">
-      <div class="flex items-center gap-2">
-        <span id="contestResultCountNotice" class="font-medium text-slate-700 dark:text-slate-300">
-          공모전 목록을 불러오는 중입니다...
-        </span>
-      </div>
-
-      <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-
-        <!-- 상태 필터 칩 (접수중, 접수예정, 상시접수) -->
-        <div class="inline-flex rounded-lg border border-slate-200 dark:border-slate-800 p-0.5 bg-slate-100 dark:bg-slate-900 text-xs font-medium text-slate-600 dark:text-slate-300" id="contestStatusFilterGroup">
-          <button data-status="ALL" class="status-pill active px-2.5 py-1 rounded-md bg-white dark:bg-slate-800 font-semibold text-slate-900 dark:text-white shadow-xs transition cursor-pointer">전체</button>
-          <button data-status="접수중" class="status-pill px-2.5 py-1 rounded-md text-slate-600 dark:text-slate-300 transition cursor-pointer">접수중</button>
-          <button data-status="접수예정" class="status-pill px-2.5 py-1 rounded-md text-slate-600 dark:text-slate-300 transition cursor-pointer">접수예정</button>
-          <button data-status="상시접수" class="status-pill px-2.5 py-1 rounded-md text-slate-600 dark:text-slate-300 transition cursor-pointer">상시</button>
-        </div>
-
-        <!-- 정렬 선택 -->
-        <select id="contestSortSelect" class="bg-white dark:bg-slate-900 text-xs text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-amber-500 shadow-sm cursor-pointer">
-          <option value="closingSoon" selected>⏱️ 마감임박순 (D-Day순)</option>
-          <option value="latest">최신등록순</option>
-        </select>
-
-        <!-- 마감 캘린더 모달 열기 버튼 -->
-        <button 
-          type="button" 
-          onclick="openContestCalendarModal()" 
-          class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-50 hover:bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:hover:bg-amber-900/60 dark:text-amber-300 border border-amber-300/80 dark:border-amber-700/80 transition cursor-pointer shadow-xs flex-shrink-0"
-          title="공모전 마감 일정 캘린더 보기"
-        >
-          <i data-lucide="calendar-days" class="w-3.5 h-3.5 text-amber-600 dark:text-amber-400"></i>
-          <span>마감 캘린더</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- 참가대상 필터 칩 바 (채용 근무지역 필터와 동일 규격) -->
-    <div class="mb-5 overflow-x-auto pb-1 scrollbar-none" style="touch-action: pan-x; overscroll-behavior: none; overscroll-behavior-x: none;">
-      <div id="contestTargetFilterGroup" class="flex items-center gap-1.5 text-xs" style="touch-action: pan-x;">
-        <span class="text-slate-400 dark:text-slate-500 font-medium flex items-center gap-1 pr-1 flex-shrink-0">
-          <i data-lucide="users" class="w-3.5 h-3.5 text-amber-500"></i>
-          <span>참가대상:</span>
-        </span>
-        <button data-target="ALL" class="target-pill active px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-500 text-white transition flex-shrink-0 cursor-pointer">
-          전체
-        </button>
-        <button data-target="student" class="target-pill px-2.5 py-1 rounded-lg text-xs font-medium bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex-shrink-0 cursor-pointer">
-          대학(원)생
-        </button>
-        <button data-target="startup" class="target-pill px-2.5 py-1 rounded-lg text-xs font-medium bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex-shrink-0 cursor-pointer">
-          스타트업·기업
-        </button>
-        <button data-target="general" class="target-pill px-2.5 py-1 rounded-lg text-xs font-medium bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex-shrink-0 cursor-pointer">
-          전 국민 누구나
-        </button>
-      </div>
-    </div>
-
-    <!-- 공모전 로딩 인디케이터 -->
-    <div id="contestLoadingState" class="py-20 flex flex-col items-center justify-center">
-      <div class="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
-      <p class="mt-4 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium">검증된 토목 공모전 목록을 불러오는 중입니다...</p>
-    </div>
-
-    <!-- 공모전 결과 없음 상태 -->
-    <div id="contestEmptyState" class="hidden py-24 flex-col items-center justify-center text-center">
-      <div class="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500 mb-3">
-        <i data-lucide="trophy" class="w-7 h-7"></i>
-      </div>
-      <h3 class="text-sm sm:text-base font-semibold text-slate-700 dark:text-slate-300">해당 조건에 맞는 공모전이 없습니다.</h3>
-      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-md">검색어를 변경하거나 필터를 초기화해 보세요.</p>
-      <button id="contestResetFilterBtn" class="mt-4 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-semibold shadow transition cursor-pointer">
-        필터 초기화
-      </button>
-    </div>
-
-    <!-- 공모전 카드 그리드 (2열 데스크탑·태블릿 / 1열 모바일 규격) -->
-    <div id="contestCardGrid" class="hidden grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
-      <!-- contests.js에 의해 동적으로 렌더링 -->
-    </div>
-  </section>
-
-  <!-- ========================================== -->
-  <!-- 4. 마이페이지 (저장한 뉴스/채용/공모전 통합 뷰) -->
-  <!-- ========================================== -->
-  <section id="tabPanelMyPage" class="hidden max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <!-- 마이페이지 상단 헤더 -->
-    <div class="mb-8">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-200/80 dark:border-slate-800">
-        <div class="flex items-center gap-3">
-          <div class="w-11 h-11 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold shadow-xs flex-shrink-0">
-            <i data-lucide="bookmark" class="w-5 h-5 fill-amber-500 text-amber-500"></i>
-          </div>
-          <div>
-            <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">마이페이지</h2>
-            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">내가 북마크에 저장한 토목 뉴스, 채용 공고, 공모전을 한눈에 모아봅니다.</p>
-          </div>
-        </div>
-        <!-- 통계 요약 뱃지 -->
-        <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
-          <span class="px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900">
-            📰 뉴스 <strong id="myPageNewsStat">0</strong>
-          </span>
-          <span class="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900">
-            💼 채용 <strong id="myPageJobsStat">0</strong>
-          </span>
-          <span class="px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-900">
-            🏆 공모전 <strong id="myPageContestsStat">0</strong>
-          </span>
-          <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold border border-slate-200 dark:border-slate-700">
-            총 <strong id="myPageTotalStat">0</strong>건
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <!-- 전체 빈 상태 (저장한 항목이 하나도 없을 때) -->
-    <div id="myPageOverallEmpty" class="hidden py-16 text-center">
-      <div class="w-16 h-16 rounded-3xl bg-amber-50 dark:bg-amber-950/40 text-amber-500 mx-auto flex items-center justify-center mb-4 border border-amber-200 dark:border-amber-900/60 shadow-inner">
-        <i data-lucide="bookmark" class="w-8 h-8"></i>
-      </div>
-      <h3 class="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-200 mb-1.5">아직 마이페이지에 저장한 항목이 없습니다</h3>
-      <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-6 leading-relaxed">
-        관심 있는 토목 뉴스 기사, 채용 공고, 공모전 카드의 북마크 아이콘을 눌러 저장해보세요.
-      </p>
-      <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
-        <button onclick="switchMainTab('news')" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition cursor-pointer">
-          토목 뉴스 둘러보기
-        </button>
-        <button onclick="switchMainTab('jobs')" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition cursor-pointer">
-          채용 공고 둘러보기
-        </button>
-        <button onclick="switchMainTab('contests')" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-900/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 transition cursor-pointer">
-          공모전 둘러보기
-        </button>
-      </div>
-    </div>
-
-    <!-- 각 섹션 래퍼 -->
-    <div id="myPageSectionsWrapper" class="space-y-12">
-      <!-- 1. 저장한 토목 뉴스 섹션 -->
-      <section id="myPageNewsSection">
-        <div class="flex items-center justify-between pb-3.5 mb-5 border-b border-slate-200/80 dark:border-slate-800 px-1">
-          <div class="flex items-center gap-2.5">
-            <span class="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
-              <i data-lucide="newspaper" class="w-4 h-4"></i>
-            </span>
-            <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              저장한 토목 뉴스
-            </h3>
-            <span id="myPageNewsCountBadge" class="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-semibold border border-blue-200 dark:border-blue-900">
-              0건
-            </span>
-          </div>
-          <button onclick="switchMainTab('news')" class="text-xs font-semibold text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 flex items-center gap-1 cursor-pointer">
-            <span>토목 뉴스 바로가기</span>
-            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-          </button>
-        </div>
-
-        <div id="myPageNewsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
-          <!-- JS 동적 주입 -->
-        </div>
-        <div id="myPageNewsEmpty" class="hidden p-8 text-center bg-slate-50/70 dark:bg-slate-900/40 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
-          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">저장된 토목 뉴스가 없습니다.</p>
-          <button onclick="switchMainTab('news')" class="mt-2 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
-            토목 뉴스 둘러보기 &rarr;
-          </button>
-        </div>
-      </section>
-
-      <!-- 2. 저장한 채용 공고 섹션 -->
-      <section id="myPageJobsSection">
-        <div class="flex items-center justify-between pb-3.5 mb-5 border-b border-slate-200/80 dark:border-slate-800 px-1">
-          <div class="flex items-center gap-2.5">
-            <span class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
-              <i data-lucide="briefcase" class="w-4 h-4"></i>
-            </span>
-            <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              저장한 채용 공고
-            </h3>
-            <span id="myPageJobsCountBadge" class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-semibold border border-emerald-200 dark:border-emerald-900">
-              0건
-            </span>
-          </div>
-          <button onclick="switchMainTab('jobs')" class="text-xs font-semibold text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 flex items-center gap-1 cursor-pointer">
-            <span>채용 공고 바로가기</span>
-            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-          </button>
-        </div>
-
-        <div id="myPageJobsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
-          <!-- JS 동적 주입 -->
-        </div>
-        <div id="myPageJobsEmpty" class="hidden p-8 text-center bg-slate-50/70 dark:bg-slate-900/40 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
-          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">저장된 채용 공고가 없습니다.</p>
-          <button onclick="switchMainTab('jobs')" class="mt-2 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
-            채용 공고 둘러보기 &rarr;
-          </button>
-        </div>
-      </section>
-
-      <!-- 3. 저장한 공모전 섹션 -->
-      <section id="myPageContestsSection">
-        <div class="flex items-center justify-between pb-3.5 mb-5 border-b border-slate-200/80 dark:border-slate-800 px-1">
-          <div class="flex items-center gap-2.5">
-            <span class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
-              <i data-lucide="trophy" class="w-4 h-4"></i>
-            </span>
-            <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              저장한 공모전
-            </h3>
-            <span id="myPageContestsCountBadge" class="text-xs px-2.5 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 font-semibold border border-amber-200 dark:border-amber-900">
-              0건
-            </span>
-          </div>
-          <button onclick="switchMainTab('contests')" class="text-xs font-semibold text-slate-500 hover:text-amber-600 dark:text-slate-400 dark:hover:text-amber-400 flex items-center gap-1 cursor-pointer">
-            <span>공모전 바로가기</span>
-            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-          </button>
-        </div>
-
-        <div id="myPageContestsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
-          <!-- JS 동적 주입 -->
-        </div>
-        <div id="myPageContestsEmpty" class="hidden p-8 text-center bg-slate-50/70 dark:bg-slate-900/40 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
-          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">저장된 공모전이 없습니다.</p>
-          <button onclick="switchMainTab('contests')" class="mt-2 text-xs font-semibold text-amber-600 dark:text-amber-400 hover:underline cursor-pointer">
-            공모전 둘러보기 &rarr;
-          </button>
-        </div>
-      </section>
-    </div>
-  </section>
-
-  <!-- ========================================== -->
-  <!-- 팝업 모달 영역 (채용 & 공모전 상세)        -->
-  <!-- ========================================== -->
-
-  <!-- 1. 채용 공고 상세 모달 -->
-  <div id="jobDetailModal" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity">
-    <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl shadow-2xl p-5 sm:p-6 transition-all transform animate-in fade-in zoom-in-95 duration-200">
-      <div id="jobModalContent">
-        <!-- JS 동적 주입 -->
-      </div>
-    </div>
-  </div>
-
-  <!-- 2. 공모전 상세 모달 -->
-  <div id="contestDetailModal" class="fixed inset-0 z-50 invisible opacity-0 transition-all duration-300 flex items-center justify-center p-3 sm:p-4">
-    <div id="contestModalBackdrop" class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm opacity-0 transition-opacity"></div>
-    <div class="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden z-10 flex flex-col max-h-[90vh]">
-      <!-- 모달 상단 헤더 -->
-      <div class="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex items-start justify-between gap-4">
-        <div class="space-y-1.5 min-w-0">
-          <div class="flex items-center gap-2">
-            <span id="modalCategoryBadge" class="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300">
-              공모전
-            </span>
-            <span id="modalStatusBadge" class="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">
-              접수중
-            </span>
-            <span id="modalDdayBadge" class="text-xs px-2.5 py-0.5 rounded-md font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-              D-Day
-            </span>
-          </div>
-          <h3 id="modalTitle" class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white leading-snug">
-            공모전 제목
-          </h3>
-          <p id="modalOrganizer" class="text-xs text-slate-500 dark:text-slate-400 font-medium">
-            주최/주관 기관
-          </p>
-        </div>
-        <button id="closeModalBtn" onclick="closeContestModal()" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer flex-shrink-0" title="닫기">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <!-- 모달 상세 정보 본문 (스크롤) -->
-      <div id="contestModalBody" class="p-5 sm:p-6 overflow-y-auto space-y-4 text-xs sm:text-sm">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-          <div>
-            <span class="text-slate-400 dark:text-slate-500 block text-[11px]">접수 기간</span>
-            <strong id="modalPeriod" class="text-slate-800 dark:text-slate-200 font-semibold">-</strong>
-          </div>
-          <div>
-            <span class="text-slate-400 dark:text-slate-500 block text-[11px]">시상 규모 / 혜택</span>
-            <strong id="modalPrize" class="text-amber-600 dark:text-amber-400 font-semibold">-</strong>
-          </div>
-        </div>
-
-        <div>
-          <h4 class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-            <i data-lucide="users" class="w-3.5 h-3.5"></i>
-            참가 대상
-          </h4>
-          <p id="modalTarget" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300 font-medium">
-            -
-          </p>
-        </div>
-
-        <div>
-          <h4 class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-            <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
-            상세 요강 및 공모 개요
-          </h4>
-          <div id="modalDescription" class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed">
-            -
-          </div>
-        </div>
-      </div>
-
-      <!-- 모달 푸터 버튼 -->
-      <div class="px-5 sm:px-6 py-4 border-t border-slate-200 dark:border-slate-800 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-900/50">
-        <div class="flex items-center gap-2">
-          <button id="modalBookmarkBtn" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer shadow-xs">
-            <i data-lucide="bookmark" class="w-4 h-4 text-amber-500"></i>
-            <span>북마크</span>
-          </button>
-
-          <!-- 캘린더 등록 드롭다운 -->
-          <div class="relative inline-block text-left" id="contestCalendarDropdown">
-            <button 
-              type="button" 
-              onclick="toggleContestCalendarMenu(event)"
-              class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium border border-amber-300/80 dark:border-amber-700/80 bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition cursor-pointer shadow-xs"
-              title="공모전 마감 일정을 캘린더에 저장"
-            >
-              <i data-lucide="calendar-plus" class="w-4 h-4 text-amber-600 dark:text-amber-400"></i>
-              <span>캘린더 등록</span>
-              <i data-lucide="chevron-down" class="w-3.5 h-3.5 opacity-70"></i>
-            </button>
-
-            <!-- 캘린더 팝오버 메뉴 -->
-            <div id="contestCalendarMenu" class="hidden absolute left-0 bottom-full mb-2 w-48 rounded-xl bg-white dark:bg-slate-800 shadow-xl border border-slate-200 dark:border-slate-700 py-1.5 z-30 transition-all">
-              <button 
-                type="button" 
-                onclick="addContestToGoogleCalendar(); event.stopPropagation();"
-                class="w-full text-left px-3.5 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-amber-50 dark:hover:bg-slate-700 flex items-center gap-2 transition"
-              >
-                <i data-lucide="calendar" class="w-4 h-4 text-blue-500"></i>
-                <span>Google 캘린더 추가 ↗</span>
-              </button>
-              <button 
-                type="button" 
-                onclick="downloadContestIcs(); event.stopPropagation();"
-                class="w-full text-left px-3.5 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-amber-50 dark:hover:bg-slate-700 flex items-center gap-2 transition"
-              >
-                <i data-lucide="download" class="w-4 h-4 text-emerald-500"></i>
-                <span>iCal / 갤럭시 (.ics) 저장</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- 공유 버튼 -->
-          <button 
-            type="button" 
-            onclick="shareCurrentModalContest()" 
-            class="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer shadow-xs"
-            title="공모전 요강 공유"
-          >
-            <i data-lucide="share-2" class="w-4 h-4 text-blue-500"></i>
-            <span>공유</span>
-          </button>
-        </div>
-
-        <a id="modalOfficialLink" href="#" target="_blank" rel="noopener noreferrer" class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs sm:text-sm shadow-md shadow-amber-500/20 transition">
-          <span>공식 접수처 바로가기</span>
-          <i data-lucide="external-link" class="w-4 h-4"></i>
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <!-- 2-1. 전북대학교 아르바이트 일정 캘린더 모달 (#albaCalendarModal) -->
-  <div id="albaCalendarModal" class="fixed inset-0 z-50 invisible opacity-0 transition-all duration-300 flex items-center justify-center p-3 sm:p-4">
-    <div id="albaCalendarBackdrop" onclick="closeAlbaCalendarModal()" class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm opacity-0 transition-opacity"></div>
-    <div class="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden z-10 flex flex-col max-h-[90vh]">
-      <!-- 캘린더 모달 헤더 -->
-      <div class="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-4">
-        <div class="flex items-center gap-2.5">
-          <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold shadow-xs flex-shrink-0">
-            <i data-lucide="calendar" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white leading-snug flex items-center gap-2">
-              전북대 알바 일정 캘린더
-              <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-extrabold">JBNU Alba</span>
-            </h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400">
-              월별 공고 마감일 및 단기·행사 근무 일정을 시각적으로 확인하고 바로 지원합니다.
-            </p>
-          </div>
-        </div>
-        <button onclick="closeAlbaCalendarModal()" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer flex-shrink-0" title="닫기">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <!-- 월 전환 컨트롤러 & 일정 필터 바 -->
-      <div class="px-5 sm:px-6 py-3 bg-slate-50/80 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-        <!-- 월 이동 네비게이션 -->
-        <div class="flex items-center justify-between sm:justify-start gap-1.5 sm:gap-2">
-          <button id="albaCalendarPrevMonthBtn" onclick="changeAlbaCalendarMonth(-1)" class="p-1.5 sm:px-2.5 sm:py-1 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center gap-1 transition cursor-pointer">
-            <i data-lucide="chevron-left" class="w-4 h-4"></i>
-            <span class="hidden sm:inline">이전 달</span>
-          </button>
-          <span id="albaCalendarCurrentMonthDisplay" class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white tracking-tight px-1 min-w-[100px] text-center">
-            2026년 9월
-          </span>
-          <button id="albaCalendarNextMonthBtn" onclick="changeAlbaCalendarMonth(1)" class="p-1.5 sm:px-2.5 sm:py-1 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center gap-1 transition cursor-pointer">
-            <span class="hidden sm:inline">다음 달</span>
-            <i data-lucide="chevron-right" class="w-4 h-4"></i>
-          </button>
-          <button onclick="resetAlbaCalendarToToday()" class="ml-1 px-2 py-1 rounded-md text-[11px] font-semibold bg-emerald-100/80 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-200 dark:hover:bg-emerald-900 transition cursor-pointer" title="오늘 날짜로 이동">
-            오늘
-          </button>
-        </div>
-
-        <!-- 캘린더 일정 유형 필터 칩 -->
-        <div class="flex items-center gap-1 text-xs">
-          <button id="albaCalFilterAll" onclick="setAlbaCalendarFilter('all')" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-600 text-white shadow-xs transition cursor-pointer">
-            🎯 전체
-          </button>
-          <button id="albaCalFilterDeadline" onclick="setAlbaCalendarFilter('deadline')" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer">
-            ⏱️ 마감일
-          </button>
-          <button id="albaCalFilterWork" onclick="setAlbaCalendarFilter('work')" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer">
-            ⚡ 근무·행사일
-          </button>
-        </div>
-      </div>
-
-      <!-- 캘린더 본문 (스크롤) -->
-      <div class="p-4 sm:p-6 overflow-y-auto space-y-4">
-        <!-- 달력 요일 헤더 -->
-        <div class="grid grid-cols-7 text-center text-xs font-bold text-slate-400 mb-1">
-          <div class="text-rose-500 py-1">일</div>
-          <div class="py-1">월</div>
-          <div class="py-1">화</div>
-          <div class="py-1">수</div>
-          <div class="py-1">목</div>
-          <div class="py-1">금</div>
-          <div class="text-blue-500 py-1">토</div>
-        </div>
-
-        <!-- 달력 일자 그리드 -->
-        <div id="albaCalendarDaysGrid" class="grid grid-cols-7 gap-1 sm:gap-1.5 text-xs">
-          <!-- JS 동적 주입 -->
-        </div>
-
-        <!-- 이번 달 알바 일정 타임라인 요약 -->
-        <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
-          <h4 class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-            <i data-lucide="clock" class="w-3.5 h-3.5 text-emerald-500"></i>
-            <span id="albaCalendarMonthTimelineTitle">이번 달 알바 일정</span>
-          </h4>
-          <div id="albaCalendarTimelineList" class="space-y-2 text-xs">
-            <!-- JS 동적 주입 -->
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 3. 공모전 마감 일정 캘린더 모달 (#contestCalendarModal) -->
-  <div id="contestCalendarModal" class="fixed inset-0 z-50 invisible opacity-0 transition-all duration-300 flex items-center justify-center p-3 sm:p-4">
-    <div id="contestCalendarBackdrop" onclick="closeContestCalendarModal()" class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm opacity-0 transition-opacity"></div>
-    <div class="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden z-10 flex flex-col max-h-[90vh]">
-      <!-- 캘린더 모달 헤더 -->
-      <div class="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-4">
-        <div class="flex items-center gap-2.5">
-          <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold shadow-xs flex-shrink-0">
-            <i data-lucide="calendar" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white leading-snug">
-              공모전 마감 일정 캘린더
-            </h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400">
-              월별 마감 일정을 시각적으로 확인하고 해당 공모전으로 바로 이동합니다.
-            </p>
-          </div>
-        </div>
-        <button onclick="closeContestCalendarModal()" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer flex-shrink-0" title="닫기">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <!-- 월 전환 컨트롤러 -->
-      <div class="px-5 sm:px-6 py-3 bg-slate-50/80 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-        <button id="calendarPrevMonthBtn" onclick="changeCalendarMonth(-1)" class="p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center gap-1 transition cursor-pointer">
-          <i data-lucide="chevron-left" class="w-4 h-4"></i>
-          <span class="hidden sm:inline">이전 달</span>
-        </button>
-        <span id="calendarCurrentMonthDisplay" class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white tracking-tight">
-          2026년 9월
-        </span>
-        <button id="calendarNextMonthBtn" onclick="changeCalendarMonth(1)" class="p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center gap-1 transition cursor-pointer">
-          <span class="hidden sm:inline">다음 달</span>
-          <i data-lucide="chevron-right" class="w-4 h-4"></i>
-        </button>
-      </div>
-
-      <!-- 캘린더 본문 (스크롤) -->
-      <div class="p-4 sm:p-6 overflow-y-auto space-y-4">
-        <!-- 달력 요일 헤더 -->
-        <div class="grid grid-cols-7 text-center text-xs font-bold text-slate-400 mb-1">
-          <div class="text-rose-500 py-1">일</div>
-          <div class="py-1">월</div>
-          <div class="py-1">화</div>
-          <div class="py-1">수</div>
-          <div class="py-1">목</div>
-          <div class="py-1">금</div>
-          <div class="text-blue-500 py-1">토</div>
-        </div>
-
-        <!-- 달력 일자 그리드 -->
-        <div id="calendarDaysGrid" class="grid grid-cols-7 gap-1 sm:gap-1.5 text-xs">
-          <!-- JS 동적 주입 -->
-        </div>
-
-        <!-- 이번 달 마감 공모전 타임라인 요약 -->
-        <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
-          <h4 class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-            <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-500"></i>
-            <span id="calendarMonthTimelineTitle">이번 달 마감 예정 공모전</span>
-          </h4>
-          <div id="calendarTimelineList" class="space-y-2 text-xs">
-            <!-- JS 동적 주입 -->
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 4. 북마크 한 줄 메모 작성/수정 모달 (#bookmarkNoteModal) -->
-  <div id="bookmarkNoteModal" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity">
-    <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 w-full max-w-md shadow-2xl p-5 sm:p-6 transition-all transform animate-in fade-in zoom-in-95 duration-200">
-      <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100 dark:border-slate-800">
-        <div class="flex items-center gap-2">
-          <span class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
-            <i data-lucide="file-edit" class="w-4 h-4"></i>
-          </span>
-          <h3 class="text-base font-bold text-slate-900 dark:text-white">나만의 북마크 메모</h3>
-        </div>
-        <button onclick="closeBookmarkNoteModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
-      </div>
-
-      <p id="noteModalItemTitle" class="text-xs font-semibold text-slate-700 dark:text-slate-300 line-clamp-2 mb-3 bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
-        항목 제목
-      </p>
-
-      <div class="mb-4">
-        <label for="bookmarkNoteText" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5">
-          개인 메모 (마이페이지에만 저장됩니다)
-        </label>
-        <textarea
-          id="bookmarkNoteText"
-          rows="3"
-          maxlength="200"
-          placeholder="예: 9/20 서류 접수 준비, 팀 스터디 발표 자료 참고"
-          class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500 resize-none"
-        ></textarea>
-        <div class="flex justify-between items-center mt-1 text-[11px] text-slate-400">
-          <span>최대 200자</span>
-          <span id="noteCharCount">0/200</span>
-        </div>
-      </div>
-
-      <div class="flex items-center justify-between gap-2 pt-2">
-        <button
-          type="button"
-          id="deleteNoteBtn"
-          onclick="deleteCurrentBookmarkNote()"
-          class="hidden px-3 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition cursor-pointer"
-        >
-          메모 삭제
-        </button>
-        <div class="flex items-center gap-2 ml-auto">
-          <button
-            type="button"
-            onclick="closeBookmarkNoteModal()"
-            class="px-3.5 py-2 text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition cursor-pointer"
-          >
-            취소
-          </button>
-          <button
-            type="button"
-            onclick="saveCurrentBookmarkNote()"
-            class="px-4 py-2 text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-white rounded-xl shadow-xs transition cursor-pointer"
-          >
-            메모 저장
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 푸터 -->
-  <footer class="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-6 pb-24 md:pb-6 transition-colors">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-500 dark:text-slate-400 space-y-2">
-      <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
-        <span>© 2026 Civil News Hub. All rights reserved.</span>
-        <span>•</span>
-        <span>AI 기반 실시간 토목 뉴스 & 공모전 & 채용 정보 브리핑 서비스</span>
-      </div>
-      <div class="flex items-center justify-center gap-2 pt-1">
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          마지막 업데이트: <strong id="footerLastUpdated" class="text-slate-700 dark:text-slate-300 ml-1">확인 중...</strong>
-        </span>
-      </div>
-    </div>
-  </footer>
-
-  <!-- 모바일 전용 하단 고정 네비게이션 바 (Mobile Bottom Navigation Bar: 5대 핵심 메뉴 상시 접근) -->
-  <nav id="mobileBottomNav" class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800/80 px-1 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] flex items-center justify-around shadow-lg transition-colors" aria-label="모바일 하단 네비게이션">
-    <!-- 1. 토목 뉴스 -->
-    <button id="mobileTabNews" type="button" onclick="switchMainTab('news')" class="flex-1 flex flex-col items-center justify-center py-1 px-0.5 text-blue-600 dark:text-blue-400 font-bold transition cursor-pointer" title="토목 뉴스 브리핑">
-      <i data-lucide="newspaper" class="w-5 h-5 mb-0.5"></i>
-      <span class="text-[10px] tracking-tight whitespace-nowrap">토목 뉴스</span>
-    </button>
-
-    <!-- 2. 채용 공고문 -->
-    <button id="mobileTabJobs" type="button" onclick="switchMainTab('jobs')" class="flex-1 flex flex-col items-center justify-center py-1 px-0.5 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition cursor-pointer" title="채용 공고문">
-      <i data-lucide="briefcase" class="w-5 h-5 mb-0.5"></i>
-      <span class="text-[10px] tracking-tight whitespace-nowrap">채용 공고</span>
-    </button>
-
-    <!-- 3. 공모전 -->
-    <button id="mobileTabContests" type="button" onclick="switchMainTab('contests')" class="flex-1 flex flex-col items-center justify-center py-1 px-0.5 text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 font-medium transition cursor-pointer" title="토목 공모전 & 경진대회">
-      <i data-lucide="trophy" class="w-5 h-5 mb-0.5"></i>
-      <span class="text-[10px] tracking-tight whitespace-nowrap">공모전</span>
-    </button>
-
-    <!-- 4. 전북대 알바 (상시 노출) -->
-    <button id="mobileTabAlba" type="button" onclick="switchMainTab('home')" class="flex-1 flex flex-col items-center justify-center py-1 px-0.5 text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition cursor-pointer" title="전북대학교 아르바이트">
-      <i data-lucide="coffee" class="w-5 h-5 mb-0.5"></i>
-      <span class="text-[10px] tracking-tight whitespace-nowrap">전북대 알바</span>
-    </button>
-
-    <!-- 4-1. SW사업단 (알바/학교 모드 시 보조 노출) -->
-    <button id="mobileTabSwUniv" type="button" onclick="switchMainTab('swuniv')" class="hidden flex-1 flex flex-col items-center justify-center py-1 px-0.5 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition cursor-pointer" title="SW중심대학사업단">
-      <i data-lucide="laptop" class="w-5 h-5 mb-0.5"></i>
-      <span class="text-[10px] tracking-tight whitespace-nowrap">SW사업단</span>
-    </button>
-
-    <!-- 5. 마이페이지 (북마크) -->
-    <button id="mobileBookmarkBtn" type="button" onclick="switchMainTab('mypage')" class="flex-1 relative flex flex-col items-center justify-center py-1 px-0.5 text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 font-medium transition cursor-pointer" title="마이페이지 모아보기">
-      <i data-lucide="bookmark" class="w-5 h-5 mb-0.5"></i>
-      <span class="text-[10px] tracking-tight whitespace-nowrap">마이페이지</span>
-      <span id="mobileBookmarkBadge" class="hidden absolute top-0.5 right-1 px-1 py-0.2 rounded-full text-[9px] font-bold bg-amber-500 text-white min-w-[14px] text-center">0</span>
-    </button>
-  </nav>
-
-  <!-- 스마트폰 모바일 접속 QR 코드 모달 -->
-  <div id="qrModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl relative text-center">
-      <button type="button" onclick="toggleQrModal(false)" class="absolute top-4 right-4 p-1.5 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer">
-        <i data-lucide="x" class="w-5 h-5"></i>
-      </button>
-
-      <div class="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-3">
-        <i data-lucide="smartphone" class="w-6 h-6"></i>
-      </div>
-
-      <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-1">
-        스마트폰에서 바로 열기
-      </h3>
-      <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
-        스마트폰 기본 카메라로 아래 QR 코드를 비추면 즉시 열립니다.
-      </p>
-
-      <!-- QR 코드 이미지 박스 -->
-      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 inline-block shadow-inner mb-4">
-        <img id="qrCodeImg" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://diverse-tattoo-exterior-reporting.trycloudflare.com/%23news" alt="Mobile QR Code" class="w-48 h-48 rounded-lg mx-auto block" />
-      </div>
-
-      <!-- 접속 주소 직접 복사 박스 -->
-      <div class="flex items-center justify-between bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-xl text-xs text-slate-700 dark:text-slate-300 mb-3 border border-slate-200 dark:border-slate-700">
-        <span id="localIpUrlText" class="font-mono truncate select-all">https://diverse-tattoo-exterior-reporting.trycloudflare.com/#news</span>
-        <button type="button" onclick="copyLocalIpUrl()" class="ml-2 px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-semibold flex-shrink-0 cursor-pointer text-[11px]">복사</button>
-      </div>
-
-      <!-- 실시간 라이브 터널 안내 -->
-      <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/40 text-left text-[11px] text-emerald-800 dark:text-emerald-300 space-y-1">
-        <p class="font-bold flex items-center gap-1 text-emerald-900 dark:text-emerald-200">
-          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-500"></i>
-          24시간 암호화 라이브 터널 연결됨:
-        </p>
-        <p>• Wi-Fi 제한 없이 스마트폰 <strong>LTE/5G 환경에서도 즉시 접속</strong> 가능합니다.</p>
-        <p>• 공식 GitHub 배포 링크: <a href="https://chldlrtjr.github.io/civil-news-hub/#news" target="_blank" class="underline font-bold text-blue-600 dark:text-blue-400">chldlrtjr.github.io</a></p>
-      </div>
-    </div>
-  </div>
-
-  <!-- 전북대 알바 상세 보기 모달 -->
-  <div id="jbnuAlbaModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl relative">
-      <button type="button" onclick="window.closeAlbaModal()" class="absolute top-5 right-5 p-1.5 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer">
-        <i data-lucide="x" class="w-5 h-5"></i>
-      </button>
-
-      <div class="flex items-center gap-2 mb-3">
-        <span class="px-2.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-bold">
-          전북대 공식 공고
-        </span>
-        <span id="modalAlbaCompany" class="text-xs font-extrabold text-blue-600 dark:text-blue-400"></span>
-      </div>
-
-      <h3 id="modalAlbaTitle" class="text-lg sm:text-xl font-black text-slate-900 dark:text-white leading-snug mb-4"></h3>
-
-      <!-- 스마트 수입 박스 -->
-      <div class="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 mb-5 text-center">
-        <div id="modalAlbaBadge" class="text-xs font-bold text-emerald-700 dark:text-emerald-300">💡 급여 및 근무 조건 안내</div>
-        <div id="modalAlbaEstimate" class="text-xl font-black text-emerald-800 dark:text-emerald-200 mt-0.5"></div>
-        <div id="modalAlbaEstimateSub" class="text-xs text-emerald-600 dark:text-emerald-400 mt-0.5"></div>
-      </div>
-
-      <!-- 세부 조건 그리드 -->
-      <div class="space-y-2.5 text-xs text-slate-600 dark:text-slate-300 mb-6 bg-slate-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
-        <div class="flex justify-between py-1 border-b border-slate-200/60 dark:border-slate-700/60">
-          <span class="text-slate-400">급여 안내</span>
-          <span id="modalAlbaWage" class="font-extrabold text-slate-900 dark:text-white"></span>
-        </div>
-        <div class="flex justify-between py-1 border-b border-slate-200/60 dark:border-slate-700/60">
-          <span class="text-slate-400">근무 시간</span>
-          <span id="modalAlbaTime" class="font-bold text-slate-900 dark:text-white"></span>
-        </div>
-        <div class="flex justify-between py-1 border-b border-slate-200/60 dark:border-slate-700/60">
-          <span class="text-slate-400">모집 인원</span>
-          <span id="modalAlbaPerson" class="font-bold text-slate-900 dark:text-white"></span>
-        </div>
-        <div class="flex justify-between py-1 border-b border-slate-200/60 dark:border-slate-700/60">
-          <span class="text-slate-400">등록일자</span>
-          <span id="modalAlbaDate" class="font-medium text-slate-700 dark:text-slate-300"></span>
-        </div>
-        <div class="flex justify-between py-1">
-          <span class="text-slate-400">조회수</span>
-          <span id="modalAlbaViews" class="font-medium text-slate-700 dark:text-slate-300"></span>
-        </div>
-      </div>
-
-      <!-- 액션 버튼 -->
-      <div class="flex gap-3">
-        <button type="button" onclick="window.closeAlbaModal()" class="flex-1 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-xl transition cursor-pointer">
-          닫기
-        </button>
-        <a id="modalAlbaLink" href="#" target="_blank" rel="noopener noreferrer" class="flex-2 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl transition flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/20 cursor-pointer">
-          <span>전북대 공식 공고 확인 및 지원</span>
-          <i data-lucide="external-link" class="w-4 h-4"></i>
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <!-- 토스트 알림 컴포넌트 -->
-  <div id="toast" class="fixed bottom-20 sm:bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 flex items-center space-x-2 px-4 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl shadow-xl text-xs sm:text-sm font-medium pointer-events-none">
-    <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400 dark:text-emerald-600"></i>
-    <span id="toastMessage">알림 메시지</span>
-  </div>
-
-  <!-- 프론트엔드 스크립트 로드 (전북대 알바 & SW중심대학사업단 & SPA 마스터 컨트롤러 & 채용 & 공모전 & AI 챗봇) -->
-  <script src="./static/jbnu_alba.js?v=20260930_v1125"></script>
-  <script src="./static/swuniv.js?v=20260930_v1125"></script>
-  <script src="./static/app.js?v=20260930_v1125"></script>
-  <script src="./static/jobs.js?v=20260930_v1125"></script>
-  <script src="./static/contests.js?v=20260930_v1125"></script>
-  <script src="./static/chatbot.js?v=20260930_v1125"></script>
-
-  <script>
-    if ('serviceWorker' in navigator && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-      navigator.serviceWorker.getRegistrations().then(regs => {
-        for (let r of regs) r.unregister();
-      });
-      if ('caches' in window) {
-        caches.keys().then(names => names.forEach(n => caches.delete(n)));
+      ${rows.length ? list(rows.map(jobRow).join('')) : '<p class="empty">이 조건의 공고가 아직 없어요. 신입·경력 필터를 바꿔 보세요.</p>'}`;
+  },
+  jbnu(){
+    return head('전북대', '전북대학교 학생을 위한 교내 알바와 SW 프로그램') + `
+      <section class="sec"><div class="sec-h"><h2>캠퍼스 알바</h2></div>
+        <p class="note">예상 수입은 주 15시간 이상이면 주휴수당을 넣어 한 달 4.345주로 계산했어요.</p>
+        ${list([...ALBA].sort((a,b)=>a.end-b.end).map(albaRow).join(''))}</section>
+      <section class="sec"><div class="sec-h"><h2>SW 중심대학사업단</h2></div>${list([...SW].sort((a,b)=>a.end-b.end).map(swRow).join(''))}</section>`;
+  },
+};
+
+function render(toTop = true){
+  $('#m-view').innerHTML = VIEWS[tab]();
+  $('#m-bar-title').textContent = TITLES[tab];
+  document.querySelectorAll('.tabbar [data-go]').forEach(b=> b.dataset.go===tab ? b.setAttribute('aria-current','page') : b.removeAttribute('aria-current'));
+  if (toTop) window.scrollTo({top:0});
+  onScroll();
+  requestAnimationFrame(() => { fitMobileNewsLines(); requestAnimationFrame(fitMobileNewsLines); });
+}
+function fitMobileNewsLines(){
+  document.querySelectorAll('#m-view .row').forEach(r => {
+    const t = r.querySelector('.row-title'), lede = r.querySelector('.row-sub.lede');
+    if (!t || !lede) return;
+    const h = t.getBoundingClientRect().height || t.offsetHeight || 0;
+    if (h <= 0) return;
+    const style = getComputedStyle(t);
+    let lh = parseFloat(style.lineHeight);
+    if (isNaN(lh) || lh <= 0) lh = (parseFloat(style.fontSize) || 15) * 1.45;
+    const lines = Math.min(2, Math.max(1, Math.round(h / lh)));
+    lede.style.setProperty('--m-lede-lines', Math.max(1, 4 - lines));
+  });
+}
+function go(t){
+  if (!VIEWS[t]) t = 'home';
+  tab = t;
+  if (location.hash.slice(1) !== t) history.replaceState(null,'','#'+t);
+  render();
+}
+function rerender(){ const y = scrollY; render(false); window.scrollTo({top:y}); }
+
+/* ---------- 바텀시트 ---------- */
+let lastFocus = null;
+function openSheet(key){
+  const [type,id] = key.split(':');
+  let kind = '', body = '', foot = '';
+  const dummy = '<button class="btn primary" data-dummy>LABEL</button>';
+  if (type==='n'){
+    const n = NEWS[+id];
+    kind = catName(n.cat);
+    const clusterHtml = (n.clusters && n.clusters.length)
+      ? n.clusters.map(c => `<li><a href="${c.link || '#'}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;width:100%;border-bottom:1px solid var(--line)"><b style="flex:none;font-weight:600">${c.publisher} ↗</b><span style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:var(--t-small)">${c.title}</span></a></li>`).join('')
+      : Array.from({length:n.n},(_,k)=>`<li><div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)"><b style="flex:none;width:96px;font-weight:600">${OTHER_SRC[(+id+k)%OTHER_SRC.length]}</b><span style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:var(--t-small)">${n.title}</span></div></li>`).join('');
+
+    body = `<div><div class="row-meta"><span>${n.src}</span><span>${n.ago}</span></div><h2 id="sh-title" style="margin-top:6px">${n.title}</h2></div>
+      <p class="lede-full">${n.lede}</p>
+      ${n.n > 0 ? `<div><div class="sub-h" style="font-weight:700;margin:16px 0 8px">같은 보도자료로 쓴 기사 ${n.n}건</div><ul class="cluster" style="list-style:none;padding:0;margin:0">${clusterHtml}</ul></div>` : ''}`;
+    foot = `<button class="btn ghost" data-save="${n.id}" aria-pressed="${saved.has(n.id)}">${saved.has(n.id)?'저장됨':'저장'}</button><a href="${n.link || '#'}" target="_blank" rel="noopener noreferrer" class="btn primary" style="text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center">원문 기사 보기 ↗</a>`;
+  } else if (type==='c'){
+    const c = CONTESTS.find(x=>x.id===id);
+    kind = '공모전';
+    body = `<div style="display:flex;gap:14px;align-items:center">${ddBox(c.end)}<h2 id="sh-title">${c.title}</h2></div>
+      <div class="prize">${fmt(c.prize)}만원<small>총 상금</small></div>
+      <dl class="spec">
+        <div><dt>주최</dt><dd>${c.org}</dd></div>
+        <div><dt>훈격</dt><dd>${c.award}</dd></div>
+        <div><dt>참가 대상</dt><dd>${c.target.join(', ')}</dd></div>
+        <div><dt>접수 기간</dt><dd class="num">${md(day(c.start))} ~ ${md(day(c.end))}</dd></div>
+        <div><dt>시상</dt><dd>대상 1팀, 최우수 2팀, 우수 3팀, 장려 5팀</dd></div>
+        <div><dt>제출물</dt><dd>기획서(PDF, 10쪽 이내), 발표 영상 3분</dd></div>
+      </dl>`;
+    foot = `<button class="btn ghost" data-save="${c.id}" aria-pressed="${saved.has(c.id)}">${saved.has(c.id)?'저장됨':'저장'}</button><a href="${c.link || '#'}" target="_blank" rel="noopener noreferrer" class="btn" style="text-decoration:none;display:grid;place-items:center">공식 접수처 바로가기 ↗</a>`;
+  } else {
+    const j = JOBS.find(x=>x.id===id);
+    kind = GRP[j.grp] + ' 채용';
+    body = `<div style="display:flex;gap:14px;align-items:center"><div class="logo" style="background:${j.color}">${j.co[0]}</div><div><div class="row-meta"><span>${j.co} (예시)</span></div><h2 id="sh-title">${j.role}</h2></div></div>
+      <dl class="spec">
+        <div><dt>지원 자격</dt><dd>${j.lvl}${j.exp?' ('+j.exp+')':''}, 토목 관련 전공</dd></div>
+        <div><dt>근무지</dt><dd>${j.loc}</dd></div>
+        <div><dt>마감</dt><dd><span class="num">${md(day(j.end))} 18:00</span> ${ddPill(j.end)}</dd></div>
+        <div><dt>우대</dt><dd>토목기사, 건설안전기사, BIM 활용 경험</dd></div>
+      </dl>
+      <div><div class="sub-h">전형 절차</div><ol class="steps">${j.steps.map(s=>`<li class="${s==='NCS'?'ncs':''}">${s}</li>`).join('')}</ol></div>
+      <div><div class="sub-h">복리후생</div><div class="pills">${j.welfare.map(w=>`<span class="pill">${w}</span>`).join('')}</div></div>`;
+    foot = `<button class="btn ghost" data-save="${j.id}" aria-pressed="${saved.has(j.id)}">${saved.has(j.id)?'저장됨':'저장'}</button><a href="${j.link || '#'}" target="_blank" rel="noopener noreferrer" class="btn" style="text-decoration:none;display:grid;place-items:center">채용 공고 지원하기 ↗</a>`;
+  }
+  $('#m-sh-kind').textContent = kind; $('#m-sh-body').innerHTML = body; $('#m-sh-foot').innerHTML = foot;
+  $('#m-sh-body').scrollTop = 0;
+  lastFocus = document.activeElement;
+  $('#m-sheet').classList.add('on'); $('#m-scrim').classList.add('on');
+  $('#m-sh-close').focus({preventScroll:true});
+}
+function closeSheet(){
+  const s = $('#m-sheet'); s.style.transform = ''; s.classList.remove('on'); $('#m-scrim').classList.remove('on');
+  lastFocus && lastFocus.focus && lastFocus.focus({preventScroll:true});
+}
+// 손잡이를 아래로 끌어 닫기
+let y0 = null;
+$('#m-grab').addEventListener('touchstart', e=>{ y0 = e.touches[0].clientY; $('#m-sheet').style.transition = 'none'; }, {passive:true});
+$('#m-grab').addEventListener('touchmove', e=>{ if (y0===null) return; const dy = Math.max(0, e.touches[0].clientY - y0); $('#m-sheet').style.transform = `translate(-50%,${dy}px)`; }, {passive:true});
+$('#m-grab').addEventListener('touchend', e=>{
+  if (y0===null) return; const dy = e.changedTouches[0].clientY - y0; y0 = null;
+  const s = $('#m-sheet'); s.style.transition = '';
+  if (dy > 90) closeSheet(); else s.style.transform = '';
+});
+
+/* ---------- 검색 ---------- */
+function openSearch(q = ''){
+  $('#m-search').hidden = false; $('#m-q').value = q; runSearch(); $('#m-q').focus();
+  document.body.style.overflow = 'hidden';
+}
+function closeSearch(){ $('#m-search').hidden = true; document.body.style.overflow = ''; }
+function runSearch(){
+  const q = $('#m-q').value.trim().toLowerCase();
+  const el = $('#m-search-res');
+  if (!q){
+    el.innerHTML = `<div class="sec-h"><h2>많이 찾는 키워드</h2></div><div class="chips wrap">${TRENDS.map(t=>`<button class="chip" data-q="${t}">#${t}</button>`).join('')}</div>`;
+    return;
+  }
+  const has = s => s.toLowerCase().includes(q);
+  const groups = [
+    ['뉴스', NEWS.map((n,i)=>[n,i]).filter(([n])=>has(n.title)||has(n.lede)).map(([n,i])=>newsRow(n,i))],
+    ['공모전', CONTESTS.filter(c=>has(c.title)||has(c.org)).map(contestRow)],
+    ['채용', JOBS.filter(j=>has(j.co)||has(j.role)).map(jobRow)],
+    ['전북대 알바', ALBA.filter(a=>has(a.title)||has(a.where)).map(albaRow)],
+  ].filter(g=>g[1].length);
+  el.innerHTML = groups.length
+    ? groups.map(([t,rows])=>`<section class="sec"><div class="sec-h"><h2>${t}<small>${rows.length}</small></h2></div>${list(rows.join(''))}</section>`).join('')
+    : `<p class="empty" style="margin-top:12px">'${$('#m-q').value.trim()}'와 맞는 항목이 없어요. 더 짧은 단어로 찾아 보세요.</p>`;
+}
+$('#m-q').addEventListener('input', runSearch);
+
+/* ---------- 이벤트 ---------- */
+let tt;
+function toast(msg){ const t = $('#m-toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(()=>t.classList.remove('on'), 2400); }
+
+document.addEventListener('click', e=>{
+  if (!e.target.closest('#m')) return;
+  const t = e.target.closest('button'); if (!t) return;
+  const d = t.dataset;
+  if (d.save) return toggleSave(d.save);
+  if ('dummy' in d) return toast('예시 데이터라서 실제 페이지로 연결되지 않아요.');
+  if (d.open) return openSheet(d.open);
+  if (d.go){ closeSearch(); return go(d.go); }
+  if (d.q) return openSearch(d.q);
+  if (d.cat){ newsCat = d.cat; return rerender(); }
+  if (d.tg){ target = d.tg; return rerender(); }
+  if (d.sort){ sortBy = d.sort; return rerender(); }
+  if (d.grp){ jobGrp = d.grp; return rerender(); }
+  if (d.lvl){ lvl = d.lvl; return rerender(); }
+});
+$('#m-scrim').onclick = closeSheet;
+$('#m-sh-close').onclick = closeSheet;
+$('#m-open-search').onclick = () => openSearch();
+$('#m-close-search').onclick = closeSearch;
+document.addEventListener('keydown', e=>{
+  if (e.key !== 'Escape' || document.getElementById('m').hidden) return;
+  if ($('#m-sheet').classList.contains('on')) closeSheet(); else if (!$('#m-search').hidden) closeSearch();
+});
+function onScroll(){ $('#m-bar').classList.toggle('scrolled', scrollY > 44); }
+addEventListener('scroll', onScroll, {passive:true});
+
+$('#m-theme').onclick = ()=>{
+  const r = document.documentElement;
+  const dark = r.dataset.theme ? r.dataset.theme==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  r.dataset.theme = dark ? 'light' : 'dark';
+  try { localStorage.setItem('cnh-theme', r.dataset.theme); } catch(e){}
+};
+try { const th = localStorage.getItem('cnh-theme'); if (th) document.documentElement.dataset.theme = th; } catch(e){}
+
+// 다른 화면이나 다른 기기에서 북마크가 바뀌면 저장 버튼과 오늘 탭을 다시 그려요
+savedListeners.push(()=>{
+  document.querySelectorAll('#m [data-save]').forEach(b=>{ const on = saved.has(b.dataset.save); b.setAttribute('aria-pressed', on); if (!b.classList.contains('save-i')) b.textContent = on ? '저장됨' : '저장'; });
+  if (tab === 'home' && !document.getElementById('m').hidden) render(false);
+});
+go(location.hash.slice(1) || 'home');
+
+/* ---------- 모바일 실시간 크롤링 데이터 연동 엔진 ---------- */
+async function syncMobileLiveData(){
+  if (typeof CivilData === 'undefined') return;
+  try {
+    const live = await CivilData.loadAll();
+    if (live) {
+      if (live.TRENDS && live.TRENDS.length) TRENDS = live.TRENDS.map(t=>t[0]);
+      if (live.NEWS && live.NEWS.length) NEWS = live.NEWS;
+      if (live.CONTESTS && live.CONTESTS.length) CONTESTS = live.CONTESTS;
+      if (live.JOBS && live.JOBS.length) JOBS = live.JOBS;
+      if (live.ALBA && live.ALBA.length) ALBA = live.ALBA;
+      if (live.SW && live.SW.length) SW = live.SW;
+
+      if (typeof rerender === 'function') rerender();
+      else if (typeof render === 'function') render(false);
+
+      const mNotEl = $('#m-live-notice');
+      if (mNotEl && live.meta) {
+        mNotEl.innerHTML = `🟢 <b>실시간 크롤링 데이터</b> (뉴스 ${live.meta.newsCount}건, 채용 ${live.meta.jobsCount}건, 공모전 ${live.meta.contestsCount}건, 알바 ${live.meta.albaCount}건)`;
       }
     }
-  </script>
-</body>
-</html>
+  } catch(e) {
+    console.warn('Mobile live sync error:', e);
+  }
+}
+syncMobileLiveData();
+
+})();
+</script>
+<script>
+/* ---------- 화면 고르기: 휴대폰 폭이면 스마트폰 화면, 아니면 컴퓨터 화면 ---------- */
+(() => {
+  const ca = document.getElementById('ca'), m = document.getElementById('m');
+  const phone = matchMedia('(max-width:600px)');
+  // 예전 전환 버튼으로 저장해 둔 선택이 남아 있으면 지워서, 화면 폭만 보고 고르게 해요
+  try { localStorage.removeItem('cnh-layout'); } catch(e){}
+  function apply(){
+    const mobile = phone.matches;
+    if (ca.hidden === mobile && m.hidden === !mobile) return;
+    if (mobile && typeof closeDrawer === 'function') closeDrawer();
+    ca.hidden = mobile; m.hidden = !mobile;
+    notifySaved();
+    if (!mobile && typeof fitNewsLines === 'function') fitNewsLines();
+    window.scrollTo(0, 0);
+  }
+  phone.addEventListener('change', apply);
+  apply();
+})();
+</script>
+<script src="./static/cnh_chat_core.js?v=20261003"></script>
+<script src="./static/cnh_chatbot.js?v=20261003"></script>
+</body></html>

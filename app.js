@@ -674,128 +674,11 @@ function sortArticlesList(articles) {
   });
 }
 
-// 기사 객체의 사실 기반 3줄 AI 브리핑 요약 포인트 반환 (존재 시 사용, 부재 시 지능적 분할 생성)
-function generateArticleSummaryPoints(article) {
-  if (Array.isArray(article.summary_points) && article.summary_points.length >= 3) {
-    return article.summary_points.slice(0, 3);
-  }
-
-  const title = (article.title || '').trim();
-  const snippet = (article.snippet || '').trim();
-  const publisher = (article.publisher || '언론사').trim();
-  const categoryName = (article.category_name || '토목').trim();
-
-  // 1. 제목 노이즈 제거 ([속보], [단독], [포토], [사설] 등)
-  const cleanTitle = title
-    .replace(/^\[(단독|속보|포토|사설|기획|종합|현장|전문|인터뷰|칼럼|기고|알림|인사|부고)\]\s*/i, '')
-    .trim();
-
-  const cleanClause = (text) => {
-    if (!text) return '';
-    let t = text.trim().replace(/^[\s·\-:,~]+|[\s·\-:,~]+$/g, '');
-    const quotePairs = [['"', '"'], ["'", "'"], ['“', '”'], ['‘', '’'], ['[', ']'], ['(', ')']];
-    for (const [open, close] of quotePairs) {
-      if (t.startsWith(open) && t.endsWith(close)) {
-        t = t.slice(open.length, -close.length).trim();
-      }
-    }
-    return t;
-  };
-
-  // 제목 분할: 말줄임표(… 또는 .. 이상), 하이픈(-), 쌍점(:)
-  const rawParts = cleanTitle.split(/…|\.{2,}|(?:\s+-\s+)|(?:\s*:\s*)/);
-  const parts = [];
-  for (const p of rawParts) {
-    const sub = cleanClause(p);
-    if (sub.length >= 4) {
-      parts.push(sub);
-    }
-  }
-
-  const points = [];
-
-  // 1번째 포인트: 핵심 안건 / 사건 개요
-  if (parts.length > 0) {
-    points.push(parts[0]);
-  } else {
-    points.push(cleanClause(cleanTitle) || title);
-  }
-
-  // 2번째 포인트: 세부 내용, 추진 목표, 사업 규모 또는 본문 스니펫 사실
-  let p2 = '';
-  const isDefaultSnippet = !snippet || snippet.includes('보도 - 클릭하여 원문 기사를 확인하세요') || snippet === title;
-  if (!isDefaultSnippet) {
-    const snippetSentences = snippet
-      .split(/[\!\?]\s+|(?<=[다요음함])\.\s+|\n+/)
-      .map(cleanClause)
-      .filter(s => s.length >= 10);
-    for (const s of snippetSentences) {
-      if (!points[0].includes(s) && !s.includes(points[0])) {
-        p2 = s;
-        break;
-      }
-    }
-  }
-
-  if (!p2 && parts.length >= 2) {
-    p2 = parts[1];
-  }
-
-  if (!p2) {
-    const numMatch = cleanTitle.match(/(\d+[\.\d]*(?:조|억|천|만|km|m|%|호선|단계|차로|곳|개소))/);
-    if (numMatch) {
-      p2 = `핵심 규모 및 지표: ${numMatch[1]} 관련 세부 계획 구체화`;
-    } else if (/(국토|정부|지자체|공사|철도공단|도로공사|수자원공사)/.test(cleanTitle)) {
-      p2 = '주관 기관 및 유관 지자체 협력 기반 행정·인허가 및 사업 절차 진행';
-    } else if (/(안전|점검|사고|예방|침하|균열|붕괴)/.test(cleanTitle)) {
-      p2 = '현장 위험 요인 선제적 점검 및 안전 시공·관리 기준 강화';
-    } else if (/(철도|도로|교량|터널|고속)/.test(cleanTitle)) {
-      p2 = '교통 인프라 확충 및 광역 이동성 개선을 위한 설계·시공 착수';
-    } else if (/(수자원|하천|항만|댐|물)/.test(cleanTitle)) {
-      p2 = '치수 방재 역량 제고 및 수자원·항만 시설 인프라 현대화';
-    } else {
-      p2 = `${categoryName} 인프라 현장 실무 및 세부 실행 계획 검토`;
-    }
-  }
-  points.push(p2);
-
-  // 3번째 포인트: 파급효과, 업계 동향 및 출처 브리핑
-  let p3 = '';
-  if (parts.length >= 3 && !points.includes(parts[2])) {
-    p3 = parts[2];
-  }
-
-  if (!p3 && !isDefaultSnippet) {
-    const snippetSentences = snippet
-      .split(/[\!\?]\s+|(?<=[다요음함])\.\s+|\n+/)
-      .map(cleanClause)
-      .filter(s => s.length >= 10);
-    for (const s of snippetSentences) {
-      if (!points[0].includes(s) && !points[1].includes(s)) {
-        p3 = s;
-        break;
-      }
-    }
-  }
-
-  if (!p3) {
-    p3 = `[${categoryName}] ${publisher} 보도 기준 업계 동향 및 후속 절차 주목`;
-  }
-  points.push(p3);
-
-  return points.slice(0, 3);
-}
-
-// 기사 본문 스니펫 정제: '원문 기사를 확인하세요' 등 무의미한 더미 문구 원천 차단 및 정갈한 팩트 요약 제공
+// 기사 본문 스니펫 정제
 function getArticleCleanSnippet(article) {
   let snippet = (article.snippet || '').trim();
-  if (snippet.includes('원문 기사를 확인하세요') || snippet.includes('보도 - 클릭하여') || snippet.length < 10) {
-    const points = generateArticleSummaryPoints(article);
-    const p1 = (points[0] || '').trim();
-    const p2 = (points[1] || '').trim();
-    const s1 = p1 ? (p1.endsWith('.') ? p1 : p1 + '.') : '';
-    const s2 = (p2 && p2 !== p1 && !p2.includes('보도 기준')) ? (p2.endsWith('.') ? p2 : p2 + '.') : '';
-    return `${s1} ${s2}`.trim() || (article.title || '');
+  if (!snippet || snippet.includes('원문 기사를 확인하세요') || snippet.length < 10) {
+    return article.title || '';
   }
   return snippet;
 }
@@ -808,7 +691,6 @@ function renderArticleCard(article) {
   const totalViews = (article.views || 0) + (userViews[article.id] || 0);
   const hasRelated = article.related_articles && article.related_articles.length > 0;
   const relatedCount = hasRelated ? article.related_articles.length : 0;
-  const summaryPoints = generateArticleSummaryPoints(article);
   const cleanSnippet = getArticleCleanSnippet(article);
 
   const readBadgeHtml = isRead
@@ -837,23 +719,16 @@ function renderArticleCard(article) {
           </div>
         </div>
 
-        <h3 class="${isRead ? 'font-bold text-lg sm:text-xl text-slate-600 dark:text-slate-400' : 'font-extrabold text-xl sm:text-2xl text-slate-900 dark:text-slate-100'} hover:text-blue-600 dark:hover:text-blue-400 leading-snug sm:leading-snug line-clamp-2 mb-3.5 sm:mb-4 transition tracking-tight">
+        <h3 class="${isRead ? 'font-bold text-lg sm:text-xl text-slate-600 dark:text-slate-400' : 'font-extrabold text-xl sm:text-2xl text-slate-900 dark:text-slate-100'} hover:text-blue-600 dark:hover:text-blue-400 leading-snug sm:leading-snug line-clamp-2 mb-2.5 sm:mb-3 transition tracking-tight">
           <a href="${article.link}" target="_blank" rel="noopener noreferrer" onclick="recordView('${article.id}'); markArticleAsRead('${article.id}');">
             ${escapeHtml(article.title)}
           </a>
         </h3>
 
-        <!-- 3줄 핵심 브리핑 리스트 (상시 노출) -->
-        <div class="mb-4 sm:mb-5 p-4 sm:p-5 rounded-2xl bg-blue-50/40 dark:bg-slate-800/60 border border-blue-100/70 dark:border-slate-700/60">
-          <ul class="space-y-2.5 text-sm sm:text-[15px] text-slate-700 dark:text-slate-200">
-            ${summaryPoints.map((point) => `
-              <li class="flex items-start gap-2.5 leading-relaxed">
-                <span class="w-2.5 h-2.5 rounded-full bg-blue-500 dark:bg-blue-400 mt-1.5 flex-shrink-0 shadow-xs"></span>
-                <span class="flex-1">${escapeHtml(point)}</span>
-              </li>
-            `).join('')}
-          </ul>
-        </div>
+        <!-- 기사 본문 요약 (정갈한 팩트 단락) -->
+        <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed mb-4 line-clamp-3">
+          ${escapeHtml(cleanSnippet)}
+        </p>
 
         ${hasRelated ? `
         <div class="mb-3.5">
