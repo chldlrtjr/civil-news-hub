@@ -228,6 +228,22 @@ def refresh_data():
         }), 500
 
 # --- Gemini 1.5 Flash API 프록시 ---
+def build_gemini_contents(prompt_text, history):
+    """최근 대화(최대 8개, 각 1000자)를 이전 턴으로 넣고, 마지막에 이번 프롬프트를 붙여요."""
+    contents = []
+    if isinstance(history, list):
+        for item in history[-8:]:
+            if not isinstance(item, dict):
+                continue
+            text = str(item.get("text") or "").strip()[:1000]
+            if not text:
+                continue
+            role = "user" if item.get("role") == "user" else "model"
+            contents.append({"role": role, "parts": [{"text": text}]})
+    contents.append({"role": "user", "parts": [{"text": prompt_text}]})
+    return contents
+
+
 @app.route("/api/chat/status", methods=["GET"])
 def chat_status():
     server_key = get_gemini_api_key()
@@ -303,11 +319,15 @@ def gemini_chat():
             "1. 기사에 나온 구체적인 수치(사업비, 공사비, 노선 길이, 완공/착공 연도 등)가 있다면 명확히 밝히세요.\n"
             "2. 읽기 편하게 불릿 기호(•)와 굵은 글씨(**)를 사용하여 핵심 위주로 일목요연하게 작성하세요.\n"
             "3. 기사에 없는 내용은 허구로 꾸며내지 말고 솔직하게 밝히세요.\n"
-            "4. 한국어로 정중하고 격식 있는 어조(~합니다, ~입니다)로 답변하세요."
+            "4. 한국어로 정중하고 격식 있는 어조(~합니다, ~입니다)로 답변하세요.\n"
+            "5. 기사 요약을 요청받으면 3줄 이내 불릿(•)으로 핵심만 정리하세요.\n"
+            "6. 단어나 용어의 뜻을 물으면 기사 속 맥락을 살려 쉬운 말로 1~2문장으로 설명하고, 예를 하나 드세요.\n"
+            "7. 이전 대화가 있으면 이어지는 질문으로 이해하고, \"그 기사\", \"그 단어\"가 무엇을 가리키는지 이전 대화에서 찾으세요."
         )
 
         prompt_text = f"{system_prompt}\n\n[참고 기사 데이터]\n{context_text}\n\n[사용자 질문]\n{query}"
 
+    contents = build_gemini_contents(prompt_text, data.get("history"))
     model_candidates = [GEMINI_MODEL, "gemini-3.6-flash", "gemini-flash-latest"]
     seen = set()
     model_list = [m for m in model_candidates if m and not (m in seen or seen.add(m))]
@@ -320,12 +340,7 @@ def gemini_chat():
                 endpoint,
                 headers={"Content-Type": "application/json"},
                 json={
-                    "contents": [
-                        {
-                            "role": "user",
-                            "parts": [{"text": prompt_text}]
-                        }
-                    ],
+                    "contents": contents,
                     "generationConfig": {
                         "temperature": 0.2,
                         "maxOutputTokens": 1200
