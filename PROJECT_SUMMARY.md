@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.1.49` (카카오톡 '나와의 채팅방' 서버 새 주소 자동 알림 시스템 구축 완료 / 104회 누적 수정 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.1.50` (스마트폰 전용 모바일 뷰 및 태블릿·아이패드 데스크톱 뷰 자동 분기 엔진 탑재 / 105회 누적 수정 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -1477,7 +1477,31 @@ mindmap
   5. **보안 강화**:
      - [`.gitignore`](file:///C:/Users/최익석/Desktop/goofy-borg/.gitignore)에 `kakao_token.json`, `data/last_tunnel_url.txt`를 추가하여 민감 토큰의 Git 노출 원천 차단.
 
+#### 98) 스마트폰 전용 모바일 뷰 및 태블릿·아이패드 데스크톱 뷰 자동 분기 엔진 탑재 (`ver 1.1.50`)
+- **사용자 문의 및 요청**:
+  - "스마트폰으로 깃허브 주소 들어가면 자꾸 데스크톱 사이트 켜져서 컴퓨터용 화면으로 보이는데 내 휴대폰이 이상한건지 지금 웹사이트 설정이 이상한건지 확인해봐"
+  - "1번으로 하는데 태블릿이나 아이패드로 접속하면 데스크톱 사이트로 보이게 하고 싶은데 어떻게 할 수 있어?"
+- **원인 분석**:
+  - 기존 감지 로직이 단순 화면 폭 `max-width: 600px` 하나에만 의존하여, 스마트폰에서 가로 회전이나 디스플레이 배율, 브라우저 가상 뷰포트로 인해 600px을 초과할 경우 곧바로 데스크톱 화면(`#ca`)으로 강제 튕김 현상 발생.
+  - 동시에 스마트폰과 태블릿/아이패드를 구분하는 User-Agent 및 터치 플랫폼 판별 로직 부재.
+- **해결 및 구축 내역 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html))**:
+  1. **태블릿 & 아이패드 제외 필터 탑재**:
+     - `iPadOS`(MacIntel + multi-touch) 및 구형 `iPad` User-Agent 감지 시 무조건 데스크톱 뷰(`ca.hidden = false, m.hidden = true`)로 고정.
+     - 안드로이드 태블릿(`Android` 포함 + `Mobile` 단어 제외) 감지 시 무조건 대화면 데스크톱 뷰로 고정.
+  2. **스마트폰(휴대폰) 전용 모바일 뷰 보장**:
+     - `iPhone`, `iPod`, `Android + Mobile` 신호 감지 시 화면 폭과 회전 상태에 무관하게 100% 모바일 전용 뷰(`#m`)로 자동 분기.
+  3. **PC 반응형 뷰포트 지원**:
+     - 일반 PC 브라우저에서 창 너비를 600px 이하로 축소할 경우에만 모바일 뷰로 반응형 전환.
+     - `resize` 및 `orientationchange` 이벤트 리스너 연동으로 실시간 화면 전환 지원.
+  4. **Playwright E2E 정밀 검증 100% 통과**:
+     - Galaxy S24 (Phone): `ca.hidden: True, m.hidden: False` (PASS)
+     - iPhone 14 (Phone): `ca.hidden: True, m.hidden: False` (PASS)
+     - iPad Pro 11 (Tablet): `ca.hidden: False, m.hidden: True` (PASS)
+     - Galaxy Tab S9 (Tablet): `ca.hidden: False, m.hidden: True` (PASS)
+     - Desktop Chrome (PC): `ca.hidden: False, m.hidden: True` (PASS)
+
 ---
+
 
 
 ## 🌿 3. Git 브랜치 현황

@@ -1547,14 +1547,33 @@ syncMobileLiveData();
 })();
 </script>
 <script>
-/* ---------- 화면 고르기: 휴대폰 폭이면 스마트폰 화면, 아니면 컴퓨터 화면 ---------- */
+/* ---------- 화면 고르기: 스마트폰이면 모바일 화면(#m), 태블릿/아이패드/PC는 데스크톱 화면(#ca) ---------- */
 (() => {
   const ca = document.getElementById('ca'), m = document.getElementById('m');
-  const phone = matchMedia('(max-width:600px)');
-  // 예전 전환 버튼으로 저장해 둔 선택이 남아 있으면 지워서, 화면 폭만 보고 고르게 해요
+
+  function isPhoneDevice() {
+    const ua = navigator.userAgent || '';
+    // 1. 아이패드(iPad) 제외: iPadOS(MacIntel + multi-touch) 또는 iPad UA -> 데스크톱 사이트
+    const isIPad = /iPad/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (isIPad) return false;
+
+    // 2. 안드로이드 태블릿(Galaxy Tab 등) 제외: Android 포함 + Mobile 단어 없음 -> 데스크톱 사이트
+    const isAndroidTablet = /Android/i.test(ua) && !/Mobile/i.test(ua);
+    if (isAndroidTablet) return false;
+
+    // 3. 스마트폰(iPhone, 일반 Android 스마트폰) 감지 -> 모바일 전용 뷰
+    const isMobilePhone = /iPhone|iPod/i.test(ua) || (/Android/i.test(ua) && /Mobile/i.test(ua)) || /BlackBerry|IEMobile|Opera Mini/i.test(ua);
+    if (isMobilePhone) return true;
+
+    // 4. 일반 PC 브라우저 창 크기가 600px 이하로 줄어들었을 때만 반응형 모바일 뷰
+    return window.innerWidth <= 600;
+  }
+
+  // 예전 전환 버튼으로 저장해 둔 선택이 남아 있으면 지워서 자동 감지만 적용
   try { localStorage.removeItem('cnh-layout'); } catch(e){}
+
   function apply(){
-    const mobile = phone.matches;
+    const mobile = isPhoneDevice();
     if (ca.hidden === mobile && m.hidden === !mobile) return;
     if (mobile && typeof closeDrawer === 'function') closeDrawer();
     ca.hidden = mobile; m.hidden = !mobile;
@@ -1562,7 +1581,9 @@ syncMobileLiveData();
     if (!mobile && typeof fitNewsLines === 'function') fitNewsLines();
     window.scrollTo(0, 0);
   }
-  phone.addEventListener('change', apply);
+
+  window.addEventListener('resize', apply);
+  window.addEventListener('orientationchange', apply);
   apply();
 })();
 </script>
