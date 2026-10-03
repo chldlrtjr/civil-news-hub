@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.1.48` (새로고침 시 SWR 로컬 캐시 즉시 복원으로 더미 화면 깜빡임 100% 제거 완료 / 103회 누적 수정 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.1.49` (카카오톡 '나와의 채팅방' 서버 새 주소 자동 알림 시스템 구축 완료 / 104회 누적 수정 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -1452,8 +1452,33 @@ mindmap
   3. **Playwright 정밀 무결성 검증 완료**:
      - 새로고침(`F5`) 시뮬레이션 결과, 첫 번째 페인트 시점(`DOMContentLoaded`)부터 실제 크롤링 헤드라인(`영동양수발전소, 배수터널 양방향 굴착 관통`)이 0초 만에 완벽 표출.
      - 데스크톱 및 모바일 전수 검사에서 더미 텍스트('1공구 공정률 18%', '한빛도로공사', '스마트시티 인프라') 검출률 0건(`False`) 확인 완료 (`verified_instant_desktop.png`, `verified_instant_mobile_standalone.png`).
+#### 97) 카카오톡 '나와의 채팅방' 서버 새 주소 자동 알림 시스템 구축 (`ver 1.1.49`)
+- **사용자 문의 및 요청**:
+  - "우분투 서버가 잠깐 멈추거나 어떤 이유로 서버가 잠깐 닫히면 주소가 바뀐다고 했는데 주소가 바뀌면 넌 바로 확인이 되는거야?"
+  - "3번으로 하는데 카카오톡으로 받을수있나?"
+- **원인 및 배경 분석**:
+  - 학교 JCloud 오픈스택 가상머신 환경에서 외부 접속용 Cloudflare Quick Tunnel(`civil-tunnel.service`) 사용 중 서버 재부팅 시 임시 주소(`*.trycloudflare.com`)가 유동적으로 변경됨.
+  - 외부에서 서버에 바로 접속하지 못하므로, 서버 재시작 시 새 주소를 관리자 스마트폰으로 자동 전송하는 푸시 알림 파이프라인의 필요성 대두.
+- **조치 및 구현 내역**:
+  1. **카카오 Developers 애플리케이션 및 OAuth 권한 연동**:
+     - 카카오 Developers 앱(`서버알리미`, ID `1596204`) 생성, REST API 키 및 클라이언트 시크릿 발급.
+     - 카카오 로그인 활성화, 개편된 플랫폼 키 하위 Redirect URI(`http://localhost:5000`) 및 메시지 전송 동의항목(`talk_message`) 연동.
+  2. **1회성 로컬 OAuth 인증 서버 구현 및 토큰 획득 ([`kakao_auth_receiver.py`](file:///C:/Users/최익석/Desktop/goofy-borg/kakao_auth_receiver.py))**:
+     - 원클릭으로 브라우저를 띄워 인가 코드(Code)를 자동 수신하고, `access_token`과 60일 유효 `refresh_token`을 자동 발급받아 [`kakao_token.json`](file:///C:/Users/최익석/Desktop/goofy-borg/kakao_token.json)에 저장.
+     - 카카오톡 나와의 채팅방으로 축하 테스트 메시지 발송 완료 (`result_code: 0`).
+  3. **무중단 토큰 자동 갱신 및 터널 로그 감시 알리미 엔진 개발 ([`kakao_notifier.py`](file:///C:/Users/최익석/Desktop/goofy-borg/kakao_notifier.py))**:
+     - `refresh_token`을 활용한 만료 시 무중단 자동 연장(Zero-Maintenance Refresh) 탑재로 평생 재인증 불필요.
+     - 우분투 터널 로그(`/var/log/civil-tunnel.log`)를 실시간 파싱하여 신규 `trycloudflare.com` URL 자동 추출.
+     - 마지막 전송 URL 기록(`data/last_tunnel_url.txt`)과 비교하여 주소 변경 시에만 1회 즉시 카카오톡 나와의 채팅방으로 피드 알림 전송 (중복 발송 방지).
+     - `--watch`(데몬 모드), `--url`(수동 발송), `--refresh`(토큰 갱신 테스트) 등 다양한 CLI 지원.
+  4. **우분투 서버 24시간 데몬 서비스 및 자동 설치 스크립트 제작**:
+     - [`civil-kakao-notifier.service`](file:///C:/Users/최익석/Desktop/goofy-borg/civil-kakao-notifier.service): 10초 간격 무부하 터널 주소 변경 감시 데몬 등록.
+     - [`install_kakao_notifier.sh`](file:///C:/Users/최익석/Desktop/goofy-borg/install_kakao_notifier.sh): 우분투 서버 원클릭 의존성 설치 및 systemd 등록/가동 스크립트 작성.
+  5. **보안 강화**:
+     - [`.gitignore`](file:///C:/Users/최익석/Desktop/goofy-borg/.gitignore)에 `kakao_token.json`, `data/last_tunnel_url.txt`를 추가하여 민감 토큰의 Git 노출 원천 차단.
 
 ---
+
 
 ## 🌿 3. Git 브랜치 현황
 

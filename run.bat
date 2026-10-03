@@ -7,7 +7,7 @@ set PORT=8000
 echo ======================================================
 echo    Civil News Hub - Server Starting...
 echo    PC Browser:   http://localhost:8000/#news
-echo    Mobile Phone: https://diverse-tattoo-exterior-reporting.trycloudflare.com/#news
+echo    Mobile Phone: https://addresses-proposition-anybody-tube.trycloudflare.com/#news
 echo    To stop the server, press Ctrl + C or close this window.
 echo ======================================================
 echo.

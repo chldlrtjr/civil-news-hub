@@ -1,0 +1,14 @@
+[Unit]
+Description=Civil News Hub Kakao Notification Watcher
+After=network.target civil-tunnel.service
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/workspace
+ExecStart=/home/ubuntu/workspace/venv/bin/python /home/ubuntu/workspace/kakao_notifier.py --watch --interval 10
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

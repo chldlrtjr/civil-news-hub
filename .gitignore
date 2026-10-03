@@ -11,3 +11,6 @@ Thumbs.db
 *.log
 .orca/
 .env
+kakao_token.json
+data/last_tunnel_url.txt
+

@@ -192,7 +192,7 @@ def get_live_tunnel_url():
                     return m.group(0)
         except Exception:
             pass
-    return "https://diverse-tattoo-exterior-reporting.trycloudflare.com"
+    return "https://addresses-proposition-anybody-tube.trycloudflare.com"
 
 @app.route("/api/network-info")
 def network_info():

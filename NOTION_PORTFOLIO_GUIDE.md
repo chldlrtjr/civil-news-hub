@@ -12,7 +12,7 @@
 | **진행 기간** | 2026.09 (기획, 크롤러 개발, 프론트엔드 SPA, 클라우드 인프라 및 Gemini AI 연동) |
 | **개발 인원** | **1인 풀스택 단독 개발 (기여도 100%)** |
 | **주요 역할** | 서비스 기획, 데이터 크롤링 및 정제 파이프라인, SPA 프론트엔드 개발, 리눅스 서버 인프라 구축, Gemini LLM RAG 연동, PWA 구축 |
-| **라이브 배포** | • **공식 GitHub Pages**: [https://chldlrtjr.github.io/civil-news-hub/](https://chldlrtjr.github.io/civil-news-hub/)<br>• **24시간 라이브 터널**: [https://diverse-tattoo-exterior-reporting.trycloudflare.com/](https://diverse-tattoo-exterior-reporting.trycloudflare.com/)<br>• **모바일 시뮬레이터**: [https://chldlrtjr.github.io/civil-news-hub/mobile.html](https://chldlrtjr.github.io/civil-news-hub/mobile.html) |
+| **라이브 배포** | • **공식 GitHub Pages**: [https://chldlrtjr.github.io/civil-news-hub/](https://chldlrtjr.github.io/civil-news-hub/)<br>• **24시간 라이브 터널**: [https://addresses-proposition-anybody-tube.trycloudflare.com/](https://addresses-proposition-anybody-tube.trycloudflare.com/)<br>• **모바일 시뮬레이터**: [https://chldlrtjr.github.io/civil-news-hub/mobile.html](https://chldlrtjr.github.io/civil-news-hub/mobile.html) |
 | **코드 저장소** | [GitHub Repository (chldlrtjr/civil-news-hub)](https://github.com/chldlrtjr/civil-news-hub) |
 
 ### 💡 기획 배경 및 문제 정의 (Problem Statement)
