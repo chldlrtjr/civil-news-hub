@@ -14,8 +14,11 @@
   // 질문에 흔히 붙지만 기사를 가려내는 데는 쓸모없는 단어
   const STOPWORDS = new Set([
     '기사', '기사를', '기사는', '기사에', '요약', '요약해줘', '요약해', '알려줘', '설명해줘', '설명',
-    '뭐야', '뭔가요', '뭐예요', '뭔데', '무슨', '내용', '의미', '해줘', '이거', '그거', '관련', '대해', '대해서', '좀'
+    '뭐야', '뭔가요', '뭐예요', '뭔데', '무슨', '내용', '의미', '해줘', '이거', '그거', '관련', '대해', '대해서', '좀',
+    // 추천 칩 같은 일반 표현: 기사 제목에 우연히 겹쳐도 맥락을 바꾸면 안 돼요
+    '오늘', '주요', '이번', '최신', '소식', '소식만', '이슈', '어려운', '용어', '풀어줘'
   ]);
+  const BRIEFING_RE = /(오늘|최신|주요|전체|브리핑)/;
   const TERM_RE = /(뜻|뭐야|뭔가요|뭐예요|뭔데|의미|무슨\s*말|용어)/;
 
   const SYSTEM_PROMPT = [
@@ -78,10 +81,24 @@
     return { title: a.title || '', publisher: a.publisher || '', link: a.link || '' };
   }
 
+  // 최신순(published_at 문자열 내림차순) 상위 n건. 날짜가 없으면 맨 뒤예요
+  function newestArticles(list, n) {
+    return list.slice()
+      .sort((x, y) => String(y.published_at || '').localeCompare(String(x.published_at || '')))
+      .slice(0, n);
+  }
+
   function pickContext(articles, query, active) {
     const list = articles || [];
     const activeId = active ? String(active.id) : null;
     const activeArt = activeId ? list.find(a => String(a.id) === activeId) || null : null;
+    if (!tokenize(query).length) {
+      // 기사를 가려낼 단어가 없는 질문: 브리핑 요청이면 맥락을 지우고, 아니면 있던 기사를 이어가요
+      if (BRIEFING_RE.test(String(query || '')) || !activeArt) {
+        return { active: null, switched: false, sources: newestArticles(list, MAX_SOURCES) };
+      }
+      return { active: toActiveRef(activeArt), switched: false, sources: [activeArt] };
+    }
     const ranked = rankArticles(list, query);
     let next = activeArt;
     let switched = false;
@@ -116,10 +133,18 @@
   }
 
   function recentHistory(history, turns = HISTORY_TURNS) {
-    return (history || [])
-      .filter(m => m && (m.role === 'user' || m.role === 'ai') && m.text)
+    const cleaned = (history || [])
+      .filter(m => m && (m.role === 'user' || m.role === 'ai') && m.text && !m.local)   // 로컬 요약은 AI 답이 아니에요
       .slice(-turns * 2)
       .map(m => ({ role: m.role, text: String(m.text).slice(0, MAX_TEXT) }));
+    while (cleaned.length && cleaned[0].role !== 'user') cleaned.shift();   // 첫 턴은 항상 user
+    const merged = [];
+    cleaned.forEach(m => {
+      const last = merged[merged.length - 1];
+      if (last && last.role === m.role) last.text = `${last.text}\n\n${m.text}`.slice(0, MAX_TEXT);
+      else merged.push(m);
+    });
+    return merged;
   }
 
   function buildPrompt(query, apiArticles) {

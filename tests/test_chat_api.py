@@ -54,9 +54,29 @@ class ChatHistoryTest(unittest.TestCase):
         history += ["문자열", None, {"role": "ai", "text": "   "}, {"role": "ai", "text": "가" * 3000}]
         resp, contents = self.post({"query": "요약", "relevantArticles": [], "history": history})
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(contents[0]["parts"][0]["text"], "질문8")
+        self.assertTrue(contents[0]["parts"][0]["text"].startswith("질문8"))
         self.assertLessEqual(len(contents), 9)
         self.assertTrue(all(len(c["parts"][0]["text"]) <= 1000 for c in contents[:-1]))
+
+    def test_leading_model_turn_dropped(self):
+        _, contents = self.post({"query": "요약", "relevantArticles": [], "history": [
+            {"role": "ai", "text": "인사"}, {"role": "user", "text": "질문"}, {"role": "ai", "text": "답"}]})
+        self.assertEqual([c["role"] for c in contents], ["user", "model", "user"])
+        self.assertEqual(contents[0]["parts"][0]["text"], "질문")
+
+    def test_consecutive_same_role_merged(self):
+        _, contents = self.post({"query": "요약", "relevantArticles": [], "history": [
+            {"role": "user", "text": "가" * 900}, {"role": "user", "text": "나" * 900},
+            {"role": "ai", "text": "답"}]})
+        self.assertEqual([c["role"] for c in contents], ["user", "model", "user"])
+        self.assertLessEqual(len(contents[0]["parts"][0]["text"]), 1000)
+        self.assertTrue(contents[0]["parts"][0]["text"].startswith("가"))
+
+    def test_local_messages_excluded(self):
+        _, contents = self.post({"query": "요약", "relevantArticles": [], "history": [
+            {"role": "user", "text": "질문"}, {"role": "ai", "text": "로컬 요약", "local": True}]})
+        self.assertEqual(len(contents), 2)
+        self.assertEqual(contents[0]["parts"][0]["text"], "질문")
 
     def test_history_not_a_list_is_ignored(self):
         _, contents = self.post({"query": "요약", "relevantArticles": [], "history": "oops"})

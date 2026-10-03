@@ -227,18 +227,25 @@ def refresh_data():
             "error": str(e)
         }), 500
 
-# --- Gemini 1.5 Flash API 프록시 ---
+# --- Gemini 챗봇 프록시 (GEMINI_MODEL 우선, 404면 대체 모델로 시도하고 이전 대화 history를 지원해요) ---
 def build_gemini_contents(prompt_text, history):
     """최근 대화(최대 8개, 각 1000자)를 이전 턴으로 넣고, 마지막에 이번 프롬프트를 붙여요."""
     contents = []
     if isinstance(history, list):
         for item in history[-8:]:
-            if not isinstance(item, dict):
-                continue
+            if not isinstance(item, dict) or item.get("local"):
+                continue  # 로컬 요약은 모델 답이 아니라서 빼요
             text = str(item.get("text") or "").strip()[:1000]
             if not text:
                 continue
             role = "user" if item.get("role") == "user" else "model"
+            if not contents and role != "user":
+                continue  # 첫 턴은 항상 user
+            if contents and contents[-1]["role"] == role:
+                # 같은 역할이 이어지면 한 턴으로 합쳐요(1000자 제한)
+                merged = contents[-1]["parts"][0]["text"] + "\n\n" + text
+                contents[-1]["parts"][0]["text"] = merged[:1000]
+                continue
             contents.append({"role": role, "parts": [{"text": text}]})
     contents.append({"role": "user", "parts": [{"text": prompt_text}]})
     return contents

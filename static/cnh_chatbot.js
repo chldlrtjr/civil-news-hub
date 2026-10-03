@@ -27,6 +27,7 @@
     open: false,
     sheet: 'half',        // 휴대폰 시트 높이 'half' | 'full'
     generating: false,
+    gen: 0,               // 초기화할 때마다 올라가요(초기화 전에 보낸 질문의 답을 버리려고)
     apiKey: '',
     serverKey: false,
     model: '',
@@ -330,8 +331,14 @@
         body: JSON.stringify({ query, relevantArticles: apiArticles, history })
       });
     } catch (e) { res = null; }
-    if (res && !PROXY_MISSING.includes(res.status)) {
-      const d = await res.json().catch(() => ({}));
+    let d = null;
+    if (res && PROXY_MISSING.includes(res.status)) {
+      // 서버가 JSON({success})로 답했다면 프록시는 있는 거예요(예: Gemini 모델 404)
+      d = await res.json().catch(() => null);
+      if (!d || typeof d.success === 'undefined') res = null;
+    }
+    if (res) {
+      if (d === null) d = await res.json().catch(() => ({}));
       if (res.ok && d.success && d.answer) return d.answer;
       if (d.error === 'KEY_MISSING' && !state.apiKey) throw new Error('KEY_MISSING');
       throw new Error(d.message || `AI 서버 오류가 났어요 (HTTP ${res.status}).`);
@@ -343,14 +350,19 @@
   async function callDirect(query, apiArticles, history) {
     const model = state.model || 'gemini-flash-latest';
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(state.apiKey)}`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: Core.buildGeminiContents(query, apiArticles, history),
-        generationConfig: { temperature: 0.2, maxOutputTokens: 1200 }
-      })
-    });
+    let res;
+    try {
+      res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: Core.buildGeminiContents(query, apiArticles, history),
+          generationConfig: { temperature: 0.2, maxOutputTokens: 1200 }
+        })
+      });
+    } catch (e) {
+      throw new Error('Gemini에 연결하지 못했어요. 인터넷 연결을 확인해 주세요.');
+    }
     const d = await res.json().catch(() => ({}));
     if (!res.ok) {
       const msg = (d.error && d.error.message) || `HTTP ${res.status}`;
@@ -393,9 +405,11 @@
   }
 
   async function answer(query, prior) {
+    const gen = state.gen;
     setGenerating(true);
     try {
       const articles = await loadArticles();
+      if (gen !== state.gen) return;                   // 기다리는 사이 초기화됐으면 답을 버려요
       const ctx = Core.pickContext(articles, query, state.active);
       state.active = ctx.active;
       renderContext();
@@ -404,15 +418,17 @@
         try { text = await callAi(query, ctx.sources.map(Core.toApiArticle), prior); }
         catch (err) { if (err.message !== 'KEY_MISSING') throw err; }
       }
+      if (gen !== state.gen) return;
       const local = text == null;
       if (local) text = Core.localBriefing(query, ctx.sources);
       state.generating = false;
       push({ role: 'ai', text, local, sources: ctx.sources.map(Core.toSourceRef) });
     } catch (err) {
+      if (gen !== state.gen) return;
       state.generating = false;
       push({ role: 'error', text: err.message || 'AI 답변 처리 중 오류가 났어요.', retry: query });
     } finally {
-      setGenerating(false);
+      if (gen === state.gen) setGenerating(false);
     }
   }
 
@@ -428,7 +444,9 @@
       case 'min': setOpen(false); break;
       case 'close': setOpen(false, { clearContext: true }); break;
       case 'reset':
-        state.history = []; state.active = null;
+        state.gen++;
+        state.history = []; state.active = null; state.generating = false;
+        el.send.disabled = false;
         saveSession(); renderMessages(); renderContext();
         break;
       case 'key':

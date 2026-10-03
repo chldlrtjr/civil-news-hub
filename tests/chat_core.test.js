@@ -96,7 +96,7 @@ test('recentHistory: 오류를 빼고 최근 8개, 1000자까지', () => {
   h.push({ role: 'error', text: '실패' });
   h.push({ role: 'user', text: 'x'.repeat(1500) });
   const r = Core.recentHistory(h);
-  assert.equal(r.length, 8);
+  assert.equal(r.length, 7);   // 최근 8개 중 맨 앞 ai 턴(m3)은 F2에 따라 버려요
   assert.ok(r.every(m => m.role === 'user' || m.role === 'ai'));
   assert.equal(r[r.length - 1].text.length, 1000);
 });
@@ -146,4 +146,78 @@ test('safeLink: http(s)만 허용', () => {
   assert.equal(Core.safeLink('https://a.com/x'), 'https://a.com/x');
   assert.equal(Core.safeLink('javascript:alert(1)'), '#');
   assert.equal(Core.safeLink(undefined), '#');
+});
+
+// ---- 최종 리뷰 수정: 추천 칩 맥락 고정 / 대화 기록 정리 ----
+const N1 = { id: 'n1', title: '신공항 활주로 공사 착수', snippet: '활주로 공사가 시작됐다.', publisher: 'X', category_name: '공항', link: 'https://e.com/1', published_at: '2026-10-01 09:00', related_articles: [] };
+const N2 = { id: 'n2', title: '주요 교량 안전 점검 이슈 소식', snippet: '이번 주 주요 이슈를 정리했다. 오늘 최신 소식.', publisher: 'Y', category_name: '교량', link: 'https://e.com/2', published_at: '2026-10-03 09:00', related_articles: [] };
+const N3 = { id: 'n3', title: '댐 보수 계획', snippet: '댐 보수.', publisher: 'Z', category_name: '수자원', link: 'https://e.com/3', published_at: '2026-10-02 09:00', related_articles: [] };
+const N4 = { id: 'n4', title: '하수관 정비', snippet: '하수관.', publisher: 'Z', category_name: '수자원', link: 'https://e.com/4', published_at: '2026-09-20 09:00', related_articles: [] };
+const N5 = { id: 'n5', title: '날짜 없는 기사', snippet: '없음', publisher: 'Z', category_name: '기타', link: 'https://e.com/5', related_articles: [] };
+const N6 = { id: 'n6', title: '터널 환기', snippet: '터널.', publisher: 'Z', category_name: '터널', link: 'https://e.com/6', published_at: '2026-09-01 09:00', related_articles: [] };
+const NEWS = [N1, N2, N3, N4, N5, N6];
+
+test('tokenize: 추천 칩의 일반 단어는 버린다', () => {
+  assert.deepEqual(Core.tokenize('오늘 주요 기사 요약'), []);
+  assert.deepEqual(Core.tokenize('어려운 용어 풀어줘'), []);
+  assert.deepEqual(Core.tokenize('이번 주 지하안전 이슈'), ['지하안전']);
+});
+
+test('칩 "오늘 주요 기사 요약": 맥락을 지우고 최신 4건', () => {
+  const r = Core.pickContext(NEWS, '오늘 주요 기사 요약', Core.toActiveRef(N1));
+  assert.equal(r.active, null);
+  assert.equal(r.switched, false);
+  assert.deepEqual(r.sources.map(a => a.id), ['n2', 'n3', 'n1', 'n4']);
+});
+
+test('칩 "어려운 용어 풀어줘": 있던 기사 유지, 없으면 최신 4건', () => {
+  const kept = Core.pickContext(NEWS, '어려운 용어 풀어줘', Core.toActiveRef(N4));
+  assert.equal(kept.active.id, 'n4');
+  assert.equal(kept.switched, false);
+  assert.deepEqual(kept.sources.map(a => a.id), ['n4']);
+  const none = Core.pickContext(NEWS, '어려운 용어 풀어줘', null);
+  assert.equal(none.active, null);
+  assert.deepEqual(none.sources.map(a => a.id), ['n2', 'n3', 'n1', 'n4']);
+});
+
+test('칩 "도로·철도 소식만" / "이번 주 지하안전 이슈": 일반 단어만 겹치는 기사로 안 바뀐다', () => {
+  const r1 = Core.pickContext(NEWS, '도로·철도 소식만', Core.toActiveRef(N1));
+  assert.equal(r1.active.id, 'n1');
+  assert.equal(r1.switched, false);
+  const r2 = Core.pickContext(NEWS, '이번 주 지하안전 이슈', Core.toActiveRef(N1));
+  assert.equal(r2.active.id, 'n1');
+  assert.equal(r2.switched, false);
+});
+
+test('pickContext: 맥락 없고 단서도 없으면 published_at 없는 기사는 맨 뒤', () => {
+  const r = Core.pickContext([N5, N6, N4], '최신 소식', null);
+  assert.deepEqual(r.sources.map(a => a.id), ['n4', 'n6', 'n5']);
+});
+
+test('recentHistory: 맨 앞 ai 턴은 버리고 같은 역할은 합친다', () => {
+  const h = Core.recentHistory([
+    { role: 'ai', text: '인사' },
+    { role: 'user', text: '하나' }, { role: 'user', text: '둘' },
+    { role: 'ai', text: '답' }
+  ]);
+  assert.deepEqual(h.map(m => m.role), ['user', 'ai']);
+  assert.equal(h[0].text, '하나\n\n둘');
+});
+
+test('recentHistory: 합친 글도 1000자 이하, local 메시지는 제외', () => {
+  const h = Core.recentHistory([
+    { role: 'user', text: '가'.repeat(900) }, { role: 'user', text: '나'.repeat(900) },
+    { role: 'ai', text: '로컬 요약', local: true },
+    { role: 'ai', text: '진짜 답' }
+  ]);
+  assert.equal(h.length, 2);
+  assert.ok(h[0].text.length <= 1000);
+  assert.equal(h[1].text, '진짜 답');
+});
+
+test('buildGeminiContents: 첫 턴이 user이고 역할이 번갈아 간다', () => {
+  const c = Core.buildGeminiContents('질문', [], [
+    { role: 'ai', text: 'x' }, { role: 'user', text: 'a' }, { role: 'user', text: 'b' }, { role: 'ai', text: 'c' }
+  ]);
+  assert.deepEqual(c.map(t => t.role), ['user', 'model', 'user']);
 });
