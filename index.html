@@ -1278,7 +1278,7 @@ const contestRow = c => `<button class="row" data-open="c:${c.id}">${ddBox(c.end
   <div class="row-meta"><span class="cat" style="--cat:var(--accent)">${c.award}</span><span>${c.target.join(', ')}</span>${c.added<=2?'<span class="tagn">새 공고</span>':''}</div>
   <div class="row-title">${c.title}</div><div class="row-sub">총 상금 <b class="num">${fmt(c.prize)}만원</b></div></div></button>`;
 const jobRow = j => `<button class="row" data-open="j:${j.id}"><div class="logo" style="background:${j.color}">${j.co[0]}</div><div class="row-main">
-  <div class="row-meta"><span>${j.co} (예시)</span><span class="lv">${j.lvl}${j.exp?' '+j.exp:''}</span></div>
+  <div class="row-meta"><span>${j.co}</span><span class="lv">${j.lvl}${j.exp?' '+j.exp:''}</span></div>
   <div class="row-title">${j.role}</div><div class="row-sub">${j.loc}, 전형 ${j.steps.length}단계</div></div>${ddPill(j.end)}</button>`;
 const albaRow = a => `<div class="row"><div class="row-main">
   <div class="row-meta"><span class="cat" style="--cat:var(--ok)">${a.tag}</span><span>${a.where}</span>${ddPill(a.end)}</div>
@@ -1415,7 +1415,7 @@ function openSheet(key){
   } else {
     const j = JOBS.find(x=>x.id===id);
     kind = GRP[j.grp] + ' 채용';
-    body = `<div style="display:flex;gap:14px;align-items:center"><div class="logo" style="background:${j.color}">${j.co[0]}</div><div><div class="row-meta"><span>${j.co} (예시)</span></div><h2 id="sh-title">${j.role}</h2></div></div>
+    body = `<div style="display:flex;gap:14px;align-items:center"><div class="logo" style="background:${j.color}">${j.co[0]}</div><div><div class="row-meta"><span>${j.co}</span></div><h2 id="sh-title">${j.role}</h2></div></div>
       <dl class="spec">
         <div><dt>지원 자격</dt><dd>${j.lvl}${j.exp?' ('+j.exp+')':''}, 토목 관련 전공</dd></div>
         <div><dt>근무지</dt><dd>${j.loc}</dd></div>
@@ -1535,7 +1535,7 @@ async function syncMobileLiveData(){
 
       const mNotEl = $('#m-live-notice');
       if (mNotEl && live.meta) {
-        mNotEl.innerHTML = `🟢 <b>실시간 크롤링 데이터</b> (뉴스 ${live.meta.newsCount}건, 채용 ${live.meta.jobsCount}건, 공모전 ${live.meta.contestsCount}건, 알바 ${live.meta.albaCount}건)`;
+        mNotEl.innerHTML = `🟢 <b>실시간 크롤링 데이터</b> (뉴스 ${live.meta.newsCount}건, 채용 ${live.meta.jobsCount}건, 공모전 ${live.meta.contestsCount}건, 알바 ${live.meta.albaCount}건 · 업데이트: ${live.meta.lastUpdated})`;
       }
     }
   } catch(e) {
