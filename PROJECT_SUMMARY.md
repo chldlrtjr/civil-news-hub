@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.1.55` (뉴스 이미지 정제: https 프로토콜 검증 및 로고·기본이미지 12건 필터링 완료 / 110회 누적 수정 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.1.56` (실시간 뉴스·채용·공모전·알바 데이터 최신화 및 알바 수집 안전장치 보강 / 111회 누적 수정 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -1620,6 +1620,25 @@ mindmap
      - **최종 남은 유효 기사 사진**: **107건** (100% `https://` 프로토콜 기반 순수 기사 사진).
   3. **화면 코드 불변 원칙 준수**:
      - `index.html`, `static/index.html`, `static/data_adapter.js` 일절 수정 없이 백엔드 데이터 및 수집기 로직만 고도화.
+
+#### 80) 전체 웹사이트 실시간 정보 최신화 및 알바 수집 안전장치 보강 (v1.1.56)
+- **요청 사항**:
+  - 웹사이트 최신 정보 수집 및 GitHub 푸시 요청.
+- **구현 및 최신화 완료 내역**:
+  1. **토목 뉴스 파이프라인 수집 완료 ([`data/news.json`](file:///C:/Users/최익석/Desktop/goofy-borg/data/news.json))**:
+     - 도로·교량·철도, 수자원·하천·항만, 터널·지반·안전, 스마트건설·정책 등 총 167건 토픽 기사(중복 146건 군집화) 최신 수집 완료.
+     - 대표 이미지(og:image) 140건 확보 및 HTTPS 검증 완료.
+  2. **채용 공고 최신화 ([`data/jobs.json`](file:///C:/Users/최익석/Desktop/goofy-borg/data/jobs.json))**:
+     - 마감 공고 자동 제외 및 실시간 유효 채용 공고 4건 동기화.
+  3. **전북대 알바 공고 수집 및 장애 대비 안전장치 보강 ([`jbnu_scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/jbnu_scraper.py), [`data/jbnu_albas.json`](file:///C:/Users/최익석/Desktop/goofy-borg/data/jbnu_albas.json))**:
+     - 실시간 유효 아르바이트 공고 32건 정상 수집 및 정제 완료.
+     - 일시적 네트워크 장애나 DNS 에러 발생 시 기존 캐시 데이터를 0건으로 덮어쓰지 않고 안전하게 유지하는 방어 로직 추가.
+  4. **SW중심대학 프로그램 최신화 ([`data/swuniv_programs.json`](file:///C:/Users/최익석/Desktop/goofy-borg/data/swuniv_programs.json))**:
+     - 2건의 최신 교육 프로그램 동기화 완료.
+  5. **공모전 수집 및 4중 무결성 전수 검증 통과 ([`data/contests.json`](file:///C:/Users/최익석/Desktop/goofy-borg/data/contests.json))**:
+     - 전북대 및 전국 단위 실시간 유효 공모전 12건 팩트 검증 완료 (`test_contests_integrity.py` 100% 통과).
+  6. **브라우저 캐시 버스팅 파라미터 최신화**:
+     - `index.html`, `mobile.html` 및 `static/` 배포 파일의 스크립트 캐시 버스팅 파라미터(`?v=20261007_1237`) 동기화.
 
 ---
 

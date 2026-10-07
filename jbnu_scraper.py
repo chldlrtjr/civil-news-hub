@@ -379,7 +379,15 @@ def scrape_jbnu_albas(max_pages=2):
             }
             all_jobs.append(job_entry)
 
-    # 데이터 저장
+    # 데이터 저장 (네트워크 오류 등으로 0건일 경우 기존 유효 데이터 보존)
+    if not all_jobs and os.path.exists(JBNU_JSON_PATH):
+        print(f"⚠️ [JBNU Alba] 수집된 공고가 없어 기존 캐시 데이터를 유지합니다: {JBNU_JSON_PATH}")
+        try:
+            with open(JBNU_JSON_PATH, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+
     os.makedirs(DATA_DIR, exist_ok=True)
     payload = {
         "updated_at": datetime.now(timezone(timedelta(hours=9))).strftime("%Y-%m-%d %H:%M:%S KST"),
