@@ -3,7 +3,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
-<script src="./static/data_adapter.js?v=20261007_1237"></script>
+<script src="./static/cnh_data_bundle.js?v=20261008_0045"></script>
+<script src="./static/data_adapter.js?v=20261008_0045"></script>
 <style>
 /* Layout: one phone-width column (max 440px, centered on bigger screens) — large page title, list rows instead of cards, details in a bottom sheet, 5-tab bar fixed at the bottom */
 :root{
@@ -73,14 +74,12 @@ button.row:active{background:var(--surface-2)}
 .tagn{font-size:var(--t-small);font-weight:700;color:var(--ok);background:var(--ok-soft);padding:1px 7px;border-radius:5px}
 .lv{font-size:var(--t-small);font-weight:700;padding:1px 7px;border-radius:5px;background:var(--surface-2);color:var(--ink)}
 
-.dd{flex:none;width:54px;height:54px;border-radius:14px;background:var(--surface-2);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
-.dd b{font-family:var(--f-body);font-size:var(--t-h3)}
-.dd span{font-size:var(--t-label);color:var(--muted);margin-top:4px}
+.dd{flex:none;width:54px;height:54px;border-radius:14px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;line-height:1}
+.dd b{font-family:var(--f-body);font-size:15px;font-weight:700;letter-spacing:-0.02em}
+.dd span{display:none}
 .dd.soon{background:var(--accent-soft);color:var(--accent)}
-.dd.soon span{color:var(--accent)}
 .dd.hot{background:var(--accent);color:#fff}
-.dd.hot span{color:#fff}
-.dd.today b{font-family:var(--f-body);font-size:var(--t-body)}
+.dd.today b{font-size:14px}
 .pd{flex:none;font-family:var(--f-body);font-size:var(--t-small);font-weight:700;padding:4px 8px;border-radius:8px;background:var(--surface-2);color:var(--muted);align-self:center}
 .pd.soon{background:var(--accent-soft);color:var(--accent)}
 .pd.hot{background:var(--accent);color:#fff}
@@ -107,8 +106,8 @@ button.row:active{background:var(--surface-2)}
 .tile{scroll-snap-align:start;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:6px;text-align:left;min-height:154px}
 .tile:active{background:var(--surface-2)}
 .tile .k{font-size:var(--t-small);font-weight:700;color:var(--kind)}
-.tile .n{font-family:var(--f-body);font-size:var(--t-h1);font-weight:700;line-height:1.1}
-.tile .n small{font-family:var(--f-body);font-size:var(--t-small);font-weight:500;color:var(--muted);margin-left:3px}
+.tile .n{font-family:var(--f-body);font-size:20px;font-weight:700;letter-spacing:-0.02em;line-height:1.2}
+.tile .n small{display:none}
 .tile.hot .n{color:var(--accent)}
 .tile .t{font-size:var(--t-small);font-weight:500;line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .empty{margin:0 16px;padding:18px;border:1px dashed var(--line);border-radius:14px;color:var(--muted);font-size:var(--t-small);text-align:center}
@@ -226,70 +225,29 @@ const DAY = ['일','월','화','수','목','금','토'];
 const md = d => `${d.getMonth()+1}.${String(d.getDate()).padStart(2,'0')}(${DAY[d.getDay()]})`;
 const urg = off => off <= 3 ? 'hot' : off <= 7 ? 'soon' : '';
 
-/* ---------- 예시 데이터 ---------- */
+/* ---------- 실시간 정적 번들 및 캐시 기반 팩트 데이터 즉시 초기화 (더미 예시 0% 영구 차단) ---------- */
 let CATS = [{id:'general',name:'토목종합'},{id:'road',name:'도로·철도'},{id:'water',name:'수자원·항만'},{id:'tunnel',name:'터널·지반'},{id:'smart',name:'스마트건설'}];
-const catName = id => CATS.find(c=>c.id===id).name;
-let TRENDS = ['광역급행철도','스마트건설','지반침하','BIM 의무화','SOC 예산','신항만','TBM','중대재해'];
-let NEWS = [
-  {cat:'road',src:'인프라타임즈',ago:'32분 전',n:12,title:'수도권 광역급행철도 신규 노선 착공 본격화… 1공구 공정률 18% 돌파',
-   lede:'수도권 광역급행철도 신규 노선이 민자 구간을 포함한 전 공구에서 착공을 마쳤다. 가장 먼저 공사에 들어간 1공구는 공정률 18%를 기록하며 계획보다 빠르게 진행되고 있다.'},
-  {cat:'smart',src:'건설저널',ago:'1시간 전',n:8,title:'스마트건설 기술 공공현장 적용 의무화 로드맵 발표',
-   lede:'정부가 300억 원 이상 공공공사에 스마트 안전장비를 단계적으로 의무화하는 로드맵을 내놨다. 드론 측량과 디지털트윈을 활용하는 현장에는 설계변경 인센티브도 준다.'},
-  {cat:'tunnel',src:'지반공학신문',ago:'2시간 전',n:5,title:'도심 지반침하 예방 위해 GPR 탐사 전국 확대',
-   lede:'도심 지반침하를 막기 위한 GPR(지표투과레이더) 탐사가 전국으로 확대된다. 노후 상하수도관이 묻힌 구간부터 탐사하고, 탐사 주기도 연 2회로 늘린다.'},
-  {cat:'water',src:'해양항만뉴스',ago:'3시간 전',n:3,title:'서해안 신항만 2단계 부두 실시설계 착수',
-   lede:'서해안 신항만 2단계 부두의 실시설계가 시작됐다. 5만 톤급 선석 2개 규모로, 연약지반을 어떤 공법으로 개량할지 비교 검토한 뒤 2028년 착공할 예정이다.'},
-  {cat:'general',src:'건설경제일보',ago:'4시간 전',n:9,title:'내년 SOC 예산 정부안 확정… 전년 대비 증액',
-   lede:'내년도 SOC 예산 정부안이 확정됐다. 전체 규모는 올해보다 늘었지만, 도로·철도 신규 사업보다 노후 시설 유지보수에 쓰이는 비중이 커진 것이 특징이다.'},
-  {cat:'smart',src:'디지털건설',ago:'5시간 전',n:4,title:'BIM 설계 의무화 대상 공공사업 확대, 설계사 인력 수요 증가',
-   lede:'BIM 설계를 의무로 적용해야 하는 공공사업의 사업비 기준이 낮아지면서 대상 사업이 크게 늘어난다. 설계엔지니어링사들은 BIM 전문 인력 채용에 나섰다.'},
-  {cat:'tunnel',src:'터널앤지반',ago:'6시간 전',n:6,title:'대심도 터널 안전기준 개정안 입법예고',
-   lede:'대심도 터널의 환기·방재 기준을 강화하는 안전기준 개정안이 입법예고됐다. 피난연결통로 간격을 줄이고, TBM 굴진 중 계측 데이터를 실시간으로 보고하도록 했다.'},
-  {cat:'road',src:'교통인프라',ago:'8시간 전',n:2,title:'호남권 고속철도 2단계 노반공사 발주',
-   lede:'호남권 고속철도 2단계 노반공사가 4개 공구로 나뉘어 발주됐다. 교량 구간 비중이 높아 입찰에 나선 업체들은 공기를 줄일 수 있는 프리캐스트 공법을 검토하고 있다.'},
-];
-const OTHER_SRC = ['건설경제일보','인프라타임즈','국토일보','엔지니어링데일리','지역신문 A','건설저널','연합 인프라','디지털건설','시공뉴스','토목신문','경제투데이','공공건설'];
-let CONTESTS = [
-  {id:'c1',title:'스마트시티 인프라 아이디어 공모전',org:'국토교통 스마트시티 추진단(예시)',award:'장관상',prize:3000,target:['대학생','일반'],start:-20,end:2,added:5},
-  {id:'c2',title:'도로안전 개선 아이디어 공모',org:'한빛도로공사(예시)',award:'사장상',prize:1500,target:['대학생','일반'],start:-14,end:5,added:9},
-  {id:'c3',title:'대학생 토목구조물 설계경진대회',org:'한국토목교육협회(예시)',award:'협회장상',prize:1000,target:['대학생'],start:-10,end:9,added:10},
-  {id:'c4',title:'스마트건설 기술 챌린지 2026',org:'스마트건설 얼라이언스(예시)',award:'장관상',prize:5000,target:['스타트업','일반'],start:-7,end:16,added:1},
-  {id:'c5',title:'수자원 데이터 활용 해커톤',org:'한결수자원공사(예시)',award:'사장상',prize:2000,target:['대학생','스타트업'],start:-3,end:24,added:0},
-  {id:'c6',title:'철도 안전 UCC·포스터 공모전',org:'대한철도공단(예시)',award:'이사장상',prize:800,target:['대학생','청소년'],start:-1,end:38,added:2},
-];
-let JOBS = [
-  {id:'j1',grp:'public',co:'한빛도로공사',color:'#1F6FB2',role:'토목직 (도로·교량)',lvl:'신입',steps:['서류','NCS','면접','최종'],end:3,loc:'경북 김천',welfare:['사택 제공','맞춤형 복지포인트','자기계발비']},
-  {id:'j2',grp:'public',co:'대한철도공단',color:'#2F7D4A',role:'토목 (궤도·노반)',lvl:'신입',steps:['서류','NCS','필기','면접'],end:11,loc:'대전',welfare:['통근버스','학자금 지원','순환근무 수당']},
-  {id:'j3',grp:'public',co:'누리주택도시공사',color:'#B5462E',role:'토목 (단지 조성)',lvl:'신입',steps:['서류','NCS','면접'],end:19,loc:'경남 진주',welfare:['사택 제공','육아휴직 3년']},
-  {id:'j4',grp:'major',co:'세움건설',color:'#34495E',role:'토목 시공관리 (현장)',lvl:'신입',steps:['서류','인적성','1차 면접','2차 면접'],end:6,loc:'전국 현장',welfare:['현장 숙소','해외근무 수당','자녀 학자금']},
-  {id:'j5',grp:'major',co:'한결E&C',color:'#7A4DB8',role:'인프라 공무 (견적·공정)',lvl:'경력',exp:'3년 이상',steps:['서류','면접','처우협의'],end:13,loc:'서울 본사',welfare:['성과급','건강검진','콘도 지원']},
-  {id:'j6',grp:'design',co:'누리엔지니어링',color:'#C07A12',role:'구조설계 (교량)',lvl:'경력',exp:'5년 이상',steps:['서류','실무 면접','임원 면접'],end:8,loc:'경기 성남',welfare:['유연근무','기술사 취득 지원']},
-  {id:'j7',grp:'design',co:'다온구조기술',color:'#157A7A',role:'지반·터널 설계',lvl:'신입',steps:['서류','과제','면접'],end:21,loc:'서울',welfare:['재택 주 1회','BIM 교육 지원']},
-];
+const catName = id => (CATS.find(c=>c.id===id) || {name:'토목종합'}).name;
 const GRP = {public:'공기업',major:'대형건설사',design:'설계사'};
-let ALBA = [
-  {title:'중앙도서관 열람실 근로',where:'중앙도서관',type:'hour',wage:10320,hours:15,end:4,tag:'근로장학'},
-  {title:'공과대학 행정실 사무 보조',where:'공과대학 1호관',type:'hour',wage:10500,hours:20,end:7,tag:'교내'},
-  {title:'토목공학과 연구실 CAD 도면 보조',where:'공대 7호관',type:'hour',wage:12000,hours:10,end:12,tag:'전공 연계'},
-  {title:'학생식당 배식 보조',where:'진수당',type:'hour',wage:10320,hours:12,end:2,tag:'교내'},
-  {title:'대동제 운영 스태프',where:'대운동장',type:'day',wage:90000,days:3,end:9,tag:'단기'},
-];
-let SW = [
-  {title:'JBNU 인프라 데이터 해커톤',kind:'해커톤',when:'11월 둘째 주, 무박 2일',end:10,seats:'40팀'},
-  {title:'현업 개발자 특강: 디지털트윈과 건설 데이터',kind:'특강',when:'매주 수요일 19:00',end:5,seats:'80명'},
-  {title:'1:1 커리어 멘토링 (SW·스마트건설)',kind:'멘토링',when:'4주 과정, 온라인',end:15,seats:'30명'},
-];
 
-// 즉시 로컬 캐시 복원 (새로고침 시 더미 데이터 노출 원천 차단: SWR 패턴)
-const _mCached = (typeof CivilData !== 'undefined' && typeof CivilData.getCached === 'function') ? CivilData.getCached() : null;
-if (_mCached) {
-  if (_mCached.TRENDS && _mCached.TRENDS.length) TRENDS = _mCached.TRENDS.map(t => Array.isArray(t) ? t[0] : t);
-  if (_mCached.NEWS && _mCached.NEWS.length) NEWS = _mCached.NEWS;
-  if (_mCached.CONTESTS && _mCached.CONTESTS.length) CONTESTS = _mCached.CONTESTS;
-  if (_mCached.JOBS && _mCached.JOBS.length) JOBS = _mCached.JOBS;
-  if (_mCached.ALBA && _mCached.ALBA.length) ALBA = _mCached.ALBA;
-  if (_mCached.SW && _mCached.SW.length) SW = _mCached.SW;
-}
+// 0ms 즉시 실제 데이터 로드 (정적 컴파일 번들 window.CNH_STATIC_DATA 또는 로컬 스토리지 캐시)
+const _mInitData = (typeof CivilData !== 'undefined' && typeof CivilData.getInitialData === 'function')
+  ? CivilData.getInitialData()
+  : null;
+
+let TRENDS = (_mInitData && _mInitData.TRENDS && _mInitData.TRENDS.length)
+  ? _mInitData.TRENDS.map(t => Array.isArray(t) ? t[0] : t)
+  : [];
+let NEWS = (_mInitData && _mInitData.NEWS && _mInitData.NEWS.length) ? _mInitData.NEWS : [];
+let CONTESTS = (_mInitData && _mInitData.CONTESTS && _mInitData.CONTESTS.length) ? _mInitData.CONTESTS : [];
+let JOBS = (_mInitData && _mInitData.JOBS && _mInitData.JOBS.length) ? _mInitData.JOBS : [];
+let ALBA = (_mInitData && _mInitData.ALBA && _mInitData.ALBA.length) ? _mInitData.ALBA : [];
+let SW = (_mInitData && _mInitData.SW && _mInitData.SW.length) ? _mInitData.SW : [];
+
+// 북마크에 쓰는 고유 번호 안전 처리
+NEWS.forEach((n,i)=>{ if(!n.id) n.id='n'+(i+1); });
+ALBA.forEach((a,i)=>{ if(!a.id) a.id='a'+(i+1); });
+SW.forEach((s,i)=>{ if(!s.id) s.id='s'+(i+1); });
 function monthly(a){
   if (a.type === 'day') return a.wage * a.days;
   const weekly = a.wage * a.hours + (a.hours >= 15 ? a.wage * a.hours / 5 : 0);
@@ -307,9 +265,8 @@ function toggleSave(id){
   if (tab === 'home') render(false);
 }
 
-/* ---------- 행 ---------- */
-const ddBox = off => `<div class="dd ${urg(off)} ${off===0?'today':''}"><b>${off===0?'오늘':off}</b><span>${off===0?'마감':'일 남음'}</span></div>`;
-const ddPill = off => `<span class="pd ${urg(off)}">${off===0?'오늘':'D-'+off}</span>`;
+const ddBox = off => `<div class="dd ${urg(off)} ${off===0?'today':''}"><b>${off===0?'D-Day':(off>=60?'상시':'D-'+off)}</b></div>`;
+const ddPill = off => `<span class="pd ${urg(off)}">${off===0?'D-Day':(off>=60?'상시':'D-'+off)}</span>`;
 const newsRow = (n,i) => `<button class="row" data-open="n:${i}"><div class="row-main">
   <div class="row-meta"><span class="cat" style="--cat:var(--c-${n.cat})">${catName(n.cat)}</span><span>${n.src}</span><span>${n.ago}</span><span>관련 ${n.n}건</span></div>
   <div class="row-title">${n.title}</div><div class="row-sub lede">${n.lede}</div></div></button>`;
@@ -345,7 +302,7 @@ const VIEWS = {
     return head('오늘', `${today.getMonth()+1}월 ${today.getDate()}일 ${DAY[today.getDay()]}요일, 다가오는 주요 일정 ${items.length}개`) + `
       <section class="sec"><div class="sec-h"><h2>마감 임박</h2></div>
         <div class="strip">${items.map(x=>`<button class="tile ${x.end<=3?'hot':x.end<=7?'soon':''}" style="--kind:${x.c}" ${x.open?`data-open="${x.open}"`:`data-go="${x.go}"`}>
-          <span class="k">${x.k}</span><span class="n">${x.end===0?'오늘':x.end>=60?'상시':x.end}<small>${x.end===0?'마감':x.end>=60?'':'일 남음'}</small></span><span class="t">${x.t}</span></button>`).join('')}</div></section>
+          <span class="k">${x.k}</span><span class="n">${x.end===0?'D-Day':(x.end>=60?'상시':'D-'+x.end)}</span><span class="t">${x.t}</span></button>`).join('')}</div></section>
       <section class="sec"><div class="sec-h"><h2>주요 뉴스</h2><button class="more" data-go="news">전체 보기</button></div>${list(NEWS.slice(0,4).map(newsRow).join(''))}</section>
       <section class="sec"><div class="sec-h"><h2>지금 많이 찾는 키워드</h2></div>
         <div class="chips wrap">${TRENDS.map(t=>`<button class="chip" data-q="${t}">#${t}</button>`).join('')}</div></section>

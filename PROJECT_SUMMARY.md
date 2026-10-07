@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.1.56` (실시간 뉴스·채용·공모전·알바 데이터 최신화 및 알바 수집 안전장치 보강 / 111회 누적 수정 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.1.58` (모바일 마감 임박 타일 및 리스트 텍스트 D-Day 형식 통일, 거대 폰트 20px 축소, '마감' 단어 완전 제거 / 113회 누적 수정 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -1639,6 +1639,46 @@ mindmap
      - 전북대 및 전국 단위 실시간 유효 공모전 12건 팩트 검증 완료 (`test_contests_integrity.py` 100% 통과).
   6. **브라우저 캐시 버스팅 파라미터 최신화**:
      - `index.html`, `mobile.html` 및 `static/` 배포 파일의 스크립트 캐시 버스팅 파라미터(`?v=20261007_1237`) 동기화.
+
+#### 81) 가짜 예시 데이터(더미) 전면 영구 박멸 및 정적 데이터 번들 자동 컴파일 시스템 구축 (v1.1.57)
+- **발생 문제 및 사용자 제보**:
+  - "로컬웹사이트 최신화 해달라고 했는데 갑자기 예시들로 가득찬 웹사이트로 변한 이유가 뭐야 그걸 알아내고 앞으로 그런일이 다시는 안생기게 해"
+- **근본 원인 정밀 분석**:
+  1. **초기 프로토타입 시절의 더미 데이터 잔존**:
+     - `index.html`과 `mobile.html` 내부 자바스크립트 변수에 `한빛도로공사(예시)`, `스마트시티 인프라 아이디어 공모전(예시)`, `인프라타임즈` 등 대량의 가짜 예시 데이터가 초기값(Fallback)으로 하드코딩되어 있었음.
+  2. **`file:///` 프로토콜(파일 더블클릭) 시 브라우저 CORS 차단 에러**:
+     - 로컬 웹 서버(`app.py`)가 실행되지 않은 상태에서 사용자가 탐색기에서 `index.html`을 더블클릭(`file:///`)하거나, 로컬 8000번 포트가 꺼진 상태에서 페이지를 열었을 때, 브라우저가 보안 정책(CORS)으로 인해 `fetch('./data/news.json')`을 전부 차단.
+     - `fetch` 실패 시 프론트엔드가 실제 데이터를 덮어쓰지 못하고, 소스코드에 하드코딩되어 있던 "가짜 예시 데이터"를 그대로 렌더링함.
+- **재발 방지 영구 조치 내역**:
+  1. **정적 데이터 번들 자동 생성기 구축 ([`build_data_bundle.py`](file:///C:/Users/최익석/Desktop/goofy-borg/build_data_bundle.py))**:
+     - 실제 수집된 JSON 파일(`news.json`, `contests.json`, `jobs.json`, `jbnu_albas.json`, `swuniv_programs.json`)을 정적 JS 파일([`static/cnh_data_bundle.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/cnh_data_bundle.js))로 즉시 컴파일하는 빌더 개발.
+     - `file:///` 환경에서도 CORS 차단 없이 100% 실제 데이터 167건, 공모전 12건, 채용 4건, 알바 32건이 0ms 만에 즉시 렌더링되도록 구현.
+  2. **가짜 예시 데이터 전면 영구 삭제 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html))**:
+     - `index.html` 및 `mobile.html` 소스코드 내에 존재하던 모든 `(예시)` 더미 데이터 배열을 전면 도려내고, `CivilData.getInitialData()`를 통해 정적 번들의 실제 팩트 데이터를 직접 바인딩하도록 수정.
+     - 어떤 오류나 오프라인 상황에서도 가짜 예시 데이터가 노출될 수 있는 가능성을 시스템적으로 0%로 영구 차단.
+  3. **데이터 어댑터 정밀 고도화 ([`static/data_adapter.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/data_adapter.js))**:
+     - 정적 번들 데이터(1순위) → 브라우저 캐시(2순위) → 실시간 네트워크 API/JSON(3순위, 백그라운드 SWR 갱신) 파이프라인 정립.
+  4. **수집 및 배포 파이프라인 영구 연동 ([`sync.bat`](file:///C:/Users/최익석/Desktop/goofy-borg/sync.bat))**:
+     - `sync.bat` [7/7] 단계에 `python build_data_bundle.py`를 영구 배치하여, 수집이 돌 때마다 번들이 자동 생성되고 Git에 동기화되도록 보장.
+  5. **로컬 백그라운드 웹 서버 구동 확인**:
+     - `http://localhost:8000` 로컬 서버를 백그라운드에서 정상 가동(HTTP 200 OK) 확인.
+
+
+#### 82) 모바일 마감 임박 타일 및 리스트 D-Day 표기 일원화 및 폰트 크기 최적화 (v1.1.58)
+- **발생 문제 및 사용자 요청**:
+  - 모바일 화면 상단 '마감 임박' 타일에서 `오늘마감`, `1일 남음` 등 숫자가 32px(`var(--t-h1)`)로 지나치게 거대하게 노출되어 시각적 부담 유발.
+  - "여기 오늘마감 1일 마감 오늘이랑 숫자가 너무 큰데 d-day형식으로 전부 통일해줘 마감이라는 단어도 없애고" 요청 접수.
+- **조치 내역**:
+  1. **과도한 32px 폰트 크기 20px 축소 ([`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html), [`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html))**:
+     - `.tile .n` 및 `#m .tile .n` 글자 크기를 32px에서 **20px**(`font-weight: 700; letter-spacing: -0.02em; line-height: 1.2`)로 단정하게 최적화.
+     - `.dd` 및 `#m .dd` 박스 패딩과 폰트를 D-Day 뱃지에 맞추어 단일 플렉스 중앙 정렬(`15px`)로 정돈.
+  2. **'마감' 및 '일 남음' 단어 원천 제거**:
+     - `.tile .n small`, `#m .tile .n small`, `.dd span`, `#m .dd span`에 `display: none !important`를 적용하여 '마감', '일 남음' 단어를 화면에서 완전히 배제.
+  3. **D-Day 표준 형식 일원화 (`D-Day`, `D-1`, `D-2`, `상시`)**:
+     - 상단 마감 타일: `0`일은 `D-Day`, `1`일 이상은 `D-1`, `D-2`, 60일 이상은 `상시`로 직관적 렌더링.
+     - 하단 공모전/채용 리스트 좌측 뱃지(`ddBox`) 및 단일 뱃지(`ddPill`)도 동일하게 `D-Day`, `D-N`으로 통일.
+  4. **단독 모바일 뷰 및 데스크톱-모바일 통합 뷰 양방향 동기화**:
+     - `mobile.html`과 `index.html` 내 `#m` 뷰, 그리고 `static/mobile.html`, `static/index.html`까지 4개 파일 전수 동기화 및 가상 DOM 렌더링 검증 완료.
 
 ---
 

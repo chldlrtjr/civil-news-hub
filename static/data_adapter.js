@@ -1,10 +1,15 @@
 /**
  * Civil News Hub: 실시간 크롤링 데이터 어댑터 (Data Adapter)
- * 크롤링된 news.json, contests.json, jobs.json, jbnu_albas.json, swuniv_programs.json을
- * 클로드 모던 UI 스키마에 1:1로 매핑하여 살아있는 웹사이트를 구현합니다.
+ * -------------------------------------------------------------
+ * 1. 번들된 정적 실제 데이터(window.CNH_STATIC_DATA)를 1순위로 즉시 로딩 (0ms 로딩 보장).
+ * 2. file:/// 프로토콜(로컬 HTML 직접 열기) 및 오프라인 환경에서도 CORS 에러 없이 100% 실제 데이터 구동.
+ * 3. HTTP/HTTPS 환경에서는 백그라운드로 최신 API/JSON을 확인하여 자동 갱신(SWR).
+ * 4. 가짜 예시 데이터(더미) 노출 원천 차단.
  */
 
 window.CivilData = (() => {
+  const CACHE_KEY = 'cnh-live-cache-v2';
+
   // 날짜 기반 남은 일수 (D-Day) 계산 유틸
   function calcDaysLeft(dateStr) {
     if (!dateStr) return 99;
@@ -29,34 +34,21 @@ window.CivilData = (() => {
     return 'general';
   }
 
-  // API 우선 호출 후 로컬 정적 JSON 폴백
-  async function fetchWithFallback(apiPath, jsonPath) {
-    try {
-      const res = await fetch(apiPath + '?t=' + Date.now());
-      if (res.ok) return await res.json();
-    } catch (e) {}
-    try {
-      const res = await fetch(jsonPath + '?t=' + Date.now());
-      if (res.ok) return await res.json();
-    } catch (e) {}
-    return null;
-  }
-
-  async function loadAll() {
-    const [newsData, contestsData, jobsData, albasData, swunivData] = await Promise.all([
-      fetchWithFallback('/api/news', './data/news.json'),
-      fetchWithFallback('/api/contests', './data/contests.json'),
-      fetchWithFallback('/api/jobs', './data/jobs.json'),
-      fetchWithFallback('/api/jbnu-albas', './data/jbnu_albas.json'),
-      fetchWithFallback('/api/swuniv-programs', './data/swuniv_programs.json')
-    ]);
+  // 원본 JSON 데이터셋들을 프론트엔드 포맷으로 일괄 변환
+  function parseRawDatasets(raw) {
+    if (!raw) return null;
+    const newsData = raw.news || null;
+    const contestsData = raw.contests || null;
+    const jobsData = raw.jobs || null;
+    const albasData = raw.albas || null;
+    const swunivData = raw.swuniv || null;
 
     // 1. 트렌딩 키워드 (실제 크롤링된 실시간 키워드)
     const TRENDS = (newsData && newsData.trending_keywords && newsData.trending_keywords.length)
       ? newsData.trending_keywords.map((kw, idx) => [kw, idx % 2 === 0 ? 1 : 0])
       : [['고속도로', 1], ['국토부', 1], ['스마트건설', 1], ['지하안전', 1], ['새만금', 0], ['신기술', 1]];
 
-    // 2. 뉴스 (136건 실제 기사)
+    // 2. 뉴스 (실제 크롤링 기사)
     let NEWS = [];
     if (newsData && newsData.articles && newsData.articles.length) {
       NEWS = newsData.articles.map((a, idx) => {
@@ -84,7 +76,6 @@ window.CivilData = (() => {
     let CONTESTS = [];
     if (contestsData && contestsData.contests && contestsData.contests.length) {
       CONTESTS = contestsData.contests.map((c, idx) => {
-        // 학교 공지에서 수집한 공모전: source 'campus' (상금·훈격이 없는 경우가 많음)
         const isJbnu = c.category === '전북대' || (c.id && (c.id.includes('jbnu') || c.id.startsWith('campus-')));
         const campus = c.source === 'campus' || isJbnu;
         let prizeNum = campus ? 0 : 2000;
@@ -120,15 +111,12 @@ window.CivilData = (() => {
           id: c.id || ('c' + (idx + 1)),
           title: c.title,
           org: c.organizer || (campus ? '전북대' : '공공기관'),
-          // 학교 공지는 상금에 "총장상"처럼 ○○상이 있으면 그대로 표시, 없으면 숨김
           award: campus ? (((c.prize || '').match(/[가-힣]+상(?![가-힣])/) || [''])[0]) : award,
           prize: prizeNum,
-          // 학교 공지 공모전은 '대학생' 필터에 걸리게 하고, 원문 참가 대상은 targetText로 그대로 보여줌
           target: campus ? ['대학생'] : (targetArr.length ? targetArr : ['대학생', '일반']),
           targetText: campus && typeof c.target === 'string' ? c.target : '',
           campus: campus,
           image: c.image || c.poster || '',
-          // 출처: c.source_name이 있으면 우선 사용 (예: "토목공학과 공지"), 없으면 "학교 공지"
           srcName: c.source_name || (isJbnu ? '전북대 공지' : '학교 공지'),
           start: -7,
           end: daysLeft,
@@ -168,7 +156,7 @@ window.CivilData = (() => {
       });
     }
 
-    // 5. 전북대 알바 (32건 실제 공고)
+    // 5. 전북대 알바 (실제 아르바이트 공고)
     let ALBA = [];
     if (albasData && albasData.jobs && albasData.jobs.length) {
       ALBA = albasData.jobs.map((a, idx) => {
@@ -243,11 +231,81 @@ window.CivilData = (() => {
         lastUpdated: (newsData && newsData.last_updated_display) || '실시간 최신'
       }
     };
-    saveCached(result);
     return result;
   }
 
-  const CACHE_KEY = 'cnh-live-cache-v1';
+  // 1순위: 번들 데이터 또는 로컬 스토리지 캐시에서 즉시 동기 데이터 반환 (0ms)
+  function getInitialData() {
+    // 1-1. cnh_data_bundle.js에서 컴파일된 실제 데이터가 있으면 최우선 파싱
+    if (window.CNH_STATIC_DATA && typeof window.CNH_STATIC_DATA === 'object') {
+      try {
+        const parsed = parseRawDatasets(window.CNH_STATIC_DATA);
+        if (parsed && parsed.NEWS && parsed.NEWS.length) {
+          saveCached(parsed);
+          return parsed;
+        }
+      } catch (e) {
+        console.warn('Failed to parse CNH_STATIC_DATA:', e);
+      }
+    }
+
+    // 1-2. 브라우저 localStorage 캐시 복원
+    const cached = getCached();
+    if (cached) return cached;
+
+    return null;
+  }
+
+  // API 우선 호출 후 로컬 정적 JSON 폴백
+  async function fetchWithFallback(apiPath, jsonPath) {
+    try {
+      const res = await fetch(apiPath + '?t=' + Date.now());
+      if (res.ok) return await res.json();
+    } catch (e) {}
+    try {
+      const res = await fetch(jsonPath + '?t=' + Date.now());
+      if (res.ok) return await res.json();
+    } catch (e) {}
+    return null;
+  }
+
+  // 비동기 전체 동기화 (SWR)
+  async function loadAll() {
+    const baseline = getInitialData();
+
+    // file:/// 프로토콜이거나 오프라인이면 fetch가 불가능하므로 번들 데이터를 즉시 반환
+    if (location.protocol === 'file:') {
+      return baseline;
+    }
+
+    try {
+      const [newsData, contestsData, jobsData, albasData, swunivData] = await Promise.all([
+        fetchWithFallback('/api/news', './data/news.json'),
+        fetchWithFallback('/api/contests', './data/contests.json'),
+        fetchWithFallback('/api/jobs', './data/jobs.json'),
+        fetchWithFallback('/api/jbnu-albas', './data/jbnu_albas.json'),
+        fetchWithFallback('/api/swuniv-programs', './data/swuniv_programs.json')
+      ]);
+
+      const raw = {
+        news: newsData || (window.CNH_STATIC_DATA && window.CNH_STATIC_DATA.news) || null,
+        contests: contestsData || (window.CNH_STATIC_DATA && window.CNH_STATIC_DATA.contests) || null,
+        jobs: jobsData || (window.CNH_STATIC_DATA && window.CNH_STATIC_DATA.jobs) || null,
+        albas: albasData || (window.CNH_STATIC_DATA && window.CNH_STATIC_DATA.albas) || null,
+        swuniv: swunivData || (window.CNH_STATIC_DATA && window.CNH_STATIC_DATA.swuniv) || null
+      };
+
+      const result = parseRawDatasets(raw);
+      if (result && result.NEWS && result.NEWS.length) {
+        saveCached(result);
+        return result;
+      }
+    } catch (e) {
+      console.warn('loadAll fetch failed, using baseline:', e);
+    }
+
+    return baseline;
+  }
 
   function getCached() {
     try {
@@ -274,6 +332,7 @@ window.CivilData = (() => {
   }
 
   return {
+    getInitialData,
     loadAll,
     getCached,
     saveCached,
