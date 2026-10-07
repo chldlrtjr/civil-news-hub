@@ -314,7 +314,8 @@ let CONTEST_CATEGORIES = [
   '도로·디자인',
   '수자원·환경',
   '지반·안전',
-  '철도·인프라'
+  '철도·인프라',
+  '전북대'
 ];
 
 // 신규 공모전 카테고리 동적 감지 및 등록 (전체 건수와 카테고리별 합산 불일치 방지)
@@ -522,6 +523,8 @@ function renderContestCard(contest) {
     catBadgeClass = 'bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border-rose-200 dark:border-rose-800';
   } else if (contest.category === '철도·인프라') {
     catBadgeClass = 'bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800';
+  } else if (contest.category === '전북대' || contest.badge_color === 'teal') {
+    catBadgeClass = 'bg-teal-100 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border-teal-200 dark:border-teal-800';
   } else if (contest.category === '토목·일반') {
     catBadgeClass = 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700';
   } else if (contest.badge_color === 'indigo') {

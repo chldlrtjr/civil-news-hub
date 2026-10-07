@@ -73,6 +73,7 @@ window.CivilData = (() => {
           n: related.length,
           title: a.title,
           lede: (a.snippet && a.snippet.trim().length >= 10) ? a.snippet.trim() : a.title,
+          image: a.image || a.og_image || a.thumbnail || '',
           link: a.link || '#',
           clusters: related
         };
@@ -83,7 +84,10 @@ window.CivilData = (() => {
     let CONTESTS = [];
     if (contestsData && contestsData.contests && contestsData.contests.length) {
       CONTESTS = contestsData.contests.map((c, idx) => {
-        let prizeNum = 2000;
+        // 학교 공지에서 수집한 공모전: source 'campus' (상금·훈격이 없는 경우가 많음)
+        const isJbnu = c.category === '전북대' || (c.id && (c.id.includes('jbnu') || c.id.startsWith('campus-')));
+        const campus = c.source === 'campus' || isJbnu;
+        let prizeNum = campus ? 0 : 2000;
         if (c.prize) {
           const pMatch = c.prize.replace(/,/g, '').match(/(\d+)\s*만/);
           if (pMatch) prizeNum = parseInt(pMatch[1]);
@@ -97,6 +101,10 @@ window.CivilData = (() => {
         else if (c.prize && c.prize.includes('사장상')) award = '사장상';
         else if (c.prize && c.prize.includes('이사장상')) award = '이사장상';
         else if (c.prize && c.prize.includes('협회장상')) award = '협회장상';
+        else if (c.prize && c.prize.includes('시장상')) award = '시장상';
+        else if (c.prize && c.prize.includes('총장상')) award = '총장상';
+        else if (c.prize && c.prize.includes('도지사')) award = '도지사상';
+        else if (c.prize && c.prize.includes('센터장상')) award = '센터장상';
 
         let targetArr = ['대학생', '일반'];
         if (Array.isArray(c.target)) targetArr = c.target;
@@ -104,15 +112,24 @@ window.CivilData = (() => {
           targetArr = c.target.split(/[,/·\s]+/).filter(t => t.length >= 2).slice(0, 2);
         }
 
-        const daysLeft = c.days_left ?? calcDaysLeft(c.deadline_date || c.period);
+        const daysLeft = (c.dday_info && typeof c.dday_info.days === 'number')
+          ? c.dday_info.days
+          : (c.days_left ?? calcDaysLeft(c.deadline_date || c.period));
 
         return {
           id: c.id || ('c' + (idx + 1)),
           title: c.title,
-          org: c.organizer || '공공기관',
-          award: award,
+          org: c.organizer || (campus ? '전북대' : '공공기관'),
+          // 학교 공지는 상금에 "총장상"처럼 ○○상이 있으면 그대로 표시, 없으면 숨김
+          award: campus ? (((c.prize || '').match(/[가-힣]+상(?![가-힣])/) || [''])[0]) : award,
           prize: prizeNum,
-          target: targetArr.length ? targetArr : ['대학생', '일반'],
+          // 학교 공지 공모전은 '대학생' 필터에 걸리게 하고, 원문 참가 대상은 targetText로 그대로 보여줌
+          target: campus ? ['대학생'] : (targetArr.length ? targetArr : ['대학생', '일반']),
+          targetText: campus && typeof c.target === 'string' ? c.target : '',
+          campus: campus,
+          image: c.image || c.poster || '',
+          // 출처: c.source_name이 있으면 우선 사용 (예: "토목공학과 공지"), 없으면 "학교 공지"
+          srcName: c.source_name || (isJbnu ? '전북대 공지' : '학교 공지'),
           start: -7,
           end: daysLeft,
           added: idx,
@@ -204,6 +221,7 @@ window.CivilData = (() => {
           when: s.activity_period || s.apply_period || '상세 공고 참조',
           end: daysLeft ?? 5,
           seats: s.capacity || '정원 마감 시',
+          image: s.thumbnail || s.image || '',
           link: s.link || '#'
         };
       });

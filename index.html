@@ -3,7 +3,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
-<script src="./static/data_adapter.js?v=20261003_1327"></script>
+<script src="./static/data_adapter.js?v=20261007_img"></script>
 <style>
 /* Layout: plain solid ground, sticky header + tab nav, dashboard = main column + deadline rail; phones get a bottom tab bar and bottom-sheet drawer */
 :root{
@@ -165,6 +165,14 @@ h1,h2,h3{text-wrap:balance;margin:0}
 #ca .pills{display:flex;gap:5px;flex-wrap:wrap}
 #ca .pill{font-size:var(--t-label);padding:2px 8px;border-radius:5px;background:var(--surface-2);color:var(--muted);font-weight:500}
 #ca .pill.award{background:var(--accent-soft);color:var(--accent);font-weight:600}
+#ca .card-img{margin:-16px -16px 2px;aspect-ratio:16/10;overflow:hidden;border-radius:var(--r) var(--r) 0 0;background:var(--surface-2);border-bottom:1px solid var(--line)}
+#ca .card-img img{display:block;width:100%;height:100%;object-fit:cover;object-position:top}
+/* 포스터가 없는 카드: 같은 줄 카드와 높이를 맞추는 연한 대체 칸 */
+#ca .card-img.ph{display:grid;place-items:center;background:color-mix(in srgb,var(--accent) 6%,var(--surface-2))}
+#ca .card-img.ph::after{content:"";width:44px;height:44px;opacity:.35;background:var(--muted);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6'%3E%3Cpath d='M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z'/%3E%3Cpath d='M17 6h3v2a3 3 0 0 1-3 3M7 6H4v2a3 3 0 0 0 3 3'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6'%3E%3Cpath d='M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z'/%3E%3Cpath d='M17 6h3v2a3 3 0 0 1-3 3M7 6H4v2a3 3 0 0 0 3 3'/%3E%3C/svg%3E") center/contain no-repeat}
+#ca .dr-img{border-radius:var(--r);overflow:hidden;background:var(--surface-2);border:1px solid var(--line)}
+#ca .dr-img img{display:block;width:100%;height:auto}
+#ca .pill.campus{background:color-mix(in srgb,var(--c-water) 15%,transparent);color:var(--c-water);font-weight:700}
 #ca .pill.new{background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok);font-weight:600}
 #ca .pill.exp{background:color-mix(in srgb,var(--c-road) 15%,transparent);color:var(--c-road);font-weight:600}
 #ca .meta{font-size:var(--t-small);color:var(--muted);display:flex;justify-content:space-between;gap:8px;margin-top:auto;padding-top:8px;border-top:1px solid var(--line)}
@@ -395,6 +403,9 @@ h1,h2,h3{line-height:1.3;letter-spacing:-.01em}
 #m .row-sub.lede{display:-webkit-box;-webkit-line-clamp:var(--m-lede-lines,2);-webkit-box-orient:vertical;overflow:hidden;line-height:1.55}
 #m .row-sub b{color:var(--ink);font-weight:700}
 #m .cat{color:var(--cat);font-weight:700}
+#m .campus{font-size:var(--t-small);font-weight:700;color:var(--c-water);background:color-mix(in srgb,var(--c-water) 15%,transparent);padding:1px 7px;border-radius:5px}
+#m .src-line{display:flex;align-items:center;gap:5px}
+#m .src-line svg{width:14px;height:14px;flex:none}
 #m .tagn{font-size:var(--t-small);font-weight:700;color:var(--ok);background:var(--ok-soft);padding:1px 7px;border-radius:5px}
 #m .lv{font-size:var(--t-small);font-weight:700;padding:1px 7px;border-radius:5px;background:var(--surface-2);color:var(--ink)}
 
@@ -411,6 +422,36 @@ h1,h2,h3{line-height:1.3;letter-spacing:-.01em}
 #m .pd.hot{background:var(--accent);color:#fff}
 #m .logo{flex:none;width:46px;height:46px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:700;font-size:var(--t-lead)}
 #m .income{flex:none;text-align:right;align-self:center}
+/* 게시글 사진: 있으면 보여주고, 없거나 못 불러오면 칸째 지워서 글만 있는 원래 행으로 돌아감 */
+#m .thumb{flex:none;display:block;overflow:hidden;border-radius:10px;background:var(--surface-2)}
+#m .thumb img{display:block;width:100%;height:100%;object-fit:cover}
+#m .t-news{width:76px;height:76px}
+#m .t-poster{width:60px;height:80px;border:1px solid var(--line)}
+#m .t-poster img{object-position:top}
+#m .banner{display:block;aspect-ratio:700/366;margin-bottom:10px;border-radius:12px}
+#m .hero{display:block;width:100%;text-align:left;background:none;border:0;padding:4px 16px 16px}
+#m .hero .thumb{aspect-ratio:16/9;width:100%;border-radius:14px;margin-bottom:12px}
+#m .hero .row-title{font-size:var(--t-lead);-webkit-line-clamp:3}
+#m .sheet-img{flex:none;border-radius:12px;overflow:hidden;background:var(--surface-2);border:1px solid var(--line)}
+#m .sheet-img img{display:block;width:100%;height:auto;max-height:70vh;object-fit:contain}
+#m .sheet-img.wide img{aspect-ratio:16/9;object-fit:cover;max-height:none}
+#m .sw{position:relative;padding:16px}
+#m .sw+.sw::before{content:"";position:absolute;top:0;left:16px;right:0;height:1px;background:var(--line)}
+#m .sw .banner{width:100%;margin-bottom:12px}
+#m .sw .row-title{margin-top:4px}
+/* SW 사업단: 분류 줄 오른쪽에 마감 배지, 활동 기간 줄 오른쪽에 북마크 */
+#m .sw-line{display:flex;align-items:center;justify-content:space-between;gap:10px}
+#m .sw-line .row-meta,#m .sw-line .row-sub{min-width:0}
+#m .sw .sw-line .row-sub{margin-top:2px}
+#m .sw .save-i{margin:-6px -10px -6px 0}
+#m .alba-meta{flex-wrap:nowrap}
+#m .alba-meta .where{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#m .alba-meta .pd{align-self:auto;padding:2px 7px}
+#m .alba-pay{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
+#m .alba-pay .income-inline b{color:var(--ok);font-size:var(--t-lead)}
+/* 챗봇 로봇: 아래로 스크롤하는 동안은 화면 밖으로 비켜 줘요 (위로 올리면 다시 나와요) */
+#cnhChatbot .cnh-fab{transition:translate .25s ease,opacity .25s ease}
+#cnhChatbot .cnh-fab.is-tucked{translate:88px 0;opacity:0;pointer-events:none}
 #m .income b{display:block;font-family:var(--f-body);font-size:var(--t-lead);color:var(--ok)}
 #m .income span{font-size:var(--t-small);color:var(--muted)}
 #m .save-i{flex:none;align-self:center;width:40px;height:40px;margin:-8px -10px -8px 0;display:grid;place-items:center;background:none;border:0;border-radius:8px;color:var(--muted)}
@@ -847,10 +888,12 @@ function newsCard(n, i){
 }
 function contestCard(c){
   return `<article class="card click title-first" data-open="contest:${c.id}" tabindex="0">
+    ${c.image?`<div class="card-img"><img src="${c.image}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add('ph');this.remove()"></div>`
+      : CONTESTS.some(x=>x.image) ? '<div class="card-img ph" aria-hidden="true"></div>' : ''}
     <div class="card-top">${ddayBadge(c.end)}${bmBtn(c.id)}</div>
     <h3>${c.title}</h3>
-    <div class="prize-line">총 상금 <b>${fmt(c.prize)}만원</b></div>
-    <div class="pills"><span class="pill award">${c.award}</span>${c.target.map(t=>`<span class="pill">${t}</span>`).join('')}${c.added<=2?'<span class="pill new">NEW</span>':''}</div>
+    <div class="prize-line">${c.prize?`총 상금 <b>${fmt(c.prize)}만원</b>`:`${c.srcName}에서 모집`}</div>
+    <div class="pills">${c.award?`<span class="pill award">${c.award}</span>`:''}${c.campus?'<span class="pill campus">전북대</span>':c.target.map(t=>`<span class="pill">${t}</span>`).join('')}${c.added<=2?'<span class="pill new">NEW</span>':''}</div>
     <div class="meta"><span>${c.org}</span><span class="mono">~${md(day(c.end))}</span></div>
   </article>`;
 }
@@ -956,6 +999,7 @@ function renderJbnu(){
     <div class="meta"><span>${a.where}</span><span>${a.type==='hour'&&a.hours>=15?'주휴수당 포함':a.type==='hour'?'주휴수당 없음':''}</span></div>
   </article>`).join('');
   $('#sw-list').innerHTML = SW.map(s=>`<article class="card" data-item="${s.id}">
+    ${s.image?`<div class="card-img" style="aspect-ratio:700/366"><img src="${s.image}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.remove()"></div>`:''}
     <div class="card-top"><span class="pill award">${s.kind}</span><div class="card-top-r">${ddayBadge(s.end)}${bmBtn(s.id)}</div></div>
     <h3>${s.title}</h3>
     <div class="wage-row"><span>${s.when}</span></div>
@@ -988,14 +1032,16 @@ function openDrawer(key, fromSaved){
     $('#dr-kind').textContent = '공모전 요강';
     html = `<div class="card-top">${ddayBadge(c.end)}${bmBtn(c.id)}</div>
       <h2 id="dr-title">${c.title}</h2>
-      <div class="prize">${fmt(c.prize)}만원<small>총 상금</small></div>
+      ${c.image?`<div class="dr-img"><img src="${c.image}" alt="${c.title} 포스터" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.remove()"></div>`:''}
+      ${c.prize?`<div class="prize">${fmt(c.prize)}만원<small>총 상금</small></div>`:''}
       <dl class="spec">
         <dt>주최</dt><dd>${c.org}</dd>
-        <dt>훈격</dt><dd>${c.award}</dd>
-        <dt>참가대상</dt><dd>${c.target.join(', ')}</dd>
+        ${c.campus?`<dt>출처</dt><dd>${c.srcName}</dd>`:''}
+        ${c.award?`<dt>훈격</dt><dd>${c.award}</dd>`:''}
+        <dt>참가대상</dt><dd>${c.targetText || c.target.join(', ')}</dd>
         <dt>접수기간</dt><dd class="mono">${md(day(c.start))}(${DAY[day(c.start).getDay()]}) ~ ${md(day(c.end))}(${DAY[day(c.end).getDay()]})</dd>
-        <dt>시상 내역</dt><dd>대상 1팀 · 최우수 2팀 · 우수 3팀 · 장려 5팀</dd>
-        <dt>제출물</dt><dd>기획서(PDF, 10쪽 이내), 발표 영상 3분</dd>
+        ${c.campus?`<dt>세부 요강</dt><dd>공지 원문에서 확인하세요</dd>`:`<dt>시상 내역</dt><dd>대상 1팀 · 최우수 2팀 · 우수 3팀 · 장려 5팀</dd>
+        <dt>제출물</dt><dd>기획서(PDF, 10쪽 이내), 발표 영상 3분</dd>`}
       </dl>
       <div class="row"><button class="cta ghost" data-bm="${c.id}" aria-pressed="${saved.has(c.id)}">저장하기</button><a href="${c.link || '#'}" target="_blank" rel="noopener noreferrer" class="cta" style="text-align:center;text-decoration:none;display:inline-block">공식 접수처 바로가기 ↗</a></div>`;
   } else {
@@ -1271,23 +1317,35 @@ function toggleSave(id){
 const saveIcon = id => `<button class="save-i" data-save="${id}" aria-pressed="${saved.has(id)}" aria-label="저장"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"/></svg></button>`;
 const ddBox = off => `<div class="dd ${urg(off)} ${off===0?'today':''}"><b>${off===0?'오늘':off}</b><span>${off===0?'마감':'일 남음'}</span></div>`;
 const ddPill = off => `<span class="pd ${urg(off)}">${off===0?'오늘':'D-'+off}</span>`;
+/* 수집기가 붙이는 '제목 + ○○ 분야 최신 인프라 동향…' 요약은 새 정보가 없어서 모바일 목록에선 빼요 */
+const rowTitle = n => { const m = n.title.match(/^(.*\S)\s*[-|]\s*(.+)$/); return m && m[2].trim() === n.src.trim() ? m[1] : n.title; };
+const rowLede = n => {
+  const rest = (n.lede || '').replace(n.title, '').replace(/[^.]*분야 최신 인프라 동향 및 사업 세부 내용을 확인하세요\.?/g, '').replace(/^[\s.]+|\s+$/g, '');
+  return rest.length >= 10 ? rest : '';
+};
+const thumb = (src, cls) => src ? `<span class="thumb ${cls}"><img src="${src}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.remove()"></span>` : '';
+const newsHero = (n,i) => `<button class="hero" data-open="n:${i}">${thumb(n.image,'')}
+  <div class="row-meta"><span class="cat" style="--cat:var(--c-${n.cat})">${catName(n.cat)}</span><span>${n.src}</span><span>${n.ago}</span>${n.n?`<span>관련 ${n.n}건</span>`:''}</div>
+  <div class="row-title">${rowTitle(n)}</div></button>`;
 const newsRow = (n,i) => `<button class="row" data-open="n:${i}"><div class="row-main">
-  <div class="row-meta"><span class="cat" style="--cat:var(--c-${n.cat})">${catName(n.cat)}</span><span>${n.src}</span><span>${n.ago}</span><span>관련 ${n.n}건</span></div>
-  <div class="row-title">${n.title}</div><div class="row-sub lede">${n.lede}</div></div></button>`;
+  <div class="row-meta"><span class="cat" style="--cat:var(--c-${n.cat})">${catName(n.cat)}</span><span>${n.src}</span><span>${n.ago}</span>${n.n?`<span>관련 ${n.n}건</span>`:''}</div>
+  <div class="row-title">${rowTitle(n)}</div>${rowLede(n)?`<div class="row-sub lede">${rowLede(n)}</div>`:''}</div>${thumb(n.image,'t-news')}</button>`;
 const contestRow = c => `<button class="row" data-open="c:${c.id}">${ddBox(c.end)}<div class="row-main">
-  <div class="row-meta"><span class="cat" style="--cat:var(--accent)">${c.award}</span><span>${c.target.join(', ')}</span>${c.added<=2?'<span class="tagn">새 공고</span>':''}</div>
-  <div class="row-title">${c.title}</div><div class="row-sub">총 상금 <b class="num">${fmt(c.prize)}만원</b></div></div></button>`;
+  <div class="row-meta">${c.campus?`<span class="campus">전북대</span><span>${c.org.replace(/^전북대(학교)?\s*/, '')}</span>`:`<span class="cat" style="--cat:var(--accent)">${c.award}</span><span>${c.target.join(', ')}</span>`}${c.added<=2?'<span class="tagn">새 공고</span>':''}</div>
+  <div class="row-title">${c.title}</div><div class="row-sub">${c.prize?`총 상금 <b class="num">${fmt(c.prize)}만원</b>`:`<span class="src-line"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H8l-4 4z"/></svg>${c.srcName}</span>`}</div></div>${thumb(c.image,'t-poster')}</button>`;
 const jobRow = j => `<button class="row" data-open="j:${j.id}"><div class="logo" style="background:${j.color}">${j.co[0]}</div><div class="row-main">
-  <div class="row-meta"><span>${j.co}</span><span class="lv">${j.lvl}${j.exp?' '+j.exp:''}</span></div>
+  <div class="row-meta"><span>${j.co}</span><span class="lv">${j.lvl}${j.exp&&j.exp!==j.lvl?' '+j.exp:''}</span></div>
   <div class="row-title">${j.role}</div><div class="row-sub">${j.loc}, 전형 ${j.steps.length}단계</div></div>${ddPill(j.end)}</button>`;
 const albaRow = a => `<div class="row"><div class="row-main">
-  <div class="row-meta"><span class="cat" style="--cat:var(--ok)">${a.tag}</span><span>${a.where}</span>${ddPill(a.end)}</div>
+  <div class="row-meta alba-meta">${ddPill(a.end)}<span class="cat" style="--cat:var(--ok)">${a.tag}</span><span class="where">${a.where}</span></div>
   <div class="row-title">${a.title}</div>
-  <div class="row-sub">${a.type==='day'?`일급 <b class="num">${fmt(a.wage)}</b>원, ${a.days}일`:`시급 <b class="num">${fmt(a.wage)}</b>원, 주 ${a.hours}시간`}</div></div>
-  <div class="income"><b>₩${fmt(monthly(a))}</b><span>${a.type==='day'?'총 예상':'월 예상'}</span></div>${saveIcon(a.id)}</div>`;
-const swRow = s => `<div class="row"><div class="row-main">
-  <div class="row-meta"><span class="cat" style="--cat:var(--c-smart)">${s.kind}</span><span>모집 ${s.seats}</span></div>
-  <div class="row-title">${s.title}</div><div class="row-sub">${s.when}</div></div>${ddPill(s.end)}${saveIcon(s.id)}</div>`;
+  <div class="row-sub alba-pay"><span class="income-inline"><b class="num">₩${fmt(monthly(a))}</b> ${a.type==='day'?'총 예상':'월 예상'}</span><span>${a.type==='day'?`일급 ${fmt(a.wage)}원, ${a.days}일`:`시급 ${fmt(a.wage)}원, 주 ${a.hours}시간`}</span></div></div>
+  ${saveIcon(a.id)}</div>`;
+/* SW 사업단 행: 포스터 배너 → 분류 줄(오른쪽에 마감 배지) → 제목 → 활동 기간 줄(오른쪽에 북마크) */
+const swRow = s => `<div class="sw">${thumb(s.image,'banner')}
+  <div class="sw-line"><div class="row-meta"><span class="cat" style="--cat:var(--c-smart)">${s.kind}</span><span>모집 ${s.seats}</span></div>${ddPill(s.end)}</div>
+  <div class="row-title">${s.title}</div>
+  <div class="sw-line"><div class="row-sub">활동 ${s.when}</div>${saveIcon(s.id)}</div></div>`;
 const list = rows => `<div class="list">${rows}</div>`;
 const head = (t, p) => `<div class="page-head"><h1>${t}</h1>${p?`<p>${p}</p>`:''}</div>`;
 
@@ -1311,7 +1369,7 @@ const VIEWS = {
       <section class="sec"><div class="sec-h"><h2>마감 임박</h2></div>
         <div class="strip">${items.map(x=>`<button class="tile ${x.end<=3?'hot':x.end<=7?'soon':''}" style="--kind:${x.c}" ${x.open?`data-open="${x.open}"`:`data-go="${x.go}"`}>
           <span class="k">${x.k}</span><span class="n">${x.end===0?'오늘':x.end>=60?'상시':x.end}<small>${x.end===0?'마감':x.end>=60?'':'일 남음'}</small></span><span class="t">${x.t}</span></button>`).join('')}</div></section>
-      <section class="sec"><div class="sec-h"><h2>주요 뉴스</h2><button class="more" data-go="news">전체 보기</button></div>${list(NEWS.slice(0,4).map(newsRow).join(''))}</section>
+      <section class="sec"><div class="sec-h"><h2>주요 뉴스</h2><button class="more" data-go="news">전체 보기</button></div>${NEWS[0]&&NEWS[0].image ? newsHero(NEWS[0],0) + list(NEWS.slice(1,4).map((n,k)=>newsRow(n,k+1)).join('')) : list(NEWS.slice(0,4).map(newsRow).join(''))}</section>
       <section class="sec"><div class="sec-h"><h2>지금 많이 찾는 키워드</h2></div>
         <div class="chips wrap">${TRENDS.map(t=>`<button class="chip" data-q="${t}">#${t}</button>`).join('')}</div></section>
       <section class="sec"><div class="sec-h"><h2>저장한 항목<small>${saved.size}</small></h2></div>
@@ -1394,7 +1452,7 @@ function openSheet(key){
       ? n.clusters.map(c => `<li><a href="${c.link || '#'}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;width:100%;border-bottom:1px solid var(--line)"><b style="flex:none;font-weight:600">${c.publisher} ↗</b><span style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:var(--t-small)">${c.title}</span></a></li>`).join('')
       : Array.from({length:n.n},(_,k)=>`<li><div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)"><b style="flex:none;width:96px;font-weight:600">${OTHER_SRC[(+id+k)%OTHER_SRC.length]}</b><span style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:var(--t-small)">${n.title}</span></div></li>`).join('');
 
-    body = `<div><div class="row-meta"><span>${n.src}</span><span>${n.ago}</span></div><h2 id="sh-title" style="margin-top:6px">${n.title}</h2></div>
+    body = `${n.image?`<div class="sheet-img wide"><img src="${n.image}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.remove()"></div>`:''}<div><div class="row-meta"><span>${n.src}</span><span>${n.ago}</span></div><h2 id="sh-title" style="margin-top:6px">${n.title}</h2></div>
       <p class="lede-full">${n.lede}</p>
       ${n.n > 0 ? `<div><div class="sub-h" style="font-weight:700;margin:16px 0 8px">같은 보도자료로 쓴 기사 ${n.n}건</div><ul class="cluster" style="list-style:none;padding:0;margin:0">${clusterHtml}</ul></div>` : ''}`;
     foot = `<button class="btn ghost" data-save="${n.id}" aria-pressed="${saved.has(n.id)}">${saved.has(n.id)?'저장됨':'저장'}</button><a href="${n.link || '#'}" target="_blank" rel="noopener noreferrer" class="btn primary" style="text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center">원문 기사 보기 ↗</a>`;
@@ -1402,22 +1460,24 @@ function openSheet(key){
     const c = CONTESTS.find(x=>x.id===id);
     kind = '공모전';
     body = `<div style="display:flex;gap:14px;align-items:center">${ddBox(c.end)}<h2 id="sh-title">${c.title}</h2></div>
-      <div class="prize">${fmt(c.prize)}만원<small>총 상금</small></div>
+      ${c.image?`<div class="sheet-img"><img src="${c.image}" alt="${c.title} 포스터" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.remove()"></div>`:''}
+      ${c.prize?`<div class="prize">${fmt(c.prize)}만원<small>총 상금</small></div>`:''}
       <dl class="spec">
         <div><dt>주최</dt><dd>${c.org}</dd></div>
-        <div><dt>훈격</dt><dd>${c.award}</dd></div>
-        <div><dt>참가 대상</dt><dd>${c.target.join(', ')}</dd></div>
+        ${c.campus?`<div><dt>출처</dt><dd>${c.srcName}</dd></div>`:''}
+        ${c.award?`<div><dt>훈격</dt><dd>${c.award}</dd></div>`:''}
+        <div><dt>참가 대상</dt><dd>${c.targetText || c.target.join(', ')}</dd></div>
         <div><dt>접수 기간</dt><dd class="num">${md(day(c.start))} ~ ${md(day(c.end))}</dd></div>
-        <div><dt>시상</dt><dd>대상 1팀, 최우수 2팀, 우수 3팀, 장려 5팀</dd></div>
-        <div><dt>제출물</dt><dd>기획서(PDF, 10쪽 이내), 발표 영상 3분</dd></div>
+        ${c.campus?`<div><dt>세부 요강</dt><dd>공지 원문에서 확인하세요</dd></div>`:`<div><dt>시상</dt><dd>대상 1팀, 최우수 2팀, 우수 3팀, 장려 5팀</dd></div>
+        <div><dt>제출물</dt><dd>기획서(PDF, 10쪽 이내), 발표 영상 3분</dd></div>`}
       </dl>`;
-    foot = `<button class="btn ghost" data-save="${c.id}" aria-pressed="${saved.has(c.id)}">${saved.has(c.id)?'저장됨':'저장'}</button><a href="${c.link || '#'}" target="_blank" rel="noopener noreferrer" class="btn" style="text-decoration:none;display:grid;place-items:center">공식 접수처 바로가기 ↗</a>`;
+    foot = `<button class="btn ghost" data-save="${c.id}" aria-pressed="${saved.has(c.id)}">${saved.has(c.id)?'저장됨':'저장'}</button><a href="${c.link || '#'}" target="_blank" rel="noopener noreferrer" class="btn" style="text-decoration:none;display:grid;place-items:center">${c.campus?'공지 원문 보기 ↗':'공식 접수처 바로가기 ↗'}</a>`;
   } else {
     const j = JOBS.find(x=>x.id===id);
     kind = GRP[j.grp] + ' 채용';
     body = `<div style="display:flex;gap:14px;align-items:center"><div class="logo" style="background:${j.color}">${j.co[0]}</div><div><div class="row-meta"><span>${j.co}</span></div><h2 id="sh-title">${j.role}</h2></div></div>
       <dl class="spec">
-        <div><dt>지원 자격</dt><dd>${j.lvl}${j.exp?' ('+j.exp+')':''}, 토목 관련 전공</dd></div>
+        <div><dt>지원 자격</dt><dd>${j.lvl}${j.exp&&j.exp!==j.lvl?' ('+j.exp+')':''}, 토목 관련 전공</dd></div>
         <div><dt>근무지</dt><dd>${j.loc}</dd></div>
         <div><dt>마감</dt><dd><span class="num">${md(day(j.end))} 18:00</span> ${ddPill(j.end)}</dd></div>
         <div><dt>우대</dt><dd>토목기사, 건설안전기사, BIM 활용 경험</dd></div>
@@ -1585,6 +1645,19 @@ syncMobileLiveData();
   window.addEventListener('resize', apply);
   window.addEventListener('orientationchange', apply);
   apply();
+})();
+
+/* ---------- 모바일 화면에서 아래로 스크롤하면 챗봇 로봇을 숨기고, 위로 올리면 다시 보여줘요 ---------- */
+(() => {
+  let lastY = window.scrollY;
+  window.addEventListener('scroll', () => {
+    const fab = document.querySelector('#cnhChatbot .cnh-fab');
+    if (!fab) return;
+    const y = window.scrollY;
+    if (document.getElementById('m').hidden || y < 80 || y < lastY - 4) fab.classList.remove('is-tucked');
+    else if (y > lastY + 4) fab.classList.add('is-tucked');
+    lastY = y;
+  }, { passive: true });
 })();
 </script>
 <script src="./static/cnh_chat_core.js?v=20261003"></script>
