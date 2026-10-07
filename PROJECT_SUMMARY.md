@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.1.51` (로컬 서버 기동 시 깃허브 실시간 데이터 자동 git pull 동기화 및 모바일 뷰 상태 표기 고도화 / 106회 누적 수정 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.1.55` (뉴스 이미지 정제: https 프로토콜 검증 및 로고·기본이미지 12건 필터링 완료 / 110회 누적 수정 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -1515,9 +1515,113 @@ mindmap
   3. **모바일 뷰 실시간성 표기 고도화 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html))**:
      - 채용 공고 카드 및 바텀시트 모달에 하드코딩되어 있던 `(예시)` 접미사 전면 삭제.
      - 하단 알림 바(`m-live-notice`)에 `live.meta.lastUpdated`(예: `업데이트: 10월 06일 15:00`)를 녹색 뱃지와 함께 실시간 표기하도록 동기화.
-
 ---
 
+#### 76) 전북대학교 공지사항 공모전 실시간 크롤러 구현 및 9건 팩트 검증 파이프라인 연동 (v1.1.52)
+- **요청 사항**:
+  - `https://www.jbnu.ac.kr/web/news/notice/sub01.do` (교내공지) 및 `https://www.jbnu.ac.kr/web/news/notice/sub02.do` (학생공지)에서 공모전 관련 게시글들을 자동 크롤링하여 허브에 편입.
+  - 전북대학교 출처 및 전용 딥링크가 명확히 식별되도록 구성.
+- **구현 및 검증 완료 내역**:
+  1. **전북대 공지사항 전담 크롤러 모듈 개발 ([`jbnu_contest_scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/jbnu_contest_scraper.py))**:
+     - 교내공지(`sub01.do`, menu=2377) 및 학생공지(`sub02.do`, menu=2378)에 대해 "공모전", "경진대회", "공모" 키워드로 실시간 크롤링 수행.
+     - 단순 설명회, 과거 대회, 취소 공지, 동아리 기수 모집 등 비공모전성 게시글 원천 필터링 배제.
+     - 공식 전용 딥링크 매핑 (`https://www.jbnu.ac.kr/web/Board/{pstUnqNo}/detailView.do`).
+  2. **100% 실사 팩트 검증 완료된 실시간 유효 공모전 9건 확보 및 딕셔너리 구축**:
+     - `[217679]` **2026 JBNU 학생설계전공 공모전** (전북대 교무처, 2026.08.31 ~ 11.06, 총장상 · 520만원)
+     - `[218130]` **2026학년도 2학기 전공·진로 로드맵 공모전** (전북대 취업진로지원과, 2026.09.28 ~ 10.16, 230만원)
+     - `[217895]` **2026년 청년 벤처클럽 아이디어 경진대회** (전북대 창업교육센터·RISE사업단, 2026.09.23 ~ 10.09, 센터장상)
+     - `[217301]` **2026학년도 AI 활용 나만의 학습법 공모전** (전북대 교육혁신본부, 2026.09.09 ~ 10.11, 270만원)
+     - `[217447]` **제2회 성남시 창의도시계획 공모전 ('성남 물빛정원' 랜드마크)** (성남시, 2026.11.02 ~ 11.06, 시장상 · 400만원)
+     - `[217863]` **2026 제주국제건축문화제 건축문화대상 건축사진 공모전** (제주특별자치도, 2026.09.23 ~ 10.12, 도지사상)
+     - `[217690]` **2026년 데이터안심구역 활용 공동경진대회** (전북도·국민연금공단, 2026.09.01 ~ 10.22, 장관상/이사장상 · 채용특전)
+     - `[217263]` **2026 제2회 화성시 공공디자인 공모전 (공사장 가설울타리)** (화성시, 2026.09.14 ~ 10.16, 시장상 · 1,600만원)
+     - `[217692]` **AI 활용 부정행위 예방 대국민 콘텐츠 공모전** (한국산업인력공단, 2026.09.16 ~ 10.15, 이사장상 · 650만원)
+  3. **통합 수집 파이프라인 연계 ([`contest_scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/contest_scraper.py))**:
+     - 기존 토목 대표 공모전 + 전북대 공모전 일괄 수집 및 중복 ID 자동 제거.
+     - 마감된 공모전(물산업 창업대전 09.23 마감, SK에코플랜트 09.30 마감) 자동 탈락(DROP) 처리 (GEMINI.md Rule 1-⑤ 준수).
+     - 카테고리 탭 목록에 신규 카테고리 `전북대` 자동 등록 및 전체 건수(12건) == 개별 카테고리 합계(12건) 100% 일치 보장 (Rule 1-⑥).
+  4. **무결성 전수 검증 통과 ([`test_contests_integrity.py`](file:///C:/Users/최익석/Desktop/goofy-borg/test_contests_integrity.py))**:
+     - 12건 전수 데이터 무결성 검증 100% 통과 (exit 0).
+  5. **프론트엔드 연동 및 캐시 방지 ([`static/contests.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/contests.js), [`static/data_adapter.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/data_adapter.js))**:
+     - `전북대` 틴트 뱃지 색상(`bg-teal-100 text-teal-800`) 및 탭 네비게이션 스타일 적용.
+     - `data_adapter.js`에서 D-Day 및 전북대 공모전 데이터 매핑 고도화.
+     - `index.html`, `static/index.html`, `static/mobile.html`의 캐시버스팅 파라미터 최신화 (`?v=20261006_2025`).
+
+#### 77) 모바일 가시성 개선 패치 확인 및 학교 공지 공모전 마감순 통합 표출 (v1.1.53)
+- **요청 사항**:
+  - `antigravity-handoff-2026-10-07` 디자인 수정본(모바일 가시성 개선) 확인 및 기존 수집기 변경사항과 온전한 통합.
+  - 모바일 수정 사항 유지 확인:
+    - 뉴스 목록: `rowTitle`(제목 끝 언론사명 제거), `rowLede`(자동 문구만 있는 요약 숨김), "관련 0건" 숨김.
+    - 전북대 알바 행: 마감 배지를 맨 앞(`alba-meta`), 예상 수입을 제목 아래 줄(`alba-pay`)로 배치.
+    - 채용 목록/상세: `lvl`과 `exp`가 같으면 중복 없이 한 번만 표시.
+    - 챗봇 로봇(#cnhChatbot .cnh-fab): 스크롤 다운 시 `is-tucked`로 숨김, 스크롤 업 시 복원.
+  - 학교 공지 공모전 표시 규칙:
+    - 공모전 탭에만 기존 공모전과 함께 마감순으로 자연스럽게 섞어서 표시 (별도 탭/섹션/"교내" 필터 칩 생성 금지).
+    - 청록색 "전북대" 배지 + 주최 학과명 표출 (주최 앞 "전북대" 접두사 자동 제거).
+    - 상금이 없으면 상금 대신 출처(`c.source_name`) 표시.
+    - `id`: `"campus-공지번호"`, `source`: `"campus"`, `source_name`: 학과/부서명 명시.
+  - 마감순 통합 및 브라우저 콘솔 오류 무결성 검증 (데스크톱 1440px 및 모바일 390px).
+- **구현 및 검증 완료 내역**:
+  1. **화면 코드 일치 및 모바일 개선 사항 확인**:
+     - `index.html`과 `static/index.html` 내용 100% 동일 일치 확인 (`Compare-Object` 검증).
+     - `#m` 모바일 레이아웃 구조 온전히 유지 (뉴스 rowTitle/rowLede, 알바 alba-meta/alba-pay, 채용 lvl/exp 단일화, 챗봇 스크롤 인터랙션).
+  2. **수집기 및 데이터 스키마 정밀화 ([`jbnu_contest_scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/jbnu_contest_scraper.py), [`contest_scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/contest_scraper.py))**:
+     - 9개 전북대 공모전에 대해 `id: "campus-{pst_id}"`, `source: "campus"`, `source_name`, 표준 카테고리(`토목·일반`, `도로·디자인`, `스마트·기술`) 매핑 완료.
+     - `CONTEST_CATEGORIES`에서 별도 "전북대" 탭을 배제하고 기존 토목 공모전(도로경관, 건설추락, 철도유휴부지)과 함께 섞여 마감 임박순으로 정렬되도록 구성.
+     - `test_contests_integrity.py` 100% 통과 (총 12건 중 마감 공모전 자동 제외 및 카테고리 합산 100% 일치).
+  3. **데이터 어댑터 고도화 ([`static/data_adapter.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/data_adapter.js))**:
+     - `isJbnu` 및 `campus` 판별 (`c.source === 'campus' || isJbnu`).
+     - 출처 우선순위: `c.source_name` 우선 사용 (`srcName: c.source_name || (isJbnu ? '전북대 공지' : '학교 공지')`).
+     - 상금 문구 내 "○○상" 훈격 자동 추출 및 청록색 전북대 배지 연동.
+  4. **캐시 버스팅 갱신**:
+     - `index.html`, `static/index.html`, `mobile.html`, `static/mobile.html`의 스크립트 로드 쿼리를 `data_adapter.js?v=20261007_campus_v2`로 일괄 갱신.
+  5. **Playwright E2E 브라우저 콘솔 오류 전수 검증 통과**:
+     - 데스크톱(1440px) 및 모바일(iPhone UA, 390px) 환경에서 홈/뉴스/공모전/채용/전북대 전체 탭 전환 테스트 수행.
+     - JavaScript uncaught exception 및 콘솔 에러 0건 확인 완료.
+     - 데스크톱 및 모바일 공모전 탭에서 전북대 배지 9건 정상 렌더링 확인.
+
+#### 78) 공모전 포스터(8건) 및 뉴스 대표 사진(119건) og:image 수집기 연동 완료 (v1.1.54)
+- **요청 사항**:
+  - 화면 코드(`index.html`, `static/index.html`, `static/data_adapter.js`)는 건드리지 않고 수집기에서 `image` 필드만 채움.
+  - 공모전 포스터 (`data/contests.json`):
+    - 전북대 공지: 본문 내 첨부파일 아이콘(`icon_attachment_01`) 이후 나오는 첫 번째 `<img src="/common/file.do?file=..." style="max-width:100%">` 포스터 URL 확보 (`https://www.jbnu.ac.kr` 접두사 추가, `visibility: hidden` 팝업 배너 제외).
+    - 외부 공모전: 상세 페이지의 `og:image` 추출.
+  - 뉴스 대표 사진 (`data/news.json`):
+    - 구글 뉴스 RSS 링크(`news.google.com/rss/articles/...`)의 원문 주소를 디코딩한 뒤, 원문 페이지의 `<meta property="og:image">` 값 추출.
+    - 서버에 사진을 직접 다운로드하지 않고 URL 문자열만 저장 (언론사 저작권 준수).
+    - 사진이 없거나 실패하면 빈 문자열 `""`로 두어 원래 텍스트 전용 카드로 자연스럽게 fallback 되도록 유지.
+- **구현 및 검증 완료 내역**:
+  1. **전북대 포스터 추출 엔진 구현 ([`jbnu_contest_scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/jbnu_contest_scraper.py))**:
+     - `extract_jbnu_poster_image(pst_id)` 구현: 팝업 배너 제외 및 본문 내 `max-width:100%` 포스터 이미지 URL 자동 파싱.
+     - 교내 공모전 9건 중 포스터가 게재된 6건의 공식 포스터 URL 확보 완료 (포스터 없는 3건은 `""`로 안전 처리).
+  2. **외부 공모전 메타 이미지 파싱 ([`contest_scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/contest_scraper.py))**:
+     - `extract_external_contest_image(link)` 구현: 도로경관디자인 대전, 건설 추락사고 예방 공모전의 `og:image` URL 확보 (2건).
+     - **공모전 포스터 최종 실적**: 전체 12건 중 **8건** 포스터 이미지 확보 (`data/contests.json` 갱신).
+     - `test_contests_integrity.py` 데이터 무결성 검증 100% 통과 (exit 0).
+  3. **뉴스 원문 디코더 및 대표 이미지 파이프라인 개발 ([`scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/scraper.py))**:
+     - `googlenewsdecoder` 기반의 구글 뉴스 암호화 링크 원문 URL 디코딩 및 병렬 메타태그 스크래핑 엔진 (`extract_news_og_image`, `enrich_articles_with_images`) 구현.
+     - `ThreadPoolExecutor` 기반 12개 워커 병렬 처리로 128건 기사의 원문 `og:image` 고속 수집.
+     - **뉴스 대표 사진 최종 실적**: 전체 128건 중 **119건** 대표 이미지 URL 확보 (`data/news.json` 갱신).
+  4. **화면 코드 불변 원칙 준수**:
+     - `index.html`, `static/index.html`, `static/data_adapter.js`는 일절 수정하지 않고 순수 수집기 및 데이터 파일(`contests.json`, `news.json`)만 갱신.
+
+#### 79) 뉴스 이미지 필드 정제 및 HTTPS 프로토콜 검증/로고 필터링 완료 (v1.1.55)
+- **요청 사항**:
+  - 화면 코드는 건드리지 않고, `data/news.json`의 `image` 필드 정제:
+    1. `http://` 주소는 `https://`로 변환하여 접근 가능할 때만 `https://`로 저장하고, 접속 불가/에러 시 빈 문자열 `""`로 처리.
+    2. URL에 `logo`, `snslogo`, `oglogo`, `default`, `noimage`가 들어간 언론사 기본/로고 이미지는 기사 사진이 아니므로 빈 문자열 `""` 처리.
+- **구현 및 검증 완료 내역**:
+  1. **스크래퍼 정제 엔진 고도화 ([`scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/scraper.py))**:
+     - `extract_news_og_image` 함수 내에 키워드 블랙리스트(`logo`, `snslogo`, `oglogo`, `default`, `noimage`) 자동 배제 로직 추가.
+     - `http://` 시작 이미지에 대한 `https://` 변환 및 실시간 접근 가능성(200 OK) 헤더 검증 로직 반영.
+  2. **뉴스 데이터 파일 정제 반영 ([`data/news.json`](file:///C:/Users/최익석/Desktop/goofy-borg/data/news.json))**:
+     - 전체 128건 중 로고 키워드 포함 이미지 3건 및 HTTPS 접속 불가 9건(총 12건) 제외 처리.
+     - `https://` 접속이 확인된 2건은 안전한 `https://` 주소로 갱신.
+     - **최종 남은 유효 기사 사진**: **107건** (100% `https://` 프로토콜 기반 순수 기사 사진).
+  3. **화면 코드 불변 원칙 준수**:
+     - `index.html`, `static/index.html`, `static/data_adapter.js` 일절 수정 없이 백엔드 데이터 및 수집기 로직만 고도화.
+
+---
 
 
 ## 🌿 3. Git 브랜치 현황

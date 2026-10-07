@@ -15,10 +15,11 @@ import re
 import json
 import urllib.parse
 from datetime import datetime, timezone, timedelta
-from email.utils import parsedate_to_datetime
-
+import ssl
+from bs4 import BeautifulSoup
 import contest_notice_parser
 import contest_validator
+import jbnu_contest_scraper
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
@@ -31,7 +32,8 @@ CONTEST_CATEGORIES = [
     "도로·디자인",
     "수자원·환경",
     "지반·안전",
-    "철도·인프라"
+    "철도·인프라",
+    "토목·일반"
 ]
 
 def calculate_contest_dday(deadline_date_str: str, deadline_time_str: str = "18:00") -> dict:
@@ -72,6 +74,33 @@ def calculate_contest_dday(deadline_date_str: str, deadline_time_str: str = "18:
     except Exception as e:
         return {"text": "접수중", "days": 30, "is_urgent": False, "is_closed": False}
 
+def extract_external_contest_image(link: str) -> str:
+    """
+    외부 공모전 공식 웹사이트의 og:image 태그 추출
+    """
+    if not link or link == "#":
+        return ""
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+    try:
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+        req = urllib.request.Request(link, headers=headers)
+        with urllib.request.urlopen(req, timeout=5, context=ctx) as resp:
+            html = resp.read().decode("utf-8", errors="ignore")
+            soup = BeautifulSoup(html, "html.parser")
+            og = soup.find("meta", property="og:image") or soup.find("meta", attrs={"name": "og:image"})
+            if og and og.get("content"):
+                c = og["content"].strip()
+                if c.startswith("http"):
+                    return c
+                elif c.startswith("/"):
+                    parsed = urllib.parse.urlparse(link)
+                    return f"{parsed.scheme}://{parsed.netloc}{c}"
+    except Exception as e:
+        print(f"⚠️ [External Contest Image] {link} 이미지 추출 실패: {e}")
+    return ""
+
 def scrape_civil_contests():
     """
     토목 공모전 전담 수집 및 정제 파이프라인
@@ -84,8 +113,18 @@ def scrape_civil_contests():
     print("🚀 [Civil News Hub] 토목 공모전 전담 수집 파이프라인 가동 (contest_scraper.py)")
     print("="*70)
 
-    # 1. 팩트 실사 엔진 가동
-    raw_contests = contest_notice_parser.run_comprehensive_contest_inspection()
+    # 1. 팩트 실사 엔진 가동 (토목 대표 공모전 + 전북대학교 공지사항 공모전)
+    civil_contests = contest_notice_parser.run_comprehensive_contest_inspection()
+    jbnu_contests = jbnu_contest_scraper.fetch_jbnu_contest_notices()
+    raw_contests = []
+    seen_ids = set()
+    for c in (civil_contests + jbnu_contests):
+        cid = c.get("id")
+        if cid and cid in seen_ids:
+            continue
+        if cid:
+            seen_ids.add(cid)
+        raw_contests.append(c)
 
     # 2. 실시간 유효 공모전 다중 방어 검증 (Rule 1-①, 1-⑤, 1-⑦: 무결성 검증 게이트)
     active_contests = []
@@ -107,6 +146,13 @@ def scrape_civil_contests():
         if c.get("status") != "접수예정" and c.get("status") != "상시접수":
             c["status"] = "접수중"
             c["status_color"] = "emerald"
+
+        # [공모전 포스터/대표 이미지 보장]
+        if not c.get("image"):
+            if c.get("source") != "campus":
+                c["image"] = extract_external_contest_image(c.get("link", ""))
+            else:
+                c["image"] = ""
             
         active_contests.append(c)
 

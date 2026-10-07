@@ -241,11 +241,11 @@ def scrape_civil_news():
                 
         print(f"  - [{cat['name']}] 엄선된 기사 {cat_count}건 수집 완료")
     
-    # 최신순 정렬
-    all_articles.sort(key=lambda x: x["iso_date"], reverse=True)
-    
     # 유사/중복 기사 군집화 (대표 기사 하위에 타 언론사 보도자료 그룹핑)
     final_articles, duplicate_count = cluster_related_articles(all_articles)
+
+    # 기사 대표 사진(og:image) 병렬 추출 및 image 필드 보강
+    final_articles = enrich_articles_with_images(final_articles)
 
     # 당일 아침 7시 수집 기사 기반 대표 트렌딩 키워드 동적 추출 (8대 전문 분야 1-Keyword-Per-Domain)
     trending_keywords = extract_trending_keywords(final_articles, max_keywords=8)
@@ -405,6 +405,99 @@ def cluster_related_articles(articles):
     print(f"📊 [유사기사 군집화 완료] 대표 토픽 {len(final_articles)}건 (중복 기사 {total_duplicates}건 하위 그룹핑)")
     return final_articles, total_duplicates
 
+def extract_news_og_image(link: str) -> str:
+    """
+    구글 뉴스 RSS 링크로부터 원문 주소를 디코딩하고, 기사 원문 페이지의 og:image 태그 URL을 추출
+    규칙:
+    - googlenewsdecoder를 사용하여 원문 URL 디코딩
+    - 원문 페이지에서 meta property='og:image' 추출
+    - 사진 파일을 서버에 내려받지 않고 URL 주소만 저장
+    - 실패 시 빈 문자열 "" 반환
+    """
+    if not link:
+        return ""
+    try:
+        import googlenewsdecoder
+        import requests
+        from bs4 import BeautifulSoup
+
+        if "news.google.com" in link:
+            dec = googlenewsdecoder.gnewsdecoder(link)
+            if not dec or not dec.get("success"):
+                return ""
+            orig_url = dec.get("decoded_url", "")
+        else:
+            orig_url = link
+
+        if not orig_url:
+            return ""
+
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        }
+        r = requests.get(orig_url, headers=headers, timeout=4)
+        if r.status_code == 200:
+            soup = BeautifulSoup(r.text, "html.parser")
+            og = soup.find("meta", property="og:image") or soup.find("meta", attrs={"name": "og:image"})
+            if og and og.get("content"):
+                img = og["content"].strip()
+                if img.startswith("/"):
+                    parsed = urllib.parse.urlparse(orig_url)
+                    img = f"{parsed.scheme}://{parsed.netloc}{img}"
+
+                # 규칙 2: logo, snslogo, oglogo, default, noimage가 들어간 URL은 기사 사진이 아니므로 제외
+                img_lower = img.lower()
+                if any(bad in img_lower for bad in ['logo', 'snslogo', 'oglogo', 'default', 'noimage']):
+                    return ""
+
+                # 규칙 1: http:// 주소는 https://로 변환하여 접근 가능할 때만 저장, 실패 시 제외
+                if img.startswith("http://"):
+                    https_img = "https://" + img[7:]
+                    try:
+                        res = requests.get(https_img, headers=headers, timeout=3, stream=True)
+                        if 200 <= res.status_code < 400:
+                            return https_img
+                        return ""
+                    except Exception:
+                        return ""
+                elif img.startswith("https://"):
+                    return img
+    except Exception:
+        pass
+    return ""
+
+def enrich_articles_with_images(articles, max_workers=10):
+    """
+    수집된 기사 목록에 대해 병렬로 대표 사진(og:image) URL을 보강 (image 필드)
+    """
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    print(f"\n🖼️ [News Image] 총 {len(articles)}건 기사의 대표 이미지(og:image) 추출 시작 (동시 작업 {max_workers}개)...")
+
+    def process_article(a):
+        # 이미 image 필드가 유효하게 채워져 있다면 스킵
+        if a.get("image"):
+            return a["id"], a["image"]
+        img = extract_news_og_image(a.get("link", ""))
+        return a["id"], img
+
+    img_map = {}
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {executor.submit(process_article, a): a for a in articles}
+        for f in as_completed(futures):
+            try:
+                aid, img = f.result()
+                img_map[aid] = img
+            except Exception:
+                pass
+
+    found_cnt = 0
+    for a in articles:
+        a["image"] = img_map.get(a["id"], "")
+        if a["image"]:
+            found_cnt += 1
+
+    print(f"✅ [News Image] {len(articles)}건 중 {found_cnt}건의 대표 이미지 확보 완료!\n")
+    return articles
 
 def extract_trending_keywords(articles, max_keywords=8):
     """
