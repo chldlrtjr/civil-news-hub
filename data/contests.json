@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-10-08 14:00:45",
-  "last_updated_display": "10월 08일 14:00",
+  "last_updated": "2026-10-08 15:01:03",
+  "last_updated_display": "10월 08일 15:01",
   "total_count": 12,
   "featured_count": 12,
   "categories": [
@@ -190,9 +190,9 @@
       "is_active": true,
       "image": "https://www.jbnu.ac.kr/common/file.do?file=slWSJ0GL7zFqTQm8mJzb/epjepovh38gi83CNRHsN1EWo1fzgHNzfy5Zo96rm1Uf",
       "dday_info": {
-        "text": "D-4",
-        "days": 4,
-        "is_urgent": false,
+        "text": "D-3",
+        "days": 3,
+        "is_urgent": true,
         "is_closed": false
       }
     },
