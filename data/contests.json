@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-10-09 17:00:43",
-  "last_updated_display": "10월 09일 17:00",
-  "total_count": 12,
-  "featured_count": 12,
+  "last_updated": "2026-10-09 18:00:50",
+  "last_updated_display": "10월 09일 18:00",
+  "total_count": 11,
+  "featured_count": 11,
   "categories": [
     "ALL",
     "스마트·기술",
@@ -13,64 +13,6 @@
     "토목·일반"
   ],
   "contests": [
-    {
-      "id": "campus-217895",
-      "source": "campus",
-      "source_name": "창업교육센터 공지",
-      "title": "2026년 청년 벤처클럽 아이디어 경진대회",
-      "organizer": "전북대 창업교육센터",
-      "category": "토목·일반",
-      "badge_color": "teal",
-      "prize": "창업교육센터장상 & 창업동아리 연계 지원",
-      "prize_details": [
-        {
-          "rank": "우수 아이디어",
-          "award": "창업교육센터장상",
-          "prize": "상장 및 시상"
-        },
-        {
-          "rank": "후속 연계",
-          "award": "창업 패키지",
-          "prize": "2027년 예비 창업동아리 우선 선발 및 시제품 제작 지원"
-        }
-      ],
-      "benefits": [
-        "지역문제 해결형 후속 경진대회 본선 진출 기회 제공",
-        "창업 전문가 온라인 사전 교육 및 1:1 멘토링 지원",
-        "2027년 예비 창업동아리 연계 지원 및 창업 마일리지 부여"
-      ],
-      "target": "전북대 재학생 (1~5인 팀)",
-      "target_details": "전북대학교 교내 재학생 (개인 또는 1~5인 팀)",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.09.23 ~ 10.09 (18:00 마감)",
-      "deadline_date": "2026-10-09",
-      "deadline_time": "18:00",
-      "fields": [
-        "지역사회 문제해결",
-        "잠재자원 발굴",
-        "혁신 비즈니스 모델",
-        "로컬 서비스 아이디어"
-      ],
-      "submission_info": "참가신청서 및 아이디어 제안서 (이메일 koyoho774@naver.com 접수)",
-      "evaluation_steps": [
-        "서류 접수",
-        "온라인 사전 교육",
-        "경진대회 발표 평가",
-        "최종 시상"
-      ],
-      "contact": "전북대학교 산학협력단 창업교육센터 (063-270-4530)",
-      "description": "전북 지역의 당면 과제와 잠재 자원을 발굴하여 창의적인 제품 및 서비스로 발전시키는 청년 창업 아이디어 경진대회",
-      "link": "https://www.jbnu.ac.kr/web/Board/217895/detailView.do",
-      "is_active": true,
-      "image": "https://www.jbnu.ac.kr/common/file.do?file=oMxKUQ3hIbKYS1l7rukCZJke77wLPyMLyg0ivLF2PeYY2ti6r9N4dKFJAAmG5sfe",
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
     {
       "id": "campus-217301",
       "source": "campus",
@@ -257,8 +199,8 @@
       "is_active": true,
       "image": "",
       "dday_info": {
-        "text": "D-6",
-        "days": 6,
+        "text": "D-5",
+        "days": 5,
         "is_urgent": false,
         "is_closed": false
       }
@@ -324,8 +266,8 @@
       "is_active": true,
       "image": "",
       "dday_info": {
-        "text": "D-7",
-        "days": 7,
+        "text": "D-6",
+        "days": 6,
         "is_urgent": false,
         "is_closed": false
       }
@@ -453,8 +395,8 @@
       "is_active": true,
       "image": "",
       "dday_info": {
-        "text": "D-13",
-        "days": 13,
+        "text": "D-12",
+        "days": 12,
         "is_urgent": false,
         "is_closed": false
       }
@@ -523,8 +465,8 @@
       "link": "https://www.ex-contest.co.kr/design26",
       "is_active": true,
       "dday_info": {
-        "text": "D-20",
-        "days": 20,
+        "text": "D-19",
+        "days": 19,
         "is_urgent": false,
         "is_closed": false
       },
@@ -591,8 +533,8 @@
       "is_active": true,
       "image": "https://www.jbnu.ac.kr/common/file.do?file=aDnf2Nbsc5JCVXjNcuja6hp6EOxg4LFfVvZE2KPyqg/B6wkWztYndrgNSVSNzFTT",
       "dday_info": {
-        "text": "D-28",
-        "days": 28,
+        "text": "D-27",
+        "days": 27,
         "is_urgent": false,
         "is_closed": false
       }
@@ -651,9 +593,9 @@
       "link": "https://safecontest.kr/summary",
       "is_active": true,
       "dday_info": {
-        "text": "D-4",
-        "days": 4,
-        "is_urgent": false,
+        "text": "D-3",
+        "days": 3,
+        "is_urgent": true,
         "is_closed": false
       },
       "image": "https://safecontest.kr/storage/og-images/01M1KVAB4J22RA3G331V0XBB8H.png"
@@ -714,8 +656,8 @@
       "is_active": true,
       "image": "https://www.jbnu.ac.kr/common/file.do?file=4cALo6DfxWUFYlylMujIYMjaKF2GJWIBKn6sJyYGF2UlCjZ8sV+4j56lZgKcZFvm",
       "dday_info": {
-        "text": "D-28",
-        "days": 28,
+        "text": "D-27",
+        "days": 27,
         "is_urgent": false,
         "is_closed": false
       }
@@ -768,8 +710,8 @@
       "link": "https://www.kr.or.kr/boardCnts/view.do?boardID=52&boardSeq=1122113",
       "is_active": true,
       "dday_info": {
-        "text": "D-83",
-        "days": 83,
+        "text": "D-82",
+        "days": 82,
         "is_urgent": false,
         "is_closed": false
       },
