@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-10-10 23:00:35",
-  "last_updated_display": "10월 10일 23:00",
+  "last_updated": "2026-10-11 00:00:46",
+  "last_updated_display": "10월 11일 00:00",
   "total_count": 11,
   "featured_count": 11,
   "categories": [
@@ -74,8 +74,8 @@
       "is_active": true,
       "image": "https://www.jbnu.ac.kr/common/file.do?file=sclFb8SG+DwrWDDxntEl0O2iljR3zSX/12Pr9hLggzsLsBI2wMiw3+YmhixwAbAr",
       "dday_info": {
-        "text": "D-1",
-        "days": 1,
+        "text": "오늘마감",
+        "days": 0,
         "is_urgent": true,
         "is_closed": false
       }
@@ -333,8 +333,8 @@
       "is_active": true,
       "image": "https://www.jbnu.ac.kr/common/file.do?file=2KrOxuPdCe0a2f/1S2xKHfB1qsq5bCCvjBSbVd3Wgm2jh02jA0XFpazUBdK2riL8",
       "dday_info": {
-        "text": "D-6",
-        "days": 6,
+        "text": "D-5",
+        "days": 5,
         "is_urgent": false,
         "is_closed": false
       }
