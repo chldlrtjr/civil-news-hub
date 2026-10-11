@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-10-11 23:00:34",
-  "last_updated_display": "10월 11일 23:00",
-  "total_count": 11,
-  "featured_count": 11,
+  "last_updated": "2026-10-12 00:00:36",
+  "last_updated_display": "10월 12일 00:00",
+  "total_count": 10,
+  "featured_count": 10,
   "categories": [
     "ALL",
     "스마트·기술",
@@ -13,73 +13,6 @@
     "토목·일반"
   ],
   "contests": [
-    {
-      "id": "campus-217301",
-      "source": "campus",
-      "source_name": "교육혁신본부 공지",
-      "title": "2026학년도 AI 활용 나만의 학습법 공모전",
-      "organizer": "전북대 교육혁신본부",
-      "category": "스마트·기술",
-      "badge_color": "teal",
-      "prize": "총 상금 270만원 · 교육혁신본부장상",
-      "prize_details": [
-        {
-          "rank": "대상",
-          "award": "교육혁신본부장상",
-          "prize": "1팀 (상금 50만원)"
-        },
-        {
-          "rank": "최우수상",
-          "award": "교육혁신본부장상",
-          "prize": "2팀 (각 35만원)"
-        },
-        {
-          "rank": "우수상",
-          "award": "교육혁신본부장상",
-          "prize": "3팀 (각 25만원)"
-        },
-        {
-          "rank": "장려상",
-          "award": "교육혁신본부장상",
-          "prize": "5팀 (각 15만원)"
-        }
-      ],
-      "benefits": [
-        "전북대학교 교육혁신본부장 명의 공식 상장 수여",
-        "입상자 결과물 전북대 공식 유튜브 및 학습법 포털 우수사례 공유",
-        "큰사람포인트 부여 및 교내 발표회 초청"
-      ],
-      "target": "전북대 재학생",
-      "target_details": "전북대학교 학부 재학생 (휴학생 제외 / 개인 또는 최대 3인 팀)",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.09.09 ~ 10.11 (23:59 마감)",
-      "deadline_date": "2026-10-11",
-      "deadline_time": "23:59",
-      "fields": [
-        "생성형 AI 학습법",
-        "ChatGPT·Claude 활용",
-        "전공 학습 노하우",
-        "AI 포트폴리오"
-      ],
-      "submission_info": "참가신청서 및 AI 활용 학습 결과물/요약서 (온라인 교육혁신본부 접수)",
-      "evaluation_steps": [
-        "1차 서류 심사",
-        "입상자 선정 공지",
-        "입상자 발표회 및 시상식"
-      ],
-      "contact": "전북대학교 교육혁신본부 교육혁신부 (063-270-4275)",
-      "description": "ChatGPT, Claude, NotebookLM 등 생성형 AI를 활용하여 교과 전공 및 자격증을 학습한 창의적인 노하우와 성과를 공유하는 공모전",
-      "link": "https://www.jbnu.ac.kr/web/Board/217301/detailView.do",
-      "is_active": true,
-      "image": "https://www.jbnu.ac.kr/common/file.do?file=sclFb8SG+DwrWDDxntEl0O2iljR3zSX/12Pr9hLggzsLsBI2wMiw3+YmhixwAbAr",
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
     {
       "id": "campus-217863",
       "source": "campus",
@@ -333,8 +266,8 @@
       "is_active": true,
       "image": "https://www.jbnu.ac.kr/common/file.do?file=2KrOxuPdCe0a2f/1S2xKHfB1qsq5bCCvjBSbVd3Wgm2jh02jA0XFpazUBdK2riL8",
       "dday_info": {
-        "text": "D-5",
-        "days": 5,
+        "text": "D-4",
+        "days": 4,
         "is_urgent": false,
         "is_closed": false
       }
