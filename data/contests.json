@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-10-12 14:00:36",
-  "last_updated_display": "10월 12일 14:00",
-  "total_count": 10,
-  "featured_count": 10,
+  "last_updated": "2026-10-12 15:00:42",
+  "last_updated_display": "10월 12일 15:00",
+  "total_count": 9,
+  "featured_count": 9,
   "categories": [
     "ALL",
     "스마트·기술",
@@ -13,64 +13,6 @@
     "토목·일반"
   ],
   "contests": [
-    {
-      "id": "campus-217863",
-      "source": "campus",
-      "source_name": "학생지원과 공지",
-      "title": "2026 제주국제건축문화제 건축문화대상 건축사진 공모전",
-      "organizer": "제주특별자치도",
-      "category": "도로·디자인",
-      "badge_color": "teal",
-      "prize": "제주특별자치도지사 표창 및 부상",
-      "prize_details": [
-        {
-          "rank": "대상/본상",
-          "award": "제주특별자치도지사 표창",
-          "prize": "상장 및 부상"
-        },
-        {
-          "rank": "특선(대학생)",
-          "award": "제주특별자치도지사 표창",
-          "prize": "2점 (상장 및 부상)"
-        }
-      ],
-      "benefits": [
-        "2026 제주국제건축문화제 개막식(제주문예회관) 공식 시상",
-        "제주문예회관 제1전시실 수상작 전국 특별 전시 개최",
-        "공식 작품 도록 제작 및 전국 건축도서관 배포"
-      ],
-      "target": "전국 대학생 및 휴학생",
-      "target_details": "전국 대학생 및 휴학생 (중·고등학생 부문과 분리 평가)",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.09.23 ~ 10.12 (15:00 마감)",
-      "deadline_date": "2026-10-12",
-      "deadline_time": "15:00",
-      "fields": [
-        "제주 전통 및 현대 건축",
-        "도시 공간 조형미",
-        "친환경 건축 인프라",
-        "드론·건축사진"
-      ],
-      "submission_info": "출품작 사진 파일 (디지털 사진 JPG 원본) 및 참가신청서 (이메일 2026iiaf@gmail.com 접수)",
-      "evaluation_steps": [
-        "작품 접수",
-        "도내외 건축·사진 전문가 심사",
-        "수상작 발표",
-        "작품 전시 및 개막식 시상"
-      ],
-      "contact": "제주국제건축문화제 운영사무국 (064-752-1220)",
-      "description": "제주도의 수려한 자연과 어우러진 건축물 및 도시 인프라 공간의 가치를 조명하는 전국 대학생 건축사진 공모전",
-      "link": "https://www.jbnu.ac.kr/web/Board/217863/detailView.do",
-      "is_active": true,
-      "image": "https://www.jbnu.ac.kr/common/file.do?file=slWSJ0GL7zFqTQm8mJzb/epjepovh38gi83CNRHsN1EWo1fzgHNzfy5Zo96rm1Uf",
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
     {
       "id": "campus-217692",
       "source": "campus",
