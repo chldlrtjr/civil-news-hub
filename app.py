@@ -54,6 +54,11 @@ def add_cors_headers(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Gemini-Key"
+    # HTML 및 JSON, JS에 대한 브라우저 캐시 방지 강제 (항상 최신 로컬 및 크롤링 팩트 데이터 즉시 반영)
+    if response.mimetype in ["text/html", "application/json", "application/javascript"]:
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
     return response
 
 # --- 페이지 라우트 ---

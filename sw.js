@@ -1,15 +1,12 @@
 // Civil News Hub Service Worker (PWA Offline & Instant Load Support)
-const CACHE_NAME = 'civil-news-hub-v1.1.7';
+const CACHE_NAME = 'civil-news-hub-v1.1.60';
 const STATIC_ASSETS = [
   './',
   './index.html',
   './mobile.html',
+  './static/cnh_data_bundle.js',
+  './static/data_adapter.js',
   './static/style.css',
-  './static/app.js',
-  './static/jobs.js',
-  './static/contests.js',
-  './static/jbnu_alba.js',
-  './static/chatbot.js',
   './static/favicon.svg',
   './static/ai_robot_avatar.png',
   './static/ai_robot_head_only.png',
@@ -33,6 +30,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         keys.map((key) => {
           if (key !== CACHE_NAME) {
+            console.log('[SW] Deleting old cache:', key);
             return caches.delete(key);
           }
         })
@@ -43,6 +41,12 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
+
+  // 로컬 개발 환경(localhost / 127.0.0.1)에서는 캐시를 무조건 우회하여 실시간 로컬 파일 즉시 반영
+  if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+    event.respondWith(fetch(event.request));
+    return;
+  }
 
   // 데이터(json/api) 요청: 네트워크 우선 (최신성 유지), 실패 시 캐시 폴백
   if (url.pathname.includes('/data/') || url.pathname.includes('/api/')) {

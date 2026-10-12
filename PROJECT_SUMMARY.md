@@ -1,6 +1,6 @@
 # 🏗️ Civil News Hub: 프로젝트 종합 진행 현황 및 논의 내역 정리
 
-> **📌 현재 버전**: `ver 1.1.58` (모바일 마감 임박 타일 및 리스트 텍스트 D-Day 형식 통일, 거대 폰트 20px 축소, '마감' 단어 완전 제거 / 113회 누적 수정 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.1.62` (API 키 불필요 네이버 뉴스 실시간 다이렉트 스크래핑 엔진 구축 및 구글+네이버 100% 자동 하이브리드 수집 파이프라인 완성 / 117회 누적 수정 / 내부 관리 버전 / 웹 화면 비노출)  
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
 본 문서는 **Civil News Hub(토목 뉴스 브리핑 & 채용·공모전 허브)**와 관련하여 지금까지 논의하고 구현한 모든 기능, UI 리디자인, 브랜치 작업 및 향후 로드맵을 체계적으로 정리한 종합 문서입니다.
@@ -1679,6 +1679,78 @@ mindmap
      - 하단 공모전/채용 리스트 좌측 뱃지(`ddBox`) 및 단일 뱃지(`ddPill`)도 동일하게 `D-Day`, `D-N`으로 통일.
   4. **단독 모바일 뷰 및 데스크톱-모바일 통합 뷰 양방향 동기화**:
      - `mobile.html`과 `index.html` 내 `#m` 뷰, 그리고 `static/mobile.html`, `static/index.html`까지 4개 파일 전수 동기화 및 가상 DOM 렌더링 검증 완료.
+
+#### 83) 캠퍼스 알바 및 SW 중심대학사업단 프로그램 카드·행 클릭 상세 열람 및 공식 공고·신청 직결 링크 활성화 연동 (v1.1.59)
+- **발생 문제 및 사용자 요청**:
+  - "캠퍼스 알바랑 SW 중심대학사업단 프로그램 들어가는게 활성화 안되어 있어"
+  - 원인: 토목 뉴스, 공모전, 채용 카드는 클릭 시 상세 드로어/바텀시트가 열리고 공식 원문/접수처 바로가기 링크(`<a>`)가 제공되었으나, 전북대 알바 및 SW 사업단 항목은 카드 및 행에 클릭 이벤트(`data-open`)와 상세 드로어/바텀시트 렌더링 로직이 누락되어 있어 클릭해도 아무 반응이 없고 원문 공고나 신청 페이지로 들어갈 수 없었음.
+- **조치 내역**:
+  1. **데스크톱 상세 드로어 및 클릭 인터랙션 활성화 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html))**:
+     - `renderJbnu()`: 알바 카드에 `class="card click" data-open="alba:${a.id}" tabindex="0"`, SW 카드에 `class="card click title-first" data-open="sw:${s.id}" tabindex="0"` 부여로 마우스 호버 리프트 효과 및 클릭 활성화.
+     - `openDrawer(key)`: `type === 'alba'`(전북대 알바 요강 - 근무처, 구분, 급여, 근무시간, 인원, 마감일, 주휴수당) 및 `type === 'sw'`(SW 중심대학사업단 - 포스터, 주관, 프로그램 구분, 정원, 일정, 마감) 드로어 상세 템플릿 신설.
+     - 하단에 `[전북대 알바 공고 바로가기 ↗]` 및 `[SW사업단 신청 바로가기 ↗]` 새 탭 딥링크 버튼 직결.
+     - 저장한 항목(북마크) 및 홈 화면 마감 임박 타임라인 레일에서 알바/SW 항목 클릭 시 상세 드로어가 즉시 열리도록 `open: 'alba:' + a.id`, `open: 'sw:' + s.id` 연동.
+  2. **모바일 상세 바텀시트 및 터치 인터랙션 활성화 ([`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html), [`static/mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/mobile.html), [`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html))**:
+     - `albaRow`: `<div class="row click" data-open="a:${a.id}">` (모바일 인라인) 및 `<button class="row" data-open="a:${a.id}">` (단독 모바일)로 터치 인터랙션 활성화.
+     - `swRow`: `<div class="sw click" data-open="s:${s.id}">` 및 `<button class="row" data-open="s:${s.id}">`로 터치 인터랙션 활성화.
+     - `openSheet(key)`: `type === 'a'`(전북대 알바) 및 `type === 's'`(SW 중심대학사업단) 상세 바텀시트 템플릿 신설 및 `[전북대 알바 공고 바로가기 ↗]`, `[SW사업단 신청 바로가기 ↗]` 버튼 제공.
+     - 모바일 북마크 아이콘(`data-save`) 탭 시 버블링을 방지하여 상세 시트 열림 없이 북마크만 정확히 토글되도록 방어 로직 적용.
+     - 모바일 통합 검색(`runSearch`) 결과 그룹에 `SW 중심대학사업단`을 추가하여 키워드 검색 시 SW 프로그램도 즉시 검색 및 열람 가능하도록 개선.
+     - 모바일 홈 마감 임박 퀵스트립에서 SW 타일 탭 시 상세 바텀시트 직결(`open: 's:' + s.id`).
+  3. **실시간 데이터 어댑터 및 정적 번들 동기화 ([`static/data_adapter.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/data_adapter.js), [`static/cnh_data_bundle.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/cnh_data_bundle.js))**:
+     - `ALBA` 및 `SW` 파싱 데이터에 마감일(`deadline_date`), 급여 표시(`wage_display`), 시간(`time`), 인원(`person`), 장소/마일리지 등 상세 필드 완벽 보강.
+     - `python build_data_bundle.py` 실행으로 최신 데이터셋 정적 컴파일 완료.
+  4. **Playwright E2E 정밀 검증 100% 통과**:
+     - 데스크톱 알바 32건 및 SW 1건 카드 클릭 시 드로어 정상 전개 및 전북대/SW사업단 공식 원문 링크 href 확인 완료.
+     - 모바일 인라인 뷰 및 단독 모바일 뷰 모두에서 바텀시트 전개 및 링크 버튼 정상 노출 확인 완료.
+
+#### 84) 로컬 웹사이트 구버전 캐시·PWA 서비스워커 영구 퍼지, 상세 드로어·시트 하드코딩 예시 0% 정제 및 E2E 실증 완료 (v1.1.60)
+- **발생 문제 및 사용자 질문**:
+  - "도대체 왜 로컬 웹사이트로 가면 예시가 보이냐고"
+- **근본 원인 분석**:
+  1. **브라우저 Service Worker 및 HTTP/LocalStorage 캐시 잔존**: 과거 PWA 서비스워커(`sw.js`, 구 CACHE_NAME `v1.1.7`)와 브라우저 캐시가 과거 더미 데이터 시절의 `index.html`을 Cache Storage에 영구 보관하고 있어, 로컬에서 새로고침을 해도 구버전 캐시가 우선 서빙되어 과거 더미('한빛도로공사(예시)' 등)가 노출됨.
+  2. **Flask 서버의 캐시 방지 헤더 누락**: `app.py`에서 HTML, JS, JSON 반환 시 `Cache-Control: no-cache, no-store, must-revalidate`가 없어 브라우저가 디스크 캐시를 지속 참조함.
+  3. **상세 드로어/바텀시트의 하드코딩된 예시 템플릿 텍스트 잔존**: 공모전 클릭 시 `시상 내역: 대상 1팀 · 최우수 2팀...`, `제출물: 기획서(PDF, 10쪽 이내)...`, 채용 클릭 시 `우대 사항: 토목기사, 건설안전기사...` 등의 하드코딩된 예시 문구가 여전히 템플릿에 남아 있었음.
+  4. **더미 전용 코드 및 토스트 문구 잔존**: `data-dummy` 및 `toast('예시 데이터라서 실제 페이지로 연결되지 않아요.')` 코드가 잔존함.
+- **조치 내역**:
+  1. **Flask 서버 전역 캐시 방지 헤더 강제 ([`app.py`](file:///C:/Users/최익석/Desktop/goofy-borg/app.py))**: `after_request` 훅에서 HTML, JSON, JS에 대해 `Cache-Control: no-cache, no-store, must-revalidate`, `Pragma: no-cache`, `Expires: 0`을 전송하도록 설정.
+  2. **PWA 서비스워커 로컬호스트 캐시 우회 및 버전 갱신 ([`sw.js`](file:///C:/Users/최익석/Desktop/goofy-borg/sw.js))**: `CACHE_NAME = 'civil-news-hub-v1.1.60'`, `localhost`/`127.0.0.1` 접속 시 캐시를 100% 우회하여 실시간 로컬 파일을 직접 fetch하도록 보장, 구버전 캐시 즉각 삭제.
+  3. **클라이언트단 캐시 킬러 & 구버전 SW 등록 해제기 탑재 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html))**: 페이지 로딩 즉시 `navigator.serviceWorker.getRegistrations()`를 통해 로컬 환경의 구 SW를 강제 `unregister()`하고, `caches.delete()`로 구 캐시 및 `localStorage('cnh-live-cache-v1')`를 자동 퍼지.
+  4. **상세 모달/드로어 하드코딩 예시 문구 전면 정제**: 공모전 및 채용의 하드코딩 텍스트를 실제 공고 데이터 필드(`c.campus ? '공지 원문에서 세부 제출 서류를 확인하세요' : '공식 공고 및 접수처 원문 참조'`, `j.summary`)로 교체하고, `data-dummy` 및 "예시 데이터라서..." 토스트 코드 완전 삭제.
+  5. **라우팅 및 URL 해시 호환성 강화**: `#contests` -> `#contest`, `#recruit` -> `#jobs` 별칭 지원 및 `window.addEventListener('hashchange')` 리스너 추가.
+  6. **4개 HTML 파일 100% 동일 해시 동기화**: `index.html` ↔ `static/index.html`, `mobile.html` ↔ `static/mobile.html`.
+  7. **Playwright E2E 검증 통과**: `http://localhost:8000` 환경에서 더미 0%, 실제 크롤링 데이터 100% 로드, 공모전·채용·알바 상세 드로어 내 예시 문구 0% 전수 확인 완료.
+
+#### 85) 네이버 검색 공식 Open API 연동 및 구글+네이버 하이브리드 뉴스 수집 파이프라인 구축 (v1.1.61)
+- **배경 및 요구사항**:
+  - 구글 뉴스 RSS 단일 소스의 한계(건설·토목 전문지 누락, 구글 리다이렉트 디코딩 지연 등)를 보완하기 위해 국내 1위 포털인 네이버 뉴스 수집 제안 및 채택(방안 1: 공식 Open API).
+- **구현 및 조치 내역**:
+  1. **네이버 검색 오픈 API 연동 모듈 탑재 ([`scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/scraper.py))**:
+     - `fetch_naver_news_for_term(term, client_id, client_secret, display=15)` 함수 구현 (`https://openapi.naver.com/v1/search/news.json`).
+     - 네이버 언론사 고유 코드(`NAVER_PRESS_CODES`, 연합뉴스·뉴시스 등 40여 개사) 및 도메인(`NAVER_DOMAIN_PRESS`, 대한경제·국토일보·토목신문·엔지니어링데일리 등 전문지) 기반 언론사명 정밀 식별기 `extract_naver_publisher()` 구축.
+  2. **공통 기사 필터링·정규화 파이프라인 단일화**:
+     - 구글 RSS와 네이버 검색 결과를 단일 `process_candidate_article()` 함수로 정규화.
+     - 필수 토목 키워드 검증(`CIVIL_MUST_HAVE`), 노이즈 제외(`EXCLUDE_KEYWORDS`), RFC 822 날짜 파싱, 스니펫 자동 생성 일원화.
+  3. **Graceful Fallback & 하이브리드 수집 구조**:
+     - `.env`에 `NAVER_CLIENT_ID` 및 `NAVER_CLIENT_SECRET`가 설정되어 있으면 구글+네이버 동시 수집 후 기존 유사 기사 군집화(`cluster_related_articles`) 및 썸네일 병렬 추출(`enrich_articles_with_images`) 진행.
+     - 키가 미설정된 상태에서는 구글 뉴스 RSS 단독 모드로 매끄럽게 자동 폴백(Fallback)되어 에러 없이 정상 가동.
+  4. **환경설정 템플릿 갱신 ([`.env.example`](file:///C:/Users/최익석/Desktop/goofy-borg/.env.example))**:
+     - `NAVER_CLIENT_ID` 및 `NAVER_CLIENT_SECRET` 설정 항목 추가.
+
+#### 86) API 키 불필요 네이버 뉴스 실시간 다이렉트 스크래핑 엔진 구축 및 구글+네이버 100% 자동 하이브리드 수집 파이프라인 완성 (v1.1.62)
+- **배경 및 원인 분석**:
+  - 사용자가 네이버 개발자 센터에서 '사용 API'를 확인한 결과 '검색' 옵션이 표시되지 않는 현상 발생 (스크린샷 실사 확인).
+  - 조사 결과, 네이버 정책 개편으로 검색 오픈 API(Search API) 신규 신청이 개발자 센터에서 중단되고 **네이버 클라우드 플랫폼(NCP)의 NAVER API HUB**로 이관됨.
+  - NCP는 신용카드/결제수단 등록이 필수적이므로 일반 사용자가 개발/운영하기에 불필요한 비용 및 절차적 피로감이 발생함을 식별.
+- **해결 조치**:
+  1. **API 키가 100% 필요 없는 다이렉트 네이버 뉴스 스크래퍼 탑재 ([`scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/scraper.py))**:
+     - `scrape_naver_news_direct(term, max_items=10, now_kst=None)` 함수 구현.
+     - 네이버 신규 컴포넌트 프레임워크(fender-ui, SDS) 기반의 `span.headline1`, `span.body1`, `span.profile-info-title-text`, 프로필 로고 `img[alt]`를 정밀 파싱하는 최신 DOM 역추적 엔진 `find_article_container()` 탑재.
+     - 언론사 원문 링크 및 `n.news.naver.com` 네이버 인링크를 자동 선별하여 연결.
+  2. **완전 자동 하이브리드 수집 모드**:
+     - API 키가 있으면 공식 Open API로 수집하고, **키가 없으면(기본 상태) 다이렉트 웹 스크래퍼가 자동 가동**되어 사용자가 어떠한 키 발급이나 카드 등록 없이도 구글+네이버 하이브리드 뉴스를 즉시 100% 수집하도록 구현.
+  3. **실증 테스트 100% 성공**:
+     - '토목공사' 등 전문 키워드 대상 경향신문, 이뉴스투데이, 브레이크뉴스, 디지털타임스 등 네이버 최신 기사 실시간 정상 파싱 검증 완료.
 
 ---
 

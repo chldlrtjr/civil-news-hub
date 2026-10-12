@@ -189,7 +189,11 @@ window.CivilData = (() => {
           tag: a.category_name || '교내',
           link: a.link || '#',
           time: a.work_time || '협의',
-          person: a.person || '0명'
+          person: a.person || '0명',
+          reg_date: a.reg_date || '',
+          deadline_date: a.deadline_date || '',
+          wage_display: a.wage_display || '',
+          monthly_estimate: a.monthly_estimate || ''
         };
       });
     }
@@ -210,7 +214,10 @@ window.CivilData = (() => {
           end: daysLeft ?? 5,
           seats: s.capacity || '정원 마감 시',
           image: s.thumbnail || s.image || '',
-          link: s.link || '#'
+          link: s.link || '#',
+          deadline_date: s.deadline_date || '',
+          location: s.location || '-',
+          point: s.point || '-'
         };
       });
     }

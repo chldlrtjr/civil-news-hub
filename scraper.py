@@ -7,9 +7,15 @@ import xml.etree.ElementTree as ET
 from datetime import datetime, timezone, timedelta
 from email.utils import parsedate_to_datetime
 from collections import Counter
+from dotenv import load_dotenv
+import requests
+from bs4 import BeautifulSoup
 
 # 디렉토리 경로
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# .env 로드 (존재 시)
+load_dotenv(os.path.join(BASE_DIR, ".env"))
+
 DATA_DIR = os.path.join(BASE_DIR, "data")
 NEWS_JSON_PATH = os.path.join(DATA_DIR, "news.json")
 
@@ -125,6 +131,202 @@ def fetch_rss_for_term(term, when="3d"):
         print(f"    [RSS 수집 에러 ({term})]: {e}")
         return []
 
+# 네이버 뉴스 언론사 코드 매핑
+NAVER_PRESS_CODES = {
+    "001": "연합뉴스", "003": "뉴시스", "421": "뉴스1", "015": "한국경제", "009": "매일경제",
+    "011": "서울경제", "014": "파이낸셜뉴스", "018": "이데일리", "277": "아시아경제", "008": "머니투데이",
+    "025": "중앙일보", "020": "동아일보", "023": "조선일보", "032": "경향신문", "028": "한겨레",
+    "081": "서울신문", "022": "세계일보", "005": "국민일보", "056": "KBS", "214": "MBC",
+    "055": "SBS", "057": "MBN", "448": "TV조선", "449": "채널A", "437": "JTBC",
+    "052": "YTN", "422": "연합뉴스TV", "374": "SBS Biz", "079": "노컷뉴스", "215": "한국경제TV",
+    "092": "ZDNet Korea", "138": "디지털데일리", "029": "디지털타임스", "030": "전자신문", "016": "헤럴드경제",
+    "629": "더팩트", "119": "데일리안", "031": "아이뉴스24", "417": "머니S", "293": "블로터",
+    "366": "조선비즈", "123": "조세일보"
+}
+
+# 네이버 뉴스 원문 도메인별 언론사 매핑 (토목/건설 전문지 우선 지원)
+NAVER_DOMAIN_PRESS = {
+    "cnews.co.kr": "대한경제", "dnews.co.kr": "대한경제", "ikld.kr": "국토일보", "cenews.co.kr": "토목신문",
+    "electimes.com": "전기신문", "engdaily.com": "엔지니어링데일리", "mcnews.co.kr": "매일건설신문",
+    "kukinews.com": "쿠키뉴스", "newspim.com": "뉴스핌", "dailian.co.kr": "데일리안", "inews24.com": "아이뉴스24",
+    "etoday.co.kr": "이투데이", "businesspost.co.kr": "비즈니스포스트", "yna.co.kr": "연합뉴스",
+    "newsis.com": "뉴시스", "news1.kr": "뉴스1", "hankyung.com": "한국경제", "mk.co.kr": "매일경제",
+    "sedaily.com": "서울경제", "fnnews.com": "파이낸셜뉴스", "edaily.co.kr": "이데일리", "asiae.co.kr": "아시아경제",
+    "mt.co.kr": "머니투데이", "chosun.com": "조선일보", "donga.com": "동아일보", "joongang.co.kr": "중앙일보",
+    "khan.co.kr": "경향신문", "hani.co.kr": "한겨레", "kmib.co.kr": "국민일보", "segye.com": "세계일보",
+    "seoul.co.kr": "서울신문", "ytn.co.kr": "YTN", "nocutnews.co.kr": "노컷뉴스", "kbs.co.kr": "KBS",
+    "imbc.com": "MBC", "sbs.co.kr": "SBS"
+}
+
+def extract_naver_publisher(link, originallink, title):
+    """네이버 기사 링크 및 원문 링크로부터 언론사명 식별"""
+    # 1. 네이버 뉴스 링크의 언론사 식별 코드 확인 (article/001/... 또는 oid=001)
+    if link:
+        m = re.search(r'/(?:article|read\.nhn(?:\?|.*&)oid=)/?(\d{3})', link)
+        if m:
+            code = m.group(1)
+            if code in NAVER_PRESS_CODES:
+                return NAVER_PRESS_CODES[code]
+    
+    # 2. 원문 링크의 도메인 매핑
+    if originallink:
+        try:
+            domain = urllib.parse.urlparse(originallink).netloc.lower()
+            for d, press in NAVER_DOMAIN_PRESS.items():
+                if d in domain:
+                    return press
+        except Exception:
+            pass
+
+    # 3. 제목 뒤 [언론사] 또는 - 언론사 패턴
+    clean_t = clean_html(title)
+    if " - " in clean_t:
+        return clean_t.rsplit(" - ", 1)[1].strip()
+    m_bracket = re.search(r'\[([가-힣A-Za-z0-9\s]{2,10})\]\s*$', clean_t)
+    if m_bracket:
+        return m_bracket.group(1).strip()
+
+    return "네이버뉴스"
+
+def fetch_naver_news_for_term(term, client_id, client_secret, display=15):
+    """네이버 검색 오픈 API를 통한 뉴스 기사 수집"""
+    if not client_id or not client_secret:
+        return []
+    
+    encoded_q = urllib.parse.quote(term)
+    url = f"https://openapi.naver.com/v1/search/news.json?query={encoded_q}&display={display}&sort=date"
+    
+    req = urllib.request.Request(
+        url,
+        headers={
+            "X-Naver-Client-Id": client_id,
+            "X-Naver-Client-Secret": client_secret,
+            "User-Agent": "CivilNewsHub/1.0"
+        }
+    )
+    
+    try:
+        with urllib.request.urlopen(req, timeout=6) as response:
+            if response.status == 200:
+                data = json.loads(response.read().decode("utf-8"))
+                return data.get("items", [])
+    except Exception as e:
+        print(f"    [네이버 뉴스 수집 에러 ({term})]: {e}")
+        return []
+    return []
+
+def scrape_naver_news_direct(term, max_items=10, now_kst=None):
+    """네이버 웹 검색을 통한 실시간 뉴스 직접 수집 (API 키 불필요 모드)"""
+    kst = timezone(timedelta(hours=9))
+    if not now_kst or not isinstance(now_kst, datetime):
+        now_kst = datetime.now(kst)
+        
+    encoded_q = urllib.parse.quote(term)
+    url = f"https://search.naver.com/search.naver?where=news&query={encoded_q}&sort=1"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+    }
+    
+    try:
+        resp = requests.get(url, headers=headers, timeout=5)
+        if resp.status_code != 200:
+            return []
+        soup = BeautifulSoup(resp.text, "html.parser")
+        
+        articles = []
+        seen_links = set()
+        
+        def find_article_container(span):
+            curr = span
+            best = None
+            while curr and curr.name not in ["section", "body", "ul"]:
+                if curr.select_one("span[class*='body1']"):
+                    if len(curr.select("span[class*='headline1']")) == 1:
+                        best = curr
+                    else:
+                        break
+                curr = curr.parent
+            return best or span.parent.parent.parent.parent
+
+        spans = soup.select("span[class*='headline1']")
+        for span in spans:
+            title = span.get_text(strip=True).replace("새 창 열림", "").strip()
+            title_a = span.find_parent("a") or span.find_previous("a")
+            if not title_a or not title_a.get("href"):
+                continue
+            orig_link = title_a["href"]
+            if orig_link in seen_links:
+                continue
+            seen_links.add(orig_link)
+            
+            card = find_article_container(span)
+            
+            # 언론사명 식별 (이미지 alt -> 링크 텍스트 -> 도메인 매핑)
+            press = ""
+            press_img = card.select_one("img[alt*='프로필 이미지']")
+            if press_img and press_img.get("alt"):
+                press = press_img["alt"].replace("의 프로필 이미지", "").strip()
+            if not press:
+                press_el = card.select_one("a[href*='media.naver.com/press'], span[class*='profile-info-title-text']")
+                if press_el:
+                    press = press_el.get_text(strip=True).replace("새 창 열림", "").strip()
+            if not press or press == "네이버뉴스":
+                press = extract_naver_publisher(orig_link, orig_link, title)
+
+            # 상대 시간 추출
+            rel_date = "최근"
+            for s in card.select("span[class*='profile-info-subtext']"):
+                txt = s.get_text(strip=True).replace("새 창 열림", "")
+                if any(u in txt for u in ["분 전", "시간 전", "일 전", "어제", "방금"]):
+                    rel_date = txt
+                    break
+                elif re.match(r'^\d{4}\.\d{2}\.\d{2}', txt):
+                    rel_date = txt
+                    break
+
+            # 요약문 (스니펫)
+            body = card.select_one("span[class*='body1']")
+            snippet = body.get_text(strip=True).replace("새 창 열림", "").strip() if body else ""
+
+            # 네이버 인링크(n.news.naver.com) 우선 매핑
+            nv_a = card.select_one("a[href*='n.news.naver.com/mnews/article'], a[href*='news.naver.com/main/read']")
+            final_link = nv_a["href"] if nv_a and nv_a.get("href") else orig_link
+
+            # 날짜 계산
+            dt = now_kst
+            m = re.search(r'(\d+)\s*분\s*전', rel_date)
+            if m:
+                dt = now_kst - timedelta(minutes=int(m.group(1)))
+            else:
+                m = re.search(r'(\d+)\s*시간\s*전', rel_date)
+                if m:
+                    dt = now_kst - timedelta(hours=int(m.group(1)))
+                else:
+                    m = re.search(r'(\d+)\s*일\s*전', rel_date)
+                    if m:
+                        dt = now_kst - timedelta(days=int(m.group(1)))
+                    elif "어제" in rel_date:
+                        dt = now_kst - timedelta(days=1)
+            
+            pub_date_str = dt.strftime("%a, %d %b %Y %H:%M:%S +0900")
+
+            articles.append({
+                "title": title,
+                "link": final_link,
+                "originallink": orig_link,
+                "publisher": press or "네이버뉴스",
+                "pubDate": pub_date_str,
+                "description": snippet
+            })
+            if len(articles) >= max_items:
+                break
+                
+        return articles
+    except Exception as e:
+        print(f"    [네이버 직접 수집 에러 ({term})]: {e}")
+        return []
+
+
 def clean_clause(text):
     """문장/구문 양 끝의 특수문자 및 따옴표 정제"""
     if not text:
@@ -136,9 +338,86 @@ def clean_clause(text):
             t = t[len(q_open):-len(q_close)].strip()
     return t
 
+def process_candidate_article(raw_title, raw_link, raw_pub_date, raw_desc, publisher, cat, kst, seen_keys):
+    """공통 기사 필터링, 정제, 메타데이터 생성 및 중복 검증"""
+    if not raw_link or "vietnam.vn" in raw_link.lower():
+        return None
+    
+    # 제외 키워드 필터링 (주식, IT, 코인, 번역 노이즈 등)
+    title_desc = (raw_title + " " + raw_desc).lower()
+    if any(bad.lower() in title_desc for bad in EXCLUDE_KEYWORDS):
+        return None
+    
+    # 필수 토목 연관 키워드 검증
+    clean_t = clean_html(raw_title)
+    if not any(must in clean_t for must in CIVIL_MUST_HAVE):
+        return None
+    
+    # 제목에서 언론사 꼬리표 제거 (- 언론사명)
+    title = clean_t
+    if " - " in title:
+        parts = title.rsplit(" - ", 1)
+        if not publisher or publisher == "네이버뉴스":
+            publisher = parts[1].strip()
+        title = parts[0].strip()
+    
+    # 접두사 머리말 정제
+    title = re.sub(r'^\[(단독|속보|포토|사설|기획|종합|현장|전문|인터뷰|칼럼|기고|알림|인사|부고)\]\s*', '', title).strip()
+
+    if not publisher:
+        publisher = "언론사"
+    
+    # 중복 검사 키 (영문/한글/숫자 앞 20자리)
+    clean_key = re.sub(r'[^a-zA-Z0-9가-힣]', '', title)[:20]
+    if not clean_key or clean_key in seen_keys:
+        return None
+    seen_keys.add(clean_key)
+    
+    # 날짜 파싱
+    iso_date = ""
+    display_date = ""
+    relative_date = ""
+    try:
+        dt = parsedate_to_datetime(raw_pub_date)
+        dt_kst = dt.astimezone(kst)
+        iso_date = dt_kst.isoformat()
+        display_date = dt_kst.strftime("%Y-%m-%d %H:%M")
+        relative_date = format_relative_time(dt_kst)
+    except Exception:
+        now_time = datetime.now(kst)
+        iso_date = now_time.isoformat()
+        display_date = now_time.strftime("%Y-%m-%d %H:%M")
+        relative_date = "최근"
+    
+    # 설명(스니펫) 정제
+    snippet = clean_html(raw_desc)
+    if publisher and snippet.endswith(publisher):
+        snippet = snippet[:-len(publisher)].strip()
+
+    # 기본 조회수 배정
+    base_views = 120 + (abs(hash(title)) % 2280)
+
+    # 설명(스니펫) 정제: 비어있거나 무의미한 경우 기사 제목 기반 보완
+    if not snippet or snippet == title or "원문 기사를 확인하세요" in snippet or len(snippet) < 15:
+        snippet = f"{title}. {cat['name']} 분야 최신 인프라 동향 및 사업 세부 내용을 확인하세요."
+
+    return {
+        "id": str(abs(hash(title + raw_link)))[-10:],
+        "title": title,
+        "link": raw_link,
+        "publisher": publisher,
+        "category_id": cat["id"],
+        "category_name": cat["name"],
+        "badge_color": cat["badge_color"],
+        "snippet": snippet[:180].strip(),
+        "iso_date": iso_date,
+        "published_at": display_date,
+        "relative_date": relative_date,
+        "views": base_views
+    }
 
 def scrape_civil_news():
-    """모든 카테고리 뉴스 정밀 수집, 필터링 및 JSON 저장"""
+    """모든 카테고리 뉴스 정밀 수집, 필터링 및 JSON 저장 (구글 뉴스 RSS + 네이버 오픈 API 하이브리드)"""
     print("=" * 60)
     print("🚀 [토목 뉴스 수집기] 토목 관련 순수 기사를 정밀 수집합니다...")
     print("=" * 60)
@@ -147,99 +426,53 @@ def scrape_civil_news():
     all_articles = []
     seen_keys = set()
     
+    naver_client_id = os.environ.get("NAVER_CLIENT_ID", "").strip()
+    naver_client_secret = os.environ.get("NAVER_CLIENT_SECRET", "").strip()
+    has_naver_api = bool(naver_client_id and naver_client_secret)
+    
+    if has_naver_api:
+        print("🔑 [네이버 뉴스] 공식 Open API 연동 모드로 수집합니다.")
+    else:
+        print("🌐 [네이버 뉴스] 직접 웹 스크래핑 엔진 가동 (API 키 불필요: 구글 + 네이버 하이브리드 수집)")
+    
     for cat in CATEGORIES:
         cat_count = 0
         for term in cat["queries"]:
-            items = fetch_rss_for_term(term, when="3d")
-            for item in items:
+            # 1. 구글 뉴스 RSS 수집
+            rss_items = fetch_rss_for_term(term, when="3d")
+            for item in rss_items:
                 raw_title = item.find("title").text if item.find("title") is not None else ""
                 raw_link = item.find("link").text if item.find("link") is not None else ""
                 raw_pub_date = item.find("pubDate").text if item.find("pubDate") is not None else ""
                 raw_desc = item.find("description").text if item.find("description") is not None else ""
                 source_el = item.find("source")
+                publisher = source_el.text.strip() if source_el is not None and source_el.text else ""
                 
-                # 1. 외신 및 특정 제외 링크 필터링
-                if "vietnam.vn" in raw_link.lower():
-                    continue
+                article = process_candidate_article(raw_title, raw_link, raw_pub_date, raw_desc, publisher, cat, kst, seen_keys)
+                if article:
+                    all_articles.append(article)
+                    cat_count += 1
+            
+            # 2. 네이버 뉴스 수집 (API 키가 있으면 API 모드, 없으면 직접 웹 스크래핑 모드)
+            if has_naver_api:
+                naver_items = fetch_naver_news_for_term(term, naver_client_id, naver_client_secret, display=15)
+            else:
+                naver_items = scrape_naver_news_direct(term, max_items=10, now_kst=datetime.now(kst))
                 
-                # 2. 제외 키워드 필터링 (주식, IT, 코인, 번역 노이즈 등)
-                title_desc = (raw_title + " " + raw_desc).lower()
-                if any(bad.lower() in title_desc for bad in EXCLUDE_KEYWORDS):
-                    continue
+            for n_item in naver_items:
+                raw_title = n_item.get("title", "")
+                raw_link = n_item.get("originallink") or n_item.get("link", "")
+                raw_pub_date = n_item.get("pubDate", "")
+                raw_desc = n_item.get("description", "")
+                publisher = n_item.get("publisher") or extract_naver_publisher(n_item.get("link", ""), n_item.get("originallink", ""), raw_title)
                 
-                # 3. 필수 토목 연관 키워드 검증 (토목/인프라/건설 어휘가 하나도 없으면 제외)
-                if not any(must in raw_title for must in CIVIL_MUST_HAVE):
-                    continue
-                
-                # 언론사 추출
-                publisher = ""
-                if source_el is not None and source_el.text:
-                    publisher = source_el.text.strip()
-                
-                # 제목에서 언론사 꼬리표 제거 (- 언론사명)
-                title = clean_html(raw_title)
-                if " - " in title:
-                    parts = title.rsplit(" - ", 1)
-                    if not publisher:
-                        publisher = parts[1].strip()
-                    title = parts[0].strip()
-                
-                if not publisher:
-                    publisher = "언론사"
-                
-                # 중복 검사 키 (영문/한글/숫자 앞 20자리)
-                clean_key = re.sub(r'[^a-zA-Z0-9가-힣]', '', title)[:20]
-                if not clean_key or clean_key in seen_keys:
-                    continue
-                seen_keys.add(clean_key)
-                
-                # 날짜 파싱
-                iso_date = ""
-                display_date = ""
-                relative_date = ""
-                try:
-                    dt = parsedate_to_datetime(raw_pub_date)
-                    dt_kst = dt.astimezone(kst)
-                    iso_date = dt_kst.isoformat()
-                    display_date = dt_kst.strftime("%Y-%m-%d %H:%M")
-                    relative_date = format_relative_time(dt_kst)
-                except Exception:
-                    now_time = datetime.now(kst)
-                    iso_date = now_time.isoformat()
-                    display_date = now_time.strftime("%Y-%m-%d %H:%M")
-                    relative_date = "최근"
-                
-                # 설명(스니펫) 정제
-                snippet = clean_html(raw_desc)
-                if publisher and snippet.endswith(publisher):
-                    snippet = snippet[:-len(publisher)].strip()
-
-                # 기본 조회수 배정
-                base_views = 120 + (abs(hash(title)) % 2280)
-
-                # 설명(스니펫) 정제: 비어있거나 무의미한 경우 기사 제목 기반 보완
-                if not snippet or snippet == title or "원문 기사를 확인하세요" in snippet or len(snippet) < 15:
-                    clean_title = re.sub(r'^\[(단독|속보|포토|사설|기획|종합|현장|전문|인터뷰|칼럼|기고|알림|인사|부고)\]\s*', '', title).strip()
-                    snippet = f"{clean_title}. {cat['name']} 분야 최신 인프라 동향 및 사업 세부 내용을 확인하세요."
-
-                article = {
-                    "id": str(abs(hash(title + raw_link)))[-10:],
-                    "title": title,
-                    "link": raw_link,
-                    "publisher": publisher,
-                    "category_id": cat["id"],
-                    "category_name": cat["name"],
-                    "badge_color": cat["badge_color"],
-                    "snippet": snippet[:180].strip(),
-                    "iso_date": iso_date,
-                    "published_at": display_date,
-                    "relative_date": relative_date,
-                    "views": base_views
-                }
-                all_articles.append(article)
-                cat_count += 1
+                article = process_candidate_article(raw_title, raw_link, raw_pub_date, raw_desc, publisher, cat, kst, seen_keys)
+                if article:
+                    all_articles.append(article)
+                    cat_count += 1
                 
         print(f"  - [{cat['name']}] 엄선된 기사 {cat_count}건 수집 완료")
+
     
     # 유사/중복 기사 군집화 (대표 기사 하위에 타 언론사 보도자료 그룹핑)
     final_articles, duplicate_count = cluster_related_articles(all_articles)

@@ -3,8 +3,29 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
-<script src="./static/cnh_data_bundle.js?v=20261008_0045"></script>
-<script src="./static/data_adapter.js?v=20261008_0045"></script>
+<script>
+// 구버전 PWA 서비스워커 및 캐시 스토리지 즉각 무효화 & 퍼지 (로컬 및 원격 환경 전체 적용)
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    regs.forEach(reg => {
+      if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+        reg.unregister();
+      }
+    });
+  });
+}
+if ('caches' in window) {
+  caches.keys().then(keys => {
+    keys.forEach(k => {
+      if (k.includes('civil-news-hub') && !k.includes('v1.1.60')) caches.delete(k);
+    });
+  });
+}
+// 구버전 더미 데이터가 포함되었던 localStorage 캐시 즉각 삭제
+try { localStorage.removeItem('cnh-live-cache-v1'); } catch(e){}
+</script>
+<script src="./static/cnh_data_bundle.js?v=20261008_2330"></script>
+<script src="./static/data_adapter.js?v=20261008_2330"></script>
 <style>
 /* Layout: plain solid ground, sticky header + tab nav, dashboard = main column + deadline rail; phones get a bottom tab bar and bottom-sheet drawer */
 :root{
@@ -438,6 +459,8 @@ h1,h2,h3{line-height:1.3;letter-spacing:-.01em}
 #m .sw+.sw::before{content:"";position:absolute;top:0;left:16px;right:0;height:1px;background:var(--line)}
 #m .sw .banner{width:100%;margin-bottom:12px}
 #m .sw .row-title{margin-top:4px}
+#m .row.click,#m .sw.click{cursor:pointer}
+#m .row.click:active,#m .sw.click:active{background:var(--surface-2)}
 /* SW 사업단: 분류 줄 오른쪽에 마감 배지, 활동 기간 줄 오른쪽에 북마크 */
 #m .sw-line{display:flex;align-items:center;justify-content:space-between;gap:10px}
 #m .sw-line .row-meta,#m .sw-line .row-sub{min-width:0}
@@ -813,8 +836,8 @@ function savedItems(){
   return [
     ...CONTESTS.filter(c=>saved.has(c.id)).map(c=>({id:c.id,open:'contest:'+c.id,kind:'공모전',k:'var(--accent)',t:c.title,sub:`${c.org} · 총 상금 ${fmt(c.prize)}만원`,end:c.end})),
     ...JOBS.filter(j=>saved.has(j.id)).map(j=>({id:j.id,open:'job:'+j.id,kind:GRP[j.grp]+' 채용',k:'var(--c-road)',t:`${j.co} ${j.role}`,sub:`${j.lvl} · ${j.loc}`,end:j.end})),
-    ...ALBA.filter(a=>saved.has(a.id)).map(a=>({id:a.id,go:'jbnu',kind:'전북대 알바',k:'var(--ok)',t:a.title,sub:`${a.where} · ${a.type==='day'?'일급':'시급'} ${fmt(a.wage)}원`,end:a.end})),
-    ...SW.filter(s=>saved.has(s.id)).map(s=>({id:s.id,go:'jbnu',kind:'전북대 SW '+s.kind,k:'var(--c-smart)',t:s.title,sub:`${s.when} · 모집 ${s.seats}`,end:s.end})),
+    ...ALBA.filter(a=>saved.has(a.id)).map(a=>({id:a.id,open:'alba:'+a.id,kind:'전북대 알바',k:'var(--ok)',t:a.title,sub:`${a.where} · ${a.type==='day'?'일급':'시급'} ${fmt(a.wage)}원`,end:a.end})),
+    ...SW.filter(s=>saved.has(s.id)).map(s=>({id:s.id,open:'sw:'+s.id,kind:'전북대 SW '+s.kind,k:'var(--c-smart)',t:s.title,sub:`${s.when} · 모집 ${s.seats}`,end:s.end})),
     // 뉴스는 마감이 없어서 맨 뒤에 둬요
     ...NEWS.filter(n=>saved.has(n.id)).map(n=>({id:n.id,go:'news',kind:'뉴스 · '+catName(n.cat),k:`var(--c-${n.cat})`,t:n.title,sub:`${n.src} · ${n.ago}`,end:null})),
   ].sort((a,b)=>(a.end??99)-(b.end??99));
@@ -870,7 +893,7 @@ function renderHome(){
   const items = [
     ...CONTESTS.map(c=>({k:'공모전',c:'var(--accent)',t:c.title,end:c.end,open:'contest:'+c.id})),
     ...JOBS.map(j=>({k:'채용',c:'var(--c-road)',t:`${j.co} ${j.role}`,end:j.end,open:'job:'+j.id})),
-    ...SW.map(s=>({k:'SW '+s.kind,c:'var(--c-smart)',t:s.title,end:s.end,go:'jbnu'})),
+    ...SW.map(s=>({k:'SW '+s.kind,c:'var(--c-smart)',t:s.title,end:s.end,open:'sw:'+s.id})),
   ].filter(x=>x.end>=0 && x.end<60).sort((a,b)=>a.end-b.end).slice(0,7);
   $('#deadlines').innerHTML = items.length ? items.map(x=>`<li style="--kind:${x.c}" ${x.open?`data-open="${x.open}"`:`data-go="${x.go}"`} tabindex="0">
     <div class="tl-body"><div class="kind">${x.k}</div><div class="t">${x.t}</div></div>${ddayBadge(x.end)}</li>`).join('') : '<li class="empty" style="padding:16px 8px;text-align:center;color:var(--muted);font-size:var(--t-small);list-style:none">다가오는 마감 일정이 없어요</li>';
@@ -944,14 +967,14 @@ function renderJobs(){
 }
 
 function renderJbnu(){
-  $('#alba-list').innerHTML = ALBA.map(a=>`<article class="card" data-item="${a.id}">
+  $('#alba-list').innerHTML = ALBA.map(a=>`<article class="card click" data-open="alba:${a.id}" tabindex="0">
     <div class="card-top"><span class="pill">${a.tag}</span><div class="card-top-r">${ddayBadge(a.end)}${bmBtn(a.id)}</div></div>
     <div><div class="income-l">${a.type==='day'?`총 예상 수입 (${a.days}일)`:'예상 월 수입'}</div><div class="income">₩${fmt(monthly(a))}</div></div>
     <h3>${a.title}</h3>
     <div class="wage-row">${a.type==='day'?`<span>일급 <b>${fmt(a.wage)}</b></span>`:`<span>시급 <b>${fmt(a.wage)}</b></span><span>주 <b>${a.hours}</b>시간</span>`}</div>
     <div class="meta"><span>${a.where}</span><span>${a.type==='hour'&&a.hours>=15?'주휴수당 포함':a.type==='hour'?'주휴수당 없음':''}</span></div>
   </article>`).join('');
-  $('#sw-list').innerHTML = SW.map(s=>`<article class="card" data-item="${s.id}">
+  $('#sw-list').innerHTML = SW.map(s=>`<article class="card click title-first" data-open="sw:${s.id}" tabindex="0">
     ${s.image?`<div class="card-img" style="aspect-ratio:700/366"><img src="${s.image}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.remove()"></div>`:''}
     <div class="card-top"><span class="pill award">${s.kind}</span><div class="card-top-r">${ddayBadge(s.end)}${bmBtn(s.id)}</div></div>
     <h3>${s.title}</h3>
@@ -993,10 +1016,39 @@ function openDrawer(key, fromSaved){
         ${c.award?`<dt>훈격</dt><dd>${c.award}</dd>`:''}
         <dt>참가대상</dt><dd>${c.targetText || c.target.join(', ')}</dd>
         <dt>접수기간</dt><dd class="mono">${md(day(c.start))}(${DAY[day(c.start).getDay()]}) ~ ${md(day(c.end))}(${DAY[day(c.end).getDay()]})</dd>
-        ${c.campus?`<dt>세부 요강</dt><dd>공지 원문에서 확인하세요</dd>`:`<dt>시상 내역</dt><dd>대상 1팀 · 최우수 2팀 · 우수 3팀 · 장려 5팀</dd>
-        <dt>제출물</dt><dd>기획서(PDF, 10쪽 이내), 발표 영상 3분</dd>`}
+        <dt>상세 요강</dt><dd>${c.campus ? '공지 원문에서 세부 제출 서류를 확인하세요' : '공식 공고 및 접수처 원문 참조'}</dd>
       </dl>
-      <div class="row"><button class="cta ghost" data-bm="${c.id}" aria-pressed="${saved.has(c.id)}">저장하기</button><a href="${c.link || '#'}" target="_blank" rel="noopener noreferrer" class="cta" style="text-align:center;text-decoration:none;display:inline-block">공식 접수처 바로가기 ↗</a></div>`;
+      <div class="row"><button class="cta ghost" data-bm="${c.id}" aria-pressed="${saved.has(c.id)}">저장하기</button><a href="${c.link || '#'}" target="_blank" rel="noopener noreferrer" class="cta" style="text-align:center;text-decoration:none;display:inline-block">${c.campus?'공지 원문 바로가기 ↗':'공식 접수처 바로가기 ↗'}</a></div>`;
+  } else if (type==='alba'){
+    const a = ALBA.find(x=>x.id===id);
+    $('#dr-kind').textContent = '전북대 알바 요강';
+    html = `<div class="card-top">${ddayBadge(a.end)}${bmBtn(a.id)}</div>
+      <h2 id="dr-title">${a.title}</h2>
+      <div class="income" style="margin:4px 0 14px">₩${fmt(monthly(a))}<small style="font-size:var(--t-small);color:var(--muted);font-weight:500;margin-left:6px">${a.type==='day'?'총 예상 수입':'월 예상 수입'}</small></div>
+      <dl class="spec">
+        <dt>근무처</dt><dd>${a.where}</dd>
+        <dt>구분</dt><dd>${a.tag}</dd>
+        <dt>급여</dt><dd>${a.type==='day' ? `일급 ${fmt(a.wage)}원 (${a.days}일 기준)` : `시급 ${fmt(a.wage)}원 (주 ${a.hours}시간 기준)`}</dd>
+        <dt>근무시간</dt><dd>${a.time || '공고 본문 참조'}</dd>
+        <dt>모집인원</dt><dd>${a.person || '0명'}</dd>
+        <dt>마감일</dt><dd class="mono">${a.deadline_date ? a.deadline_date : `~${md(day(a.end))}`} (${ddayBadge(a.end)})</dd>
+        <dt>주휴수당</dt><dd>${a.type==='hour'&&a.hours>=15?'주휴수당 포함 (주 15시간 이상)':'주휴수당 미해당'}</dd>
+      </dl>
+      <div class="row"><button class="cta ghost" data-bm="${a.id}" aria-pressed="${saved.has(a.id)}">공고 저장</button><a href="${a.link || '#'}" target="_blank" rel="noopener noreferrer" class="cta" style="text-align:center;text-decoration:none;display:inline-block">전북대 알바 공고 바로가기 ↗</a></div>`;
+  } else if (type==='sw'){
+    const s = SW.find(x=>x.id===id);
+    $('#dr-kind').textContent = 'SW 중심대학사업단 프로그램';
+    html = `<div class="card-top">${ddayBadge(s.end)}${bmBtn(s.id)}</div>
+      <h2 id="dr-title">${s.title}</h2>
+      ${s.image ? `<div class="dr-img"><img src="${s.image}" alt="${s.title} 안내 포스터" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.remove()"></div>` : ''}
+      <dl class="spec">
+        <dt>주관</dt><dd>전북대학교 SW중심대학사업단</dd>
+        <dt>프로그램</dt><dd>${s.kind}</dd>
+        <dt>모집정원</dt><dd>${s.seats}</dd>
+        <dt>활동일정</dt><dd>${s.when}</dd>
+        <dt>신청마감</dt><dd class="mono">~${md(day(s.end))}(${DAY[day(s.end).getDay()]}) (${ddayBadge(s.end)})</dd>
+      </dl>
+      <div class="row"><button class="cta ghost" data-bm="${s.id}" aria-pressed="${saved.has(s.id)}">프로그램 저장</button><a href="${s.link || '#'}" target="_blank" rel="noopener noreferrer" class="cta" style="text-align:center;text-decoration:none;display:inline-block">SW사업단 신청 바로가기 ↗</a></div>`;
   } else {
     const j = JOBS.find(x=>x.id===id);
     $('#dr-kind').textContent = GRP[j.grp] + ' 채용';
@@ -1005,7 +1057,7 @@ function openDrawer(key, fromSaved){
       <dl class="spec">
         <dt>지원 자격</dt><dd>${j.lvl}${j.exp?' ('+j.exp+')':''} · 토목 관련 전공</dd>
         <dt>마감</dt><dd class="mono">${md(day(j.end))}(${DAY[day(j.end).getDay()]}) 18:00</dd>
-        <dt>우대</dt><dd>토목기사, 건설안전기사, BIM 활용 경험</dd>
+        <dt>상세 요강</dt><dd>${j.summary ? j.summary : '공식 채용 공고 원문 참조'}</dd>
       </dl>
       <div><div class="eyebrow" style="margin-bottom:8px">전형 절차</div><div class="steps">${j.steps.map((s,k)=>`<span class="step ${s==='NCS'?'ncs':''}"><b>${k+1}</b>${s}</span>`).join('')}</div></div>
       <div><div class="eyebrow" style="margin-bottom:8px">복리후생</div><div class="pills">${j.welfare.map(w=>`<span class="pill">${w}</span>`).join('')}</div></div>
@@ -1029,11 +1081,14 @@ function closeDrawer(){
 }
 
 /* ---------- 라우팅 & 이벤트 ---------- */
+const OTHER_SRC = ['연합뉴스', '뉴시스', '뉴스1', '매일경제', '한국경제', '아시아경제', '머니투데이', '파이낸셜뉴스'];
 const VIEWS = ['home','news','contest','jobs','jbnu'];
 function go(v){
+  if (v === 'contests') v = 'contest';
+  if (v === 'recruit') v = 'jobs';
   if (!VIEWS.includes(v)) v = 'home';
   VIEWS.forEach(x=>$('#v-'+x).hidden = x!==v);
-  document.querySelectorAll('#ca nav [data-go]').forEach(b=>{
+  document.querySelectorAll('#ca nav [data-go], #ca .bottom-bar [data-go]').forEach(b=>{
     if (b.dataset.go===v) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current');
   });
   if (location.hash.slice(1)!==v) history.replaceState(null,'','#'+v);
@@ -1042,6 +1097,7 @@ function go(v){
   }
   window.scrollTo({top:0});
 }
+window.addEventListener('hashchange', () => go(location.hash.slice(1) || 'home'));
 let tt;
 function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('on'),2400); }
 
@@ -1245,13 +1301,13 @@ const contestRow = c => `<button class="row" data-open="c:${c.id}">${ddBox(c.end
 const jobRow = j => `<button class="row" data-open="j:${j.id}"><div class="logo" style="background:${j.color}">${j.co[0]}</div><div class="row-main">
   <div class="row-meta"><span>${j.co}</span><span class="lv">${j.lvl}${j.exp&&j.exp!==j.lvl?' '+j.exp:''}</span></div>
   <div class="row-title">${j.role}</div><div class="row-sub">${j.loc}, 전형 ${j.steps.length}단계</div></div>${ddPill(j.end)}</button>`;
-const albaRow = a => `<div class="row"><div class="row-main">
+const albaRow = a => `<div class="row click" data-open="a:${a.id}" role="button" tabindex="0"><div class="row-main">
   <div class="row-meta alba-meta">${ddPill(a.end)}<span class="cat" style="--cat:var(--ok)">${a.tag}</span><span class="where">${a.where}</span></div>
   <div class="row-title">${a.title}</div>
   <div class="row-sub alba-pay"><span class="income-inline"><b class="num">₩${fmt(monthly(a))}</b> ${a.type==='day'?'총 예상':'월 예상'}</span><span>${a.type==='day'?`일급 ${fmt(a.wage)}원, ${a.days}일`:`시급 ${fmt(a.wage)}원, 주 ${a.hours}시간`}</span></div></div>
   ${saveIcon(a.id)}</div>`;
 /* SW 사업단 행: 포스터 배너 → 분류 줄(오른쪽에 마감 배지) → 제목 → 활동 기간 줄(오른쪽에 북마크) */
-const swRow = s => `<div class="sw">${thumb(s.image,'banner')}
+const swRow = s => `<div class="sw click" data-open="s:${s.id}" role="button" tabindex="0">${thumb(s.image,'banner')}
   <div class="sw-line"><div class="row-meta"><span class="cat" style="--cat:var(--c-smart)">${s.kind}</span><span>모집 ${s.seats}</span></div>${ddPill(s.end)}</div>
   <div class="row-title">${s.title}</div>
   <div class="sw-line"><div class="row-sub">활동 ${s.when}</div>${saveIcon(s.id)}</div></div>`;
@@ -1267,7 +1323,7 @@ const VIEWS = {
     const items = [
       ...CONTESTS.map(c=>({k:'공모전',c:'var(--accent)',t:c.title,end:c.end,open:'c:'+c.id})),
       ...JOBS.map(j=>({k:'채용',c:'var(--c-road)',t:`${j.co} ${j.role}`,end:j.end,open:'j:'+j.id})),
-      ...SW.map(s=>({k:'SW '+s.kind,c:'var(--c-smart)',t:s.title,end:s.end,go:'jbnu'})),
+      ...SW.map(s=>({k:'SW '+s.kind,c:'var(--c-smart)',t:s.title,end:s.end,open:'s:'+s.id})),
     ].filter(x=>x.end>=0 && x.end<60).sort((a,b)=>a.end-b.end).slice(0,5);
     const savedRows = [
       ...CONTESTS.filter(c=>saved.has(c.id)).map(contestRow), ...JOBS.filter(j=>saved.has(j.id)).map(jobRow),
@@ -1353,7 +1409,6 @@ let lastFocus = null;
 function openSheet(key){
   const [type,id] = key.split(':');
   let kind = '', body = '', foot = '';
-  const dummy = '<button class="btn primary" data-dummy>LABEL</button>';
   if (type==='n'){
     const n = NEWS[+id];
     kind = catName(n.cat);
@@ -1377,10 +1432,37 @@ function openSheet(key){
         ${c.award?`<div><dt>훈격</dt><dd>${c.award}</dd></div>`:''}
         <div><dt>참가 대상</dt><dd>${c.targetText || c.target.join(', ')}</dd></div>
         <div><dt>접수 기간</dt><dd class="num">${md(day(c.start))} ~ ${md(day(c.end))}</dd></div>
-        ${c.campus?`<div><dt>세부 요강</dt><dd>공지 원문에서 확인하세요</dd></div>`:`<div><dt>시상</dt><dd>대상 1팀, 최우수 2팀, 우수 3팀, 장려 5팀</dd></div>
-        <div><dt>제출물</dt><dd>기획서(PDF, 10쪽 이내), 발표 영상 3분</dd></div>`}
+        <div><dt>상세 요강</dt><dd>${c.campus ? '공지 원문에서 세부 제출 서류를 확인하세요' : '공식 공고 및 접수처 원문 참조'}</dd></div>
       </dl>`;
     foot = `<button class="btn ghost" data-save="${c.id}" aria-pressed="${saved.has(c.id)}">${saved.has(c.id)?'저장됨':'저장'}</button><a href="${c.link || '#'}" target="_blank" rel="noopener noreferrer" class="btn" style="text-decoration:none;display:grid;place-items:center">${c.campus?'공지 원문 보기 ↗':'공식 접수처 바로가기 ↗'}</a>`;
+  } else if (type==='a'){
+    const a = ALBA.find(x=>x.id===id);
+    kind = '전북대 알바';
+    body = `<div style="display:flex;gap:14px;align-items:center">${ddPill(a.end)}<h2 id="sh-title">${a.title}</h2></div>
+      <div class="income" style="margin:8px 0 14px"><b>₩${fmt(monthly(a))}</b><small style="font-size:var(--t-small);color:var(--muted);margin-left:6px">${a.type==='day'?'총 예상 수입':'월 예상 수입'}</small></div>
+      <dl class="spec">
+        <div><dt>근무처</dt><dd>${a.where}</dd></div>
+        <div><dt>구분</dt><dd>${a.tag}</dd></div>
+        <div><dt>급여</dt><dd class="num">${a.type==='day' ? `일급 ${fmt(a.wage)}원 (${a.days}일)` : `시급 ${fmt(a.wage)}원 (주 ${a.hours}시간)`}</dd></div>
+        <div><dt>근무 시간</dt><dd>${a.time || '상세 공고 참조'}</dd></div>
+        <div><dt>모집 인원</dt><dd>${a.person || '0명'}</dd></div>
+        <div><dt>마감</dt><dd><span class="num">${a.deadline_date ? a.deadline_date : `~${md(day(a.end))}`}</span> ${ddPill(a.end)}</dd></div>
+        <div><dt>주휴수당</dt><dd>${a.type==='hour'&&a.hours>=15?'포함 (주 15시간 이상)':'미포함'}</dd></div>
+      </dl>`;
+    foot = `<button class="btn ghost" data-save="${a.id}" aria-pressed="${saved.has(a.id)}">${saved.has(a.id)?'저장됨':'저장'}</button><a href="${a.link || '#'}" target="_blank" rel="noopener noreferrer" class="btn" style="text-decoration:none;display:grid;place-items:center">전북대 알바 공고 바로가기 ↗</a>`;
+  } else if (type==='s'){
+    const s = SW.find(x=>x.id===id);
+    kind = 'SW 중심대학사업단';
+    body = `<div style="display:flex;gap:14px;align-items:center">${ddPill(s.end)}<h2 id="sh-title">${s.title}</h2></div>
+      ${s.image ? `<div class="sheet-img wide"><img src="${s.image}" alt="${s.title} 포스터" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.remove()"></div>` : ''}
+      <dl class="spec">
+        <div><dt>주관</dt><dd>전북대 SW중심대학사업단</dd></div>
+        <div><dt>프로그램</dt><dd>${s.kind}</dd></div>
+        <div><dt>모집 정원</dt><dd>${s.seats}</dd></div>
+        <div><dt>활동 일정</dt><dd>${s.when}</dd></div>
+        <div><dt>신청 마감</dt><dd><span class="num">~${md(day(s.end))}</span> ${ddPill(s.end)}</dd></div>
+      </dl>`;
+    foot = `<button class="btn ghost" data-save="${s.id}" aria-pressed="${saved.has(s.id)}">${saved.has(s.id)?'저장됨':'저장'}</button><a href="${s.link || '#'}" target="_blank" rel="noopener noreferrer" class="btn" style="text-decoration:none;display:grid;place-items:center">SW사업단 신청 바로가기 ↗</a>`;
   } else {
     const j = JOBS.find(x=>x.id===id);
     kind = GRP[j.grp] + ' 채용';
@@ -1389,7 +1471,7 @@ function openSheet(key){
         <div><dt>지원 자격</dt><dd>${j.lvl}${j.exp&&j.exp!==j.lvl?' ('+j.exp+')':''}, 토목 관련 전공</dd></div>
         <div><dt>근무지</dt><dd>${j.loc}</dd></div>
         <div><dt>마감</dt><dd><span class="num">${md(day(j.end))} 18:00</span> ${ddPill(j.end)}</dd></div>
-        <div><dt>우대</dt><dd>토목기사, 건설안전기사, BIM 활용 경험</dd></div>
+        <div><dt>상세 요강</dt><dd>${j.summary ? j.summary : '공식 채용 공고 원문 참조'}</dd></div>
       </dl>
       <div><div class="sub-h">전형 절차</div><ol class="steps">${j.steps.map(s=>`<li class="${s==='NCS'?'ncs':''}">${s}</li>`).join('')}</ol></div>
       <div><div class="sub-h">복리후생</div><div class="pills">${j.welfare.map(w=>`<span class="pill">${w}</span>`).join('')}</div></div>`;
@@ -1434,6 +1516,7 @@ function runSearch(){
     ['공모전', CONTESTS.filter(c=>has(c.title)||has(c.org)).map(contestRow)],
     ['채용', JOBS.filter(j=>has(j.co)||has(j.role)).map(jobRow)],
     ['전북대 알바', ALBA.filter(a=>has(a.title)||has(a.where)).map(albaRow)],
+    ['SW 중심대학사업단', SW.filter(s=>has(s.title)||has(s.kind)).map(swRow)],
   ].filter(g=>g[1].length);
   el.innerHTML = groups.length
     ? groups.map(([t,rows])=>`<section class="sec"><div class="sec-h"><h2>${t}<small>${rows.length}</small></h2></div>${list(rows.join(''))}</section>`).join('')
@@ -1447,10 +1530,14 @@ function toast(msg){ const t = $('#m-toast'); t.textContent = msg; t.classList.a
 
 document.addEventListener('click', e=>{
   if (!e.target.closest('#m')) return;
-  const t = e.target.closest('button'); if (!t) return;
-  const d = t.dataset;
-  if (d.save) return toggleSave(d.save);
-  if ('dummy' in d) return toast('예시 데이터라서 실제 페이지로 연결되지 않아요.');
+  const sv = e.target.closest('[data-save]');
+  if (sv){
+    e.stopPropagation();
+    return toggleSave(sv.dataset.save);
+  }
+  const btn = e.target.closest('button, [data-open], [data-go]');
+  if (!btn) return;
+  const d = btn.dataset;
   if (d.open) return openSheet(d.open);
   if (d.go){ closeSearch(); return go(d.go); }
   if (d.q) return openSearch(d.q);
@@ -1465,8 +1552,14 @@ $('#m-sh-close').onclick = closeSheet;
 $('#m-open-search').onclick = () => openSearch();
 $('#m-close-search').onclick = closeSearch;
 document.addEventListener('keydown', e=>{
-  if (e.key !== 'Escape' || document.getElementById('m').hidden) return;
-  if ($('#m-sheet').classList.contains('on')) closeSheet(); else if (!$('#m-search').hidden) closeSearch();
+  if (document.getElementById('m').hidden) return;
+  if (e.key === 'Escape'){
+    if ($('#m-sheet').classList.contains('on')) closeSheet(); else if (!$('#m-search').hidden) closeSearch();
+    return;
+  }
+  if ((e.key==='Enter'||e.key===' ') && e.target.matches('#m [data-open]')){
+    e.preventDefault(); e.target.click();
+  }
 });
 function onScroll(){ $('#m-bar').classList.toggle('scrolled', scrollY > 44); }
 addEventListener('scroll', onScroll, {passive:true});

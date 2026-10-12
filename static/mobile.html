@@ -3,8 +3,28 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
-<script src="./static/cnh_data_bundle.js?v=20261008_0045"></script>
-<script src="./static/data_adapter.js?v=20261008_0045"></script>
+<script>
+// 구버전 PWA 서비스워커 및 캐시 스토리지 즉각 무효화 & 퍼지
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    regs.forEach(reg => {
+      if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+        reg.unregister();
+      }
+    });
+  });
+}
+if ('caches' in window) {
+  caches.keys().then(keys => {
+    keys.forEach(k => {
+      if (k.includes('civil-news-hub') && !k.includes('v1.1.60')) caches.delete(k);
+    });
+  });
+}
+try { localStorage.removeItem('cnh-live-cache-v1'); } catch(e){}
+</script>
+<script src="./static/cnh_data_bundle.js?v=20261008_2330"></script>
+<script src="./static/data_adapter.js?v=20261008_2330"></script>
 <style>
 /* Layout: one phone-width column (max 440px, centered on bigger screens) — large page title, list rows instead of cards, details in a bottom sheet, 5-tab bar fixed at the bottom */
 :root{
@@ -276,14 +296,14 @@ const contestRow = c => `<button class="row" data-open="c:${c.id}">${ddBox(c.end
 const jobRow = j => `<button class="row" data-open="j:${j.id}"><div class="logo" style="background:${j.color}">${j.co[0]}</div><div class="row-main">
   <div class="row-meta"><span>${j.co}</span><span class="lv">${j.lvl}${j.exp?' '+j.exp:''}</span></div>
   <div class="row-title">${j.role}</div><div class="row-sub">${j.loc}, 전형 ${j.steps.length}단계</div></div>${ddPill(j.end)}</button>`;
-const albaRow = a => `<div class="row"><div class="row-main">
+const albaRow = a => `<button class="row" data-open="a:${a.id}"><div class="row-main">
   <div class="row-meta"><span class="cat" style="--cat:var(--ok)">${a.tag}</span><span>${a.where}</span>${ddPill(a.end)}</div>
   <div class="row-title">${a.title}</div>
   <div class="row-sub">${a.type==='day'?`일급 <b class="num">${fmt(a.wage)}</b>원, ${a.days}일`:`시급 <b class="num">${fmt(a.wage)}</b>원, 주 ${a.hours}시간`}</div></div>
-  <div class="income"><b>₩${fmt(monthly(a))}</b><span>${a.type==='day'?'총 예상':'월 예상'}</span></div></div>`;
-const swRow = s => `<div class="row"><div class="row-main">
+  <div class="income"><b>₩${fmt(monthly(a))}</b><span>${a.type==='day'?'총 예상':'월 예상'}</span></div></button>`;
+const swRow = s => `<button class="row" data-open="s:${s.id}"><div class="row-main">
   <div class="row-meta"><span class="cat" style="--cat:var(--c-smart)">${s.kind}</span><span>모집 ${s.seats}</span></div>
-  <div class="row-title">${s.title}</div><div class="row-sub">${s.when}</div></div>${ddPill(s.end)}</div>`;
+  <div class="row-title">${s.title}</div><div class="row-sub">${s.when}</div></div>${ddPill(s.end)}</button>`;
 const list = rows => `<div class="list">${rows}</div>`;
 const head = (t, p) => `<div class="page-head"><h1>${t}</h1>${p?`<p>${p}</p>`:''}</div>`;
 
@@ -296,9 +316,15 @@ const VIEWS = {
     const items = [
       ...CONTESTS.map(c=>({k:'공모전',c:'var(--accent)',t:c.title,end:c.end,open:'c:'+c.id})),
       ...JOBS.map(j=>({k:'채용',c:'var(--c-road)',t:`${j.co} ${j.role}`,end:j.end,open:'j:'+j.id})),
-      ...SW.map(s=>({k:'SW '+s.kind,c:'var(--c-smart)',t:s.title,end:s.end,go:'jbnu'})),
+      ...SW.map(s=>({k:'SW '+s.kind,c:'var(--c-smart)',t:s.title,end:s.end,open:'s:'+s.id})),
     ].filter(x=>x.end>=0 && x.end<60).sort((a,b)=>a.end-b.end).slice(0,5);
-    const savedRows = [...CONTESTS.filter(c=>saved.has(c.id)).map(contestRow), ...JOBS.filter(j=>saved.has(j.id)).map(jobRow)].join('');
+    const savedRows = [
+      ...CONTESTS.filter(c=>saved.has(c.id)).map(contestRow),
+      ...JOBS.filter(j=>saved.has(j.id)).map(jobRow),
+      ...ALBA.filter(a=>saved.has(a.id)).map(albaRow),
+      ...SW.filter(s=>saved.has(s.id)).map(swRow),
+      ...NEWS.map((n,i)=>[n,i]).filter(([n])=>saved.has(n.id)).map(([n,i])=>newsRow(n,i))
+    ].join('');
     return head('오늘', `${today.getMonth()+1}월 ${today.getDate()}일 ${DAY[today.getDay()]}요일, 다가오는 주요 일정 ${items.length}개`) + `
       <section class="sec"><div class="sec-h"><h2>마감 임박</h2></div>
         <div class="strip">${items.map(x=>`<button class="tile ${x.end<=3?'hot':x.end<=7?'soon':''}" style="--kind:${x.c}" ${x.open?`data-open="${x.open}"`:`data-go="${x.go}"`}>
@@ -378,7 +404,6 @@ let lastFocus = null;
 function openSheet(key){
   const [type,id] = key.split(':');
   let kind = '', body = '', foot = '';
-  const dummy = '<button class="btn primary" data-dummy>LABEL</button>';
   if (type==='n'){
     const n = NEWS[+id];
     kind = catName(n.cat);
@@ -400,10 +425,37 @@ function openSheet(key){
         <div><dt>훈격</dt><dd>${c.award}</dd></div>
         <div><dt>참가 대상</dt><dd>${c.target.join(', ')}</dd></div>
         <div><dt>접수 기간</dt><dd class="num">${md(day(c.start))} ~ ${md(day(c.end))}</dd></div>
-        <div><dt>시상</dt><dd>대상 1팀, 최우수 2팀, 우수 3팀, 장려 5팀</dd></div>
-        <div><dt>제출물</dt><dd>기획서(PDF, 10쪽 이내), 발표 영상 3분</dd></div>
+        <div><dt>상세 요강</dt><dd>${c.campus ? '공지 원문에서 세부 제출 서류를 확인하세요' : '공식 공고 및 접수처 원문 참조'}</dd></div>
       </dl>`;
-    foot = `<button class="btn ghost" data-save="${c.id}" aria-pressed="${saved.has(c.id)}">${saved.has(c.id)?'저장됨':'저장'}</button><a href="${c.link || '#'}" target="_blank" rel="noopener noreferrer" class="btn" style="text-decoration:none;display:grid;place-items:center">공식 접수처 바로가기 ↗</a>`;
+    foot = `<button class="btn ghost" data-save="${c.id}" aria-pressed="${saved.has(c.id)}">${saved.has(c.id)?'저장됨':'저장'}</button><a href="${c.link || '#'}" target="_blank" rel="noopener noreferrer" class="btn" style="text-decoration:none;display:grid;place-items:center">${c.campus?'공지 원문 보기 ↗':'공식 접수처 바로가기 ↗'}</a>`;
+  } else if (type==='a'){
+    const a = ALBA.find(x=>x.id===id);
+    kind = '전북대 알바';
+    body = `<div style="display:flex;gap:14px;align-items:center">${ddPill(a.end)}<h2 id="sh-title">${a.title}</h2></div>
+      <div class="income" style="margin:8px 0 14px"><b>₩${fmt(monthly(a))}</b><small style="font-size:var(--t-small);color:var(--muted);margin-left:6px">${a.type==='day'?'총 예상 수입':'월 예상 수입'}</small></div>
+      <dl class="spec">
+        <div><dt>근무처</dt><dd>${a.where}</dd></div>
+        <div><dt>구분</dt><dd>${a.tag}</dd></div>
+        <div><dt>급여</dt><dd class="num">${a.type==='day' ? `일급 ${fmt(a.wage)}원 (${a.days}일)` : `시급 ${fmt(a.wage)}원 (주 ${a.hours}시간)`}</dd></div>
+        <div><dt>근무 시간</dt><dd>${a.time || '상세 공고 참조'}</dd></div>
+        <div><dt>모집 인원</dt><dd>${a.person || '0명'}</dd></div>
+        <div><dt>마감</dt><dd><span class="num">${a.deadline_date ? a.deadline_date : `~${md(day(a.end))}`}</span> ${ddPill(a.end)}</dd></div>
+        <div><dt>주휴수당</dt><dd>${a.type==='hour'&&a.hours>=15?'포함 (주 15시간 이상)':'미포함'}</dd></div>
+      </dl>`;
+    foot = `<button class="btn ghost" data-save="${a.id}" aria-pressed="${saved.has(a.id)}">${saved.has(a.id)?'저장됨':'저장'}</button><a href="${a.link || '#'}" target="_blank" rel="noopener noreferrer" class="btn" style="text-decoration:none;display:grid;place-items:center">전북대 알바 공고 바로가기 ↗</a>`;
+  } else if (type==='s'){
+    const s = SW.find(x=>x.id===id);
+    kind = 'SW 중심대학사업단';
+    body = `<div style="display:flex;gap:14px;align-items:center">${ddPill(s.end)}<h2 id="sh-title">${s.title}</h2></div>
+      ${s.image ? `<div class="sheet-img wide" style="margin-bottom:12px;border-radius:12px;overflow:hidden;border:1px solid var(--line)"><img src="${s.image}" alt="${s.title} 포스터" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.remove()" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover"></div>` : ''}
+      <dl class="spec">
+        <div><dt>주관</dt><dd>전북대 SW중심대학사업단</dd></div>
+        <div><dt>프로그램</dt><dd>${s.kind}</dd></div>
+        <div><dt>모집 정원</dt><dd>${s.seats}</dd></div>
+        <div><dt>활동 일정</dt><dd>${s.when}</dd></div>
+        <div><dt>신청 마감</dt><dd><span class="num">~${md(day(s.end))}</span> ${ddPill(s.end)}</dd></div>
+      </dl>`;
+    foot = `<button class="btn ghost" data-save="${s.id}" aria-pressed="${saved.has(s.id)}">${saved.has(s.id)?'저장됨':'저장'}</button><a href="${s.link || '#'}" target="_blank" rel="noopener noreferrer" class="btn" style="text-decoration:none;display:grid;place-items:center">SW사업단 신청 바로가기 ↗</a>`;
   } else {
     const j = JOBS.find(x=>x.id===id);
     kind = GRP[j.grp] + ' 채용';
@@ -412,7 +464,7 @@ function openSheet(key){
         <div><dt>지원 자격</dt><dd>${j.lvl}${j.exp?' ('+j.exp+')':''}, 토목 관련 전공</dd></div>
         <div><dt>근무지</dt><dd>${j.loc}</dd></div>
         <div><dt>마감</dt><dd><span class="num">${md(day(j.end))} 18:00</span> ${ddPill(j.end)}</dd></div>
-        <div><dt>우대</dt><dd>토목기사, 건설안전기사, BIM 활용 경험</dd></div>
+        <div><dt>상세 요강</dt><dd>${j.summary ? j.summary : '공식 채용 공고 원문 참조'}</dd></div>
       </dl>
       <div><div class="sub-h">전형 절차</div><ol class="steps">${j.steps.map(s=>`<li class="${s==='NCS'?'ncs':''}">${s}</li>`).join('')}</ol></div>
       <div><div class="sub-h">복리후생</div><div class="pills">${j.welfare.map(w=>`<span class="pill">${w}</span>`).join('')}</div></div>`;
@@ -457,6 +509,7 @@ function runSearch(){
     ['공모전', CONTESTS.filter(c=>has(c.title)||has(c.org)).map(contestRow)],
     ['채용', JOBS.filter(j=>has(j.co)||has(j.role)).map(jobRow)],
     ['전북대 알바', ALBA.filter(a=>has(a.title)||has(a.where)).map(albaRow)],
+    ['SW 중심대학사업단', SW.filter(s=>has(s.title)||has(s.kind)).map(swRow)],
   ].filter(g=>g[1].length);
   el.innerHTML = groups.length
     ? groups.map(([t,rows])=>`<section class="sec"><div class="sec-h"><h2>${t}<small>${rows.length}</small></h2></div>${list(rows.join(''))}</section>`).join('')
@@ -469,10 +522,14 @@ let tt;
 function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(()=>t.classList.remove('on'), 2400); }
 
 document.addEventListener('click', e=>{
-  const t = e.target.closest('button'); if (!t) return;
-  const d = t.dataset;
-  if (d.save) return toggleSave(d.save);
-  if ('dummy' in d) return toast('예시 데이터라서 실제 페이지로 연결되지 않아요.');
+  const sv = e.target.closest('[data-save]');
+  if (sv){
+    e.stopPropagation();
+    return toggleSave(sv.dataset.save);
+  }
+  const btn = e.target.closest('button, [data-open], [data-go]');
+  if (!btn) return;
+  const d = btn.dataset;
   if (d.open) return openSheet(d.open);
   if (d.go){ closeSearch(); return go(d.go); }
   if (d.q) return openSearch(d.q);
@@ -487,8 +544,13 @@ $('#sh-close').onclick = closeSheet;
 $('#open-search').onclick = () => openSearch();
 $('#close-search').onclick = closeSearch;
 document.addEventListener('keydown', e=>{
-  if (e.key !== 'Escape') return;
-  if ($('#sheet').classList.contains('on')) closeSheet(); else if (!$('#search').hidden) closeSearch();
+  if (e.key === 'Escape'){
+    if ($('#sheet').classList.contains('on')) closeSheet(); else if (!$('#search').hidden) closeSearch();
+    return;
+  }
+  if ((e.key==='Enter'||e.key===' ') && e.target.matches('[data-open]')){
+    e.preventDefault(); e.target.click();
+  }
 });
 function onScroll(){ $('#bar').classList.toggle('scrolled', scrollY > 44); }
 addEventListener('scroll', onScroll, {passive:true});
