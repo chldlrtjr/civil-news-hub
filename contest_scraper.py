@@ -25,15 +25,11 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 CONTESTS_JSON_PATH = os.path.join(DATA_DIR, "contests.json")
 
-# 카테고리 기본 정의
+# 카테고리 기본 정의 (전북대 & 일반 2분류 원칙)
 CONTEST_CATEGORIES = [
     "ALL",
-    "스마트·기술",
-    "도로·디자인",
-    "수자원·환경",
-    "지반·안전",
-    "철도·인프라",
-    "토목·일반"
+    "전북대",
+    "일반"
 ]
 
 def calculate_contest_dday(deadline_date_str: str, deadline_time_str: str = "18:00") -> dict:
@@ -129,6 +125,18 @@ def scrape_civil_contests():
     # 2. 실시간 유효 공모전 다중 방어 검증 (Rule 1-①, 1-⑤, 1-⑦: 무결성 검증 게이트)
     active_contests = []
     for c in raw_contests:
+        # [카테고리 2분류 정규화: 전북대 vs 일반]
+        link = str(c.get("link", ""))
+        source = str(c.get("source", ""))
+        organizer = str(c.get("organizer", ""))
+        title = str(c.get("title", ""))
+        if source == "campus" or "jbnu.ac.kr" in link or "전북대" in organizer or "전북대" in title or "JBNU" in title:
+            c["category"] = "전북대"
+            c["badge_color"] = "teal"
+        else:
+            c["category"] = "일반"
+            c["badge_color"] = "blue"
+
         # [방어막 1] contest_validator 단일 객체 철저 검증
         is_valid, reason = contest_validator.validate_contest(c)
         if not is_valid:
@@ -167,7 +175,7 @@ def scrape_civil_contests():
     # 3. 카테고리 동적 감지 및 검증 (Rule 1-⑥)
     categories = list(CONTEST_CATEGORIES)
     for c in active_contests:
-        cat = c.get("category", "토목·일반")
+        cat = c.get("category", "일반")
         if cat and cat not in categories:
             categories.append(cat)
 

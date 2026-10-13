@@ -452,10 +452,12 @@ def open_in_browser(url):
         os.path.join(user_profile, r"AppData\Local\Programs\orca\resources\bin\orca.exe"),
     ]
 
+    create_no_window = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
+
     for cli in orca_cli_candidates:
         if cli and os.path.isfile(cli):
             try:
-                res = subprocess.run([cli, "tab", "create", "--url", url], capture_output=True, text=True, timeout=5)
+                res = subprocess.run([cli, "tab", "create", "--url", url], capture_output=True, text=True, timeout=5, creationflags=create_no_window)
                 if res.returncode == 0:
                     print(f"🐬 [오르카 브라우저] 실행 중인 오르카 창에 새 탭을 열었습니다: {url}")
                     return
@@ -473,7 +475,7 @@ def open_in_browser(url):
     for candidate in orca_gui_candidates:
         if candidate and os.path.isfile(candidate):
             try:
-                subprocess.Popen([candidate, url])
+                subprocess.Popen([candidate, url], creationflags=create_no_window)
                 print(f"🐬 [오르카 브라우저]를 실행하여 사이트를 엽니다: {candidate}")
                 return
             except Exception as e:

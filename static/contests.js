@@ -307,15 +307,11 @@ function getFilteredContests() {
   return list;
 }
 
-// 4. 분야(카테고리) 탭 동적 렌더링 및 동기화
+// 4. 분야(카테고리) 탭 동적 렌더링 및 동기화 (전북대 & 일반 2분류 원칙)
 let CONTEST_CATEGORIES = [
   'ALL',
-  '스마트·기술',
-  '도로·디자인',
-  '수자원·환경',
-  '지반·안전',
-  '철도·인프라',
-  '전북대'
+  '전북대',
+  '일반'
 ];
 
 // 신규 공모전 카테고리 동적 감지 및 등록 (전체 건수와 카테고리별 합산 불일치 방지)
@@ -335,7 +331,7 @@ function syncContestCategories(apiCategories = []) {
   allContests.forEach(c => {
     let cat = (c.category || '').trim();
     if (!cat) {
-      cat = '스마트·기술';
+      cat = '일반';
       c.category = cat;
     }
     if (cat !== 'ALL' && !existingCats.has(cat)) {
@@ -511,31 +507,11 @@ function renderContestCard(contest) {
   const isBookmarked = contestBookmarks.has(contest.id);
   const ddayInfo = parseDdayFromPeriod(contest.period, contest.status);
 
-  // 카테고리 뱃지 색상
-  let catBadgeClass = 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800';
-  if (contest.category === '스마트·기술') {
-    catBadgeClass = 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800';
-  } else if (contest.category === '도로·디자인') {
-    catBadgeClass = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
-  } else if (contest.category === '수자원·환경') {
-    catBadgeClass = 'bg-cyan-100 text-cyan-800 dark:bg-cyan-950/60 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800';
-  } else if (contest.category === '지반·안전') {
-    catBadgeClass = 'bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border-rose-200 dark:border-rose-800';
-  } else if (contest.category === '철도·인프라') {
-    catBadgeClass = 'bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800';
-  } else if (contest.category === '전북대' || contest.badge_color === 'teal') {
+  // 카테고리 뱃지 색상 (전북대: 틸, 일반: 블루)
+  let catBadgeClass = 'bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800';
+  if (contest.category === '전북대' || contest.badge_color === 'teal') {
     catBadgeClass = 'bg-teal-100 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border-teal-200 dark:border-teal-800';
-  } else if (contest.category === '토목·일반') {
-    catBadgeClass = 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700';
-  } else if (contest.badge_color === 'indigo') {
-    catBadgeClass = 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800';
-  } else if (contest.badge_color === 'emerald') {
-    catBadgeClass = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
-  } else if (contest.badge_color === 'cyan') {
-    catBadgeClass = 'bg-cyan-100 text-cyan-800 dark:bg-cyan-950/60 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800';
-  } else if (contest.badge_color === 'rose') {
-    catBadgeClass = 'bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border-rose-200 dark:border-rose-800';
-  } else if (contest.badge_color === 'blue') {
+  } else if (contest.category === '일반') {
     catBadgeClass = 'bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800';
   }
 

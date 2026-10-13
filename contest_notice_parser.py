@@ -36,8 +36,8 @@ def inspect_ex_contest():
                 "id": "fc-ex-design26",
                 "title": "제15회 도로경관디자인 대전",
                 "organizer": "한국도로공사 (후원 국토교통부)",
-                "category": "도로·디자인",
-                "badge_color": "emerald",
+                "category": "일반",
+                "badge_color": "blue",
                 "prize": "총 상금 2,240만원 · 국토교통부 장관상 (대상 500만원)",
                 "prize_details": [
                     {"rank": "대상", "award": "국토교통부 장관상", "prize": "1점 (500만원)"},
@@ -80,8 +80,8 @@ def inspect_water_contest():
             "id": "fc-water-startup2026",
             "title": "2026 대한민국 물산업 혁신 창업대전",
             "organizer": "환경부 · 한국수자원공사 (K-water)",
-            "category": "수자원·환경",
-            "badge_color": "cyan",
+            "category": "일반",
+            "badge_color": "blue",
             "prize": "기후에너지환경부 장관상 · 총 상금 2,000만원",
             "prize_details": [
                 {"rank": "대상", "award": "기후에너지환경부 장관상", "prize": "1팀 (상금 1,000만원)"},
@@ -121,8 +121,8 @@ def inspect_sk_contest():
             "id": "fc-sk-contech2026",
             "title": "SK에코플랜트 2026 콘테크 미트업 데이 공모전",
             "organizer": "SK에코플랜트 · 연구개발특구진흥재단",
-            "category": "스마트·기술",
-            "badge_color": "indigo",
+            "category": "일반",
+            "badge_color": "blue",
             "prize": "공동 R&D 자금 지원 및 사업화·투자유치 협력 기회 (총 1억원 규모)",
             "prize_details": [
                 {"rank": "선정 기업", "award": "SK에코플랜트 파트너십", "prize": "기술개발(R&D) 및 실증 PoC 자금 차등 지원 (팀당 최대 3,000만원)"},
@@ -160,8 +160,8 @@ def inspect_safe_contest():
             "id": "fc-safe-fall2026",
             "title": "2026 건설 추락사고 예방 콘텐츠 공모전",
             "organizer": "국토교통부 · 고용노동부 · 한국산업안전보건공단",
-            "category": "지반·안전",
-            "badge_color": "rose",
+            "category": "일반",
+            "badge_color": "blue",
             "prize": "총 상금 3,200만원 · 대상 4점(각 500만원) 장관상",
             "prize_details": [
                 {"rank": "대상", "award": "국토교통부 장관상 및 고용노동부 장관상", "prize": "부문별 4점 (각 500만원)"},
@@ -200,7 +200,7 @@ def inspect_rail_contest():
             "id": "fc-rail-idle2026",
             "title": "국가철도공단 철도 유휴부지 활용사업 공모",
             "organizer": "국가철도공단",
-            "category": "철도·인프라",
+            "category": "일반",
             "badge_color": "blue",
             "prize": "최장 20년간 국유재산 부지 무상/저리 사용 및 독점 개발권",
             "prize_details": [

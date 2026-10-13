@@ -37,7 +37,7 @@ VERIFIED_JBNU_FACTS = {
         "source_name": "교무처 공지",
         "title": "2026 JBNU 학생설계전공 공모전",
         "organizer": "전북대 교무처 교무과",
-        "category": "토목·일반",
+        "category": "전북대",
         "badge_color": "teal",
         "prize": "총 상금 520만원 · 총장상",
         "prize_details": [
@@ -72,7 +72,7 @@ VERIFIED_JBNU_FACTS = {
         "source_name": "취업진로지원과 공지",
         "title": "2026학년도 2학기 전공·진로 로드맵 공모전",
         "organizer": "전북대 취업진로지원과",
-        "category": "토목·일반",
+        "category": "전북대",
         "badge_color": "teal",
         "prize": "총 상금 230만원 (최우수상 30만원 등 15명)",
         "prize_details": [
@@ -107,7 +107,7 @@ VERIFIED_JBNU_FACTS = {
         "source_name": "창업교육센터 공지",
         "title": "2026년 청년 벤처클럽 아이디어 경진대회",
         "organizer": "전북대 창업교육센터",
-        "category": "토목·일반",
+        "category": "전북대",
         "badge_color": "teal",
         "prize": "창업교육센터장상 & 창업동아리 연계 지원",
         "prize_details": [
@@ -140,7 +140,7 @@ VERIFIED_JBNU_FACTS = {
         "source_name": "교육혁신본부 공지",
         "title": "2026학년도 AI 활용 나만의 학습법 공모전",
         "organizer": "전북대 교육혁신본부",
-        "category": "스마트·기술",
+        "category": "전북대",
         "badge_color": "teal",
         "prize": "총 상금 270만원 · 교육혁신본부장상",
         "prize_details": [
@@ -175,7 +175,7 @@ VERIFIED_JBNU_FACTS = {
         "source_name": "학생지원과 공지",
         "title": "제2회 성남시 창의도시계획 공모전 ('성남 물빛정원' 글로벌 랜드마크 개발)",
         "organizer": "성남시 공공개발정책과",
-        "category": "도로·디자인",
+        "category": "전북대",
         "badge_color": "teal",
         "prize": "총 상금 400만원 · 성남시장상 (대상 200만원)",
         "prize_details": [
@@ -209,7 +209,7 @@ VERIFIED_JBNU_FACTS = {
         "source_name": "학생지원과 공지",
         "title": "2026 제주국제건축문화제 건축문화대상 건축사진 공모전",
         "organizer": "제주특별자치도",
-        "category": "도로·디자인",
+        "category": "전북대",
         "badge_color": "teal",
         "prize": "제주특별자치도지사 표창 및 부상",
         "prize_details": [
@@ -242,7 +242,7 @@ VERIFIED_JBNU_FACTS = {
         "source_name": "교내공지",
         "title": "2026년 데이터안심구역 활용 공동경진대회",
         "organizer": "전북특별자치도 · 국민연금공단",
-        "category": "스마트·기술",
+        "category": "전북대",
         "badge_color": "teal",
         "prize": "총 20점 시상 및 국민연금공단 채용 우대",
         "prize_details": [
@@ -276,7 +276,7 @@ VERIFIED_JBNU_FACTS = {
         "source_name": "총무과 공지",
         "title": "2026 제2회 화성시 공공디자인 공모전 (공사장 가설울타리 디자인)",
         "organizer": "화성시 공공디자인과",
-        "category": "도로·디자인",
+        "category": "전북대",
         "badge_color": "teal",
         "prize": "총 상금 1,600만원 · 화성시장상 (대상 500만원)",
         "prize_details": [
@@ -311,7 +311,7 @@ VERIFIED_JBNU_FACTS = {
         "source_name": "교내공지",
         "title": "AI 활용 부정행위 예방을 위한 대국민 콘텐츠 공모전",
         "organizer": "한국산업인력공단",
-        "category": "스마트·기술",
+        "category": "전북대",
         "badge_color": "teal",
         "prize": "총 상금 650만원 · 한국산업인력공단 이사장상",
         "prize_details": [
