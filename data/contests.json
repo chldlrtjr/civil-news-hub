@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-10-13 17:00:46",
-  "last_updated_display": "10월 13일 17:00",
-  "total_count": 9,
-  "featured_count": 9,
+  "last_updated": "2026-10-13 18:01:14",
+  "last_updated_display": "10월 13일 18:01",
+  "total_count": 8,
+  "featured_count": 8,
   "categories": [
     "ALL",
     "스마트·기술",
@@ -74,8 +74,8 @@
       "is_active": true,
       "image": "",
       "dday_info": {
-        "text": "D-2",
-        "days": 2,
+        "text": "D-1",
+        "days": 1,
         "is_urgent": true,
         "is_closed": false
       }
@@ -141,8 +141,8 @@
       "is_active": true,
       "image": "",
       "dday_info": {
-        "text": "D-3",
-        "days": 3,
+        "text": "D-2",
+        "days": 2,
         "is_urgent": true,
         "is_closed": false
       }
@@ -270,8 +270,8 @@
       "is_active": true,
       "image": "",
       "dday_info": {
-        "text": "D-9",
-        "days": 9,
+        "text": "D-8",
+        "days": 8,
         "is_urgent": false,
         "is_closed": false
       }
@@ -340,8 +340,8 @@
       "link": "https://www.ex-contest.co.kr/design26",
       "is_active": true,
       "dday_info": {
-        "text": "D-16",
-        "days": 16,
+        "text": "D-15",
+        "days": 15,
         "is_urgent": false,
         "is_closed": false
       },
@@ -408,72 +408,11 @@
       "is_active": true,
       "image": "https://www.jbnu.ac.kr/common/file.do?file=aDnf2Nbsc5JCVXjNcuja6hp6EOxg4LFfVvZE2KPyqg/B6wkWztYndrgNSVSNzFTT",
       "dday_info": {
-        "text": "D-24",
-        "days": 24,
+        "text": "D-23",
+        "days": 23,
         "is_urgent": false,
         "is_closed": false
       }
-    },
-    {
-      "id": "fc-safe-fall2026",
-      "title": "2026 건설 추락사고 예방 콘텐츠 공모전",
-      "organizer": "국토교통부 · 고용노동부 · 한국산업안전보건공단",
-      "category": "지반·안전",
-      "badge_color": "rose",
-      "prize": "총 상금 3,200만원 · 대상 4점(각 500만원) 장관상",
-      "prize_details": [
-        {
-          "rank": "대상",
-          "award": "국토교통부 장관상 및 고용노동부 장관상",
-          "prize": "부문별 4점 (각 500만원)"
-        },
-        {
-          "rank": "최우수상",
-          "award": "한국산업안전보건공단 이사장상",
-          "prize": "부문별 4점 (각 200만원)"
-        },
-        {
-          "rank": "우수상",
-          "award": "건설 관련 유관기관장상",
-          "prize": "부문별 4점 (각 100만원)"
-        }
-      ],
-      "benefits": [
-        "수상작은 전국 국토교통부 인허가 대형 건설현장 표준 안전교육 교재로 채택",
-        "국토교통부 건설안전신기술 지정 신청 시 기술성 평가 우대 가점",
-        "안전보건공단 공식 유튜브 및 전국 건설현장 전광판 송출 캠페인 진행"
-      ],
-      "target": "전 국민 누구나 (학생, 건설현장 근로자, 일반)",
-      "target_details": "대한민국 국민 누구나 (학생, 건설현장 기술자 및 근로자, 안전관리자, 일반 시민 / 개인 또는 팀)",
-      "status": "접수예정",
-      "status_color": "blue",
-      "period": "2026.09.14 ~ 10.13 (18:00 마감)",
-      "deadline_date": "2026-10-13",
-      "deadline_time": "18:00",
-      "fields": [
-        "스마트 추락방지 에어백/센서 시스템",
-        "가설구조물(비계, 동바리) 안전공법",
-        "현장 근로자 체감형 숏폼 영상",
-        "외국인 근로자 소통형 안전 카드뉴스"
-      ],
-      "submission_info": "[아이디어] 제안서 A4 5매 이내 / [영상] 60초 이내 MP4(FHD, 세로형 권장) / [카드뉴스] 10장 이내 이미지 파일",
-      "evaluation_steps": [
-        "1차 적격성 서류검토",
-        "2차 전문가 본선심사",
-        "대국민 표절검증 및 온라인 투표",
-        "최종 시상식"
-      ],
-      "contact": "건설 추락사고 예방 공모전 운영사무국 (02-334-9044 / safe@contestweb.net)",
-      "description": "건설현장 추락재해 예방을 위한 숏폼 영상, 정책제안 및 스마트 안전 신기술·현장개선 우수사례 대국민 공모전",
-      "link": "https://safecontest.kr/summary",
-      "is_active": true,
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      },
-      "image": "https://safecontest.kr/storage/og-images/01M1KVAB4J22RA3G331V0XBB8H.png"
     },
     {
       "id": "campus-217447",
@@ -531,8 +470,8 @@
       "is_active": true,
       "image": "https://www.jbnu.ac.kr/common/file.do?file=4cALo6DfxWUFYlylMujIYMjaKF2GJWIBKn6sJyYGF2UlCjZ8sV+4j56lZgKcZFvm",
       "dday_info": {
-        "text": "D-24",
-        "days": 24,
+        "text": "D-23",
+        "days": 23,
         "is_urgent": false,
         "is_closed": false
       }
@@ -585,8 +524,8 @@
       "link": "https://www.kr.or.kr/boardCnts/view.do?boardID=52&boardSeq=1122113",
       "is_active": true,
       "dday_info": {
-        "text": "D-79",
-        "days": 79,
+        "text": "D-78",
+        "days": 78,
         "is_urgent": false,
         "is_closed": false
       },
