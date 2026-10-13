@@ -107,9 +107,12 @@ window.CivilData = (() => {
           ? c.dday_info.days
           : (c.days_left ?? calcDaysLeft(c.deadline_date || c.period));
 
+        const category = c.category || (campus ? '전북대' : '일반');
+
         return {
           id: c.id || ('c' + (idx + 1)),
           title: c.title,
+          category: category,
           org: c.organizer || (campus ? '전북대' : '공공기관'),
           award: campus ? (((c.prize || '').match(/[가-힣]+상(?![가-힣])/) || [''])[0]) : award,
           prize: prizeNum,

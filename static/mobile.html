@@ -23,8 +23,8 @@ if ('caches' in window) {
 }
 try { localStorage.removeItem('cnh-live-cache-v1'); } catch(e){}
 </script>
-<script src="./static/cnh_data_bundle.js?v=20261013_1627"></script>
-<script src="./static/data_adapter.js?v=20261013_1627"></script>
+<script src="./static/cnh_data_bundle.js?v=20261013_1955"></script>
+<script src="./static/data_adapter.js?v=20261013_1955"></script>
 <style>
 /* Layout: one phone-width column (max 440px, centered on bigger screens) — large page title, list rows instead of cards, details in a bottom sheet, 5-tab bar fixed at the bottom */
 :root{
@@ -290,9 +290,13 @@ const ddPill = off => `<span class="pd ${urg(off)}">${off===0?'D-Day':(off>=60?'
 const newsRow = (n,i) => `<button class="row" data-open="n:${i}"><div class="row-main">
   <div class="row-meta"><span class="cat" style="--cat:var(--c-${n.cat})">${catName(n.cat)}</span><span>${n.src}</span><span>${n.ago}</span><span>관련 ${n.n}건</span></div>
   <div class="row-title">${n.title}</div><div class="row-sub lede">${n.lede}</div></div></button>`;
-const contestRow = c => `<button class="row" data-open="c:${c.id}">${ddBox(c.end)}<div class="row-main">
-  <div class="row-meta"><span class="cat" style="--cat:var(--accent)">${c.award}</span><span>${c.target.join(', ')}</span>${c.added<=2?'<span class="tagn">새 공고</span>':''}</div>
-  <div class="row-title">${c.title}</div><div class="row-sub">총 상금 <b class="num">${fmt(c.prize)}만원</b></div></div></button>`;
+const contestRow = c => {
+  const isJbnu = c.category === '전북대' || c.campus;
+  const catName = c.category || (isJbnu ? '전북대' : '일반');
+  return `<button class="row" data-open="c:${c.id}">${ddBox(c.end)}<div class="row-main">
+  <div class="row-meta"><span class="cat" style="--cat:${isJbnu ? 'var(--c-water)' : 'var(--c-road)'}">${catName}</span>${c.award?`<span>${c.award}</span>`:''}${c.added<=2?'<span class="tagn">새 공고</span>':''}</div>
+  <div class="row-title">${c.title}</div><div class="row-sub">${c.prize ? `총 상금 <b class="num">${fmt(c.prize)}만원</b>` : `${c.srcName || '공모전'}`} · ${c.org}</div></div></button>`;
+};
 const jobRow = j => `<button class="row" data-open="j:${j.id}"><div class="logo" style="background:${j.color}">${j.co[0]}</div><div class="row-main">
   <div class="row-meta"><span>${j.co}</span><span class="lv">${j.lvl}${j.exp?' '+j.exp:''}</span></div>
   <div class="row-title">${j.role}</div><div class="row-sub">${j.loc}, 전형 ${j.steps.length}단계</div></div>${ddPill(j.end)}</button>`;
@@ -343,14 +347,18 @@ const VIEWS = {
       ${list(rows.map(([n,i])=>newsRow(n,i)).join(''))}`;
   },
   contest(){
-    let rows = CONTESTS.filter(c=>c.end>=0 && (target==='전체'||c.target.includes(target)));
+    const cats = ['전체', '전북대', '일반'];
+    let rows = CONTESTS.filter(c=>c.end>=0 && (target==='전체'||c.category===target||(target==='전북대'&&c.campus)));
     rows.sort(sortBy==='prize'?(a,b)=>b.prize-a.prize : sortBy==='new'?(a,b)=>a.added-b.added : (a,b)=>a.end-b.end);
     return head('공모전', `지금 접수 중인 공모전 ${rows.length}개`) + `
       <div class="filters">
-        <div class="chips">${['전체','대학생','스타트업','일반','청소년'].map(t=>`<button class="chip" data-tg="${t}" aria-pressed="${t===target}">${t}</button>`).join('')}</div>
+        <div class="chips">${cats.map(t=>{
+          const cnt = t==='전체'?CONTESTS.filter(c=>c.end>=0).length:CONTESTS.filter(c=>c.end>=0&&(c.category===t||(t==='전북대'&&c.campus))).length;
+          return `<button class="chip" data-tg="${t}" aria-pressed="${t===target}">${t} ${cnt}</button>`;
+        }).join('')}</div>
         <div class="seg">${[['dday','마감 임박순'],['prize','상금 높은순'],['new','최신순']].map(([k,v])=>`<button data-sort="${k}" aria-pressed="${k===sortBy}">${v}</button>`).join('')}</div>
       </div>
-      ${rows.length ? list(rows.map(contestRow).join('')) : '<p class="empty">이 대상으로 열린 공모전이 아직 없어요. 다른 대상을 골라 보세요.</p>'}`;
+      ${rows.length ? list(rows.map(contestRow).join('')) : '<p class="empty">이 카테고리의 공모전이 아직 없어요.</p>'}`;
   },
   jobs(){
     const rows = JOBS.filter(j=>j.grp===jobGrp&&(lvl==='전체'||j.lvl===lvl)).sort((a,b)=>a.end-b.end);

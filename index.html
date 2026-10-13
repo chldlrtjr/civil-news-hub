@@ -24,8 +24,8 @@ if ('caches' in window) {
 // 구버전 더미 데이터가 포함되었던 localStorage 캐시 즉각 삭제
 try { localStorage.removeItem('cnh-live-cache-v1'); } catch(e){}
 </script>
-<script src="./static/cnh_data_bundle.js?v=20261013_1627"></script>
-<script src="./static/data_adapter.js?v=20261013_1627"></script>
+<script src="./static/cnh_data_bundle.js?v=20261013_1955"></script>
+<script src="./static/data_adapter.js?v=20261013_1955"></script>
 <style>
 /* Layout: plain solid ground, sticky header + tab nav, dashboard = main column + deadline rail; phones get a bottom tab bar and bottom-sheet drawer */
 :root{
@@ -195,6 +195,7 @@ h1,h2,h3{text-wrap:balance;margin:0}
 #ca .dr-img{border-radius:var(--r);overflow:hidden;background:var(--surface-2);border:1px solid var(--line)}
 #ca .dr-img img{display:block;width:100%;height:auto}
 #ca .pill.campus{background:color-mix(in srgb,var(--c-water) 15%,transparent);color:var(--c-water);font-weight:700}
+#ca .pill.general{background:color-mix(in srgb,var(--c-road) 15%,transparent);color:var(--c-road);font-weight:600}
 #ca .pill.new{background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok);font-weight:600}
 #ca .pill.exp{background:color-mix(in srgb,var(--c-road) 15%,transparent);color:var(--c-road);font-weight:600}
 #ca .meta{font-size:var(--t-small);color:var(--muted);display:flex;justify-content:space-between;gap:8px;margin-top:auto;padding-top:8px;border-top:1px solid var(--line)}
@@ -863,13 +864,15 @@ function newsCard(n, i){
   </article>`;
 }
 function contestCard(c){
+  const isJbnu = c.category === '전북대' || c.campus;
+  const catName = c.category || (isJbnu ? '전북대' : '일반');
   return `<article class="card click title-first" data-open="contest:${c.id}" tabindex="0">
     ${c.image?`<div class="card-img"><img src="${c.image}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add('ph');this.remove()"></div>`
       : CONTESTS.some(x=>x.image) ? '<div class="card-img ph" aria-hidden="true"></div>' : ''}
     <div class="card-top">${ddayBadge(c.end)}${bmBtn(c.id)}</div>
     <h3>${c.title}</h3>
     <div class="prize-line">${c.prize?`총 상금 <b>${fmt(c.prize)}만원</b>`:`${c.srcName}에서 모집`}</div>
-    <div class="pills">${c.award?`<span class="pill award">${c.award}</span>`:''}${c.campus?'<span class="pill campus">전북대</span>':c.target.map(t=>`<span class="pill">${t}</span>`).join('')}${c.added<=2?'<span class="pill new">NEW</span>':''}</div>
+    <div class="pills">${c.award?`<span class="pill award">${c.award}</span>`:''}<span class="pill ${isJbnu?'campus':'general'}">${catName}</span>${c.added<=2?'<span class="pill new">NEW</span>':''}</div>
     <div class="meta"><span>${c.org}</span><span class="mono">~${md(day(c.end))}</span></div>
   </article>`;
 }
@@ -949,13 +952,16 @@ function fitNewsLines(){
 
 let target = '전체', sortBy = 'dday';
 function renderContests(){
-  const targets = ['전체','대학생','스타트업','일반','청소년'];
-  $('#target-chips').innerHTML = targets.map(t=>`<button class="chip" data-target="${t}" aria-pressed="${t===target}">${t}</button>`).join('');
+  const cats = ['전체', '전북대', '일반'];
+  $('#target-chips').innerHTML = cats.map(cat => {
+    const cnt = cat === '전체' ? CONTESTS.filter(c=>c.end>=0).length : CONTESTS.filter(c=>c.end>=0 && (c.category===cat || (cat==='전북대'&&c.campus))).length;
+    return `<button class="chip" data-target="${cat}" aria-pressed="${cat===target}">${cat} <span class="mono">${cnt}</span></button>`;
+  }).join('');
   const q = $('#q').value.trim();
-  let list = CONTESTS.filter(c=>c.end>=0 && (target==='전체'||c.target.includes(target)) && (!q||c.title.includes(q)));
+  let list = CONTESTS.filter(c => c.end >= 0 && (target === '전체' || c.category === target || (target === '전북대' && c.campus)) && (!q || c.title.includes(q)));
   list.sort(sortBy==='prize'?(a,b)=>b.prize-a.prize : sortBy==='new'?(a,b)=>a.added-b.added : (a,b)=>a.end-b.end);
   $('#contest-count').textContent = list.length;
-  $('#contest-list').innerHTML = list.map(contestCard).join('') || '<p class="notice">조건에 맞는 공모전이 없어요. 참가대상 필터를 바꿔 보세요.</p>';
+  $('#contest-list').innerHTML = list.map(contestCard).join('') || '<p class="notice">조건에 맞는 공모전이 없어요. 카테고리 필터를 바꿔 보세요.</p>';
 }
 
 let jobGrp = 'public', lvl = '전체';
