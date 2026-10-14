@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-10-14 17:01:04",
-  "last_updated_display": "10월 14일 17:01",
+  "last_updated": "2026-10-14 18:01:04",
+  "last_updated_display": "10월 14일 18:01",
   "total_count": 8,
   "featured_count": 8,
   "categories": [
@@ -70,8 +70,8 @@
       "is_active": true,
       "image": "",
       "dday_info": {
-        "text": "D-1",
-        "days": 1,
+        "text": "오늘마감",
+        "days": 0,
         "is_urgent": true,
         "is_closed": false
       }
@@ -137,8 +137,8 @@
       "is_active": true,
       "image": "",
       "dday_info": {
-        "text": "D-2",
-        "days": 2,
+        "text": "D-1",
+        "days": 1,
         "is_urgent": true,
         "is_closed": false
       }
@@ -266,8 +266,8 @@
       "is_active": true,
       "image": "",
       "dday_info": {
-        "text": "D-8",
-        "days": 8,
+        "text": "D-7",
+        "days": 7,
         "is_urgent": false,
         "is_closed": false
       }
@@ -336,8 +336,8 @@
       "link": "https://www.ex-contest.co.kr/design26",
       "is_active": true,
       "dday_info": {
-        "text": "D-15",
-        "days": 15,
+        "text": "D-14",
+        "days": 14,
         "is_urgent": false,
         "is_closed": false
       },
@@ -404,8 +404,8 @@
       "is_active": true,
       "image": "https://www.jbnu.ac.kr/common/file.do?file=aDnf2Nbsc5JCVXjNcuja6hp6EOxg4LFfVvZE2KPyqg/B6wkWztYndrgNSVSNzFTT",
       "dday_info": {
-        "text": "D-23",
-        "days": 23,
+        "text": "D-22",
+        "days": 22,
         "is_urgent": false,
         "is_closed": false
       }
@@ -466,8 +466,8 @@
       "is_active": true,
       "image": "https://www.jbnu.ac.kr/common/file.do?file=4cALo6DfxWUFYlylMujIYMjaKF2GJWIBKn6sJyYGF2UlCjZ8sV+4j56lZgKcZFvm",
       "dday_info": {
-        "text": "D-23",
-        "days": 23,
+        "text": "D-22",
+        "days": 22,
         "is_urgent": false,
         "is_closed": false
       }
@@ -520,8 +520,8 @@
       "link": "https://www.kr.or.kr/boardCnts/view.do?boardID=52&boardSeq=1122113",
       "is_active": true,
       "dday_info": {
-        "text": "D-78",
-        "days": 78,
+        "text": "D-77",
+        "days": 77,
         "is_urgent": false,
         "is_closed": false
       },
