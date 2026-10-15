@@ -1,81 +1,14 @@
 {
-  "last_updated": "2026-10-15 17:01:10",
-  "last_updated_display": "10월 15일 17:01",
-  "total_count": 8,
-  "featured_count": 8,
+  "last_updated": "2026-10-15 18:00:56",
+  "last_updated_display": "10월 15일 18:00",
+  "total_count": 7,
+  "featured_count": 7,
   "categories": [
     "ALL",
     "전북대",
     "일반"
   ],
   "contests": [
-    {
-      "id": "campus-217692",
-      "source": "campus",
-      "source_name": "교내공지",
-      "title": "AI 활용 부정행위 예방을 위한 대국민 콘텐츠 공모전",
-      "organizer": "한국산업인력공단",
-      "category": "전북대",
-      "badge_color": "teal",
-      "prize": "총 상금 650만원 · 한국산업인력공단 이사장상",
-      "prize_details": [
-        {
-          "rank": "대상",
-          "award": "한국산업인력공단 이사장상",
-          "prize": "1점 (상금 200만원)"
-        },
-        {
-          "rank": "최우수상",
-          "award": "한국산업인력공단 이사장상",
-          "prize": "2점 (각 100만원)"
-        },
-        {
-          "rank": "우수상",
-          "award": "한국산업인력공단 이사장상",
-          "prize": "3점 (각 50만원)"
-        },
-        {
-          "rank": "장려상",
-          "award": "한국산업인력공단 이사장상",
-          "prize": "5점 (각 20만원)"
-        }
-      ],
-      "benefits": [
-        "한국산업인력공단 이사장 공식 표창 수여",
-        "수상작 국가자격시험 현장 및 공식 SNS 대국민 부정행위 예방 캠페인 콘텐츠 송출"
-      ],
-      "target": "대한민국 국민 누구나",
-      "target_details": "대한민국 국민 누구나 참여 가능 (개인 또는 팀 / 숏폼 영상, 웹툰, 포스터 부문)",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.09.16 ~ 10.15 (18:00 마감)",
-      "deadline_date": "2026-10-15",
-      "deadline_time": "18:00",
-      "fields": [
-        "AI 부정행위 예방",
-        "자격시험 공정 문화",
-        "숏폼 영상",
-        "웹툰·포스터"
-      ],
-      "submission_info": "공모전 참가신청서 및 공모작품 파일 (이메일 dahye9110@hrdkorea.or.kr 제출)",
-      "evaluation_steps": [
-        "1차 서류 적격성 심사",
-        "2차 전문가 심사",
-        "대국민 온라인 투표",
-        "최종 시상"
-      ],
-      "contact": "한국산업인력공단 능력평가기획부 (052-714-8664)",
-      "description": "생성형 AI 등 디지털 기술 확산에 따른 국가기술자격시험 부정행위를 예방하고 공정한 시험 문화를 조성하기 위한 대국민 콘텐츠 공모전",
-      "link": "https://www.jbnu.ac.kr/web/Board/217692/detailView.do",
-      "is_active": true,
-      "image": "",
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
     {
       "id": "campus-218130",
       "source": "campus",
@@ -137,8 +70,8 @@
       "is_active": true,
       "image": "",
       "dday_info": {
-        "text": "D-1",
-        "days": 1,
+        "text": "오늘마감",
+        "days": 0,
         "is_urgent": true,
         "is_closed": false
       }
@@ -266,8 +199,8 @@
       "is_active": true,
       "image": "",
       "dday_info": {
-        "text": "D-7",
-        "days": 7,
+        "text": "D-6",
+        "days": 6,
         "is_urgent": false,
         "is_closed": false
       }
@@ -336,8 +269,8 @@
       "link": "https://www.ex-contest.co.kr/design26",
       "is_active": true,
       "dday_info": {
-        "text": "D-14",
-        "days": 14,
+        "text": "D-13",
+        "days": 13,
         "is_urgent": false,
         "is_closed": false
       },
@@ -404,8 +337,8 @@
       "is_active": true,
       "image": "https://www.jbnu.ac.kr/common/file.do?file=aDnf2Nbsc5JCVXjNcuja6hp6EOxg4LFfVvZE2KPyqg/B6wkWztYndrgNSVSNzFTT",
       "dday_info": {
-        "text": "D-22",
-        "days": 22,
+        "text": "D-21",
+        "days": 21,
         "is_urgent": false,
         "is_closed": false
       }
@@ -466,8 +399,8 @@
       "is_active": true,
       "image": "https://www.jbnu.ac.kr/common/file.do?file=4cALo6DfxWUFYlylMujIYMjaKF2GJWIBKn6sJyYGF2UlCjZ8sV+4j56lZgKcZFvm",
       "dday_info": {
-        "text": "D-22",
-        "days": 22,
+        "text": "D-21",
+        "days": 21,
         "is_urgent": false,
         "is_closed": false
       }
@@ -520,8 +453,8 @@
       "link": "https://www.kr.or.kr/boardCnts/view.do?boardID=52&boardSeq=1122113",
       "is_active": true,
       "dday_info": {
-        "text": "D-77",
-        "days": 77,
+        "text": "D-76",
+        "days": 76,
         "is_urgent": false,
         "is_closed": false
       },
