@@ -1,5 +1,24 @@
 {
-  "updated_at": "2026-10-16 15:01",
-  "total_count": 0,
-  "programs": []
+  "updated_at": "2026-10-16 16:01",
+  "total_count": 1,
+  "programs": [
+    {
+      "id": "VYBXcmR9VrOM",
+      "title": "2026 METAmobility 자율주행 자동차 경진대회",
+      "category": "SW가치확산",
+      "thumbnail": "https://swuniv.jbnu.ac.kr/r/VYBXcr9BpTIJ?t=1792134075",
+      "link": "https://swuniv.jbnu.ac.kr/main/jbnusw?gc=Program&do=view&page=1&program_id=VYBXcmR9VrOM",
+      "raw_status": "신청하기",
+      "status": "접수중",
+      "dday": "D-9",
+      "days_left": 9,
+      "deadline_date": "2026-10-25",
+      "activity_period": "26.11.05(목) ~ 26.11.06(금)",
+      "apply_period": "26.10.14(수) ~ 26.10.25(일)",
+      "location": "부안 모항해나루가족호텔",
+      "capacity": "무제한",
+      "point": "10",
+      "collected_at": "2026-10-16 16:01"
+    }
+  ]
 }
