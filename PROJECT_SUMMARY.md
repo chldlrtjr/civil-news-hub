@@ -2,7 +2,7 @@
 
 
 
-> **📌 현재 버전**: `ver 1.1.82` (리드 기사 관련기사 건수 숫자(span.n) 화이트 모드 색상 상속 통일 / 137회 누적 수정 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.1.87` (기사 본문 풀와이드 & 사진 우선 대표 선발 배포 / 142회 누적 수정 / 내부 관리 버전 / 웹 화면 비노출)  
 
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
@@ -3843,6 +3843,82 @@ mindmap
   - [`preview_option3_test.html`](file:///C:/Users/최익석/Desktop/goofy-borg/preview_option3_test.html) 및 [`preview_lead_options.html`](file:///C:/Users/최익석/Desktop/goofy-borg/preview_lead_options.html)에도 동일 동기화.
   - `test_contests_integrity.py` 100% PASS 검증 완료.
 
+### 107. 보도자료 군집 사진 우선 대표 기사 자동 승격 엔진 도입 (v1.1.83)
+- **요청 사항**:
+  - "우리가 기사들 가져올때 사진을 가져오는데 사진이 없는 기사들은 그 회사 이름을 가져오기로 했잖아 근데 겹치는 보도자료 기사들중에 조회수가 높은게 나오게 했는데 거기서 보이는 기사가 사진이 없는 기사면 조회순대로 내려가면서 사진이 있는 기사를 내보이는거 어때 아예 없는건 그냥 놔두고"
+- **개발 내용**:
+  - **2단계 스마트 병렬 이미지 추출 및 대표 기사 선발 엔진 구축** ([`scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/scraper.py)):
+    - **1단계 (대표 후보 병렬 스캔)**: 군집화된 모든 보도자료 클러스터의 '조회수 1위 기사'들의 메타태그(`og:image`)를 병렬 일괄 추출.
+    - **2단계 (사진 부재 군집 타겟 스캔)**: 1위 기사에 사진이 없는 다중 기사 군집에 한해, 후속 2~4순위 기사들의 사진을 병렬로 신속 추가 추출.
+    - **3단계 (사진 우선 대표 승격)**: 조회순으로 내려가며 **사진이 존재하는 첫 번째 기사를 메인 대표 기사(`primary_article`)로 즉시 승격**. 원래 1위 기사 및 타 언론사 기사는 '관련 기사(모두보기)' 목록으로 안전하게 이동.
+    - **4단계 (폴백 방어 유지)**: 군집 내 모든 기사에 사진이 아예 없는 경우, 원래 조회수 1위 기사 및 회사 이름(언론사명) 썸네일 표출 원칙 100% 유지.
+  - **성과 및 검증**:
+    - 대표 토픽 280건 중 **대표 사진 확보 건수가 기존 5건에서 260건(약 93%)으로 대폭 증가**.
+    - 총 8건의 보도자료 군집에서 사진이 있는 기사가 대표 기사로 자동 승격되어 피드의 시각적 퀄리티와 몰입도 극대화.
+    - [`build_data_bundle.py`](file:///C:/Users/최익석/Desktop/goofy-borg/build_data_bundle.py) 실행을 통해 정적 데이터 번들([`static/cnh_data_bundle.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/cnh_data_bundle.js)) 100% 동기화 완료.
+  - **Git 상태**: 사용자 명시 지시 없는 임의 커밋/푸시 원천 금지 규칙에 따라 로컬 워크스페이스 완료 상태 유지.
+
+### 108. 기사 카드 회사 이름(언론사) 1줄 고정 & 말줄임표 처리로 제목·본문 높이 칼정렬 (v1.1.84)
+- **요청 사항**:
+  - "회사 이름 때문에 기사 제목이랑 본문이 밑으로 내려가는 경우가 생기는데 어떻게 하면 좋을까" -> 사용자 1번 해결안 채택
+- **원인 분석**:
+  - 기사 상단 메타 영역(`.news-meta`, `.row-meta`)에 `flex-wrap: wrap`이 지정되어 있어, 언론사/회사명이 긴 경우(예: '머니투데이방송 MTN', '국토교통과학기술진흥원') 다음 줄로 줄바꿈되어 2줄을 차지함.
+  - 이로 인해 아래에 위치한 기사 헤드라인 제목(`<h3>`, `.row-title`)과 팩트 요약 본문(`p.lede`, `.row-sub`)의 시작 높이가 20~25px 밑으로 들쭉날쭉 밀려 내려가는 현상 발생.
+- **적용 내용**:
+  - **CSS 1줄 강제 & 말줄임표(`ellipsis`) 처리**:
+    - [`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html):
+      `#ca .news-meta`: `flex-wrap: nowrap; min-width: 0; overflow: hidden;`
+      `#ca .news-meta .src`: `white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; flex: none;`
+      `#ca .briefing .news.lead .cat-tag`: `white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: calc(100% - 50px);`
+      `#m .row-meta`: `flex-wrap: nowrap; min-width: 0; overflow: hidden;`
+      `#m .row-meta .src`: `white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; flex: none;`
+    - [`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html), [`static/mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/mobile.html):
+      `.row-meta`: `flex-wrap: nowrap; min-width: 0; overflow: hidden;`
+      `.row-meta .src`: `white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; flex: none;`
+  - **템플릿 마크업 동기화**:
+    - `newsCard`, `newsHero`, `newsRow`에서 언론사명 요소에 `class="src"` 및 마우스 오버 시 전체 이름을 확인할 수 있는 `title="${safeSrc}"` 속성 부여.
+  - **Git 상태**: 사용자 명시 지시 없는 임의 커밋/푸시 원천 금지 규칙 준수 (로컬 워크스페이스 대기).
+
+### 109. 카테고리 태그 줄바꿈 절대 방어(flex-shrink:0) & 회사명 자동 말줄임(...) 엔진 완성 (v1.1.85)
+- **요청 사항**:
+  - "이렇게 태그가 줄 바꿈 현상이 일어나면 뒤에 회사 이름을 뒤에 몇글자 지워서 ...으로 표시 시키면서 태그는 무조건 줄바뀜 현상이 절대 일어나지 않게 해줘"
+- **원인 분석**:
+  - `news-meta`가 `flex-wrap: nowrap`인 상태에서 `.cat` 요소에 `flex-shrink: 0`과 `white-space: nowrap`이 지정되지 않아, flexbox 공간 부족 시 카테고리 태그(`[도로·철도]`)가 너비 40px로 찌그러지고 세로 67px로 줄바꿈되는 이상 현상 발생.
+  - 반면 `.src`(회사 이름)에는 `flex: none`이 걸려 있어 회사가 줄어들지 않고 태그가 찌그러지는 부작용 유발.
+- **적용 내용**:
+  - **카테고리 태그 절대 고정 원칙 (`.cat`)**:
+    - `white-space: nowrap; flex: none; flex-shrink: 0;` 적용으로 어떤 카드 크기나 화면 해상도에서도 **카테고리 태그는 0.001%도 찌그러지거나 줄바꿈되지 않고 원래 가로 형태 100% 영구 보존**.
+    - 불릿 점(`::before`)도 `flex: none; flex-shrink: 0;`으로 원형 및 비율 보존.
+  - **회사 이름 자동 반응형 말줄임 (`.src`)**:
+    - `flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;` 적용.
+    - 카테고리 태그가 차지하고 남은 공간에 맞추어 회사 이름(예: '위클리한국주택경제신문' -> '위클리한국주...')이 자동으로 뒤에서부터 잘리며 `...`으로 자연스럽게 축소 표출.
+  - **Git 상태**: 사용자 명시 지시 없는 임의 커밋/푸시 원천 금지 규칙 준수 (로컬 워크스페이스 대기).
+
+### 110. 기사 본문 요약 가로 풀와이드(Full-width) 확장 레이아웃 개편 (v1.1.86)
+- **요청 사항**:
+  - `orca-paste-1792173302471-ee7e58be-ae43-4b8d-898a-cdbb0167409e.png` 첨부: "본문이 빨간색 동그라미까지 차면 좋겠어"
+- **원인 분석**:
+  - 기존 기사 카드가 좌측(`.news-body`)과 우측(`.news-aside`)의 2컬럼 레이아웃으로 분리되어 있어, 본문 요약(`p.lede`)이 좌측 컬럼의 좁은 가로폭 안에만 갇혀 있었음.
+  - 이로 인해 우측 썸네일(사진 또는 언론사명 박스) 바로 아래 공간(사용자가 표시한 빨간 동그라미 영역)이 완전히 하얗게 텅 빈 채 방치되고, 북마크 버튼만 맨 아래에 덜렁 놓이는 레이아웃 불균형 발생.
+- **적용 내용**:
+  - **3단 모던 카드 아키텍처 개편** ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html)):
+    - **1단 (상단 헤더 `.news-header`)**: 좌측에 카테고리/회사명 메타 및 2줄 헤드라인 제목(`.news-title-wrap`), 우측에 컴팩트 썸네일(`${thumbHtml}`, 110x74px)을 나란히 배치.
+    - **2단 (중간 본문 `p.lede`)**: `width: 100%`를 부여하여 **썸네일 아래(빨간 동그라미 친 곳)까지 카드의 좌우 전체 가로폭을 시원하게 꽉 채우도록 확장**. 2줄 요약 텍스트가 풍성하게 채워지며 우측 빈 공간이 완벽히 해소됨.
+    - **3단 (하단 푸터 `.news-footer`)**: 좌측에 [같은 보도자료 기사 n건 ▾], 우측에 [북마크 버튼]을 나란히 양 끝 정렬(`justify-content: space-between; margin-top: auto;`)하여 카드의 상하 대칭과 시각적 안정감 극대화.
+    - 리스트 뷰(`list`)에서도 1행 가로 정렬(`order: 1 / order: 2`)을 완벽하게 지원하도록 전용 반응형 스타일링 동기화.
+  - `test_contests_integrity.py` 100% PASS 검증 완료.
+  - **Git 상태**: v1.1.87로 main 브랜치 커밋 및 푸시 완료.
+
+### 111. 유사기사 군집화 사진 우선 대표 선발 & 최신 피드 정렬 동기화 (v1.1.87)
+- **수정 및 개선 내역**:
+  - **사진 보유 기사 우선 대표 승격 (`scraper.py`)**:
+    - 유사/중복 기사 군집화 시, 조회수 1위 기사에 사진(og:image)이 없는 경우 조회수 순으로 내려가며 실제 대표 사진이 있는 기사를 우선 대표(Lead) 기사로 승격.
+    - 군집 전체에 사진이 없는 경우에만 원래 조회수 1위 기사를 유지하고 언론사 썸네일을 표출하도록 하여 피드의 시각적 퀄리티 대폭 향상.
+  - **데이터 및 템플릿 실시간 동기화**:
+    - `data/news.json`, `static/cnh_data_bundle.js` 갱신.
+    - 캐시 방지 파라미터 갱신 및 전체 무결성 테스트(`test_contests_integrity.py`) 통과.
+  - **Git 상태**: 사용자의 명시적 푸시 지시에 따라 v1.1.87 버전으로 GitHub 원격 저장소에 반영 완료.
+
 ---
 
 ## 🌿 3. Git 브랜치 현황
@@ -3853,7 +3929,7 @@ mindmap
 
 | :--- | :--- | :--- |
 
-| **`main`** | **최신 공식 배포 브랜치 (v1.1.38)** | GitHub Pages 및 JCloud 우분투 서버를 통해 라이브 서비스 중인 메인 브랜치 (사용자 명시 지시 없는 임의 Git Push 원천 차단 규칙 적용) |
+| **`main`** | **최신 공식 배포 브랜치 (v1.1.87)** | GitHub Pages 및 JCloud 우분투 서버를 통해 라이브 서비스 중인 메인 브랜치 (사용자 명시 지시 없는 임의 Git Push 원천 차단 규칙 적용) |
 
 | **`feature/footer-last-updated`** | **작업 완료 (main 병합됨)** | 푸터 업데이트 이전 및 초기 헤더 클린업 작업 브랜치 |
 

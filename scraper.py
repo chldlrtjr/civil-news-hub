@@ -474,10 +474,10 @@ def scrape_civil_news():
         print(f"  - [{cat['name']}] 엄선된 기사 {cat_count}건 수집 완료")
 
     
-    # 유사/중복 기사 군집화 (대표 기사 하위에 타 언론사 보도자료 그룹핑)
+    # 유사/중복 기사 군집화 & 사진 우선 대표 선발 (조회순으로 내려가며 사진 있는 기사 우선 대표 승격)
     final_articles, duplicate_count = cluster_related_articles(all_articles)
 
-    # 기사 대표 사진(og:image) 병렬 추출 및 image 필드 보강
+    # 잔여 기사 대표 사진(og:image) 병렬 추출 점검 및 image 필드 보강
     final_articles = enrich_articles_with_images(final_articles)
     # 사진이 없는 기사는 큐레이션 예시 사진 대신 언론사(회사) 이름을 썸네일로 표출합니다.
 
@@ -572,11 +572,16 @@ def is_similar_article(title_a, tokens_a, title_b, tokens_b):
         
     return False
 
-def cluster_related_articles(articles):
+def cluster_related_articles(articles, max_workers=15):
     """동일/유사 보도자료를 발행한 타 언론사 기사들을 대표 기사 하위로 묶음.
-    - 같은 기사 군집(단락)에서 '조회수 기준 1등' 기사를 타이틀(메인 기사)로 선정
-    - 모두보기 시에는 타 언론사 기사들을 '최신순'으로 정렬
-    - 전체 피드는 최신순 유지
+    [원칙]:
+    1. 같은 기사 군집(단락)에서 기본적으로 '조회수 기준'으로 정렬.
+    2. 메인 대표 기사(Lead) 선정 시:
+       - 조회수 1위 기사에 사진(image)이 있다면 그대로 대표 기사로 선정.
+       - 조회수 1위 기사에 사진이 없다면, 조회순으로 내려가며 사진이 있는 기사를 우선 대표 기사로 승격.
+       - 군집 내 모든 기사에 사진이 아예 없는 경우는 원래 조회수 1위 기사를 유지 (언론사 썸네일 표출).
+    3. 모두보기(관련 기사) 목록은 최신순 정렬.
+    4. 전체 피드는 클러스터 내 가장 최신 기사 일시 기준 최신순 정렬 유지.
     """
     clusters = []
     for art in articles:
@@ -593,9 +598,31 @@ def cluster_related_articles(articles):
                 'tokens': tokens,
                 'items': [art]
             })
-            
+
+    # 각 클러스터 내 기사들을 조회수 내림차순으로 사전 정렬
+    for c in clusters:
+        c['items'].sort(key=lambda x: x.get('views', 0), reverse=True)
+
+    # 1단계: 모든 클러스터의 '조회수 1위 기사'들의 이미지 병렬 추출
+    phase1_candidates = [c['items'][0] for c in clusters]
+    print(f"\n🖼️ [News Image] 1단계: {len(phase1_candidates)}개 대표 후보 기사 대표 사진(og:image) 병렬 추출...")
+    extract_images_for_article_list(phase1_candidates, max_workers=max_workers)
+
+    # 2단계: 다중 기사 군집 중 1위 기사에 사진이 없는 군집 선별 -> 하위 기사(2위~최대 4위) 이미지 병렬 추출
+    phase2_candidates = []
+    for c in clusters:
+        if len(c['items']) > 1 and not c['items'][0].get('image'):
+            # 하위 기사들 중 상위 3개(2위, 3위, 4위)를 후보로 추가
+            phase2_candidates.extend(c['items'][1:4])
+
+    if phase2_candidates:
+        print(f"🖼️ [News Image] 2단계: 사진 부재 군집 {len(phase2_candidates)}개 후속 기사 사진 병렬 추출 (사진 우선 대표 승격)...")
+        extract_images_for_article_list(phase2_candidates, max_workers=max_workers)
+
     final_articles = []
     total_duplicates = 0
+    promoted_count = 0
+
     for c in clusters:
         items = c['items']
         if len(items) == 1:
@@ -603,14 +630,28 @@ def cluster_related_articles(articles):
             item['related_articles'] = []
             final_articles.append(item)
         else:
-            # 1. 같은 기사 군집(단락)에서 '조회수 기준 1등' 기사를 타이틀(메인 기사)로 선정
-            items_by_views = sorted(items, key=lambda x: x.get('views', 0), reverse=True)
-            primary_article = dict(items_by_views[0])
-            
-            # 2. 나머지 기사들은 '최신순'으로 정렬하여 모두보기 목록으로 구성
-            other_articles = items_by_views[1:]
-            other_articles_sorted_newest = sorted(other_articles, key=lambda x: x.get('iso_date', x.get('published_at', '')), reverse=True)
-            
+            # 대표 기사 선정: 조회순으로 내려가면서 사진이 있는 기사를 우선 선정
+            primary_idx = 0
+            found_photo = False
+            for idx, cand in enumerate(items):
+                if cand.get('image'):
+                    primary_idx = idx
+                    found_photo = True
+                    break
+
+            if found_photo and primary_idx > 0:
+                promoted_count += 1
+
+            primary_article = dict(items[primary_idx])
+
+            # 나머지 기사들은 '최신순'으로 정렬하여 모두보기 목록으로 구성
+            other_articles = [it for idx, it in enumerate(items) if idx != primary_idx]
+            other_articles_sorted_newest = sorted(
+                other_articles,
+                key=lambda x: x.get('iso_date', x.get('published_at', '')),
+                reverse=True
+            )
+
             primary_article['related_articles'] = [
                 {
                     'id': a['id'],
@@ -620,24 +661,27 @@ def cluster_related_articles(articles):
                     'relative_date': a.get('relative_date', '최근'),
                     'published_at': a.get('published_at', ''),
                     'iso_date': a.get('iso_date', ''),
-                    'views': a.get('views', 0)
+                    'views': a.get('views', 0),
+                    'image': a.get('image', '')
                 }
                 for a in other_articles_sorted_newest
             ]
             total_duplicates += len(other_articles)
-            
+
             # 클러스터 대표 일시는 가장 최신 기사의 일시를 보존하여 최신 피드에 올바르게 배치
             latest_iso = max(a.get('iso_date', '') for a in items)
             if latest_iso:
                 primary_article['latest_iso_date'] = latest_iso
-                
+
             final_articles.append(primary_article)
-            
+
     # 전체 피드는 최신순(newest)으로 정렬하여 가장 최근 기사들이 상단에 뜨도록 유지
     final_articles.sort(key=lambda x: x.get('latest_iso_date', x.get('iso_date', '')), reverse=True)
-    
-    print(f"📊 [유사기사 군집화 완료] 대표 토픽 {len(final_articles)}건 (중복 기사 {total_duplicates}건 하위 그룹핑)")
+
+    found_photos_cnt = sum(1 for a in final_articles if a.get('image'))
+    print(f"📊 [유사기사 군집화 & 사진 우선 대표 선발 완료] 대표 토픽 {len(final_articles)}건 (중복 {total_duplicates}건, 사진 우선 승격 {promoted_count}건, 대표 사진 확보 {found_photos_cnt}건)")
     return final_articles, total_duplicates
+
 
 def upgrade_to_high_res_image(url: str) -> str:
     """
@@ -735,6 +779,27 @@ def extract_news_og_image(link: str) -> str:
     except Exception:
         pass
     return ""
+
+def extract_images_for_article_list(articles, max_workers=15):
+    """기사 목록에 대해 병렬로 og:image를 추출하여 기사 객체에 image 필드 세팅"""
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    targets = [a for a in articles if not a.get("image")]
+    if not targets:
+        return
+    targets_by_id = {a["id"]: a for a in targets}
+
+    def fetch_img(a):
+        return a["id"], extract_news_og_image(a.get("link", ""))
+
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {executor.submit(fetch_img, a): a for a in targets}
+        for f in as_completed(futures):
+            try:
+                aid, img = f.result()
+                if aid in targets_by_id:
+                    targets_by_id[aid]["image"] = img
+            except Exception:
+                pass
 
 def enrich_articles_with_images(articles, max_workers=10):
     """

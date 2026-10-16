@@ -85,12 +85,14 @@ h1,h2,h3{margin:0;text-wrap:balance}
 .row+.row::before{content:"";position:absolute;top:0;left:16px;right:0;height:1px;background:var(--line)}
 button.row:active{background:var(--surface-2)}
 .row-main{flex:1;min-width:0}
-.row-meta{font-size:var(--t-small);color:var(--muted);display:flex;gap:4px 8px;flex-wrap:wrap;align-items:center}
+.row-meta{font-size:var(--t-small);color:var(--muted);display:flex;gap:4px 8px;flex-wrap:nowrap;align-items:center;min-width:0;overflow:hidden}
+.cat{color:var(--cat);font-weight:700;white-space:nowrap;flex:none;flex-shrink:0}
+.row-meta .src{display:inline-block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1 1 auto;max-width:110px}
+.row-meta span:last-child{flex:none;flex-shrink:0;white-space:nowrap}
 .row-title{font-size:var(--t-body);font-weight:600;line-height:1.45;margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .row-sub{font-size:var(--t-small);color:var(--muted);margin-top:4px}
 .row-sub.lede{display:-webkit-box;-webkit-line-clamp:var(--m-lede-lines,2);-webkit-box-orient:vertical;overflow:hidden;line-height:1.55}
 .row-sub b{color:var(--ink);font-weight:700}
-.cat{color:var(--cat);font-weight:700}
 .tagn{font-size:var(--t-small);font-weight:700;color:var(--ok);background:var(--ok-soft);padding:1px 7px;border-radius:5px}
 .lv{font-size:var(--t-small);font-weight:700;padding:1px 7px;border-radius:5px;background:var(--surface-2);color:var(--ink)}
 
@@ -310,8 +312,9 @@ const thumb = (src, cls, isCurated, co) => {
 };
 const newsRow = (n,i) => {
   const count = (n.clusters && n.clusters.length) ? n.clusters.length : (n.n || 0);
+  const safeSrc = (n.src || '언론사').replace(/"/g, '&quot;');
   return `<button class="row" data-open="n:${i}"><div class="row-main">
-  <div class="row-meta"><span class="cat" style="--cat:var(--c-${n.cat})">${catName(n.cat)}</span><span>${n.src}</span><span>관련 ${count}건</span></div>
+  <div class="row-meta"><span class="cat" style="--cat:var(--c-${n.cat})">${catName(n.cat)}</span><span class="src" title="${safeSrc}">${n.src}</span><span>관련 ${count}건</span></div>
   <div class="row-title">${n.title}</div><div class="row-sub lede">${n.lede}</div></div>${thumb(n.image, 't-news', n.isCurated, n.src)}</button>`;
 };
 const contestRow = c => {

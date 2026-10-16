@@ -120,7 +120,7 @@ h1,h2,h3{text-wrap:balance;margin:0}
 #ca .briefing .news.lead:hover .bg-img{transform:scale(1.03)}
 #ca .briefing .news.lead .bg-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,21,33,0.98) 0%,rgba(10,21,33,0.90) 36%,rgba(10,21,33,0.72) 65%,rgba(10,21,33,0.35) 85%,rgba(10,21,33,0.55) 100%);z-index:1}
 #ca .briefing .news.lead .content-top{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center}
-#ca .briefing .news.lead .cat-tag{background:rgba(255,255,255,0.22);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;color:#fff;border:1px solid rgba(255,255,255,0.2)}
+#ca .briefing .news.lead .cat-tag{background:rgba(255,255,255,0.22);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;color:#fff;border:1px solid rgba(255,255,255,0.2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100% - 50px)}
 #ca .briefing .news.lead .content-bottom{position:relative;z-index:2;display:flex;flex-direction:column;gap:8px}
 #ca .briefing .news.lead h3{font-size:24px;font-weight:800;line-height:1.34;letter-spacing:-0.02em;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,0.95),0 4px 12px rgba(0,0,0,0.75);-webkit-line-clamp:2;margin:0}
 @media (max-width:600px){#ca .briefing .news.lead h3{font-size:20px;line-height:1.36}}
@@ -131,26 +131,27 @@ h1,h2,h3{text-wrap:balance;margin:0}
 #ca .briefing .news.lead .cluster-btn .n{color:inherit}
 #ca .briefing .news.lead .bm{color:rgba(255,255,255,0.85)}
 
-/* news */
-#ca .news{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:row;align-items:stretch;gap:16px;min-width:0;box-shadow:var(--shadow);transition:transform .15s ease,box-shadow .15s ease;position:relative}
+#ca .news{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;justify-content:space-between;gap:12px;min-width:0;box-shadow:var(--shadow);transition:transform .15s ease,box-shadow .15s ease;position:relative}
 #ca .news:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(15,42,68,.08)}
+#ca .news-header{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;min-width:0}
+#ca .news-title-wrap{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+#ca .news-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;padding-top:2px}
+#ca .news-footer .bm{width:32px;height:32px;cursor:pointer;border-radius:6px;transition:color .15s ease,background-color .15s ease;display:flex;align-items:center;justify-content:center;background:none;border:0;color:var(--muted)}
+#ca .news-footer .bm:hover{color:var(--ink);background:var(--surface-2)}
 #ca .news-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
-#ca .news-body .cluster-wrap{margin-top:auto}
-#ca .news-aside{flex:none;display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;gap:8px}
-#ca .news-aside .bm{margin-top:auto;width:32px;height:32px;cursor:pointer;border-radius:6px;transition:color .15s ease,background-color .15s ease}
-#ca .news-aside .bm:hover{color:var(--ink);background:var(--surface-2)}
-#ca .news-thumb{flex:none;width:120px;height:80px;aspect-ratio:3/2;border-radius:8px;overflow:hidden;background:linear-gradient(135deg,var(--surface-2) 0%,color-mix(in srgb,var(--surface-2) 80%,var(--line)) 100%);border:1px solid var(--line);position:relative}
+#ca .news-aside{display:none}
+#ca .news-thumb{flex:none;width:110px;height:74px;aspect-ratio:3/2;border-radius:8px;overflow:hidden;background:linear-gradient(135deg,var(--surface-2) 0%,color-mix(in srgb,var(--surface-2) 80%,var(--line)) 100%);border:1px solid var(--line);position:relative}
 #ca .news-thumb img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 30%;image-rendering:-webkit-optimize-contrast;image-rendering:high-quality;backface-visibility:hidden;transform:translateZ(0);transition:transform .2s ease}
 #ca .news:hover .news-thumb img{transform:scale(1.05) translateZ(0)}
 #ca .news-thumb.news-thumb-co{display:flex;align-items:center;justify-content:center;padding:8px 10px;text-align:center;background:linear-gradient(135deg,var(--surface-2) 0%,color-mix(in srgb,var(--surface-2) 75%,var(--line)) 100%);box-shadow:inset 0 1px 2px rgba(15,42,68,.04);user-select:none}
 #ca .news-thumb.news-thumb-co .thumb-co-name{font-family:var(--f-body);font-size:13px;font-weight:700;color:var(--muted);letter-spacing:-.02em;line-height:1.35;word-break:keep-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;transition:color .15s ease}
 #ca .news:hover .news-thumb.news-thumb-co .thumb-co-name{color:var(--ink)}
-#ca .news-grid.list .news .news-thumb.news-thumb-co .thumb-co-name{font-size:11px}
-#ca .news-meta{display:flex;gap:10px;align-items:center;font-size:var(--t-small);color:var(--muted);flex-wrap:wrap}
-#ca .cat{display:inline-flex;align-items:center;gap:6px;font-weight:600;color:var(--cat)}
-#ca .cat::before{content:"";width:8px;height:8px;background:var(--cat);border-radius:2px}
+#ca .news-meta{display:flex;gap:10px;align-items:center;font-size:var(--t-small);color:var(--muted);flex-wrap:nowrap;min-width:0;overflow:hidden}
+#ca .cat{display:inline-flex;align-items:center;gap:6px;font-weight:600;color:var(--cat);white-space:nowrap;flex:none;flex-shrink:0}
+#ca .cat::before{content:"";width:8px;height:8px;background:var(--cat);border-radius:2px;flex:none;flex-shrink:0}
+#ca .news-meta .src{display:inline-block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1 1 auto;max-width:160px}
 #ca .news h3{font-size:var(--t-lead);line-height:1.45;font-weight:700;letter-spacing:-.01em;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-#ca .lede{margin:0;font-size:var(--t-small);color:var(--muted);line-height:1.6;display:-webkit-box;-webkit-line-clamp:var(--lede-lines,2);-webkit-box-orient:vertical;overflow:hidden}
+#ca .lede{margin:0;font-size:var(--t-small);color:var(--muted);line-height:1.6;width:100%;display:-webkit-box;-webkit-line-clamp:var(--lede-lines,2);-webkit-box-orient:vertical;overflow:hidden}
 #ca .cluster-btn{align-self:flex-start;background:none;border:1px dashed var(--line);border-radius:6px;padding:5px 10px;font-size:var(--t-small);color:var(--muted);display:flex;align-items:center;gap:6px}
 #ca .cluster-btn:hover{border-color:var(--ink);color:var(--ink)}
 #ca .cluster-btn .n{font-family:var(--f-body);font-weight:700;color:var(--ink)}
@@ -180,10 +181,11 @@ h1,h2,h3{text-wrap:balance;margin:0}
 #ca .news-grid.list{grid-template-columns:1fr;gap:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
 #ca .news-grid.list .news:first-child{border-radius:var(--r) var(--r) 0 0}
 #ca .news-grid.list .news:last-child{border-radius:0 0 var(--r) var(--r);border-bottom:0}
-#ca .news-grid.list .news{border:0;border-bottom:1px solid var(--line);border-radius:0;padding:12px 16px;gap:12px;align-items:center}
-#ca .news-grid.list .news .news-thumb{width:72px;height:48px;aspect-ratio:3/2;border-radius:6px}
-#ca .news-grid.list .news .news-aside{flex-direction:row;align-items:center;gap:10px}
-#ca .news-grid.list .news .news-aside .bm{margin-top:0}
+#ca .news-grid.list .news{flex-direction:row;align-items:center;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:12px 16px;gap:12px}
+#ca .news-grid.list .news .news-header{flex:1;min-width:0;align-items:center;gap:12px}
+#ca .news-grid.list .news .news-title-wrap{order:1}
+#ca .news-grid.list .news .news-thumb{width:72px;height:48px;aspect-ratio:3/2;border-radius:6px;order:2}
+#ca .news-grid.list .news .news-footer{flex:none;margin-top:0;padding-top:0;gap:8px}
 #ca .news-grid.list .news .lede{display:none}
 #ca .news-grid.list .news h3{font-size:var(--t-lead)}
 /* card view: cards in a row stretch to the same height, so the related-articles button sits on one line at the bottom */
@@ -454,12 +456,14 @@ h1,h2,h3{line-height:1.3;letter-spacing:-.01em}
 #m .row+.row::before{content:"";position:absolute;top:0;left:16px;right:0;height:1px;background:var(--line)}
 #m button.row:active{background:var(--surface-2)}
 #m .row-main{flex:1;min-width:0}
-#m .row-meta{font-size:var(--t-small);color:var(--muted);display:flex;gap:4px 8px;flex-wrap:wrap;align-items:center}
+#m .row-meta{font-size:var(--t-small);color:var(--muted);display:flex;gap:4px 8px;flex-wrap:nowrap;align-items:center;min-width:0;overflow:hidden}
+#m .cat{color:var(--cat);font-weight:700;white-space:nowrap;flex:none;flex-shrink:0}
+#m .row-meta .src{display:inline-block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1 1 auto;max-width:110px}
+#m .row-meta span:last-child{flex:none;flex-shrink:0;white-space:nowrap}
 #m .row-title{font-size:var(--t-body);font-weight:600;line-height:1.45;margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 #m .row-sub{font-size:var(--t-small);color:var(--muted);margin-top:4px}
 #m .row-sub.lede{display:-webkit-box;-webkit-line-clamp:var(--m-lede-lines,2);-webkit-box-orient:vertical;overflow:hidden;line-height:1.55}
 #m .row-sub b{color:var(--ink);font-weight:700}
-#m .cat{color:var(--cat);font-weight:700}
 #m .campus{font-size:var(--t-small);font-weight:700;color:var(--c-water);background:color-mix(in srgb,var(--c-water) 15%,transparent);padding:1px 7px;border-radius:5px}
 #m .src-line{display:flex;align-items:center;gap:5px}
 #m .src-line svg{width:14px;height:14px;flex:none}
@@ -898,17 +902,19 @@ function newsCard(n, i){
     ? `<div class="news-thumb"><img src="${n.image}" data-orig-src="${n.image}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="if(!this.dataset.p){this.dataset.p='1';this.src='https://wsrv.nl/?url='+encodeURIComponent(this.dataset.origSrc)+'&w=360&output=webp&q=85';}else{this.parentNode.className='news-thumb news-thumb-co';this.parentNode.innerHTML='<span class=\"thumb-co-name\">'+${JSON.stringify(n.src)}+'</span>';}"></div>`
     : `<div class="news-thumb news-thumb-co" title="${safeSrc}"><span class="thumb-co-name">${n.src}</span></div>`;
   return `<article class="news" data-item="${n.id}" style="--cat:var(--c-${n.cat})">
-    <div class="news-body">
-      <div class="news-meta"><span class="cat">${catName(n.cat)}</span><span>${n.src}</span></div>
-      <a href="${n.link || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:inherit"><h3 style="cursor:pointer" title="원문 기사 새 창 열기">${n.title}</h3></a>
-      <p class="lede">${n.lede}</p>
+    <div class="news-header">
+      <div class="news-title-wrap">
+        <div class="news-meta"><span class="cat">${catName(n.cat)}</span><span class="src" title="${safeSrc}">${n.src}</span></div>
+        <a href="${n.link || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:inherit"><h3 style="cursor:pointer" title="원문 기사 새 창 열기">${n.title}</h3></a>
+      </div>
+      ${thumbHtml}
+    </div>
+    <p class="lede">${n.lede}</p>
+    <div class="news-footer">
       <div class="cluster-wrap">
         <button class="cluster-btn" aria-expanded="false">같은 보도자료 기사 <span class="n">${count}</span>건 ${ICON.chev}</button>
         <ul class="cluster" aria-label="같은 보도자료로 기사를 쓴 언론사" hidden>${cluster}</ul>
       </div>
-    </div>
-    <div class="news-aside">
-      ${thumbHtml}
       ${bmBtn(n.id)}
     </div>
   </article>`;
@@ -1387,14 +1393,16 @@ const thumb = (src, cls, isCurated, co) => {
 };
 const newsHero = (n,i) => {
   const count = (n.clusters && n.clusters.length) ? n.clusters.length : (n.n || 0);
+  const safeSrc = (n.src || '언론사').replace(/"/g, '&quot;');
   return `<button class="hero" data-open="n:${i}">${thumb(n.image,'',n.isCurated,n.src)}
-  <div class="row-meta"><span class="cat" style="--cat:var(--c-${n.cat})">${catName(n.cat)}</span><span>${n.src}</span><span>관련 ${count}건</span></div>
+  <div class="row-meta"><span class="cat" style="--cat:var(--c-${n.cat})">${catName(n.cat)}</span><span class="src" title="${safeSrc}">${n.src}</span><span>관련 ${count}건</span></div>
   <div class="row-title">${rowTitle(n)}</div></button>`;
 };
 const newsRow = (n,i) => {
   const count = (n.clusters && n.clusters.length) ? n.clusters.length : (n.n || 0);
+  const safeSrc = (n.src || '언론사').replace(/"/g, '&quot;');
   return `<button class="row" data-open="n:${i}"><div class="row-main">
-  <div class="row-meta"><span class="cat" style="--cat:var(--c-${n.cat})">${catName(n.cat)}</span><span>${n.src}</span><span>관련 ${count}건</span></div>
+  <div class="row-meta"><span class="cat" style="--cat:var(--c-${n.cat})">${catName(n.cat)}</span><span class="src" title="${safeSrc}">${n.src}</span><span>관련 ${count}건</span></div>
   <div class="row-title">${rowTitle(n)}</div>${rowLede(n)?`<div class="row-sub lede">${rowLede(n)}</div>`:''}</div>${thumb(n.image,'t-news',n.isCurated,n.src)}</button>`;
 };
 const contestRow = c => `<button class="row" data-open="c:${c.id}">${ddBox(c.end)}<div class="row-main">
