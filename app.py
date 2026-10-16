@@ -172,12 +172,13 @@ def get_jbnu_albas():
 @app.route("/api/swuniv")
 @app.route("/data/swuniv_programs.json")
 def get_swuniv_programs():
-    if not os.path.exists(SWUNIV_JSON_PATH):
+    refresh_req = request.args.get("refresh") == "1"
+    if refresh_req or not os.path.exists(SWUNIV_JSON_PATH):
         try:
             import swuniv_scraper
             swuniv_scraper.save_swuniv_programs()
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"[-] swuniv scrape error: {e}")
     resp = send_file(SWUNIV_JSON_PATH, mimetype="application/json; charset=utf-8")
     resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     resp.headers["Pragma"] = "no-cache"
