@@ -1,81 +1,14 @@
 {
-  "last_updated": "2026-10-16 23:01:08",
-  "last_updated_display": "10월 16일 23:01",
-  "total_count": 6,
-  "featured_count": 6,
+  "last_updated": "2026-10-17 00:01:06",
+  "last_updated_display": "10월 17일 00:01",
+  "total_count": 5,
+  "featured_count": 5,
   "categories": [
     "ALL",
     "전북대",
     "일반"
   ],
   "contests": [
-    {
-      "id": "campus-217263",
-      "source": "campus",
-      "source_name": "총무과 공지",
-      "title": "2026 제2회 화성시 공공디자인 공모전 (공사장 가설울타리 디자인)",
-      "organizer": "화성시 공공디자인과",
-      "category": "전북대",
-      "badge_color": "teal",
-      "prize": "총 상금 1,600만원 · 화성시장상 (대상 500만원)",
-      "prize_details": [
-        {
-          "rank": "일반부 최우수상",
-          "award": "화성시장상",
-          "prize": "1점 (상금 500만원)"
-        },
-        {
-          "rank": "일반부 우수상",
-          "award": "화성시장상",
-          "prize": "2점 (각 200만원)"
-        },
-        {
-          "rank": "일반부 장려상",
-          "award": "화성시장상",
-          "prize": "3점 (각 100만원)"
-        },
-        {
-          "rank": "일반부 입선",
-          "award": "화성시장상",
-          "prize": "5점 (각 50만원)"
-        }
-      ],
-      "benefits": [
-        "화성시 관내 대규모 인프라 및 건축 건설현장 가설울타리 표준 디자인 실제 시공 적용",
-        "화성시장 공식 훈격 표창 수여",
-        "시청 로비 및 공식 웹사이트 수상작 전시"
-      ],
-      "target": "만 18세 이상 누구나",
-      "target_details": "공공디자인에 관심 있는 만 18세 이상 누구나 (개인 또는 3인 이내 팀 / 1인(팀)당 2작품 이내)",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.09.14 ~ 10.16 (23:59 마감)",
-      "deadline_date": "2026-10-16",
-      "deadline_time": "23:59",
-      "fields": [
-        "공사장 가설울타리 그래픽",
-        "도시 안전 공공디자인",
-        "친환경 인프라 시각 디자인",
-        "스마트 도시미관"
-      ],
-      "submission_info": "출품신청서, 작품설명서, 디자인 패널 A1 규격 파일 (이메일 접수)",
-      "evaluation_steps": [
-        "작품 접수",
-        "공공디자인 진흥위원회 심사",
-        "당선작 발표 및 시상식"
-      ],
-      "contact": "화성시 공공디자인과 공공디자인팀 (031-5189-6316)",
-      "description": "건설 공사장의 삭막한 가설울타리를 도시의 품격과 안전을 높이는 예술 공간으로 탈바꿈시키는 대국민 공공디자인 공모전",
-      "link": "https://www.jbnu.ac.kr/web/Board/217263/detailView.do",
-      "is_active": true,
-      "image": "https://www.jbnu.ac.kr/common/file.do?file=2KrOxuPdCe0a2f/1S2xKHfB1qsq5bCCvjBSbVd3Wgm2jh02jA0XFpazUBdK2riL8",
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
     {
       "id": "campus-217690",
       "source": "campus",
