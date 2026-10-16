@@ -479,6 +479,7 @@ def scrape_civil_news():
 
     # 기사 대표 사진(og:image) 병렬 추출 및 image 필드 보강
     final_articles = enrich_articles_with_images(final_articles)
+    # 사진이 없는 기사는 큐레이션 예시 사진 대신 언론사(회사) 이름을 썸네일로 표출합니다.
 
     # 당일 아침 7시 수집 기사 기반 대표 트렌딩 키워드 동적 추출 (8대 전문 분야 1-Keyword-Per-Domain)
     trending_keywords = extract_trending_keywords(final_articles, max_keywords=8)
@@ -638,6 +639,32 @@ def cluster_related_articles(articles):
     print(f"📊 [유사기사 군집화 완료] 대표 토픽 {len(final_articles)}건 (중복 기사 {total_duplicates}건 하위 그룹핑)")
     return final_articles, total_duplicates
 
+def upgrade_to_high_res_image(url: str) -> str:
+    """
+    언론사 CMS(NDSoft 등)의 초저화질 썸네일(_v150.jpg 등)을 감지하여 고화질 원본 사진 URL로 변환
+    """
+    if not url:
+        return ""
+    import re
+    # 1. NDSoft CMS: /thumbnail/ -> /photo/, _v150 제거
+    if '/thumbnail/' in url and re.search(r'_v\d+\.(jpg|jpeg|png|webp)', url, re.I):
+        return re.sub(r'_v\d+\.(jpg|jpeg|png|webp)', r'.\1', url.replace('/thumbnail/', '/photo/'), flags=re.I)
+    # 2. Daum CDN: ?fname= 파라미터에서 원본 주소 복원
+    if 'daumcdn.net/thumb/' in url and 'fname=' in url:
+        m = re.search(r'fname=([^&]+)', url)
+        if m:
+            import urllib.parse
+            raw = urllib.parse.unquote(m.group(1))
+            if raw.startswith('http'):
+                return raw
+    # 3. Naver news / pstatic: 작은 썸네일 해상도 제거 및 원본 치환
+    if 'pstatic.net' in url and '?type=' in url:
+        return re.sub(r'\?type=[^&]+', '?type=w800', url)
+    # 4. _thumb / _small 패턴 제거
+    if re.search(r'_(thumb|small)\.(jpg|jpeg|png)', url, re.I):
+        return re.sub(r'_(thumb|small)\.(jpg|jpeg|png)', r'.\2', url, flags=re.I)
+    return url
+
 def extract_news_og_image(link: str) -> str:
     """
     구글 뉴스 RSS 링크로부터 원문 주소를 디코딩하고, 기사 원문 페이지의 og:image 태그 URL을 추출
@@ -682,6 +709,16 @@ def extract_news_og_image(link: str) -> str:
                 img_lower = img.lower()
                 if any(bad in img_lower for bad in ['logo', 'snslogo', 'oglogo', 'default', 'noimage']):
                     return ""
+
+                # CMS 고화질 원본 자동 복원
+                cand = upgrade_to_high_res_image(img)
+                if cand != img:
+                    try:
+                        v_res = requests.head(cand, headers=headers, timeout=2.5, allow_redirects=True)
+                        if v_res.status_code == 200:
+                            img = cand
+                    except Exception:
+                        pass
 
                 # 규칙 1: http:// 주소는 https://로 변환하여 접근 가능할 때만 저장, 실패 시 제외
                 if img.startswith("http://"):

@@ -65,7 +65,8 @@ window.CivilData = (() => {
           n: related.length,
           title: a.title,
           lede: (a.snippet && a.snippet.trim().length >= 10) ? a.snippet.trim() : a.title,
-          image: a.image || a.og_image || a.thumbnail || '',
+          image: a.is_curated_image ? '' : (a.image || a.og_image || a.thumbnail || ''),
+          isCurated: false,
           link: a.link || '#',
           clusters: related
         };

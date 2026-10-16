@@ -23,8 +23,8 @@ if ('caches' in window) {
 }
 try { localStorage.removeItem('cnh-live-cache-v1'); } catch(e){}
 </script>
-<script src="./static/cnh_data_bundle.js?v=20261013_1955"></script>
-<script src="./static/data_adapter.js?v=20261013_1955"></script>
+<script src="./static/cnh_data_bundle.js?v=20261017_0036"></script>
+<script src="./static/data_adapter.js?v=20261017_0036"></script>
 <style>
 /* Layout: one phone-width column (max 440px, centered on bigger screens) — large page title, list rows instead of cards, details in a bottom sheet, 5-tab bar fixed at the bottom */
 :root{
@@ -107,6 +107,18 @@ button.row:active{background:var(--surface-2)}
 .income{flex:none;text-align:right;align-self:center}
 .income b{display:block;font-family:var(--f-body);font-size:var(--t-lead);color:var(--ok)}
 .income span{font-size:var(--t-small);color:var(--muted)}
+
+/* thumbnail */
+.thumb{flex:none;display:block;overflow:hidden;border-radius:10px;background:linear-gradient(135deg,var(--surface-2) 0%,color-mix(in srgb,var(--surface-2) 80%,var(--line)) 100%);border:1px solid var(--line)}
+.thumb img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 30%;image-rendering:-webkit-optimize-contrast;image-rendering:high-quality;backface-visibility:hidden;transform:translateZ(0)}
+.thumb.t-news{width:96px;height:64px;aspect-ratio:3/2}
+.thumb.thumb-co{display:flex!important;align-items:center;justify-content:center;padding:6px 8px;text-align:center;background:linear-gradient(135deg,var(--surface-2) 0%,color-mix(in srgb,var(--surface-2) 75%,var(--line)) 100%);box-shadow:inset 0 1px 2px rgba(15,42,68,.04);user-select:none}
+.thumb.thumb-co .thumb-co-name{font-family:var(--f-body);font-size:12px;font-weight:700;color:var(--muted);letter-spacing:-.02em;line-height:1.3;word-break:keep-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.thumb.t-poster{width:60px;height:80px}
+.thumb.t-poster img{object-position:top}
+.sheet-img{flex:none;border-radius:12px;overflow:hidden;background:var(--surface-2);border:1px solid var(--line)}
+.sheet-img img{display:block;width:100%;height:auto;max-height:70vh;object-fit:contain}
+.sheet-img.wide img{aspect-ratio:16/9;object-fit:cover;max-height:none}
 
 /* filters */
 .filters{position:sticky;top:calc(var(--bar-h) + env(safe-area-inset-top,0px));z-index:10;background:var(--bg);padding-bottom:12px;display:flex;flex-direction:column;gap:10px}
@@ -287,15 +299,27 @@ function toggleSave(id){
 
 const ddBox = off => `<div class="dd ${urg(off)} ${off===0?'today':''}"><b>${off===0?'D-Day':(off>=60?'상시':'D-'+off)}</b></div>`;
 const ddPill = off => `<span class="pd ${urg(off)}">${off===0?'D-Day':(off>=60?'상시':'D-'+off)}</span>`;
-const newsRow = (n,i) => `<button class="row" data-open="n:${i}"><div class="row-main">
-  <div class="row-meta"><span class="cat" style="--cat:var(--c-${n.cat})">${catName(n.cat)}</span><span>${n.src}</span><span>${n.ago}</span><span>관련 ${n.n}건</span></div>
-  <div class="row-title">${n.title}</div><div class="row-sub lede">${n.lede}</div></div></button>`;
+const thumb = (src, cls, isCurated, co) => {
+  if (src && !isCurated) {
+    return `<span class="thumb ${cls}"><img src="${src}" data-orig-src="${src}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="if(!this.dataset.p){this.dataset.p='1';this.src='https://wsrv.nl/?url='+encodeURIComponent(this.dataset.origSrc)+'&w=240&output=webp&q=85';}else{${co ? `this.parentNode.className='thumb ${cls} thumb-co';this.parentNode.innerHTML='<span class=\"thumb-co-name\">'+${JSON.stringify(co)}+'</span>';` : `this.parentNode.remove();`}}"></span>`;
+  }
+  if (co) {
+    return `<span class="thumb ${cls} thumb-co"><span class="thumb-co-name">${co}</span></span>`;
+  }
+  return '';
+};
+const newsRow = (n,i) => {
+  const count = (n.clusters && n.clusters.length) ? n.clusters.length : (n.n || 0);
+  return `<button class="row" data-open="n:${i}"><div class="row-main">
+  <div class="row-meta"><span class="cat" style="--cat:var(--c-${n.cat})">${catName(n.cat)}</span><span>${n.src}</span><span>관련 ${count}건</span></div>
+  <div class="row-title">${n.title}</div><div class="row-sub lede">${n.lede}</div></div>${thumb(n.image, 't-news', n.isCurated, n.src)}</button>`;
+};
 const contestRow = c => {
   const isJbnu = c.category === '전북대' || c.campus;
   const catName = c.category || (isJbnu ? '전북대' : '일반');
   return `<button class="row" data-open="c:${c.id}">${ddBox(c.end)}<div class="row-main">
   <div class="row-meta"><span class="cat" style="--cat:${isJbnu ? 'var(--c-water)' : 'var(--c-road)'}">${catName}</span>${c.award?`<span>${c.award}</span>`:''}${c.added<=2?'<span class="tagn">새 공고</span>':''}</div>
-  <div class="row-title">${c.title}</div><div class="row-sub">${c.prize ? `총 상금 <b class="num">${fmt(c.prize)}만원</b>` : `${c.srcName || '공모전'}`} · ${c.org}</div></div></button>`;
+  <div class="row-title">${c.title}</div><div class="row-sub">${c.prize ? `총 상금 <b class="num">${fmt(c.prize)}만원</b>` : `${c.srcName || '공모전'}`} · ${c.org}</div></div>${thumb(c.image, 't-poster')}</button>`;
 };
 const jobRow = j => `<button class="row" data-open="j:${j.id}"><div class="logo" style="background:${j.color}">${j.co[0]}</div><div class="row-main">
   <div class="row-meta"><span>${j.co}</span><span class="lv">${j.lvl}${j.exp?' '+j.exp:''}</span></div>
@@ -414,19 +438,21 @@ function openSheet(key){
   let kind = '', body = '', foot = '';
   if (type==='n'){
     const n = NEWS[+id];
-    kind = catName(n.cat);
+    const count = (n.clusters && n.clusters.length) ? n.clusters.length : (n.n || 0);
     const clusterHtml = (n.clusters && n.clusters.length)
       ? n.clusters.map(c => `<li><a href="${c.link || '#'}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;width:100%;border-bottom:1px solid var(--line)"><b style="flex:none;font-weight:600">${c.publisher} ↗</b><span style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:var(--t-small)">${c.title}</span></a></li>`).join('')
-      : Array.from({length:n.n},(_,k)=>`<li><div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)"><b style="flex:none;width:96px;font-weight:600">${OTHER_SRC[(+id+k)%OTHER_SRC.length]}</b><span style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:var(--t-small)">${n.title}</span></div></li>`).join('');
+      : (count > 0 ? Array.from({length:count},(_,k)=>`<li><div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)"><b style="flex:none;width:96px;font-weight:600">${OTHER_SRC[(+id+k)%OTHER_SRC.length]}</b><span style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:var(--t-small)">${n.title}</span></div></li>`).join('')
+      : `<li style="padding:10px 0;color:var(--muted);font-size:var(--t-small);border-bottom:1px solid var(--line)">동일한 보도자료 기사가 없습니다.</li>`);
 
-    body = `<div><div class="row-meta"><span>${n.src}</span><span>${n.ago}</span></div><h2 id="sh-title" style="margin-top:6px">${n.title}</h2></div>
+    body = `${(n.image && !n.isCurated) ? `<div class="sheet-img wide" style="margin-bottom:14px"><img src="${n.image}" data-orig-src="${n.image}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="if(!this.dataset.p){this.dataset.p='1';this.src='https://wsrv.nl/?url='+encodeURIComponent(this.dataset.origSrc)+'&w=600&h=338&fit=cover&output=webp&q=85';}else{this.parentNode.remove();}"></div>` : ''}<div><div class="row-meta"><span>${n.src}</span></div><h2 id="sh-title" style="margin-top:6px">${n.title}</h2></div>
       <p class="lede-full">${n.lede}</p>
-      ${n.n > 0 ? `<div><div class="sub-h" style="font-weight:700;margin:16px 0 8px">같은 보도자료로 쓴 기사 ${n.n}건</div><ul class="cluster" style="list-style:none;padding:0;margin:0">${clusterHtml}</ul></div>` : ''}`;
-    foot = `<a href="${n.link || '#'}" target="_blank" rel="noopener noreferrer" class="btn primary" style="text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;width:100%">원문 기사 보기 ↗</a>`;
+      <div><div class="sub-h" style="font-weight:700;margin:16px 0 8px">같은 보도자료로 쓴 기사 ${count}건</div><ul class="cluster" style="list-style:none;padding:0;margin:0">${clusterHtml}</ul></div>`;
+    foot = `<button class="btn ghost" data-save="${n.id}" aria-pressed="${saved.has(n.id)}">${saved.has(n.id)?'저장됨':'저장'}</button><a href="${n.link || '#'}" target="_blank" rel="noopener noreferrer" class="btn primary" style="text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;flex:1">원문 기사 보기 ↗</a>`;
   } else if (type==='c'){
     const c = CONTESTS.find(x=>x.id===id);
     kind = '공모전';
     body = `<div style="display:flex;gap:14px;align-items:center">${ddBox(c.end)}<h2 id="sh-title">${c.title}</h2></div>
+      ${c.image ? `<div class="sheet-img" style="margin:12px 0"><img src="${c.image}" alt="${c.title} 포스터" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.remove()"></div>` : ''}
       <div class="prize">${fmt(c.prize)}만원<small>총 상금</small></div>
       <dl class="spec">
         <div><dt>주최</dt><dd>${c.org}</dd></div>

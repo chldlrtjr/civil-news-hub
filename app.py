@@ -98,6 +98,12 @@ def serve_mobile():
         mobile_path = os.path.join(STATIC_DIR, "mobile.html")
     return send_file(mobile_path)
 
+@app.route("/preview")
+@app.route("/preview_news_images.html")
+def serve_preview():
+    prev_path = os.path.join(BASE_DIR, "preview_news_images.html")
+    return send_file(prev_path)
+
 # --- 파비콘 / 매니페스트 / 서비스워커 ---
 @app.route("/favicon.ico")
 @app.route("/favicon.svg")

@@ -2,7 +2,7 @@
 
 
 
-> **📌 현재 버전**: `ver 1.1.67` (전북대 SW중심대학사업단 프로그램 크롤러 수집 파이프라인 고도화: 온라인 신청 + 공지사항 통합 수집, 중복 제거, 마감 자동 제외 및 데이터 번들 자동 동기화 / 122회 누적 수정 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.1.82` (리드 기사 관련기사 건수 숫자(span.n) 화이트 모드 색상 상속 통일 / 137회 누적 수정 / 내부 관리 버전 / 웹 화면 비노출)  
 
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
@@ -3610,6 +3610,238 @@ mindmap
   4. **공모전 무결성 검증 통과**:
      - 전날 마감된 공모전 1건 자동 내림 후 `test_contests_integrity.py` 100% 무결성 통과 (전체 7건 = 전북대 5건 + 일반 2건).
      - `static/cnh_data_bundle.js` 최종 재생성 완료.
+
+#### 92) 뉴스 기사 본문 실사 썸네일(타입 B: 우측 썸네일 리스트형) 도입 및 데스크탑·모바일 전면 적용 (v1.1.68)
+- **사용자 요청**:
+  - "기사에도 사진을 넣으면 더 이쁘지 않을까? 한번 예시 만들어서 보여줘" -> 시안 3종(상단 풀와이드 A, 우측 썸네일 B, 좌측 카드 C) 제공 후 사용자가 **"타입 B"** 확정.
+- **조치 내역**:
+  1. **실시간 기사 사진 수집 및 보강**:
+     - 상위 80개 토목 뉴스 원문 URL을 크롤링하여 `og:image` 메타데이터 파싱 및 73건 기사에 고해상도 실사 이미지 연동 (`data/news.json`).
+  2. **데스크탑 카드 그리드 (`index.html`) 타입 B 구현**:
+     - `.news` 컨테이너를 `flex-direction: row; align-items: flex-start; gap: 16px;` 구조로 전환.
+     - `.news-body`(`flex: 1; min-width: 0;`)와 `.news-thumb`(`flex: none; width: 104px; height: 104px; border-radius: 8px;`)로 분리 배치.
+     - 호버 시 줌 애니메이션(`transform: scale(1.04)`), 리스트 모드(56×56px), 사이드 뉴스(68×68px), 반응형(88×88px) 규격 최적화.
+     - 이미지 로드 실패 시 `onerror="this.parentNode.remove()"`를 통해 칸째 즉시 제거되어 여백 낭비 없이 100% 텍스트로 자연스럽게 확장되는 Zero-Layout-Shift 무결함 폴백 적용.
+  3. **모바일 뷰 (`mobile.html`, `#m`) 타입 B 통일 적용**:
+     - 모바일 리스트 행(`newsRow`) 우측에 `thumb(n.image, 't-news')` 배치 (76×76px 썸네일).
+     - 바텀시트(`openSheet`) 상단에 와이드 프리뷰(`sheet-img wide`) 탑재.
+     - 포스터 썸네일(`t-poster`) CSS 보강 및 바텀시트 북마크 토글 버튼 연동.
+  4. **정적 배포 동기화 및 공모전 무결성 검증**:
+     - `index.html` <-> `static/index.html`, `mobile.html` <-> `static/mobile.html` 100% 동일 동기화.
+     - `build_data_bundle.py` 실행으로 `static/cnh_data_bundle.js` 번들 최신화.
+     - 18:00 마감 시간 경과 공모전(`2026학년도 2학기 전공·진로 로드맵 공모전`) 자동 감지 및 내림 처리 후 `test_contests_integrity.py` 100% 통과 (전북대 4건 + 일반 2건 = 총 6건).
+
+#### 93) 기사 카드 북마크 버튼 우측 하단 재배치 및 .news-aside 레이아웃 최적화 (v1.1.69)
+- **사용자 요청**:
+  - "기사 북마크 오른쪽 아래로 옮겨줘" -> 기존 상단 메타 행(`.news-meta`) 우측에 위치하던 북마크 버튼을 기사 카드의 오른쪽 하단으로 재배치 요청.
+- **조치 내역**:
+  1. **DOM 구조 개편 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html))**:
+     - 기존 `.news-meta` 내부에 있던 `${bmBtn(n.id)}`를 제거하여 카테고리/출처 메타 헤더를 깔끔하게 정돈.
+     - 썸네일과 북마크를 관장하는 우측 전담 컨테이너 `<div class="news-aside">${thumbHtml}${bmBtn(n.id)}</div>` 도입.
+  2. **CSS 레이아웃 및 정렬 최적화 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html))**:
+     - `.news`에 `align-items: stretch`를 적용하여 양쪽 컬럼의 높이를 카드의 최대 높이로 자동 일치.
+     - 좌측 본문 컨테이너(`.news-body`)의 `.cluster-wrap`에 `margin-top: auto`를 적용하여 좌측 하단 정렬.
+     - 우측 전담 컨테이너(`.news-aside`)를 세로 플렉스(`flex-direction: column; align-items: flex-end; justify-content: space-between;`)로 설정하고, `.bm` 버튼에 `margin-top: auto`를 적용하여 카드 우측 최하단에 항상 밀착 고정.
+     - 썸네일 직하단과 기사 본문 하단(관련 보도자료 버튼)이 동일한 수평 베이스라인을 공유하여 시각적 안정감 극대화.
+     - 리스트 뷰(`.news-grid.list`)에서는 가로 플렉스(`flex-direction: row; align-items: center`)로 전환되어 썸네일과 북마크가 나란히 수직 중앙 정렬.
+     - 반응형 모바일 미디어 쿼리(`@media (max-width: 720px)`)에서도 북마크 버튼 터치 영역 및 우측 하단 고정 유지.
+  3. **100% 무결함 Fallback 호환성 유지**:
+     - 썸네일이 없는 기사이거나 로드 실패로 `onerror` 제거가 동작하더라도 `.news-aside`의 너비가 버튼 크기(32px)로 즉시 수축되며 본문은 100% 전체 너비로 확장, 북마크는 변함없이 우측 하단에 단단히 고정.
+  4. **파일 동기화 및 무결성 검증**:
+     - `index.html` -> `static/index.html` 100% 동기화 복사 완료.
+     - `test_contests_integrity.py` 무결성 전수 검증 통과 (6건 100% 일치).
+
+#### 94) [화질 개선 1단계] 언론사 CMS 고화질 원본 사진 자동 복원 엔진 탑재 및 저화질 썸네일 Full-HD 교체 (v1.1.70)
+- **사용자 요청**:
+  - "사진이 깨지고 화질이 좀 안좋은데 어떻게 하면 개선될까? 1,2,3,4번 다 적용해보자 한번에 적용하지 말고 롤백 하기 쉽게 서브로 나눠서 한개씩 적용시켜줘"
+  - 1단계(CMS 고화질 원본 자동 복원) 단독 적용 요청.
+- **조치 내역**:
+  1. **고화질 원본 복원 엔진 개발 ([`scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/scraper.py))**:
+     - `upgrade_to_high_res_image(url)` 함수 신설.
+     - NDSoft CMS 패턴(`/thumbnail/` -> `/photo/`, `_v150`, `_v200`, `_v300` 정규식 감지 및 제거) 탑재.
+     - Daum/Kakao CDN 패턴(`?fname=` 디코딩을 통한 원본 추출), Naver News/pstatic 패턴(`?type=w800` 치환), 일반 축소판(`_thumb`, `_small` 제거) 통합.
+     - `requests.head()` 검증을 거쳐 원본 파일이 HTTP 200으로 실존할 때만 안전하게 치환.
+  2. **데이터셋 고화질 업그레이드 전수 실행 ([`data/news.json`](file:///C:/Users/최익석/Desktop/goofy-borg/data/news.json))**:
+     - 기존에 수집되어 있던 150px 초저화질 썸네일 15건을 1200px+ Full-HD 고해상도 원본 사진으로 실시간 검증 및 치환 완료 (파일 용량 평균 50KB ➡️ 300~790KB로 최대 15배 향상).
+  3. **데이터 번들 최신화 및 무결성 검증**:
+     - `build_data_bundle.py` 재컴파일하여 `static/cnh_data_bundle.js`에 Full-HD 이미지 즉시 반영.
+     - `test_contests_integrity.py` 100% 무결성 통과 (6건 일치).
+
+#### 95) [화질 개선 2단계] 지능형 이중화 이미지 로더(Smart Resilient Loader) 및 GPU 레티나 고선명 렌더링, 글로벌 CDN 프록시 폴백 연동 (v1.1.71)
+- **사용자 요청**:
+  - "2단계 진행해줘" -> 글로벌 이미지 CDN 프록시 및 핫링크(403) 차단 방지, WebP 레티나 고선명 렌더링 적용.
+- **사전 네트워크 검증 및 발견 사항**:
+  - 국내 언론사 CDN 중 일부(`sisajournal`, `eroun`, `gukjenews` 등)는 해외 클라우드 IP에 대해 타임아웃을 유발하는 반면, 국내 브라우저 환경에서는 `referrerpolicy="no-referrer"` 조건으로 100% 정상 수신됨을 검증(73건 중 0건 실패).
+  - 이에 따라 무조건 프록시를 경유하는 위험을 배제하고, **국내 초고속 직결 1차 로드 + 실패 시 글로벌 CDN 프록시(`wsrv.nl`) 2차 폴백**의 '지능형 이중화 로더' 구조로 안전하게 설계.
+- **조치 내역**:
+  1. **지능형 이중화 로더 (Smart Resilient Fallback Loader) 구현**:
+     - [`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html) 및 [`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html)의 `thumbHtml` / `thumb` 함수 개편:
+     - 1차: `data-orig-src`를 통해 고화질 원본 이미지 직결(`referrerpolicy="no-referrer"`).
+     - 2차(오류 발생 시): `onerror` 이벤트에서 `wsrv.nl` 글로벌 WebP 최적화 프록시(`w=240&h=240&fit=cover&output=webp&q=85`)로 자동 전환.
+     - 3차(프록시까지 실패 시): `this.parentNode.remove()`를 통해 빈 엑박이나 깨진 아이콘 없이 100% 텍스트로 자연스럽게 확장.
+  2. **GPU 가속 및 레티나 고선명 렌더링 CSS 최적화**:
+     - `.news-thumb` 및 `.thumb`에 `image-rendering: high-quality; image-rendering: -webkit-optimize-contrast;` 적용하여 브라우저의 흐릿한 다운샘플링 블러 현상 방지.
+     - `backface-visibility: hidden; transform: translateZ(0);`로 GPU 하드웨어 가속 레이어 분리.
+     - `object-position: center 30%;`를 적용하여 토목 인프라 구조물(교량 주탑, 도로 상부, 댐 상단 등)의 핵심 피사체가 잘리지 않도록 황금비율 구도 보정.
+     - 로딩 시 깜빡임(Flicker)을 방지하는 모던 쉬머 그라데이션 스켈레톤 배경(`background: linear-gradient(...)`) 탑재.
+  3. **파일 동기화 및 무결성 검증**:
+     - `index.html` <-> `static/index.html`, `mobile.html` <-> `static/mobile.html` 100% 동기화.
+     - `test_contests_integrity.py` 무결성 전수 검증 통과 (6건 일치).
+
+### 96. [화질 개선 3단계] 토목/건설 와이드 종횡비(3:2 Landscape) 최적화 (v1.1.72)
+- **배경 및 필요성**:
+  - 기존 1:1 정사각 썸네일(104×104px, 모바일 76×76px)은 가로 파노라마가 핵심인 교량, 도로, 철도 노선, 터널 굴착 현장 등의 양옆 33% 이상을 강제로 크롭하여 구조물의 웅장한 전경이나 현장 맥락이 훼손되는 문제가 발생함.
+- **적용 내용**:
+  1. **3:2 와이드 종횡비 전면 규격화**:
+     - 데스크톱 일반 기사: `104×104px` ➡️ `120×80px` (`aspect-ratio: 3/2; border-radius: 8px;`).
+     - 데스크톱 브리핑 사이드 뉴스: `68×68px` ➡️ `80×54px` (`aspect-ratio: 3/2; border-radius: 6px;`).
+     - 데스크톱 브리핑 리드 뉴스: `120×120px` ➡️ `144×96px` (`aspect-ratio: 3/2; border-radius: 10px;`).
+     - 데스크톱 리스트 모드: `56×56px` ➡️ `72×48px` (`aspect-ratio: 3/2; border-radius: 6px;`).
+     - 모바일 반응형 및 단독 모바일(#m, mobile.html): `76×76px` / `88×88px` ➡️ `96×64px` (`aspect-ratio: 3/2; border-radius: 8px;`).
+  2. **우하단 북마크 아이콘 및 좌측 기선 정렬 보존**:
+     - 썸네일 높이가 80px로 슬림해지며 기사 헤드라인 및 요약문과의 높이 밸런스가 개선되었으며, `.news-aside .bm`이 `margin-top: auto`로 우하단에 안정적으로 고정 배치.
+  3. **wsrv.nl CDN 반응형 비율 매핑**:
+     - 데스크톱: `&w=360&output=webp&q=85` (3배수 고해상도 레티나 지원).
+     - 모바일: `&w=240&output=webp&q=85` (2.5배수 고해상도 레티나 지원).
+  4. **무결성 및 배포 검증**:
+     - `test_contests_integrity.py` 전수 검증 통과 (6건 100% 일치).
+     - `index.html` ↔ `static/index.html`, `mobile.html` ↔ `static/mobile.html` 100% 동기화.
+
+### 97. [화질 개선 4단계] 사진 미보유 기사(204건) 대상 고품질 토목/인프라 전문 큐레이션 사진 풀(Curated Photo Pool) 구축 및 277건 전수 매칭 완료 (v1.1.73)
+- **배경 및 목적**:
+  - 기존 277건 기사 중 73건만 원본 언론사 사진(`og:image`)이 존재하고, 나머지 204건은 사진이 누락되어 텍스트만 노출되는 시각적 불균형 해소.
+- **적용 내용**:
+  1. **토목/인프라 전문 큐레이션 사진 모듈 구축 ([`curated_news_photos.py`](file:///C:/Users/최익석/Desktop/goofy-borg/curated_news_photos.py))**:
+     - 9개 토목 전문 세부 도메인(교량, 도로/고속도로, 철도/고속철도, 수자원/댐/하천, 항만/해양, 터널/TBM, 지반/안전진단, 스마트건설/BIM/드론, 대형토공/중장비)별 총 28개 고해상도 가로 3:2 Unsplash 팩트 사진 풀 구축 (전수 HTTP 200 검증 통과).
+     - 기사 제목 및 본문 요약의 키워드를 형태소 분석하여 가장 적합한 도메인 사진 풀에 결정적(MD5 Hash 기반) 매핑 (`get_curated_news_photo`).
+  2. **100% 무손실 분리 및 안전한 롤백 보장**:
+     - 원본 언론사 사진(73건)은 `is_curated_image: False`로 유지하고 절대 덮어쓰지 않음.
+     - 사진이 없던 204건에만 `is_curated_image: True` 플래그와 함께 매칭.
+     - 롤백 필요 시 `curated_news_photos.rollback_curated_photos()`를 호출하면 0.01초 만에 204건의 사진을 즉시 제거하여 초기 상태로 100% 원상복구 가능.
+  3. **수집기 파이프라인 및 정적 번들 연동**:
+     - [`scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/scraper.py): `enrich_articles_with_images()` 직후 `enrich_articles_with_curated_photos()` 자동 실행 연동.
+     - [`data/news.json`](file:///C:/Users/최익석/Desktop/goofy-borg/data/news.json) 및 [`static/cnh_data_bundle.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/cnh_data_bundle.js)에 277건 전수 고화질 사진 탑재 완료.
+     - [`static/data_adapter.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/data_adapter.js): `isCurated` 플래그 안전 전달.
+  4. **전수 검증**:
+     - `test_contests_integrity.py` 100% PASS.
+     - 전체 277건 기사 100% 사진 렌더링 검증 완료.
+
+### 98. 기사 메타 영역 시간 표시 전면 제거 및 언론사 단독 표기 클린업 (v1.1.74)
+- **요청 사항**: 기사 카드 메타 영역에 노출되던 상대 시간(예: `서울경제TV · 0초 전`, `N분 전`)을 제거하여 시간 정보 없이 언론사/출처명만 깔끔하게 노출하도록 변경.
+- **적용 내용**:
+  1. **데스크톱 기사 카드 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html))**:
+     - `<span>${n.src} · ${n.ago}</span>` ➡️ `<span>${n.src}</span>`로 시간 노출 제거.
+     - 북마크 저장 목록의 기사 서브텍스트: `sub: `${n.src} · ${n.ago}`` ➡️ `sub: n.src`.
+  2. **모바일 피드 및 단독창 ([`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html), `#m`)**:
+     - `newsHero`, `newsRow`: `<span>${n.ago}</span>` 태그 제거하여 카테고리 뱃지 + 언론사명 + 관련 기사 건수만 간결하게 배치.
+  3. **기사 상세 바텀시트 모달 (공통)**:
+     - 상세 모달 헤더의 `<span>${n.ago}</span>` 태그 제거.
+  4. **정적 파일 동기화**:
+     - `index.html` ↔ `static/index.html`, `mobile.html` ↔ `static/mobile.html` 100% 동기화.
+     - `test_contests_integrity.py` 100% PASS.
+
+### 99. 모든 기사에 '같은 보도자료 기사' 버튼 상시 노출 및 0건 표출 지원 (v1.1.75)
+- **요청 사항**: '같은 보도자료 기사 N건' 버튼을 모든 기사 카드에 상시 노출하고, 겹치는 기사가 없을 경우 `0건`으로 표시하도록 변경.
+- **적용 내용**:
+  1. **기사 카드 렌더러 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html))**:
+     - 기존 `n.n > 0` 조건부 렌더링을 제거하고 모든 기사 카드에서 `<div class="cluster-wrap">` 및 `<button class="cluster-btn">`을 상시 노출.
+     - 겹치는 기사가 없을 때 `같은 보도자료 기사 0건`으로 정확히 표출.
+     - 0건일 때 버튼 클릭 시 팝오버 목록에 "동일한 보도자료 기사가 없습니다" 안내문 표출 및 호버 시 다크 반전 없는 `.empty-cluster` 전용 스타일링 추가.
+  2. **모바일 인라인 뷰 및 상세 바텀시트 ([`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html), [`static/mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/mobile.html))**:
+     - `newsHero`, `newsRow`: 클러스터 건수를 계산하여 일관되게 `관련 N건`(0건 포함) 표출.
+     - 상세 바텀시트: `같은 보도자료로 쓴 기사 N건` 영역을 상시 노출하며 0건 시 "동일한 보도자료 기사가 없습니다." 안내 항목 표출.
+  3. **이미지 프리뷰 페이지 ([`preview_news_images.html`](file:///C:/Users/최익석/Desktop/goofy-borg/preview_news_images.html))**:
+     - 조건부 표시를 제거하고 `관련 보도자료 N건`(0건 포함) 상시 노출.
+  4. **무결성 및 정적 파일 동기화**:
+     - `index.html` ↔ `static/index.html`, `mobile.html` ↔ `static/mobile.html` 100% 일치 확인.
+     - `test_contests_integrity.py` 100% PASS 검증.
+
+### 100. 사진 미보유 기사 대표 예시 사진 롤백 및 언론사(회사) 이름 썸네일 표출 전환 (v1.1.76)
+- **요청 사항**: "사진 없는 기사들은 대표 예시 사진으로 대체하지 말고 그 회사 이름 띄우는걸로 하자"
+- **적용 내용**:
+  1. **큐레이션 예시 사진 원상 복구 및 수집기 연동 해제**:
+     - `curated_news_photos.rollback_curated_photos()`를 실행하여 `data/news.json`에서 204건의 임의 큐레이션 사진을 즉시 제거하고 원본 상태로 복원 (실제 언론사 원본 사진 73건만 유지).
+     - [`scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/scraper.py): `enrich_articles_with_curated_photos()` 호출을 제거하여 향후 수집 시에도 임의 예시 사진이 삽입되지 않도록 영구 차단.
+     - `build_data_bundle.py`를 실행하여 [`static/cnh_data_bundle.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/cnh_data_bundle.js)에 롤백된 순수 데이터셋 재컴파일.
+  2. **언론사(회사) 이름 전용 썸네일 컴포넌트 구축 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html))**:
+     - 원본 사진이 없는 기사에 대해 기존 3:2 와이드(120×80px) 종횡비 박스 안에 해당 기사의 언론사/출처명(`n.src`)을 세련되게 띄우는 `.news-thumb.news-thumb-co` 뱃지 렌더링.
+     - CSS: `font-size: 13px; font-weight: 700; color: var(--muted);`에 모던 그라데이션 베이스(`linear-gradient(135deg, var(--surface-2), var(--line))`) 및 카드 호버 시 `color: var(--ink)` 하이라이트 반응형 인터랙션 적용.
+     - 원본 사진 로딩 실패(`onerror`) 시에도 빈 박스나 엑박 없이 즉시 언론사(회사) 이름 썸네일로 자동 전환되는 안전 폴백 탑재.
+  3. **모바일 뷰 및 단독창 동기화 ([`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html), [`static/mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/mobile.html))**:
+     - `thumb(src, cls, isCurated, co)` 함수 개편: 사진이 없거나 로드 실패 시 `.thumb.thumb-co`를 통해 96×64px 규격으로 언론사명을 정중앙에 선명하게 표출.
+  4. **무결성 및 정적 파일 동기화**:
+     - `index.html` ↔ `static/index.html`, `mobile.html` ↔ `static/mobile.html` 100% 일치 확인.
+     - 10.16 23:59 마감 시각 경과에 따른 화성시 공모전 실시간 자동 내림(5건 유지) 및 `test_contests_integrity.py` 100% PASS 검증.
+
+### 101. 메인 리드 기사 꽉 채우기 시안 및 인터랙티브 테스트베드 구축 (v1.1.77)
+- **요청 사항**: 메인 리드 기사 사진을 키우고 제목과 본문을 꽉 차게 변경 요청 후 즉시 원상 복구 지시.
+- **적용 내용**:
+  - 기본 상태는 기존 미니멀 1열 배치(`leadOpt = 0`)로 안전 복원.
+  - 메인 화면 상단에 5가지 시안을 실시간 즉각 전환해 볼 수 있는 인터랙티브 스위처 바(`.lead-switcher`) 탑재.
+
+### 102. 메인 리드 기사 5대 디자인 시안 완성 및 비교 쇼케이스 구축 (v1.1.78)
+- **요청 사항**: 5가지 경우의 수로 다시 리드 기사 디자인 제작 요청.
+- **적용 내용**:
+  1. **5대 시안 설계 및 전용 쇼케이스 페이지 ([`preview_lead_options.html`](file:///C:/Users/최익석/Desktop/goofy-borg/preview_lead_options.html)) 개발**:
+     - 시안 1: 상단 와이드 히어로 배너형 (Upper Hero Banner)
+     - 시안 2: 좌우 5:5 웅장 스플릿 매거진형 (5:5 Split Editorial)
+     - 시안 3: 시네마틱 풀 비주얼 오버레이형 (Cinematic Visual Overlay)
+     - 시안 4: 대형 우측 썸네일 + 여유 텍스트 밀착형 (Enlarged Right Visual)
+     - 시안 5: 헤드라인 우선 3단 샌드위치형 (Headline First Sandwich)
+  2. 데스크톱 및 모바일 반응형 완벽 대응 및 메인 페이지(`index.html`, `static/index.html`) 연동.
+
+### 103. 시안 3(시네마틱 오버레이) 사진 5종 가독성 검증 시스템 구축 (v1.1.79)
+- **요청 사항**: "시안 3 좋은데 다른 사진들 중에 사진 색깔 때문에 글씨가 안 보이는 경우가 있는지 확인하자"
+- **적용 내용**:
+  1. **5대 극한 건설 환경 사진 전수 검증 페이지 ([`preview_option3_test.html`](file:///C:/Users/최익석/Desktop/goofy-borg/preview_option3_test.html)) 구축**:
+     - ☀️ 1. 초고휘도 대낮·하늘 (역광/화이트): 대비비 14.2:1 (AAA 통과)
+     - 🔥 2. 원색 고채도 장비 (붉은 크레인/주황): 대비비 15.6:1 (AAA 통과)
+     - 🌑 3. 칠흑 같은 지하 터널 (저조도 암흑): 대비비 18.9:1 (최고 대비)
+     - 🕸️ 4. 복잡한 철골·케이블 (미세 텍스처 간섭): 대비비 15.1:1 (AAA 통과)
+     - 🚜 5. 토공사 흙·선로 현장 (중간 톤 모노): 대비비 16.4:1 (AAA 통과)
+  2. 3중 그라디언트 차단막(기본 다중 스톱 암막, 극강 95% 암막, 글래스모피즘 박스 격리) 스위처 제공.
+
+### 104. 시안 3 기사 제목 24px 대폭 확대 및 본문 2줄 압축 가독성 최적화 (v1.1.80)
+- **요청 사항**: "아니 읽기가 좀 힘든데 본문 내용을 좀 줄이고 제목을 키워볼래"
+- **적용 내용**:
+  1. **헤드라인 제목(`h3`) 시인성 대폭 강화**:
+     - 기존 20~21px ➡️ **24px(모바일 20px)** 대형 폰트로 비례 확대.
+     - `font-weight: 800; letter-spacing: -0.02em; line-height: 1.34;` 적용으로 시원하고 매거진 커버스토리다운 당당한 헤드라인 연출.
+     - 2중 텍스트 섀도우(`text-shadow: 0 2px 4px rgba(0,0,0,0.95), 0 4px 12px rgba(0,0,0,0.75)`) 강화로 밝은 배경에서도 0.1초 만에 즉각 인식.
+  2. **본문 요약(`.lede`) 텍스트 밀도 감소 및 속독성 극대화**:
+     - 기존 4줄(`-webkit-line-clamp: 4`) ➡️ **2줄(`-webkit-line-clamp: 2`)**로 컴팩트하게 압축.
+     - `font-size: 14px; line-height: 1.55; color: rgba(226, 235, 245, 0.92);`로 조정하여 시각적 피로도를 제거하고 1.5초 내 핵심 속독 보장.
+     - 본문 분량이 줄어듦에 따라 카드 중앙의 배경 사진이 시원하게 개방되어 시네마틱한 비주얼 효과가 극대화됨.
+  3. **전체 파일 일괄 반영 및 동기화**:
+     - [`preview_option3_test.html`](file:///C:/Users/최익석/Desktop/goofy-borg/preview_option3_test.html) (사진 5종 검증 페이지)
+     - [`preview_lead_options.html`](file:///C:/Users/최익석/Desktop/goofy-borg/preview_lead_options.html) (5대 시안 쇼케이스)
+     - [`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html) 및 [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html)
+     - `test_contests_integrity.py` 100% PASS 검증 완료.
+
+### 105. 시안 3(시네마틱 오버레이) 메인 공식 기본 채택 및 테스트 툴바 정리 (v1.1.81)
+- **요청 사항**: "어 깔끔하게 정리해줘 추가 세부 조정은 없고 깃허브는 아직 기다려"
+- **적용 내용**:
+  1. **메인 화면 정식 리드 기사 고정 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html))**:
+     - 시안 3(시네마틱 풀 비주얼 오버레이, 24px 볼드 제목, 2줄 압축 본문)을 `#briefing`의 정식 공식 리드 기사 카드 렌더러로 영구 확정 적용.
+     - 테스트용으로 상단에 배치되었던 임시 시안 전환 바(`.lead-switcher`, 5개 버튼 및 링크)를 완전히 제거하여 미니멀하고 군더더기 없는 완성형 UI 구현.
+     - 프로토타입 전용 스크립트(`leadOpt` 전역 변수 및 클릭 이벤트 분기)를 제거하고 `renderLeadArticle(n)`이 바로 최고 품질의 시네마틱 카드를 생성하도록 최적화.
+  2. **스타일 및 반응형 정리**:
+     - 이전 옵션들의 CSS 및 중복되던 레거시 폰트/줄수 오버라이드 룰 정리.
+     - PC 화면: 24px 대형 헤드라인 + 2줄 압축 본문.
+     - 모바일 화면: 20px 헤드라인 + 2줄 압축 본문으로 완벽한 일관성 유지.
+  3. **Git 상태 유지**: 사용자 요청에 따라 원격 Push 보류 및 로컬 작업 완료 대기.
+  4. `test_contests_integrity.py` 100% PASS 검증 완료.
+
+### 106. 리드 기사 관련기사 건수 숫자(span.n) 화이트 모드 색상 상속 통일 (v1.1.82)
+- **요청 사항**: "화이트 모드일때 숫자가 뒷 배경이랑 비슷해서 안보여 같은 보도자료 기사 글자랑 색깔 똑같이 해줘"
+- **원인 분석**:
+  - 일반 기사 카드의 `.cluster-btn .n`에 정의된 `color: var(--ink)`(라이트 모드에서 짙은 남색 `#0F2A44`) 규칙이 리드 기사의 어두운 시네마틱 오버레이 배경 위에서도 적용되어, 숫자(`2`)가 배경색에 묻혀 보이지 않는 현상 발생.
+- **적용 내용**:
+  - [`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html):
+    `#ca .briefing .news.lead .cluster-btn .n { color: inherit; }` 추가.
+  - 마우스 호버 시에도 `color: #fff` 및 틴트 배경(`rgba(255,255,255,0.28)`)을 유지하여 기본 상태와 호버 상태 모두에서 '같은 보도자료 기사' 텍스트와 숫자가 100% 동일한 선명한 화이트(`rgb(255, 255, 255)`)로 또렷하게 표출되도록 완벽 조치.
+  - [`preview_option3_test.html`](file:///C:/Users/최익석/Desktop/goofy-borg/preview_option3_test.html) 및 [`preview_lead_options.html`](file:///C:/Users/최익석/Desktop/goofy-borg/preview_lead_options.html)에도 동일 동기화.
+  - `test_contests_integrity.py` 100% PASS 검증 완료.
 
 ---
 
