@@ -2,7 +2,7 @@
 
 
 
-> **📌 현재 버전**: `ver 1.1.89` (모바일 뉴스 스크롤 단축 4대 인터랙션 프로토타입 데모 구축 / 144회 누적 수정 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.1.90` (모바일 공모전 카테고리 목록 포스터 숨김 및 클릭 시 바텀시트에서만 포스터 표출 / 145회 누적 수정 / 내부 관리 버전 / 웹 화면 비노출)  
 
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
@@ -3928,6 +3928,25 @@ mindmap
 - **적용 내용**:
   - 문자열 HTML 삽입 방식 대신 안전한 표준 DOM API (`document.createElement('span')`, `.className = 'thumb-co-name'`, `.textContent = co`, `.replaceChildren(s)`) 구조로 개편 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html), [`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html), [`static/mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/mobile.html)).
   - 따옴표 충돌이 원천적으로 불가능해져 찌꺼기 텍스트 완전 소멸 및 언론사명 특수문자 안전성 확보.
+  - `test_contests_integrity.py` 100% PASS 검증 완료.
+  - **Git 상태**: 사용자 명시 지시 없는 임의 커밋/푸시 원천 금지 규칙 준수 (로컬 워크스페이스 대기).
+
+### 113. 모바일 공모전 카테고리 목록 포스터 숨김 및 클릭 상세 시트에만 포스터 표출 (v1.1.90)
+- **요청 사항**:
+  - "모바일에서 공모전 사진 보는게 되게 불편한데 클릭 했을때만 사진 보이게 하고 카테고리에서는 안보이게 해줘"
+- **원인 분석 및 개선 방향**:
+  - 모바일 좁은 화면(폭 360~400px)에서 공모전 목록 각 행 우측에 포스터 썸네일(`t-poster`)이 상시 노출되어 제목과 메타 정보가 좁아지고 가독성이 저하됨.
+  - 카테고리 목록 행(`contestRow`)에서는 포스터 썸네일을 완전히 제거하여 D-Day 배지, 카테고리/훈격 태그, 제목, 상금/주최기관 정보가 가로 전체 폭을 시원하게 활용하도록 개선.
+  - 공모전 행을 클릭하여 열리는 바텀 시트(상세 화면)에서만 포스터 사진을 깨끗한 종횡비로 온전하게 렌더링하고, 탭 시 원본 고해상도 이미지를 바로 확인할 수 있는 '크게 보기' 링크 추가.
+- **적용 내용**:
+  - [`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html) 및 [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html):
+    - `contestRow`: `${thumb(c.image,'t-poster')}` 제거 및 메타/상금 레이아웃 최적화.
+    - 바텀 시트(`type === 'c'`): 포스터 클릭 시 원본 고해상도 새 탭 확인 및 '크게 보기' 오버레이 배지 추가.
+    - 스크립트 캐시 버스팅 파라미터(`v=20261018_2116`) 동기화.
+  - [`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html) 및 [`static/mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/mobile.html):
+    - `contestRow`: `${thumb(c.image, 't-poster')}` 제거.
+    - 바텀 시트: 포스터 '크게 보기' 링크 및 반응형 컨테이너 적용.
+    - 스크립트 캐시 버스팅 파라미터(`v=20261018_2116`) 동기화.
   - `test_contests_integrity.py` 100% PASS 검증 완료.
   - **Git 상태**: 사용자 명시 지시 없는 임의 커밋/푸시 원천 금지 규칙 준수 (로컬 워크스페이스 대기).
 

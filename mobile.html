@@ -23,8 +23,8 @@ if ('caches' in window) {
 }
 try { localStorage.removeItem('cnh-live-cache-v1'); } catch(e){}
 </script>
-<script src="./static/cnh_data_bundle.js?v=20261017_0036"></script>
-<script src="./static/data_adapter.js?v=20261017_0036"></script>
+<script src="./static/cnh_data_bundle.js?v=20261018_2116"></script>
+<script src="./static/data_adapter.js?v=20261018_2116"></script>
 <style>
 /* Layout: one phone-width column (max 440px, centered on bigger screens) — large page title, list rows instead of cards, details in a bottom sheet, 5-tab bar fixed at the bottom */
 :root{
@@ -322,7 +322,7 @@ const contestRow = c => {
   const catName = c.category || (isJbnu ? '전북대' : '일반');
   return `<button class="row" data-open="c:${c.id}">${ddBox(c.end)}<div class="row-main">
   <div class="row-meta"><span class="cat" style="--cat:${isJbnu ? 'var(--c-water)' : 'var(--c-road)'}">${catName}</span>${c.award?`<span>${c.award}</span>`:''}${c.added<=2?'<span class="tagn">새 공고</span>':''}</div>
-  <div class="row-title">${c.title}</div><div class="row-sub">${c.prize ? `총 상금 <b class="num">${fmt(c.prize)}만원</b>` : `${c.srcName || '공모전'}`} · ${c.org}</div></div>${thumb(c.image, 't-poster')}</button>`;
+  <div class="row-title">${c.title}</div><div class="row-sub">${c.prize ? `총 상금 <b class="num">${fmt(c.prize)}만원</b>` : `${c.srcName || '공모전'}`} · ${c.org}</div></div></button>`;
 };
 const jobRow = j => `<button class="row" data-open="j:${j.id}"><div class="logo" style="background:${j.color}">${j.co[0]}</div><div class="row-main">
   <div class="row-meta"><span>${j.co}</span><span class="lv">${j.lvl}${j.exp?' '+j.exp:''}</span></div>
@@ -455,7 +455,7 @@ function openSheet(key){
     const c = CONTESTS.find(x=>x.id===id);
     kind = '공모전';
     body = `<div style="display:flex;gap:14px;align-items:center">${ddBox(c.end)}<h2 id="sh-title">${c.title}</h2></div>
-      ${c.image ? `<div class="sheet-img" style="margin:12px 0"><img src="${c.image}" alt="${c.title} 포스터" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.remove()"></div>` : ''}
+      ${c.image ? `<div class="sheet-img" style="margin:12px 0"><a href="${c.image}" target="_blank" rel="noopener noreferrer" title="포스터 크게 보기" style="display:block;text-decoration:none;position:relative"><img src="${c.image}" alt="${c.title} 포스터" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.closest('.sheet-img').remove()"><span style="position:absolute;bottom:8px;right:8px;background:rgba(15,42,68,0.78);color:#fff;font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;backdrop-filter:blur(4px);display:inline-flex;align-items:center;gap:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg> 크게 보기</span></a></div>` : ''}
       <div class="prize">${fmt(c.prize)}만원<small>총 상금</small></div>
       <dl class="spec">
         <div><dt>주최</dt><dd>${c.org}</dd></div>

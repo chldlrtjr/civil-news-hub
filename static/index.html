@@ -24,8 +24,8 @@ if ('caches' in window) {
 // 구버전 더미 데이터가 포함되었던 localStorage 캐시 즉각 삭제
 try { localStorage.removeItem('cnh-live-cache-v1'); } catch(e){}
 </script>
-<script src="./static/cnh_data_bundle.js?v=20261017_0036"></script>
-<script src="./static/data_adapter.js?v=20261017_0036"></script>
+<script src="./static/cnh_data_bundle.js?v=20261018_2116"></script>
+<script src="./static/data_adapter.js?v=20261018_2116"></script>
 <style>
 /* Layout: plain solid ground, sticky header + tab nav, dashboard = main column + deadline rail; phones get a bottom tab bar and bottom-sheet drawer */
 :root{
@@ -1404,9 +1404,13 @@ const newsRow = (n,i) => {
   <div class="row-meta"><span class="cat" style="--cat:var(--c-${n.cat})">${catName(n.cat)}</span><span class="src" title="${safeSrc}">${n.src}</span><span>관련 ${count}건</span></div>
   <div class="row-title">${rowTitle(n)}</div>${rowLede(n)?`<div class="row-sub lede">${rowLede(n)}</div>`:''}</div>${thumb(n.image,'t-news',n.isCurated,n.src)}</button>`;
 };
-const contestRow = c => `<button class="row" data-open="c:${c.id}">${ddBox(c.end)}<div class="row-main">
-  <div class="row-meta">${c.campus?`<span class="campus">전북대</span><span>${c.org.replace(/^전북대(학교)?\s*/, '')}</span>`:`<span class="cat" style="--cat:var(--accent)">${c.award}</span><span>${c.target.join(', ')}</span>`}${c.added<=2?'<span class="tagn">새 공고</span>':''}</div>
-  <div class="row-title">${c.title}</div><div class="row-sub">${c.prize?`총 상금 <b class="num">${fmt(c.prize)}만원</b>`:`<span class="src-line"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H8l-4 4z"/></svg>${c.srcName}</span>`}</div></div>${thumb(c.image,'t-poster')}</button>`;
+const contestRow = c => {
+  const isJbnu = c.category === '전북대' || c.campus;
+  const catName = c.category || (isJbnu ? '전북대' : '일반');
+  return `<button class="row" data-open="c:${c.id}">${ddBox(c.end)}<div class="row-main">
+  <div class="row-meta"><span class="cat" style="--cat:${isJbnu ? 'var(--c-water)' : 'var(--c-road)'}">${catName}</span>${c.award?`<span>${c.award}</span>`:''}${c.added<=2?'<span class="tagn">새 공고</span>':''}</div>
+  <div class="row-title">${c.title}</div><div class="row-sub">${c.prize?`총 상금 <b class="num">${fmt(c.prize)}만원</b>`:`<span class="src-line"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H8l-4 4z"/></svg>${c.srcName || '공모전'}</span>`} · ${c.org}</div></div></button>`;
+};
 const jobRow = j => `<button class="row" data-open="j:${j.id}"><div class="logo" style="background:${j.color}">${j.co[0]}</div><div class="row-main">
   <div class="row-meta"><span>${j.co}</span><span class="lv">${j.lvl}${j.exp&&j.exp!==j.lvl?' '+j.exp:''}</span></div>
   <div class="row-title">${j.role}</div><div class="row-sub">${j.loc}, 전형 ${j.steps.length}단계</div></div>${ddPill(j.end)}</button>`;
@@ -1534,7 +1538,7 @@ function openSheet(key){
     const c = CONTESTS.find(x=>x.id===id);
     kind = '공모전';
     body = `<div style="display:flex;gap:14px;align-items:center">${ddBox(c.end)}<h2 id="sh-title">${c.title}</h2></div>
-      ${c.image?`<div class="sheet-img"><img src="${c.image}" alt="${c.title} 포스터" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.remove()"></div>`:''}
+      ${c.image?`<div class="sheet-img" style="margin:12px 0"><a href="${c.image}" target="_blank" rel="noopener noreferrer" title="포스터 크게 보기" style="display:block;text-decoration:none;position:relative"><img src="${c.image}" alt="${c.title} 포스터" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.closest('.sheet-img').remove()"><span style="position:absolute;bottom:8px;right:8px;background:rgba(15,42,68,0.78);color:#fff;font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;backdrop-filter:blur(4px);display:inline-flex;align-items:center;gap:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg> 크게 보기</span></a></div>`:''}
       ${c.prize?`<div class="prize">${fmt(c.prize)}만원<small>총 상금</small></div>`:''}
       <dl class="spec">
         <div><dt>주최</dt><dd>${c.org}</dd></div>
