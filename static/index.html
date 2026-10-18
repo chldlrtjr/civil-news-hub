@@ -898,7 +898,7 @@ function newsCard(n, i){
   }
   const safeSrc = (n.src || '언론사').replace(/"/g, '&quot;');
   const thumbHtml = (n.image && !n.isCurated)
-    ? `<div class="news-thumb"><img src="${n.image}" data-orig-src="${n.image}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="if(!this.dataset.p){this.dataset.p='1';this.src='https://wsrv.nl/?url='+encodeURIComponent(this.dataset.origSrc)+'&w=360&output=webp&q=85';}else{this.parentNode.className='news-thumb news-thumb-co';this.parentNode.innerHTML='<span class=\"thumb-co-name\">'+${JSON.stringify(n.src)}+'</span>';}"></div>`
+    ? `<div class="news-thumb"><img src="${n.image}" data-orig-src="${n.image}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="if(!this.dataset.p){this.dataset.p='1';this.src='https://wsrv.nl/?url='+encodeURIComponent(this.dataset.origSrc)+'&w=360&output=webp&q=85';}else{this.parentNode.className='news-thumb news-thumb-co';const s=document.createElement('span');s.className='thumb-co-name';s.textContent=${JSON.stringify(n.src)};this.parentNode.replaceChildren(s);}"></div>`
     : `<div class="news-thumb news-thumb-co" title="${safeSrc}"><span class="thumb-co-name">${n.src}</span></div>`;
   return `<article class="news" data-item="${n.id}" style="--cat:var(--c-${n.cat})">
     <div class="news-header">
@@ -1383,7 +1383,7 @@ const rowLede = n => {
 };
 const thumb = (src, cls, isCurated, co) => {
   if (src && !isCurated) {
-    return `<span class="thumb ${cls}"><img src="${src}" data-orig-src="${src}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="if(!this.dataset.p){this.dataset.p='1';this.src='https://wsrv.nl/?url='+encodeURIComponent(this.dataset.origSrc)+'&w=240&output=webp&q=85';}else{${co ? `this.parentNode.className='thumb ${cls} thumb-co';this.parentNode.innerHTML='<span class=\"thumb-co-name\">'+${JSON.stringify(co)}+'</span>';` : `this.parentNode.remove();`}}"></span>`;
+    return `<span class="thumb ${cls}"><img src="${src}" data-orig-src="${src}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="if(!this.dataset.p){this.dataset.p='1';this.src='https://wsrv.nl/?url='+encodeURIComponent(this.dataset.origSrc)+'&w=240&output=webp&q=85';}else{${co ? `this.parentNode.className='thumb ${cls} thumb-co';const s=document.createElement('span');s.className='thumb-co-name';s.textContent=${JSON.stringify(co)};this.parentNode.replaceChildren(s);` : `this.parentNode.remove();`}}"></span>`;
   }
   if (co) {
     return `<span class="thumb ${cls} thumb-co"><span class="thumb-co-name">${co}</span></span>`;

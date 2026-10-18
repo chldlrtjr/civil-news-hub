@@ -303,7 +303,7 @@ const ddBox = off => `<div class="dd ${urg(off)} ${off===0?'today':''}"><b>${off
 const ddPill = off => `<span class="pd ${urg(off)}">${off===0?'D-Day':(off>=60?'상시':'D-'+off)}</span>`;
 const thumb = (src, cls, isCurated, co) => {
   if (src && !isCurated) {
-    return `<span class="thumb ${cls}"><img src="${src}" data-orig-src="${src}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="if(!this.dataset.p){this.dataset.p='1';this.src='https://wsrv.nl/?url='+encodeURIComponent(this.dataset.origSrc)+'&w=240&output=webp&q=85';}else{${co ? `this.parentNode.className='thumb ${cls} thumb-co';this.parentNode.innerHTML='<span class=\"thumb-co-name\">'+${JSON.stringify(co)}+'</span>';` : `this.parentNode.remove();`}}"></span>`;
+    return `<span class="thumb ${cls}"><img src="${src}" data-orig-src="${src}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="if(!this.dataset.p){this.dataset.p='1';this.src='https://wsrv.nl/?url='+encodeURIComponent(this.dataset.origSrc)+'&w=240&output=webp&q=85';}else{${co ? `this.parentNode.className='thumb ${cls} thumb-co';const s=document.createElement('span');s.className='thumb-co-name';s.textContent=${JSON.stringify(co)};this.parentNode.replaceChildren(s);` : `this.parentNode.remove();`}}"></span>`;
   }
   if (co) {
     return `<span class="thumb ${cls} thumb-co"><span class="thumb-co-name">${co}</span></span>`;

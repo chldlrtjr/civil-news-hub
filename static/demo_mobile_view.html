@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>모바일 뉴스 뷰 모드 비교 체험 (Civil News Hub)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Pretendard Variable", Pretendard, Roboto, sans-serif; }
+    .custom-scroll::-webkit-scrollbar { width: 4px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 p-4 sm:p-8 flex flex-col items-center min-h-screen">
+
+  <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col h-[840px]">
+    <!-- 스마트폰 상단 가상 노치 & 헤더 -->
+    <div class="bg-slate-900 text-white px-5 pt-3 pb-3">
+      <div class="flex justify-between items-center text-xs text-slate-400 mb-2">
+        <span>09:41</span>
+        <div class="flex items-center gap-1.5">
+          <i data-lucide="wifi" class="w-3.5 h-3.5"></i>
+          <i data-lucide="battery" class="w-3.5 h-3.5"></i>
+        </div>
+      </div>
+      <div class="flex items-center justify-between">
+        <h1 class="font-extrabold text-base flex items-center gap-1.5 text-white">
+          <i data-lucide="newspaper" class="w-4 h-4 text-blue-400"></i>
+          토목 뉴스 브리핑
+        </h1>
+        <span class="text-[11px] bg-blue-600/40 text-blue-300 px-2 py-0.5 rounded-full border border-blue-500/30">실시간 체험</span>
+      </div>
+    </div>
+
+    <!-- 모드 전환 탭 컨트롤러 (핵심 체험 영역) -->
+    <div class="bg-slate-50 border-b border-slate-200 p-3">
+      <div class="text-[11px] font-semibold text-slate-500 mb-2 flex justify-between items-center">
+        <span>보기 모드 선택 (클릭하여 스크롤 체감 비교)</span>
+        <span id="scrollLengthBadge" class="text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded border border-blue-200">높이 약 3,600px</span>
+      </div>
+      <div class="grid grid-cols-3 gap-1.5 bg-slate-200/80 p-1 rounded-xl text-xs font-semibold">
+        <button id="btnDefault" onclick="switchMode('default')" class="py-2 rounded-lg bg-white text-blue-600 shadow-xs flex items-center justify-center gap-1 transition">
+          <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i> 기존 카드
+        </button>
+        <button id="btnCompact" onclick="switchMode('compact')" class="py-2 rounded-lg text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1 transition">
+          <i data-lucide="list" class="w-3.5 h-3.5"></i> 컴팩트 목록
+        </button>
+        <button id="btnSlim" onclick="switchMode('slim')" class="py-2 rounded-lg text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1 transition">
+          <i data-lucide="minimize-2" class="w-3.5 h-3.5"></i> 슬림 카드
+        </button>
+      </div>
+    </div>
+
+    <!-- 모바일 본문 스크롤 영역 -->
+    <div id="newsContainer" class="flex-1 overflow-y-auto p-4 space-y-3 custom-scroll">
+      <!-- 동적 기사 렌더링 -->
+    </div>
+
+    <!-- 하단 상태 안내 바 -->
+    <div class="bg-white border-t border-slate-200 p-2.5 text-center text-xs text-slate-500 flex justify-between items-center px-4">
+      <span id="articleCountText">기사 15건 표시 중</span>
+      <button onclick="scrollToTop()" class="flex items-center gap-1 text-blue-600 font-semibold hover:underline">
+        <i data-lucide="arrow-up" class="w-3.5 h-3.5"></i> 맨 위로
+      </button>
+    </div>
+  </div>
+
+  <div class="mt-4 text-xs text-slate-500 text-center max-w-md">
+    💡 위 화면에서 <b>[컴팩트 목록]</b> 버튼을 눌러보세요. 한 화면에 들어오는 기사 수와 스크롤 길이가 얼마나 단축되는지 바로 체감하실 수 있습니다.
+  </div>
+
+  <script>
+    const mockArticles = [
+      { id: 1, cat: '도로·철도', title: 'GTX-B 착공 가시화… 수도권 30분 출퇴근 생활권 본격 개막', snippet: '수도권광역급행철도(GTX) B노선이 재정구간 발주를 마치고 조기 착공에 돌입합니다. 인천 송도에서 서울 여의도, 마석까지...', pub: '대한경제', time: '10분 전', views: 320 },
+      { id: 2, cat: '도로·철도', title: '코레일, 철도 궤도 이상 유무 AI 24시간 실시간 감시망 가동', snippet: '선로 이상 징후를 사전에 포착하는 차세대 열차 자율진단 시스템이 주요 고속선 구간에 전면 구축되었습니다.', pub: '철도신문', time: '25분 전', views: 245 },
+      { id: 3, cat: '스마트건설', title: '도로공사, 3기 신도시 고속도로 현장에 스마트 로봇 시공 전면 도입', snippet: '사람의 접근이 위험한 교량 하부 및 급경사면에 자율주행 건설 로봇을 투입하여 안전사고 제로화에 나섭니다.', pub: '건설타임즈', time: '40분 전', views: 410 },
+      { id: 4, cat: '스마트건설', title: '국토부, 공공 건설공사 BIM 설계 및 시공 디지털 트윈 의무화 확대', snippet: '설계 오류를 사전 방지하고 시공 오차를 mm 단위로 정밀 제어하는 BIM 표준 프레임워크가 고시되었습니다.', pub: '매일건설신문', time: '1시간 전', views: 189 },
+      { id: 5, cat: '수자원', title: 'K-water, 기후위기 대응 인공지능 기반 극한 호우 홍수 방어망 구축', snippet: '과거 기상 데이터와 위성 레이더를 결합하여 댐 유입량을 3시간 전 정밀 예측하는 AI 홍수 통제 시스템이 가동됩니다.', pub: '한국수자원공보', time: '2시간 전', views: 532 },
+      { id: 6, cat: '수자원', title: '부산·경남 광역상수도 노후관 개량 현대화 프로젝트 국비 1,200억 투입', snippet: '가뭄 및 노후 누수를 방지하기 위한 지하 송수관로 전면 지능화 개량 사업이 하반기 조기 착공됩니다.', pub: '연합뉴스', time: '3시간 전', views: 278 },
+      { id: 7, cat: '지하안전', title: '서울시, 지반침하(싱크홀) 고위험 50개 구간 GPR 정밀 탐사 착수', snippet: '지표투과레이더(GPR) 탐사 장비를 총동원하여 도로 하부 공동을 사전에 전수 탐지하고 선제 복구합니다.', pub: '동아일보', time: '3시간 전', views: 640 },
+      { id: 8, cat: '지하안전', title: '지하안전관리에 관한 특별법 시행령 개정안 국무회의 통과', snippet: '굴착 깊이 10m 이상 공사장의 계측 관리 기준을 대폭 강화하고 지반안전평가 점검 주기를 단축합니다.', pub: '정책브리핑', time: '4시간 전', views: 312 },
+      { id: 9, cat: '스마트·정책', title: '2026 건설 신기술 박람회 개최… 모듈러 및 탄소저감 콘크리트 주목', snippet: '친환경 탈탄소 시멘트와 프리캐스트 모듈러 공법 등 미래 토목 인프라 혁신 기술이 대거 공개되었습니다.', pub: '한국경제', time: '5시간 전', views: 450 },
+      { id: 10, cat: '스마트·정책', title: '공공 인프라 투자 상반기 70% 조기 집행… 지역 건설경기 활성화', snippet: '국토교통부가 도로, 철도, 공항 등 SOC 핵심 사업 예산을 상반기에 집중 투입하기로 결정했습니다.', pub: '머니투데이', time: '6시간 전', views: 512 },
+      { id: 11, cat: '도로·철도', title: '호남고속철도 2단계 턴키 공사 정상 궤도… 2027년 완공 목표', snippet: '나주에서 무안국제공항을 거쳐 목포로 이어지는 노반 신설 공사가 70% 공정률을 돌파했습니다.', pub: '전자신문', time: '7시간 전', views: 198 },
+      { id: 12, cat: '스마트건설', title: '현대건설, 세계 최초 무인 자율 굴착기 현장 실증 테스트 완료', snippet: '오차 2cm 이내의 정밀 토공 작업을 원격 중앙관제실에서 무인으로 수행하는 데 성공했습니다.', pub: '조선비즈', time: '8시간 전', views: 720 }
+    ];
+
+    let currentMode = 'default';
+
+    function switchMode(mode) {
+      currentMode = mode;
+      const btnDefault = document.getElementById('btnDefault');
+      const btnCompact = document.getElementById('btnCompact');
+      const btnSlim = document.getElementById('btnSlim');
+      const badge = document.getElementById('scrollLengthBadge');
+
+      [btnDefault, btnCompact, btnSlim].forEach(b => {
+        b.className = 'py-2 rounded-lg text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1 transition';
+      });
+
+      if (mode === 'default') {
+        btnDefault.className = 'py-2 rounded-lg bg-white text-blue-600 shadow-xs font-bold flex items-center justify-center gap-1 transition';
+        badge.textContent = '높이 약 2,800px (12건 기준)';
+        badge.className = 'text-red-500 font-bold bg-red-50 px-2 py-0.5 rounded border border-red-200';
+      } else if (mode === 'compact') {
+        btnCompact.className = 'py-2 rounded-lg bg-white text-blue-600 shadow-xs font-bold flex items-center justify-center gap-1 transition';
+        badge.textContent = '높이 약 850px (70% 압축! ⚡)';
+        badge.className = 'text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200';
+      } else {
+        btnSlim.className = 'py-2 rounded-lg bg-white text-blue-600 shadow-xs font-bold flex items-center justify-center gap-1 transition';
+        badge.textContent = '높이 약 1,750px (37% 압축)';
+        badge.className = 'text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200';
+      }
+
+      renderList();
+      scrollToTop();
+    }
+
+    function renderList() {
+      const container = document.getElementById('newsContainer');
+      container.innerHTML = '';
+
+      if (currentMode === 'default') {
+        // 기존 상세 카드형 (높이 약 235px)
+        mockArticles.forEach(a => {
+          const div = document.createElement('div');
+          div.className = 'bg-white border border-slate-200 rounded-2xl p-4 shadow-xs';
+          div.innerHTML = `
+            <div class="flex items-center justify-between text-xs mb-2">
+              <span class="px-2 py-0.5 rounded-md font-bold text-blue-700 bg-blue-50 border border-blue-200">${a.cat}</span>
+              <span class="text-slate-400 flex items-center gap-1"><i data-lucide="clock" class="w-3.5 h-3.5"></i>${a.time}</span>
+            </div>
+            <h3 class="font-bold text-base text-slate-900 leading-snug mb-2 line-clamp-2">${a.title}</h3>
+            <p class="text-xs text-slate-600 leading-relaxed mb-3 line-clamp-3">${a.snippet}</p>
+            <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+              <span class="font-medium">${a.pub}</span>
+              <div class="flex items-center gap-2 text-slate-400">
+                <i data-lucide="share-2" class="w-4 h-4"></i>
+                <i data-lucide="bookmark" class="w-4 h-4"></i>
+              </div>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+      } else if (currentMode === 'compact') {
+        // 컴팩트 목록형 (높이 약 68px - 한 화면에 5~6개)
+        const wrapper = document.createElement('div');
+        wrapper.className = 'bg-white rounded-2xl border border-slate-200 divide-y divide-slate-100 overflow-hidden shadow-xs';
+
+        mockArticles.forEach(a => {
+          const item = document.createElement('div');
+          item.className = 'p-3 hover:bg-slate-50 transition cursor-pointer flex items-start justify-between gap-3';
+          item.innerHTML = `
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-1.5 mb-1">
+                <span class="px-1.5 py-0.5 rounded text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 flex-shrink-0">${a.cat}</span>
+                <span class="text-[11px] text-slate-400 font-medium">${a.pub} · ${a.time}</span>
+              </div>
+              <h3 class="text-xs sm:text-sm font-bold text-slate-800 line-clamp-1 leading-snug hover:text-blue-600">${a.title}</h3>
+            </div>
+            <button class="flex-shrink-0 p-1 text-slate-400 hover:text-amber-500">
+              <i data-lucide="bookmark" class="w-4 h-4"></i>
+            </button>
+          `;
+          wrapper.appendChild(item);
+        });
+        container.appendChild(wrapper);
+      } else {
+        // 슬림 카드형 (높이 약 145px)
+        mockArticles.forEach(a => {
+          const div = document.createElement('div');
+          div.className = 'bg-white border border-slate-200 rounded-xl p-3 shadow-xs';
+          div.innerHTML = `
+            <div class="flex items-center justify-between text-xs mb-1.5">
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200">${a.cat}</span>
+              <span class="text-slate-400 text-[11px]">${a.pub} · ${a.time}</span>
+            </div>
+            <h3 class="font-bold text-sm text-slate-900 leading-snug mb-1 line-clamp-1">${a.title}</h3>
+            <p class="text-xs text-slate-500 leading-normal line-clamp-2 mb-2">${a.snippet}</p>
+            <div class="flex justify-end gap-3 text-slate-400 pt-1.5 border-t border-slate-100">
+              <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+              <i data-lucide="bookmark" class="w-3.5 h-3.5"></i>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+      }
+
+      lucide.createIcons();
+    }
+
+    function scrollToTop() {
+      document.getElementById('newsContainer').scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 초기화
+    renderList();
+    lucide.createIcons();
+  </script>
+</body>
+</html>

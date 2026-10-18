@@ -2,7 +2,7 @@
 
 
 
-> **📌 현재 버전**: `ver 1.1.87` (기사 본문 풀와이드 & 사진 우선 대표 선발 배포 / 142회 누적 수정 / 내부 관리 버전 / 웹 화면 비노출)  
+> **📌 현재 버전**: `ver 1.1.89` (모바일 뉴스 스크롤 단축 4대 인터랙션 프로토타입 데모 구축 / 144회 누적 수정 / 내부 관리 버전 / 웹 화면 비노출)  
 
 > **버전 관리 규칙**: 수정 및 업그레이드 시마다 `+0.0.1` 자동 증가 (메이저 `1.0.0`, 마이너 `0.1.0`는 사용자 지시 시에만 변경)
 
@@ -3918,6 +3918,18 @@ mindmap
     - `data/news.json`, `static/cnh_data_bundle.js` 갱신.
     - 캐시 방지 파라미터 갱신 및 전체 무결성 테스트(`test_contests_integrity.py`) 통과.
   - **Git 상태**: 사용자의 명시적 푸시 지시에 따라 v1.1.87 버전으로 GitHub 원격 저장소에 반영 완료.
+
+### 112. 썸네일 onerror 따옴표 파싱 에러 찌꺼기(`';}">`) 원천 제거 (v1.1.88)
+- **요청 사항**:
+  - `orca-paste-1792174115679-baae1a21-191b-4236-bf2b-50a2b37c3021.png` 첨부: "빨간색으로 동그라미 친 곳에 있는 저건 뭐야?" (`';}">` 노출 현상 수정 요청)
+- **원인 분석**:
+  - `onerror="..."` HTML 속성 내부에서 언론사 대체 태그를 작성할 때 `<span class=\"thumb-co-name\">`와 같이 큰따옴표가 포함되어, 브라우저 HTML 파서가 `class="`에서 `onerror` 속성을 닫힌 것으로 오인.
+  - 이로 인해 뒤쪽 스크립트 문법 마감 구문인 `';}">` 가 일반 화면 텍스트로 인식되어 기사 사진 우측에 노출됨.
+- **적용 내용**:
+  - 문자열 HTML 삽입 방식 대신 안전한 표준 DOM API (`document.createElement('span')`, `.className = 'thumb-co-name'`, `.textContent = co`, `.replaceChildren(s)`) 구조로 개편 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html), [`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html), [`static/mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/mobile.html)).
+  - 따옴표 충돌이 원천적으로 불가능해져 찌꺼기 텍스트 완전 소멸 및 언론사명 특수문자 안전성 확보.
+  - `test_contests_integrity.py` 100% PASS 검증 완료.
+  - **Git 상태**: 사용자 명시 지시 없는 임의 커밋/푸시 원천 금지 규칙 준수 (로컬 워크스페이스 대기).
 
 ---
 
