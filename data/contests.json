@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-10-18 17:01:20",
-  "last_updated_display": "10월 18일 17:01",
+  "last_updated": "2026-10-18 18:00:44",
+  "last_updated_display": "10월 18일 18:00",
   "total_count": 5,
   "featured_count": 5,
   "categories": [
@@ -65,9 +65,9 @@
       "is_active": true,
       "image": "",
       "dday_info": {
-        "text": "D-4",
-        "days": 4,
-        "is_urgent": false,
+        "text": "D-3",
+        "days": 3,
+        "is_urgent": true,
         "is_closed": false
       }
     },
@@ -135,8 +135,8 @@
       "link": "https://www.ex-contest.co.kr/design26",
       "is_active": true,
       "dday_info": {
-        "text": "D-11",
-        "days": 11,
+        "text": "D-10",
+        "days": 10,
         "is_urgent": false,
         "is_closed": false
       },
@@ -203,8 +203,8 @@
       "is_active": true,
       "image": "https://www.jbnu.ac.kr/common/file.do?file=aDnf2Nbsc5JCVXjNcuja6hp6EOxg4LFfVvZE2KPyqg/B6wkWztYndrgNSVSNzFTT",
       "dday_info": {
-        "text": "D-19",
-        "days": 19,
+        "text": "D-18",
+        "days": 18,
         "is_urgent": false,
         "is_closed": false
       }
@@ -265,8 +265,8 @@
       "is_active": true,
       "image": "https://www.jbnu.ac.kr/common/file.do?file=4cALo6DfxWUFYlylMujIYMjaKF2GJWIBKn6sJyYGF2UlCjZ8sV+4j56lZgKcZFvm",
       "dday_info": {
-        "text": "D-19",
-        "days": 19,
+        "text": "D-18",
+        "days": 18,
         "is_urgent": false,
         "is_closed": false
       }
@@ -319,8 +319,8 @@
       "link": "https://www.kr.or.kr/boardCnts/view.do?boardID=52&boardSeq=1122113",
       "is_active": true,
       "dday_info": {
-        "text": "D-74",
-        "days": 74,
+        "text": "D-73",
+        "days": 73,
         "is_urgent": false,
         "is_closed": false
       },
