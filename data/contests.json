@@ -1,76 +1,14 @@
 {
-  "last_updated": "2026-10-22 17:00:55",
-  "last_updated_display": "10월 22일 17:00",
-  "total_count": 5,
-  "featured_count": 5,
+  "last_updated": "2026-10-22 18:00:58",
+  "last_updated_display": "10월 22일 18:00",
+  "total_count": 4,
+  "featured_count": 4,
   "categories": [
     "ALL",
     "전북대",
     "일반"
   ],
   "contests": [
-    {
-      "id": "campus-217690",
-      "source": "campus",
-      "source_name": "교내공지",
-      "title": "2026년 데이터안심구역 활용 공동경진대회",
-      "organizer": "전북특별자치도 · 국민연금공단",
-      "category": "전북대",
-      "badge_color": "teal",
-      "prize": "총 20점 시상 및 국민연금공단 채용 우대",
-      "prize_details": [
-        {
-          "rank": "대상",
-          "award": "과학기술정보통신부 장관상",
-          "prize": "상장 및 상금"
-        },
-        {
-          "rank": "최우수상",
-          "award": "전북특별자치도지사상",
-          "prize": "상장 및 상금"
-        },
-        {
-          "rank": "우수상",
-          "award": "국민연금공단 이사장상",
-          "prize": "상장 및 상금"
-        }
-      ],
-      "benefits": [
-        "국민연금공단 및 주관 공공기관 신규 채용 시 서류전형 가점 우대",
-        "데이터안심구역 금융·연금 미개방 데이터 분석 분석환경 무상 지원",
-        "우수 분석 알고리즘 모델 사업화 IR 연계 멘토링"
-      ],
-      "target": "데이터 활용에 관심 있는 국민 누구나",
-      "target_details": "데이터 분석 및 활용에 관심 있는 대한민국 국민 누구나 (개인 또는 팀)",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.09.01 ~ 10.22 (18:00 마감)",
-      "deadline_date": "2026-10-22",
-      "deadline_time": "18:00",
-      "fields": [
-        "국민연금 빅데이터 분석",
-        "데이터안심구역 AI 모델",
-        "공공 인프라 데이터 혁신",
-        "금융·복지 정책 제안"
-      ],
-      "submission_info": "경진대회 참가신청서 및 분석 제안서 (온라인 전용 접수)",
-      "evaluation_steps": [
-        "1차 서류 심사",
-        "2차 데이터안심구역 본선 분석",
-        "최종 피칭 및 시상식"
-      ],
-      "contact": "데이터안심구역 경진대회 운영사무국 (전북창조경제혁신센터)",
-      "description": "전북 금융혁신 빅데이터 및 미개방 공공데이터를 활용하여 사회문제 해결 알고리즘과 비즈니스 모델을 발굴하는 전국 경진대회",
-      "link": "https://www.jbnu.ac.kr/web/Board/217690/detailView.do",
-      "is_active": true,
-      "image": "",
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
     {
       "id": "fc-ex-design26",
       "title": "제15회 도로경관디자인 대전",
@@ -135,8 +73,8 @@
       "link": "https://www.ex-contest.co.kr/design26",
       "is_active": true,
       "dday_info": {
-        "text": "D-7",
-        "days": 7,
+        "text": "D-6",
+        "days": 6,
         "is_urgent": false,
         "is_closed": false
       },
@@ -203,8 +141,8 @@
       "is_active": true,
       "image": "https://www.jbnu.ac.kr/common/file.do?file=aDnf2Nbsc5JCVXjNcuja6hp6EOxg4LFfVvZE2KPyqg/B6wkWztYndrgNSVSNzFTT",
       "dday_info": {
-        "text": "D-15",
-        "days": 15,
+        "text": "D-14",
+        "days": 14,
         "is_urgent": false,
         "is_closed": false
       }
@@ -265,8 +203,8 @@
       "is_active": true,
       "image": "https://www.jbnu.ac.kr/common/file.do?file=4cALo6DfxWUFYlylMujIYMjaKF2GJWIBKn6sJyYGF2UlCjZ8sV+4j56lZgKcZFvm",
       "dday_info": {
-        "text": "D-15",
-        "days": 15,
+        "text": "D-14",
+        "days": 14,
         "is_urgent": false,
         "is_closed": false
       }
@@ -319,8 +257,8 @@
       "link": "https://www.kr.or.kr/boardCnts/view.do?boardID=52&boardSeq=1122113",
       "is_active": true,
       "dday_info": {
-        "text": "D-70",
-        "days": 70,
+        "text": "D-69",
+        "days": 69,
         "is_urgent": false,
         "is_closed": false
       },
