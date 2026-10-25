@@ -1,26 +1,7 @@
 {
-  "updated_at": "2026-10-25 23:01",
-  "total_count": 4,
+  "updated_at": "2026-10-26 00:01",
+  "total_count": 3,
   "programs": [
-    {
-      "id": "VYBXcmR9VrOM",
-      "title": "2026 METAmobility 자율주행 자동차 경진대회",
-      "category": "경진대회",
-      "thumbnail": "https://swuniv.jbnu.ac.kr/r/VYBXcr9BpTIJ?t=1792936873",
-      "link": "https://swuniv.jbnu.ac.kr/main/jbnusw?gc=Program&do=view&page=1&program_id=VYBXcmR9VrOM",
-      "raw_status": "신청하기",
-      "status": "오늘마감",
-      "dday": "D-Day",
-      "days_left": 0,
-      "deadline_date": "2026-10-25",
-      "activity_period": "26.11.05(목) ~ 26.11.06(금)",
-      "apply_period": "26.10.14(수) ~ 26.10.25(일)",
-      "location": "부안 모항해나루가족호텔",
-      "capacity": "무제한",
-      "point": "10",
-      "source": "program_board",
-      "collected_at": "2026-10-25 23:01"
-    },
     {
       "id": "VVH5Km6qPOqZ",
       "title": "[Codetree] 학생들을 위한 무료 학습 프로그램 (코드트리 양떼 목장 챌린지: 4주 코테 습관 만들기)",
@@ -29,8 +10,8 @@
       "link": "https://swuniv.jbnu.ac.kr/main/jbnusw?gc=605XOAS&do=view&page=1&bwrite_id=VVH5Km6qPOqZ",
       "raw_status": "공지사항 접수중",
       "status": "접수중",
-      "dday": "D-6",
-      "days_left": 6,
+      "dday": "D-5",
+      "days_left": 5,
       "deadline_date": "2026-10-31",
       "activity_period": "2026.09.01 ~ 10.31",
       "apply_period": "2026.09.01 ~ 10.31",
@@ -38,7 +19,7 @@
       "capacity": "상세 공고 참조",
       "point": "-",
       "source": "notice_board",
-      "collected_at": "2026-10-25 23:01"
+      "collected_at": "2026-10-26 00:01"
     },
     {
       "id": "VEr73R7lRTgr",
@@ -48,8 +29,8 @@
       "link": "https://swuniv.jbnu.ac.kr/main/jbnusw?gc=605XOAS&do=view&page=1&bwrite_id=VEr73R7lRTgr",
       "raw_status": "공지사항 접수중",
       "status": "접수중",
-      "dday": "D-33",
-      "days_left": 33,
+      "dday": "D-32",
+      "days_left": 32,
       "deadline_date": "2026-11-27",
       "activity_period": "2026.04.03 ~ 2026.12.18",
       "apply_period": "2026.03.30 ~ 11.27",
@@ -57,7 +38,7 @@
       "capacity": "SW학과 15명 / 비SW학과 10명",
       "point": "참가등록비+여비 최대 100만원 지원",
       "source": "notice_board",
-      "collected_at": "2026-10-25 23:01"
+      "collected_at": "2026-10-26 00:01"
     },
     {
       "id": "VJOBioAdVu0j",
@@ -76,7 +57,7 @@
       "capacity": "상세 공고 참조",
       "point": "-",
       "source": "notice_board",
-      "collected_at": "2026-10-25 23:01"
+      "collected_at": "2026-10-26 00:01"
     }
   ]
 }
