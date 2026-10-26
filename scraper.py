@@ -477,8 +477,6 @@ def scrape_civil_news():
     # 유사/중복 기사 군집화 & 사진 우선 대표 선발 (조회순으로 내려가며 사진 있는 기사 우선 대표 승격)
     final_articles, duplicate_count = cluster_related_articles(all_articles)
 
-    # 잔여 기사 대표 사진(og:image) 병렬 추출 점검 및 image 필드 보강
-    final_articles = enrich_articles_with_images(final_articles)
     # 사진이 없는 기사는 큐레이션 예시 사진 대신 언론사(회사) 이름을 썸네일로 표출합니다.
 
     # 당일 아침 7시 수집 기사 기반 대표 트렌딩 키워드 동적 추출 (8대 전문 분야 1-Keyword-Per-Domain)
@@ -800,39 +798,6 @@ def extract_images_for_article_list(articles, max_workers=15):
                     targets_by_id[aid]["image"] = img
             except Exception:
                 pass
-
-def enrich_articles_with_images(articles, max_workers=10):
-    """
-    수집된 기사 목록에 대해 병렬로 대표 사진(og:image) URL을 보강 (image 필드)
-    """
-    from concurrent.futures import ThreadPoolExecutor, as_completed
-    print(f"\n🖼️ [News Image] 총 {len(articles)}건 기사의 대표 이미지(og:image) 추출 시작 (동시 작업 {max_workers}개)...")
-
-    def process_article(a):
-        # 이미 image 필드가 유효하게 채워져 있다면 스킵
-        if a.get("image"):
-            return a["id"], a["image"]
-        img = extract_news_og_image(a.get("link", ""))
-        return a["id"], img
-
-    img_map = {}
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = {executor.submit(process_article, a): a for a in articles}
-        for f in as_completed(futures):
-            try:
-                aid, img = f.result()
-                img_map[aid] = img
-            except Exception:
-                pass
-
-    found_cnt = 0
-    for a in articles:
-        a["image"] = img_map.get(a["id"], "")
-        if a["image"]:
-            found_cnt += 1
-
-    print(f"✅ [News Image] {len(articles)}건 중 {found_cnt}건의 대표 이미지 확보 완료!\n")
-    return articles
 
 def extract_trending_keywords(articles, max_keywords=8):
     """

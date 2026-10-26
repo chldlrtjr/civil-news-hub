@@ -7,13 +7,17 @@ import os
 import sys
 import webbrowser
 import threading
+from dotenv import load_dotenv
 
-PORT = 5000
-REST_API_KEY = "7412ad09c20b5373e35dae2239931cbd"
-CLIENT_SECRET = "3C0yV1xn3uxMwEv1xkGW7FFgxsTdtCWk"
-REDIRECT_URI = "http://localhost:5000"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
-TOKEN_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "kakao_token.json")
+PORT = int(os.environ.get("KAKAO_AUTH_PORT", 5000))
+REST_API_KEY = os.environ.get("KAKAO_REST_API_KEY", "").strip()
+CLIENT_SECRET = os.environ.get("KAKAO_CLIENT_SECRET", "").strip()
+REDIRECT_URI = f"http://localhost:{PORT}"
+
+TOKEN_FILE = os.path.join(BASE_DIR, "kakao_token.json")
 
 server_instance = None
 
@@ -47,7 +51,7 @@ class OAuthHandler(http.server.SimpleHTTPRequestHandler):
                 msg_payload = {
                     "template_object": json.dumps({
                         "object_type": "text",
-                        "text": "🎉 [Civil News Hub] 카카오톡 서버 알림 연동이 성공했습니다!\n\n앞으로 우분투 서버가 재시작되어 주소가 변경되면 이 채팅방으로 새 주소 링크가 자동 전송됩니다.",
+                        "text": "🎉 [Civil News Hub] 카카오톡 서버 알림 연동이 성공했습니다!\n\n새로운 REST API 키 및 보안 코드가 성공적으로 적용되었습니다.",
                         "link": {
                             "web_url": "https://chldlrtjr.github.io/civil-news-hub/",
                             "mobile_web_url": "https://chldlrtjr.github.io/civil-news-hub/"
@@ -79,7 +83,7 @@ class OAuthHandler(http.server.SimpleHTTPRequestHandler):
                     <div class="card">
                         <h1>🎉 카카오톡 연동 완료!</h1>
                         <div class="badge">💬 나와의 채팅방으로 테스트 메시지 발송됨</div>
-                        <p style="margin-top: 20px;">인증 토큰이 성공적으로 발급되었습니다.<br>지금 카카오톡을 확인해 보세요!<br><br><b>이 브라우저 창은 닫으셔도 됩니다.</b></p>
+                        <p style="margin-top: 20px;">새로운 인증 토큰이 성공적으로 발급되었습니다.<br>지금 카카오톡 '나와의 채팅'을 확인해 보세요!<br><br><b>이 브라우저 창은 닫으셔도 됩니다.</b></p>
                     </div>
                 </body>
                 </html>
@@ -111,10 +115,23 @@ class OAuthHandler(http.server.SimpleHTTPRequestHandler):
 
 def main():
     global server_instance
+    if not REST_API_KEY or not CLIENT_SECRET:
+        print("[-] 오류: KAKAO_REST_API_KEY 또는 KAKAO_CLIENT_SECRET 환경변수가 설정되지 않았습니다.")
+        print("[-] .env 파일에 키를 설정한 후 다시 실행해주세요.")
+        sys.exit(1)
+
+    auth_url = f"https://kauth.kakao.com/oauth/authorize?client_id={REST_API_KEY}&redirect_uri={REDIRECT_URI}&response_type=code&scope=talk_message"
+    print("=" * 60)
+    print("🔑 [Civil News Hub] 카카오톡 인증 토큰 발급기")
+    print(f"[*] 인가 요청 URL: {auth_url}")
+    print(f"[*] 로컬 수신 서버 가동 중 (포트 {PORT})...")
+    print("=" * 60)
+    
+    # 0.8초 후 브라우저 자동 오픈
+    threading.Timer(0.8, lambda: webbrowser.open(auth_url)).start()
+
     with socketserver.TCPServer(("", PORT), OAuthHandler) as httpd:
         server_instance = httpd
-        print(f"[*] 로컬 인증 수신 서버 가동 중 (포트 {PORT})...")
-
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:

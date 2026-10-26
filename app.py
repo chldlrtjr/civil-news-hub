@@ -6,7 +6,7 @@ import webbrowser
 import subprocess
 import threading
 import requests
-from flask import Flask, request, jsonify, send_from_directory, send_file, Response
+from flask import Flask, request, jsonify, send_from_directory, send_file, Response, redirect
 from dotenv import load_dotenv
 
 import scraper
@@ -65,44 +65,26 @@ def add_cors_headers(response):
 @app.route("/")
 @app.route("/index.html")
 def serve_index():
-    index_path = os.path.join(BASE_DIR, "index.html")
-    if not os.path.exists(index_path):
-        index_path = os.path.join(STATIC_DIR, "index.html")
-    return send_file(index_path)
+    return send_file(os.path.join(BASE_DIR, "index.html"))
 
 @app.route("/jobs")
 @app.route("/jobs.html")
 @app.route("/recruit")
 @app.route("/recruit.html")
 def serve_jobs():
-    jobs_path = os.path.join(BASE_DIR, "jobs.html")
-    if not os.path.exists(jobs_path):
-        jobs_path = os.path.join(STATIC_DIR, "jobs.html")
-    return send_file(jobs_path)
+    return redirect("/#jobs")
 
 @app.route("/contests")
 @app.route("/contests.html")
 @app.route("/contest")
 @app.route("/contest.html")
 def serve_contests():
-    contests_path = os.path.join(BASE_DIR, "contests.html")
-    if not os.path.exists(contests_path):
-        contests_path = os.path.join(STATIC_DIR, "contests.html")
-    return send_file(contests_path)
+    return redirect("/#contests")
 
 @app.route("/mobile")
 @app.route("/mobile.html")
 def serve_mobile():
-    mobile_path = os.path.join(BASE_DIR, "mobile.html")
-    if not os.path.exists(mobile_path):
-        mobile_path = os.path.join(STATIC_DIR, "mobile.html")
-    return send_file(mobile_path)
-
-@app.route("/preview")
-@app.route("/preview_news_images.html")
-def serve_preview():
-    prev_path = os.path.join(BASE_DIR, "preview_news_images.html")
-    return send_file(prev_path)
+    return redirect("/#news")
 
 # --- 파비콘 / 매니페스트 / 서비스워커 ---
 @app.route("/favicon.ico")
@@ -117,17 +99,11 @@ def serve_favicon():
 
 @app.route("/manifest.json")
 def serve_manifest():
-    m_path = os.path.join(BASE_DIR, "manifest.json")
-    if not os.path.exists(m_path):
-        m_path = os.path.join(STATIC_DIR, "manifest.json")
-    return send_file(m_path, mimetype="application/manifest+json")
+    return send_file(os.path.join(BASE_DIR, "manifest.json"), mimetype="application/manifest+json")
 
 @app.route("/sw.js")
 def serve_sw():
-    sw_path = os.path.join(BASE_DIR, "sw.js")
-    if not os.path.exists(sw_path):
-        sw_path = os.path.join(STATIC_DIR, "sw.js")
-    return send_file(sw_path, mimetype="application/javascript")
+    return send_file(os.path.join(BASE_DIR, "sw.js"), mimetype="application/javascript")
 
 @app.route("/api/news")
 @app.route("/data/news.json")
@@ -204,7 +180,7 @@ def get_live_tunnel_url():
                     return m.group(0)
         except Exception:
             pass
-    return "https://addresses-proposition-anybody-tube.trycloudflare.com"
+    return "https://chldlrtjr.github.io/civil-news-hub"
 
 @app.route("/api/network-info")
 def network_info():

@@ -17,7 +17,7 @@ if ('serviceWorker' in navigator) {
 if ('caches' in window) {
   caches.keys().then(keys => {
     keys.forEach(k => {
-      if (k.includes('civil-news-hub') && !k.includes('v1.1.60')) caches.delete(k);
+      if (k.includes('civil-news-hub') && !k.includes('v1.1.91')) caches.delete(k);
     });
   });
 }

@@ -25,8 +25,6 @@ from bs4 import BeautifulSoup
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 SWUNIV_JSON_PATH = os.path.join(DATA_DIR, "swuniv_programs.json")
-STATIC_DATA_DIR = os.path.join(BASE_DIR, "static", "data")
-STATIC_SWUNIV_JSON_PATH = os.path.join(STATIC_DATA_DIR, "swuniv_programs.json")
 
 KST = timezone(timedelta(hours=9))
 
@@ -513,10 +511,7 @@ def save_swuniv_programs():
     with open(SWUNIV_JSON_PATH, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, indent=2)
 
-    with open(STATIC_SWUNIV_JSON_PATH, "w", encoding="utf-8") as f:
-        json.dump(payload, f, ensure_ascii=False, indent=2)
-
-    print(f"[+] Saved to {SWUNIV_JSON_PATH} and {STATIC_SWUNIV_JSON_PATH}")
+    print(f"[+] Saved to {SWUNIV_JSON_PATH}")
 
     # 정적 데이터 번들 자동 갱신
     try:

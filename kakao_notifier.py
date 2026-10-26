@@ -22,8 +22,8 @@ TOKEN_FILE = os.path.join(BASE_DIR, "kakao_token.json")
 LAST_URL_FILE = os.path.join(BASE_DIR, "data", "last_tunnel_url.txt")
 TUNNEL_LOG_FILE = os.environ.get("TUNNEL_LOG_PATH", "/var/log/civil-tunnel.log")
 
-REST_API_KEY = os.environ.get("KAKAO_REST_API_KEY", "7412ad09c20b5373e35dae2239931cbd")
-CLIENT_SECRET = os.environ.get("KAKAO_CLIENT_SECRET", "3C0yV1xn3uxMwEv1xkGW7FFgxsTdtCWk")
+REST_API_KEY = os.environ.get("KAKAO_REST_API_KEY", "").strip()
+CLIENT_SECRET = os.environ.get("KAKAO_CLIENT_SECRET", "").strip()
 
 def load_tokens():
     if not os.path.exists(TOKEN_FILE):
@@ -44,6 +44,10 @@ def save_tokens(tokens):
 
 def refresh_access_token(tokens):
     """refresh_token을 사용하여 access_token을 새로 갱신 (영구 자동 연장)"""
+    if not REST_API_KEY or not CLIENT_SECRET:
+        print("[-] KAKAO_REST_API_KEY 또는 KAKAO_CLIENT_SECRET 환경변수가 설정되지 않아 토큰을 갱신할 수 없습니다.")
+        return None
+
     refresh_token = tokens.get("refresh_token")
     if not refresh_token:
         print("[-] refresh_token이 없습니다.")
