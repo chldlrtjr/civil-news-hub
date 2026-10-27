@@ -694,6 +694,7 @@ h1,h2,h3{line-height:1.3;letter-spacing:-.01em}
   <section class="view" id="v-jobs" hidden>
     <div class="toolbar"><div class="seg" id="job-seg"></div><div class="spacer"></div><div class="chips" id="lvl-chips"></div></div>
     <div class="job-grid" id="job-list"></div>
+    <div id="career-pages"></div>
   </section>
 
   <section class="view" id="v-jbnu" hidden>
@@ -836,7 +837,7 @@ let CATS = [
   {id:'tunnel',name:'터널·지반'},{id:'smart',name:'스마트건설'}
 ];
 const catName = id => (CATS.find(c=>c.id===id) || {name:'토목종합'}).name;
-const GRP = {public:'공기업',major:'대형건설사',design:'설계엔지니어링'};
+const GRP = {public:'공기업·공공',major:'건설·민간',design:'설계엔지니어링'};
 
 // 0ms 즉시 실제 데이터 로드 (정적 컴파일 번들 window.CNH_STATIC_DATA 또는 로컬 스토리지 캐시)
 const _initData = (typeof CivilData !== 'undefined' && typeof CivilData.getInitialData === 'function')
@@ -847,6 +848,7 @@ let TRENDS = (_initData && _initData.TRENDS && _initData.TRENDS.length) ? _initD
 let NEWS = (_initData && _initData.NEWS && _initData.NEWS.length) ? _initData.NEWS : [];
 let CONTESTS = (_initData && _initData.CONTESTS && _initData.CONTESTS.length) ? _initData.CONTESTS : [];
 let JOBS = (_initData && _initData.JOBS && _initData.JOBS.length) ? _initData.JOBS : [];
+let CAREER_PAGES = (_initData && _initData.CAREER_PAGES) || [];
 let ALBA = (_initData && _initData.ALBA && _initData.ALBA.length) ? _initData.ALBA : [];
 let SW = (_initData && _initData.SW && _initData.SW.length) ? _initData.SW : [];
 
@@ -939,7 +941,7 @@ function jobCard(j){
       <div class="card-top-r">${ddayBadge(j.end)}${bmBtn(j.id)}</div>
     </div>
     <h3>${j.role}</h3>
-    <div class="pills"><span class="pill ${j.lvl==='신입'?'new':'exp'}">${j.lvl}${j.exp?' '+j.exp:''}</span>${j.welfare.slice(0,2).map(w=>`<span class="pill">${w}</span>`).join('')}</div>
+    <div class="pills"><span class="pill ${j.lvl==='인턴'?'award':j.lvl==='신입'?'new':'exp'}">${j.lvl}${j.exp?' '+j.exp:''}</span>${j.welfare.slice(0,2).map(w=>`<span class="pill">${w}</span>`).join('')}</div>
     <div class="steps">${j.steps.map((s,k)=>`<span class="step ${s==='NCS'?'ncs':''}"><b>${k+1}</b>${s}</span>`).join('')}</div>
   </article>`;
 }
@@ -1055,9 +1057,11 @@ function renderContests(){
 let jobGrp = 'public', lvl = '전체';
 function renderJobs(){
   $('#job-seg').innerHTML = Object.entries(GRP).map(([k,v])=>`<button data-grp="${k}" aria-pressed="${k===jobGrp}">${v} <span class="mono">${JOBS.filter(j=>j.grp===k).length}</span></button>`).join('');
-  $('#lvl-chips').innerHTML = ['전체','신입','경력'].map(l=>`<button class="chip" data-lvl="${l}" aria-pressed="${l===lvl}">${l}</button>`).join('');
-  const list = JOBS.filter(j=>j.grp===jobGrp&&(lvl==='전체'||j.lvl===lvl)).sort((a,b)=>a.end-b.end);
+  $('#lvl-chips').innerHTML = ['전체','신입','경력','인턴'].map(l=>`<button class="chip" data-lvl="${l}" aria-pressed="${l===lvl}">${l}</button>`).join('');
+  const list = JOBS.filter(j=>j.grp===jobGrp&&(lvl==='전체'||j.lvl.includes(lvl))).sort((a,b)=>a.end-b.end);
   $('#job-list').innerHTML = list.map(jobCard).join('') || '<p class="notice">이 조건의 공고가 아직 없어요.</p>';
+  const pages = CAREER_PAGES.filter(p=>p.grp===jobGrp);
+  $('#career-pages').innerHTML = pages.length ? `<p class="notice">수집되지 않은 공고는 공식 채용 페이지에서 확인하세요</p><div class="pills" style="margin-top:8px">${pages.map(p=>`<a class="pill" href="${p.link}" target="_blank" rel="noopener noreferrer">${p.co} ↗</a>`).join('')}</div>` : '';
 }
 
 function renderJbnu(){
@@ -1150,11 +1154,11 @@ function openDrawer(key, fromSaved){
       <h2 id="dr-title">${j.role}</h2>
       <dl class="spec">
         <dt>지원 자격</dt><dd>${j.lvl}${j.exp?' ('+j.exp+')':''} · 토목 관련 전공</dd>
-        <dt>마감</dt><dd class="mono">${md(day(j.end))}(${DAY[day(j.end).getDay()]}) 18:00</dd>
+        <dt>마감</dt><dd class="mono">${md(day(j.end))}(${DAY[day(j.end).getDay()]})</dd>
         <dt>상세 요강</dt><dd>${j.summary ? j.summary : '공식 채용 공고 원문 참조'}</dd>
       </dl>
       <div><div class="eyebrow" style="margin-bottom:8px">전형 절차</div><div class="steps">${j.steps.map((s,k)=>`<span class="step ${s==='NCS'?'ncs':''}"><b>${k+1}</b>${s}</span>`).join('')}</div></div>
-      <div><div class="eyebrow" style="margin-bottom:8px">복리후생</div><div class="pills">${j.welfare.map(w=>`<span class="pill">${w}</span>`).join('')}</div></div>
+      <div><div class="eyebrow" style="margin-bottom:8px">고용 형태</div><div class="pills">${j.welfare.map(w=>`<span class="pill">${w}</span>`).join('')}</div></div>
       <div class="row"><button class="cta ghost" data-bm="${j.id}" aria-pressed="${saved.has(j.id)}">공고 저장</button><a href="${j.link || '#'}" target="_blank" rel="noopener noreferrer" class="cta" style="text-align:center;text-decoration:none;display:inline-block">채용 공고 바로가기 ↗</a></div>`;
   }
   $('#dr-body').innerHTML = (fromSaved ? '<button class="back" data-saved>← 저장한 항목</button>' : '') + html;
@@ -1298,6 +1302,7 @@ async function syncDesktopLiveData(){
       if (live.NEWS && live.NEWS.length) NEWS = live.NEWS;
       if (live.CONTESTS && live.CONTESTS.length) CONTESTS = live.CONTESTS;
       if (live.JOBS && live.JOBS.length) JOBS = live.JOBS;
+      if (live.CAREER_PAGES && live.CAREER_PAGES.length) CAREER_PAGES = live.CAREER_PAGES;
       if (live.ALBA && live.ALBA.length) ALBA = live.ALBA;
       if (live.SW && live.SW.length) SW = live.SW;
 
@@ -1338,7 +1343,7 @@ const urg = off => off <= 3 ? 'hot' : off <= 7 ? 'soon' : '';
 /* ---------- 실시간 정적 번들 및 캐시 기반 팩트 데이터 즉시 초기화 (모바일 인라인 뷰) ---------- */
 let CATS = [{id:'general',name:'토목종합'},{id:'road',name:'도로·철도'},{id:'water',name:'수자원·항만'},{id:'tunnel',name:'터널·지반'},{id:'smart',name:'스마트건설'}];
 const catName = id => (CATS.find(c=>c.id===id) || {name:'토목종합'}).name;
-const GRP = {public:'공기업',major:'대형건설사',design:'설계사'};
+const GRP = {public:'공기업·공공',major:'건설·민간',design:'설계사'};
 
 const _mInitData = (typeof CivilData !== 'undefined' && typeof CivilData.getInitialData === 'function')
   ? CivilData.getInitialData()
@@ -1350,6 +1355,7 @@ let TRENDS = (_mInitData && _mInitData.TRENDS && _mInitData.TRENDS.length)
 let NEWS = (_mInitData && _mInitData.NEWS && _mInitData.NEWS.length) ? _mInitData.NEWS : [];
 let CONTESTS = (_mInitData && _mInitData.CONTESTS && _mInitData.CONTESTS.length) ? _mInitData.CONTESTS : [];
 let JOBS = (_mInitData && _mInitData.JOBS && _mInitData.JOBS.length) ? _mInitData.JOBS : [];
+let CAREER_PAGES = (_mInitData && _mInitData.CAREER_PAGES) || [];
 let ALBA = (_mInitData && _mInitData.ALBA && _mInitData.ALBA.length) ? _mInitData.ALBA : [];
 let SW = (_mInitData && _mInitData.SW && _mInitData.SW.length) ? _mInitData.SW : [];
 
@@ -1472,13 +1478,15 @@ const VIEWS = {
       ${rows.length ? list(rows.map(contestRow).join('')) : '<p class="empty">이 대상으로 열린 공모전이 아직 없어요. 다른 대상을 골라 보세요.</p>'}`;
   },
   jobs(){
-    const rows = JOBS.filter(j=>j.grp===jobGrp&&(lvl==='전체'||j.lvl===lvl)).sort((a,b)=>a.end-b.end);
+    const rows = JOBS.filter(j=>j.grp===jobGrp&&(lvl==='전체'||j.lvl.includes(lvl))).sort((a,b)=>a.end-b.end);
+    const pages = CAREER_PAGES.filter(p=>p.grp===jobGrp);
     return head('채용', `토목 전공자를 뽑는 공고 ${JOBS.length}개`) + `
       <div class="filters">
         <div class="seg">${Object.entries(GRP).map(([k,v])=>`<button data-grp="${k}" aria-pressed="${k===jobGrp}">${v} ${JOBS.filter(j=>j.grp===k).length}</button>`).join('')}</div>
-        <div class="chips">${['전체','신입','경력'].map(l=>`<button class="chip" data-lvl="${l}" aria-pressed="${l===lvl}">${l}</button>`).join('')}</div>
+        <div class="chips">${['전체','신입','경력','인턴'].map(l=>`<button class="chip" data-lvl="${l}" aria-pressed="${l===lvl}">${l}</button>`).join('')}</div>
       </div>
-      ${rows.length ? list(rows.map(jobRow).join('')) : '<p class="empty">이 조건의 공고가 아직 없어요. 신입·경력 필터를 바꿔 보세요.</p>'}`;
+      ${rows.length ? list(rows.map(jobRow).join('')) : '<p class="empty">이 조건의 공고가 아직 없어요. 신입·경력·인턴 필터를 바꿔 보세요.</p>'}
+      ${pages.length ? `<div style="margin:16px"><div class="sub-h">공식 채용 페이지</div><div class="pills">${pages.map(p=>`<a class="pill" href="${p.link}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none">${p.co} ↗</a>`).join('')}</div></div>` : ''}`;
   },
   jbnu(){
     return head('전북대', '전북대학교 학생을 위한 교내 알바와 SW 프로그램') + `
@@ -1585,11 +1593,11 @@ function openSheet(key){
       <dl class="spec">
         <div><dt>지원 자격</dt><dd>${j.lvl}${j.exp&&j.exp!==j.lvl?' ('+j.exp+')':''}, 토목 관련 전공</dd></div>
         <div><dt>근무지</dt><dd>${j.loc}</dd></div>
-        <div><dt>마감</dt><dd><span class="num">${md(day(j.end))} 18:00</span> ${ddPill(j.end)}</dd></div>
+        <div><dt>마감</dt><dd><span class="num">${md(day(j.end))}</span> ${ddPill(j.end)}</dd></div>
         <div><dt>상세 요강</dt><dd>${j.summary ? j.summary : '공식 채용 공고 원문 참조'}</dd></div>
       </dl>
       <div><div class="sub-h">전형 절차</div><ol class="steps">${j.steps.map(s=>`<li class="${s==='NCS'?'ncs':''}">${s}</li>`).join('')}</ol></div>
-      <div><div class="sub-h">복리후생</div><div class="pills">${j.welfare.map(w=>`<span class="pill">${w}</span>`).join('')}</div></div>`;
+      <div><div class="sub-h">고용 형태</div><div class="pills">${j.welfare.map(w=>`<span class="pill">${w}</span>`).join('')}</div></div>`;
     foot = `<button class="btn ghost" data-save="${j.id}" aria-pressed="${saved.has(j.id)}">${saved.has(j.id)?'저장됨':'저장'}</button><a href="${j.link || '#'}" target="_blank" rel="noopener noreferrer" class="btn" style="text-decoration:none;display:grid;place-items:center">채용 공고 지원하기 ↗</a>`;
   }
   $('#m-sh-kind').textContent = kind; $('#m-sh-body').innerHTML = body; $('#m-sh-foot').innerHTML = foot;
@@ -1704,6 +1712,7 @@ async function syncMobileLiveData(){
       if (live.NEWS && live.NEWS.length) NEWS = live.NEWS;
       if (live.CONTESTS && live.CONTESTS.length) CONTESTS = live.CONTESTS;
       if (live.JOBS && live.JOBS.length) JOBS = live.JOBS;
+      if (live.CAREER_PAGES && live.CAREER_PAGES.length) CAREER_PAGES = live.CAREER_PAGES;
       if (live.ALBA && live.ALBA.length) ALBA = live.ALBA;
       if (live.SW && live.SW.length) SW = live.SW;
 

@@ -2,516 +2,516 @@
 # -*- coding: utf-8 -*-
 
 """
-Civil News Hub - 토목·건설 채용 공고 자동 수집 및 정제 스크립트 (job_scraper.py)
+Civil News Hub - 토목 채용 공고 자동 수집 스크립트 (job_scraper.py)
+
+수집 출처 1: 잡알리오 '재정경제부 공공기관 채용정보 조회서비스' (data.go.kr)
+  - 진행 중 공고 전체를 한 번에 받아 지원자격·우대·전형 설명에 '토목'이 있으면 '토목 명시',
+    NCS '건설' 분야이면서 제목이 토목 관련이거나 청년인턴이면 '건설 분야 · 공고문 확인'으로 수집합니다.
+    (모집분야 상세는 첨부 공고문에만 있고 첨부파일은 API로 내려받을 수 없음)
+
+수집 출처 2: 고용24 Open API '공채속보' (개인회원 이용 가능)
+  - 목록(210L21)으로 진행 중 공채를 모두 받고, 상세(210D21)의 모집분야·지원자격에서
+    '토목'이 확인되는 공고만 남깁니다. (제목만으로는 토목직 포함 여부를 알 수 없음)
+  - 상세 조회 결과는 공고 번호별로 캐시(data/work24_cache.json)해서 새 공고만 조회합니다.
+  - 인턴(체험형/채용형)은 제목·경력구분·고용형태로 판별합니다.
+
 규칙 준수 (GEMINI.md):
-1. 팩트 기반 검증 공고 원칙 (실체 없는 허위 공고 배제)
-2. 공식 지원 웹사이트 전용 딥링크 매핑
-3. 접수 마감된 공고는 대시보드 게시 목록에서 즉시 자동 제외
+1. 팩트 기반: API에서 받은 실제 공고만 게시 (임의 작성 공고 없음)
+2. 공식 지원 페이지 딥링크 사용
+3. 접수 마감된 공고는 자동 제외
 """
 
 import os
 import re
 import json
+import time
 import urllib.request
 import urllib.parse
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone, timedelta
-from email.utils import parsedate_to_datetime
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 JOBS_JSON_PATH = os.path.join(DATA_DIR, "jobs.json")
+CACHE_PATH = os.path.join(DATA_DIR, "work24_cache.json")
+
+WORK24_BASE = "https://www.work24.go.kr/cm/openApi/call/wk/callOpenApiSvcInfo{}.do"
+LIST_PAGE_SIZE = 100
+CIVIL_KEYWORD = "토목"
+# 목록 지문: 이 값이 바뀌면 공고가 수정된 것으로 보고 상세를 다시 조회
+LIST_FINGERPRINT_TAGS = ("empWantedTitle", "empWantedStdt", "empWantedEndt", "empWantedTypeNm", "empWantedHomepgDetail")
+
+JOBALIO_LIST_URL = "https://apis.data.go.kr/1051000/recruitment/list"
+JOBALIO_PAGE_SIZE = 1000
+JOBALIO_NCS_CONSTRUCTION = "R600014"  # NCS 대분류 '건설' (토목·건축 구분 없음)
+# '건설' 분야 공고 중 제목으로 토목 관련성을 판단하는 단어
+JOBALIO_CIVIL_HINT_RE = re.compile(r"건설사업|현장|감독|공사원가|매입기술|상수관망|하수|도로|철도|교량|터널|항만|댐|하천|지반|측량|시설관리|토지")
+# 본문에서 '직무(분야)' 형태로 지정된 모집 분야. 토목 자격으로 지원 가능한 분야가 하나도 없으면 제외
+# 직무명 바로 뒤 괄호만 모집 분야로 봄: '감독(전기)', '매입기술역(건축/기계/전기)', '촉탁나급(토목)'
+# ('해당분야(건설·전기…) 실무경력' 같은 경력 조건 괄호는 제외)
+FIELD_PAREN_RE = re.compile(r"(?:역|감독|직|급|원|시설|기술)\(([가-힣/·,\s]+)\)")
+KNOWN_FIELDS = {"토목", "건설", "건축", "조경", "측량", "안전", "건설안전", "전기", "기계", "통신", "정보통신", "소방", "전자", "화학", "환경"}
+CIVIL_COMPATIBLE_FIELDS = {"토목", "건설", "조경", "측량", "안전", "건설안전"}
 
 # 카테고리 정의
 JOB_CATEGORIES = [
     {"id": "all", "name": "전체"},
     {"id": "public", "name": "공기업·공공기관"},
-    {"id": "builder", "name": "대형 건설사"},
-    {"id": "engineering", "name": "설계·엔지니어링"},
-    {"id": "safety_research", "name": "전문기술·안전·연구"}
+    {"id": "builder", "name": "건설·민간기업"},
+    {"id": "engineering", "name": "설계·엔지니어링"}
+]
+CATEGORY_NAMES = {c["id"]: c["name"] for c in JOB_CATEGORIES}
+
+PUBLIC_CO_TYPES = ("공기업", "공공기관")
+PUBLIC_NAME_RE = re.compile(r"공사|공단|연구원|진흥원|공항|관리원|재단")
+ENGINEERING_NAME_RE = re.compile(r"엔지니어링|기술공단|기술단|건축사사무소|설계|컨설턴트")
+
+# 공채속보에 잘 올라오지 않는 주요 기관·기업의 공식 채용 페이지 (공고 내용은 만들지 않고 링크만 제공)
+CAREER_PAGES = [
+    {"company": "한국도로공사", "category_id": "public", "link": "https://www.ex.co.kr"},
+    {"company": "한국수자원공사", "category_id": "public", "link": "https://www.kwater.or.kr/kor/sub01/sub04/sub01/list.do?s_mid=108"},
+    {"company": "국가철도공단", "category_id": "public", "link": "https://www.kr.or.kr/boardCnts/list.do?boardID=72"},
+    {"company": "한국토지주택공사", "category_id": "public", "link": "https://www.lh.or.kr/board.es?mid=a10602040000&bid=0035"},
+    {"company": "한국건설기술연구원", "category_id": "public", "link": "https://www.kict.re.kr/announcementRecruitWeb/getAnnouncementRecruitList.es?mid=a10513030000"},
+    {"company": "현대건설", "category_id": "builder", "link": "https://recruit.hdec.co.kr/"},
+    {"company": "대우건설", "category_id": "builder", "link": "https://recruit.daewooenc.com/"},
+    {"company": "DL이앤씨", "category_id": "builder", "link": "https://dlenc.recruiter.co.kr/career/Main"},
+    {"company": "GS건설", "category_id": "builder", "link": "https://gsenc.recruiter.co.kr/career/home"},
+    {"company": "포스코이앤씨", "category_id": "builder", "link": "https://recruit.posco.com"},
+    {"company": "유신", "category_id": "engineering", "link": "https://www.yooshin.com/career/career_opportunities"},
+    {"company": "삼안", "category_id": "engineering", "link": "https://www.samaneng.co.kr/board/bbs/board.php?bo_table=recruit2"},
+    {"company": "동명기술공단", "category_id": "engineering", "link": "http://www.dmec.co.kr"},
+    {"company": "도화엔지니어링", "category_id": "engineering", "link": "https://dohwa.recruiter.co.kr/career/home"},
+    {"company": "한국종합기술", "category_id": "engineering", "link": "https://recruit.kecc.co.kr/"}
 ]
 
-# 기업 및 기관별 팩트 기반 공식 채용 사이트 딥링크 & 메타데이터 맵
-COMPANY_REGISTRY = {
-    "한국도로공사": {
-        "category_id": "public",
-        "category_name": "공기업·공공기관",
-        "badge_color": "emerald",
-        "link": "https://www.ex.co.kr",
-        "benefits": ["지방이전 정착금", "사택 지원", "선택적 복지포인트", "자녀학자금 지원", "건강검진 지원"],
-        "default_steps": ["서류전형 (적부)", "필기시험 (NCS + 토목전공)", "1차 직무면접", "2차 인성면접", "최종합격"]
-    },
-    "인천국제공항공사": {
-        "category_id": "public",
-        "category_name": "공기업·공공기관",
-        "badge_color": "emerald",
-        "link": "https://www.airport.kr/ap_ko/953/subView.do",
-        "benefits": ["영종도 거주지원비", "선택적 복지포인트", "자녀학자금 전액지원", "임직원 종합건강검진", "휴양시설 지원"],
-        "default_steps": ["서류전형 (정량평가)", "필기전형 (NCS+토목전공)", "1차 직무역량면접", "2차 종합면접", "최종합격"]
-    },
-    "한국전력공사": {
-        "category_id": "public",
-        "category_name": "공기업·공공기관",
-        "badge_color": "emerald",
-        "link": "https://recruit.kepco.co.kr",
-        "benefits": ["지방이전 사택 지원", "선택적 맞춤형 복지", "자녀학자금 무이자 대부", "종합검진 지원", "사내근로복지기금"],
-        "default_steps": ["서류전형 (가점 정량평가)", "직무능력검사(NCS)+토목전공", "1차 직무면접", "2차 종합면접", "최종합격"]
-    },
-    "한국수자원공사": {
-        "category_id": "public",
-        "category_name": "공기업·공공기관",
-        "badge_color": "emerald",
-        "link": "https://www.kwater.or.kr/kor/sub01/sub04/sub01/list.do?s_mid=108",
-        "benefits": ["사택 및 기숙사 제공", "사내근로복지기금 대출", "복지포인트", "선택적 근로시간제", "전문자격수당"],
-        "default_steps": ["1차 서류적부", "2차 필기전형 (NCS+수자원직무)", "3차 직무PT면접", "4차 역량면접", "최종합격"]
-    },
-    "국가철도공단": {
-        "category_id": "public",
-        "category_name": "공기업·공공기관",
-        "badge_color": "emerald",
-        "link": "https://www.kr.or.kr/boardCnts/list.do?boardID=72",
-        "benefits": ["지방이전 지원금", "임차사택 지원", "자기계발 휴직제", "맞춤형 복지포인트", "휴양콘도 지원"],
-        "default_steps": ["서류심사 (자격증 가점)", "필기시험 (NCS + 전공 50문항)", "면접전형 (직무+인성)", "신원조회", "최종합격"]
-    },
-    "한국토지주택공사": {
-        "category_id": "public",
-        "category_name": "공기업·공공기관",
-        "badge_color": "emerald",
-        "link": "https://www.lh.or.kr/board.es?mid=a10602040000&bid=0035",
-        "benefits": ["사택/기숙사 제공", "건강검진", "학자금 지원", "복지포인트", "유연근무제"],
-        "default_steps": ["서류전형", "필기전형 (NCS+직무수행능력)", "1차 면접전형", "2차 인성면접", "최종합격"]
-    },
-    "한국철도공사": {
-        "category_id": "public",
-        "category_name": "공기업·공공기관",
-        "badge_color": "emerald",
-        "link": "https://info.korail.com/info/selectBbsNttList.do?bbsNo=199&key=911",
-        "benefits": ["철도 무료이용 혜택", "사택 지원", "맞춤형 복지제도", "자녀학자금 지원"],
-        "default_steps": ["서류검증", "필기시험 (NCS)", "실기시험/면접시험", "철도적성검사", "채용형인턴"]
-    },
-    "현대건설": {
-        "category_id": "builder",
-        "category_name": "대형 건설사",
-        "badge_color": "indigo",
-        "link": "https://recruit.hdec.co.kr/",
-        "benefits": ["현장수당 및 준공보너스", "통근버스/사택 지원", "의료비 전액 실손지원", "자녀 학자금 전액지원", "현대차 임직원 할인"],
-        "default_steps": ["서류전형", "HMAT(인적성검사)", "1차 실무진면접 (영어면접 포함)", "2차 임원면접", "신체검사", "입사"]
-    },
-    "대우건설": {
-        "category_id": "builder",
-        "category_name": "대형 건설사",
-        "badge_color": "indigo",
-        "link": "https://recruit.daewooenc.com/",
-        "benefits": ["현장 숙소 및 부임비 지원", "의료비 및 단체상해보험", "복지카드", "자녀 학자금", "장기근속 포상"],
-        "default_steps": ["서류전형", "온라인 인적성검사", "1차 직무면접", "2차 인성면접", "신체검사", "최종합격"]
-    },
-    "DL이앤씨": {
-        "category_id": "builder",
-        "category_name": "대형 건설사",
-        "badge_color": "indigo",
-        "link": "https://dlenc.recruiter.co.kr/career/Main",
-        "benefits": ["현장 전문수당", "자녀 학자금", "사택 및 기숙사", "복지카드 연 200만원", "종합검진"],
-        "default_steps": ["서류전형", "인적성검사", "1차 직무면접", "2차 임원면접", "신체검사", "최종합격"]
-    },
-    "GS건설": {
-        "category_id": "builder",
-        "category_name": "대형 건설사",
-        "badge_color": "indigo",
-        "link": "https://gsenc.recruiter.co.kr/career/home",
-        "benefits": ["현장 숙식 전액제공", "GS그룹 계열사 할인", "자녀 학자금", "종합 건강검진", "주택자금 융자"],
-        "default_steps": ["서류전형", "인적성검사", "1차 실무면접", "2차 임원면접", "건강검진", "최종합격"]
-    },
-    "포스코이앤씨": {
-        "category_id": "builder",
-        "category_name": "대형 건설사",
-        "badge_color": "indigo",
-        "link": "https://recruit.posco.com",
-        "benefits": ["포스코그룹 복지혜택", "사택/원룸 지원", "휴양시설 이용권", "자기계발비 지원", "학자금 전액"],
-        "default_steps": ["서류전형", "PAT(인적성검사)", "1차 직무역량면접", "2차 임원면접", "채용검진", "입사"]
-    },
-    "유신": {
-        "category_id": "engineering",
-        "category_name": "설계·엔지니어링",
-        "badge_color": "purple",
-        "link": "https://www.yooshin.com/career/career_opportunities",
-        "benefits": ["기술사 우대수당", "성과 인센티브", "사내 동호회 지원", "건강검진", "경조사비"],
-        "default_steps": ["서류전형", "부서장 기술면접", "임원 심층면접", "신체검사", "입사"]
-    },
-    "삼안": {
-        "category_id": "engineering",
-        "category_name": "설계·엔지니어링",
-        "badge_color": "purple",
-        "link": "https://www.samaneng.co.kr/board/bbs/board.php?bo_table=recruit2",
-        "benefits": ["자격증 수당", "장기근속 포상", "사내 동호회", "종합검진", "경조휴가"],
-        "default_steps": ["서류전형", "실무면접", "임원면접", "최종합격"]
-    },
-    "동명기술공단": {
-        "category_id": "engineering",
-        "category_name": "설계·엔지니어링",
-        "badge_color": "purple",
-        "link": "http://www.dmec.co.kr",
-        "benefits": ["기술사 수당(매월 추가지급)", "사내근로복지기금", "임직원 자녀학자금", "종합건강검진", "경조사 지원"],
-        "default_steps": ["서류전형", "1차 실무기술면접", "2차 임원면접", "신체검사", "최종합격"]
-    },
-    "도화엔지니어링": {
-        "category_id": "engineering",
-        "category_name": "설계·엔지니어링",
-        "badge_color": "purple",
-        "link": "https://dohwa.recruiter.co.kr/career/home",
-        "benefits": ["기술사 자격수당(매월 추가지급)", "사내근로복지기금", "임직원 자녀학자금", "건강검진", "휴양 콘도"],
-        "default_steps": ["서류전형", "1차 실무진 면접 (포트폴리오 심사)", "2차 경영진 면접", "신체검사", "최종합격"]
-    },
-    "한국종합기술": {
-        "category_id": "engineering",
-        "category_name": "설계·엔지니어링",
-        "badge_color": "purple",
-        "link": "https://recruit.kecc.co.kr/",
-        "benefits": ["우리사주 배당금", "기술사 수당", "자기계발비", "선택적 복지비", "자녀 학자금"],
-        "default_steps": ["서류전형", "전문기술 필기/면접", "최종 임원면접", "신체검사", "최종합격"]
-    },
-    "국토안전관리원": {
-        "category_id": "safety_research",
-        "category_name": "전문기술·안전·연구",
-        "badge_color": "amber",
-        "link": "https://kalis.incruit.com",
-        "benefits": ["지방이전 지원금", "임차보증금 지원", "복지포인트", "선택적 근로시간제", "자기계발 휴직"],
-        "default_steps": ["서류전형", "필기시험 (NCS+전공)", "1차 직무면접", "2차 종합인성면접", "신체검사", "최종합격"]
-    },
-    "한국건설기술연구원": {
-        "category_id": "safety_research",
-        "category_name": "전문기술·안전·연구",
-        "badge_color": "amber",
-        "link": "https://www.kict.re.kr/announcementRecruitWeb/getAnnouncementRecruitList.es?mid=a10513030000",
-        "benefits": ["정부출연연구원 복지", "연구인센티브", "사택 지원", "종합검진", "해외연수 기회"],
-        "default_steps": ["서류전형", "연구실적 심사", "1차 전공세미나 면접", "2차 종합면접", "최종합격"]
-    },
-    "국토연구원": {
-        "category_id": "safety_research",
-        "category_name": "전문기술·안전·연구",
-        "badge_color": "amber",
-        "link": "http://recruit.krihs.re.kr/ext/rec/rec_5010.do?ANNC_NO=26082701&SUPT_FLD_CD=0&DEG=0",
-        "benefits": ["정부출연연구원 복지", "연구활동지원비", "사택 지원", "종합건강검진", "유연근무제"],
-        "default_steps": ["서류전형 (6배수)", "면접전형 (직무+인성)", "신체검사", "최종합격"]
-    }
-}
 
-# 팩트 기반 유효 공고 시드 풀 (접수마감 항목 원천 배제, 실시간 유효 공고만 유지)
-VERIFIED_JOBS_MASTER = [
-    # 1. 공기업·공공기관 (3건)
-    {
-        "id": "job-ex-2026-02",
-        "company": "한국도로공사",
-        "category_id": "public",
-        "category_name": "공기업·공공기관",
-        "badge_color": "emerald",
-        "title": "2026년 하반기 신입사원(채용형인턴) 공개채용 (토목직무)",
-        "fields": ["고속도로 토목시공", "구조물 안전진단", "스마트 고속도로 인프라"],
-        "career": "신입(채용형 인턴)",
-        "education": "학력무관 (블라인드)",
-        "location": "전국 본사 및 지역본부·지사",
-        "period": "2026.09.15 ~ 09.22 (15:00 마감)",
-        "deadline_date": "2026-09-22",
-        "salary": "초임 연 4,100만원 수준 (경영평가급 별도)",
-        "tags": ["블라인드 채용", "토목기사 우대", "정규직 전환율 95%+", "사택 제공"],
-        "link": "https://www.ex.co.kr",
-        "summary": "고속도로 신설·확장, 노후 교량 및 지하고속도로 시공 관리와 안전진단을 담당할 토목 기술 인재를 선발합니다.",
-        "qualifications": "연령 및 학력 제한 없음 (단, 남자는 병역필 또는 면제자), 토목 관련 전공자 또는 토목기사 자격증 소지자 우대",
-        "steps": ["서류전형 (적부)", "필기시험 (NCS + 토목전공 50문항)", "1차 직무면접", "2차 인성면접", "최종합격"]
-    },
-    {
-        "id": "job-airport-2026-02",
-        "company": "인천국제공항공사",
-        "category_id": "public",
-        "category_name": "공기업·공공기관",
-        "badge_color": "emerald",
-        "title": "2026년 일반직 신입직원 채용 (토목직무)",
-        "fields": ["공항 활주로·유도로 토목포장", "신공항 부지조성", "여객터미널 인프라 토목"],
-        "career": "신입 (일반직 5급)",
-        "education": "학력무관 (블라인드 채용)",
-        "location": "인천 영종도 본사",
-        "period": "2026.09.01 ~ 09.15 (10:00 마감)",
-        "deadline_date": "2026-09-15",
-        "salary": "초임 연 4,600만원 수준 (공공기관 최고 수준)",
-        "tags": ["공기업 취업선호 1위", "블라인드 채용", "토목기사 우대", "영종도 본사"],
-        "link": "https://www.airport.kr/ap_ko/953/subView.do",
-        "summary": "동북아 허브 인천국제공항의 활주로, 유도로 확장 및 스마트 공항 인프라 시공·안전관리를 담당할 일반직 토목 인재를 모집합니다.",
-        "qualifications": "공인어학성적(토익 800점 또는 토스/오픽 기준점 이상) 보유자, 토목기사 또는 건설안전기사 자격증 소지자 가점",
-        "steps": ["서류전형 (정량평가)", "필기전형 (NCS+토목전공)", "1차 직무역량면접", "2차 종합면접", "최종합격"]
-    },
-    {
-        "id": "job-kepco-2026-02",
-        "company": "한국전력공사",
-        "category_id": "public",
-        "category_name": "공기업·공공기관",
-        "badge_color": "emerald",
-        "title": "2026년 하반기 대졸 신입사원 공개채용 (토목분야)",
-        "fields": ["송변전 지중토목 인프라", "변전소 및 철탑 기초설계", "지하 전력구 터널공학"],
-        "career": "신입 (대졸수준 4직급)",
-        "education": "학력무관 (블라인드 채용)",
-        "location": "나주 본사 및 전국 사업소",
-        "period": "2026.09.08 ~ 09.16 (14:00 마감)",
-        "deadline_date": "2026-09-16",
-        "salary": "초임 연 4,200만원 수준 (경영평가 성과급 별도)",
-        "tags": ["에너지 공기업", "블라인드 채용", "토목기사 가점", "사택 지원"],
-        "link": "https://recruit.kepco.co.kr",
-        "summary": "국가 기간 전력망을 책임지는 한국전력공사에서 송변전 설비 토목 시공 및 지하 전력구 터널 구조 안전을 담당할 토목 인재를 채용합니다.",
-        "qualifications": "연령/학력 제한 없음 (단, 남자는 병역필 또는 면제자), 토목기사 소지자(서류 및 필기 가점 부여), 공인어학성적 보유자",
-        "steps": ["서류전형 (가점 정량평가)", "직무능력검사(NCS)+토목전공", "1차 직무면접", "2차 종합면접", "최종합격"]
-    },
-    # 2. 대형 건설사 (4건)
-    {
-        "id": "job-hdec-2026-03",
-        "company": "현대건설",
-        "category_id": "builder",
-        "category_name": "대형 건설사",
-        "badge_color": "indigo",
-        "title": "2026년 하반기 토목사업본부 대졸 신입사원 공채",
-        "fields": ["해외 인프라 시공", "국내 고속도로·대교 현장관리", "해양·항만공사"],
-        "career": "신입",
-        "education": "4년제 정규대학 졸업(예정)자",
-        "location": "서울 계동 본사 및 국내/해외 토목건설현장",
-        "period": "2026.09.01 ~ 09.29 (17:00 마감)",
-        "deadline_date": "2026-09-29",
-        "salary": "신입 초봉 약 5,500만원 + 현장수당/성과급 별도 (업계 최고 수준)",
-        "tags": ["1군 건설사", "글로벌 메가프로젝트", "해외파견 기회", "토목기사 우대"],
-        "link": "https://recruit.hdec.co.kr/",
-        "summary": "국내외 초대형 교량, 침매터널, 항만 및 고속철도 현장을 진두지휘할 미래 글로벌 토목 리더를 모집합니다.",
-        "qualifications": "토목공학 및 관련 전공자(2027년 2월 이전 졸업예정자 포함), 영어 스피킹 성적(오픽 IM2 또는 토스 120점 이상) 보유자, 토목기사 소지자 우대",
-        "steps": ["서류전형", "HMAT(온라인 인적성검사)", "1차 실무진면접 (영어면접 포함)", "2차 임원면접", "신체검사", "입사"]
-    },
-    {
-        "id": "job-daewoo-2026-02",
-        "company": "대우건설",
-        "category_id": "builder",
-        "category_name": "대형 건설사",
-        "badge_color": "indigo",
-        "title": "2026년 토목사업본부 신입사원 공개채용",
-        "fields": ["터널·지하공간 시공", "도로·철도 구조물", "스마트 토공관리"],
-        "career": "신입",
-        "education": "대졸 이상 (토목관련 전공자)",
-        "location": "서울 을지로 본사 및 전국 현장",
-        "period": "2026.09.14 ~ 09.30 (23:59 마감)",
-        "deadline_date": "2026-09-30",
-        "salary": "초봉 5,300만원 수준 (현장수당 별도)",
-        "tags": ["1군 건설사", "해저터널 특화", "인재육성", "숙소 지원"],
-        "link": "https://recruit.daewooenc.com/",
-        "summary": "세계 최고 수준의 해저터널 및 고난도 교량 시공 노하우를 계승할 신입 토목 엔지니어를 선발합니다.",
-        "qualifications": "토목공학 학사 이상, 토목기사/건설안전기사 자격증 우대, 공인어학성적 보유자",
-        "steps": ["서류전형", "온라인 인적성검사", "1차 직무면접", "2차 인성면접", "신체검사", "최종합격"]
-    },
-    {
-        "id": "job-dlenc-2026-03",
-        "company": "DL이앤씨",
-        "category_id": "builder",
-        "category_name": "대형 건설사",
-        "badge_color": "indigo",
-        "title": "2026년 토목사업본부 국내 전 현장 수시채용",
-        "fields": ["현수교·사장교 특수교량 시공", "TBM 터널 현장소장/공무", "BIM 기반 현장설계"],
-        "career": "신입 및 경력",
-        "education": "대졸 이상",
-        "location": "전국 현장 및 본사 (서울 종로)",
-        "period": "2026.08.01 ~ 12.31 (상시채용)",
-        "deadline_date": "2026-12-31",
-        "salary": "회사 내규 및 경력·역량에 따른 개별 협의",
-        "tags": ["상시채용", "특수교량 1위", "TBM 터널", "스마트건설"],
-        "link": "https://dlenc.recruiter.co.kr/career/Main",
-        "summary": "초장대 교량 및 첨단 TBM 터널 굴진 프로젝트를 총괄할 역량 있는 시공·공무 베테랑 엔지니어를 영입합니다.",
-        "qualifications": "토목 전공자, 특수교량 또는 지하철/터널 공무 경력자 우대, 토목기사/기술사 우대",
-        "steps": ["서류전형", "온라인 역량검사", "1차 실무면접", "2차 경영진면접", "처우협의", "입사"]
-    },
-    {
-        "id": "job-gs-2026-02",
-        "company": "GS건설",
-        "category_id": "builder",
-        "category_name": "대형 건설사",
-        "badge_color": "indigo",
-        "title": "2026년 하반기 인프라사업본부 신입 공채 (토목시공)",
-        "fields": ["철도·지하철 시공관리", "항만·해양 인프라", "공사 공무관리"],
-        "career": "신입",
-        "education": "4년제 대졸 이상",
-        "location": "서울 종로 본사 및 전국 현장",
-        "period": "2026.09.01 ~ 09.20 (23:59 마감)",
-        "deadline_date": "2026-09-20",
-        "salary": "신입 초봉 5,400만원 수준 + 현장수당 별도",
-        "tags": ["1군 건설사", "GS그룹 복지", "스마트 안전", "숙소 지원"],
-        "link": "https://gsenc.recruiter.co.kr/career/home",
-        "summary": "국내 대형 철도 및 해양 인프라 현장의 디지털 시공과 안전관리를 이끌어갈 신입 엔지니어를 모집합니다.",
-        "qualifications": "토목공학 전공자, 토목기사 보유자 우대, 어학성적(토익 750점 또는 오픽 IM 이상)",
-        "steps": ["서류전형", "인적성검사", "1차 실무면접", "2차 임원면접", "건강검진", "최종합격"]
-    },
-    # 3. 설계·엔지니어링 (3건)
-    {
-        "id": "job-yooshin-2026-02",
-        "company": "유신",
-        "category_id": "engineering",
-        "category_name": "설계·엔지니어링",
-        "badge_color": "purple",
-        "title": "2026년 토목구조·지반터널 부서별 수시채용 (상시모집)",
-        "fields": ["장대교량 구조설계", "터널 및 연약지반 해석", "BIM 인프라 모델링"],
-        "career": "신입 및 경력",
-        "education": "대졸(4년제) 이상",
-        "location": "서울 강남구 역삼동 본사",
-        "period": "2026.08.01 ~ 12.31 (상시채용)",
-        "deadline_date": "2026-12-31",
-        "salary": "신입 연 4,400만원 수준 / 경력직 경력별 협의",
-        "tags": ["상시채용", "구조설계 명가", "특수교량 설계", "기술사 우대"],
-        "link": "https://www.yooshin.com/career/career_opportunities",
-        "summary": "국내 최고 수준의 교량 및 지하터널 구조해석 노하우를 보유한 유신에서 설계 엔지니어를 상시 모집합니다.",
-        "qualifications": "토목 관련 학과 졸업자, MIDAS Civil/Gen 등 구조해석 소프트웨어 숙련자, 토목기사 보유자",
-        "steps": ["서류전형", "부서장 기술면접", "임원 심층면접", "신체검사", "입사"]
-    },
-    {
-        "id": "job-saman-2026-02",
-        "company": "삼안",
-        "category_id": "engineering",
-        "category_name": "설계·엔지니어링",
-        "badge_color": "purple",
-        "title": "2026년 철도·수자원·도로 설계 엔지니어 상시 채용",
-        "fields": ["철도노반 및 궤도설계", "댐 및 하천기본계획", "도로선형 설계"],
-        "career": "경력 (3년 이상)",
-        "education": "대졸 이상",
-        "location": "경기 안양시 본사",
-        "period": "2026.08.01 ~ 12.31 (상시채용)",
-        "deadline_date": "2026-12-31",
-        "salary": "회사 내규 및 경력에 따른 개별 협의",
-        "tags": ["상시채용", "철도설계", "수자원설계", "기술사 우대"],
-        "link": "https://www.samaneng.co.kr/board/bbs/board.php?bo_table=recruit2",
-        "summary": "국가 간선 철도망 및 광역 수자원 인프라 설계 프로젝트 확장에 따라 경력직 엔지니어를 상시 채용합니다.",
-        "qualifications": "철도, 도로, 수자원 설계 유경험자(경력 3년 이상), 토목기사 필수, 토목관련 기술사 보유자 우대",
-        "steps": ["서류전형", "실무면접", "임원면접", "최종합격"]
-    },
-    {
-        "id": "job-dmec-2026-02",
-        "company": "동명기술공단",
-        "category_id": "engineering",
-        "category_name": "설계·엔지니어링",
-        "badge_color": "purple",
-        "title": "2026년 토목설계(도로·구조·철도·단지) 전 부문 수시채용",
-        "fields": ["도로 및 공항설계", "교량 및 지하구조물", "철도·궤도공학", "단지개발 토목BIM"],
-        "career": "신입 및 경력",
-        "education": "대졸(4년제) 이상",
-        "location": "서울 송파구 문정동 본사",
-        "period": "2026.08.01 ~ 12.31 (상시채용)",
-        "deadline_date": "2026-12-31",
-        "salary": "신입 초임 연 4,400만원 수준 (기술사 수당 별도 지급)",
-        "tags": ["상시채용", "설계 명가", "문정동 본사", "토목기사 우대"],
-        "link": "http://www.dmec.co.kr",
-        "summary": "국내 도로 및 구조설계 대표 엔지니어링 동명기술공단에서 스마트 인프라 설계와 대형 국책 사업을 담당할 신입 및 경력 엔지니어를 상시 모집합니다.",
-        "qualifications": "토목공학 및 관련 학과 전공자, 토목기사 자격증 소지자 우대, CAD 및 구조해석 소프트웨어 활용 가능자",
-        "steps": ["서류전형", "1차 실무기술면접", "2차 임원면접", "신체검사", "최종합격"]
-    },
-    # 4. 전문기술·안전·연구 (2건)
-    {
-        "id": "job-krihs-2026-03",
-        "company": "국토연구원",
-        "category_id": "safety_research",
-        "category_name": "전문기술·안전·연구",
-        "badge_color": "amber",
-        "title": "2026년 제3차 청년인턴 공개채용 (국토·인프라 연구지원)",
-        "fields": ["국토·도시계획 연구", "공간인프라 데이터 분석", "토목·환경 GIS 기술지원"],
-        "career": "청년인턴 (체험형)",
-        "education": "만 15세 이상 ~ 만 34세 이하 청년",
-        "location": "세종특별자치시 국토연구원 본원",
-        "period": "2026.08.31 ~ 09.14 (18:00 마감)",
-        "deadline_date": "2026-09-14",
-        "salary": "월 210만원 수준 (4대보험 및 중식 지원)",
-        "tags": ["정부출연연구기관", "공식공고문 PDF 검증", "공간인프라", "세종 본원"],
-        "link": "http://recruit.krihs.re.kr/ext/rec/rec_5010.do?ANNC_NO=26082701&SUPT_FLD_CD=0&DEG=0",
-        "summary": "국토교통부 산하 싱크탱크 국토연구원에서 국토·도시인프라 계획 및 GIS 공간데이터 분석 연구를 지원할 청년인재를 모집합니다.",
-        "qualifications": "청년고용촉진 특별법상 청년(만 15세~34세), 도시계획/토목/지리정보 등 관련 전공자 우대",
-        "steps": ["서류전형 (6배수)", "면접전형 (직무+인성)", "최종합격"]
-    },
-    {
-        "id": "job-kict-2026-02",
-        "company": "한국건설기술연구원",
-        "category_id": "safety_research",
-        "category_name": "전문기술·안전·연구",
-        "badge_color": "amber",
-        "title": "2026년(5회) 연수직(학생연구원·인턴) 채용 (수자원·하천 토목)",
-        "fields": ["하천실험실증연구 (토목·환경·방재)", "건축화재안전", "첨단화재재료"],
-        "career": "연수직 / 인턴 (학생연구원)",
-        "education": "학력무관 (토목·환경·방재 전공자 지원 가능)",
-        "location": "경북 안동(하천실험실증), 경기 화성, 일산 본원",
-        "period": "2026.09.08 ~ 09.18 (12:00 마감)",
-        "deadline_date": "2026-09-18",
-        "salary": "정부출연연구기관 연수직/인턴 지급 기준에 따름",
-        "tags": ["정부출연연구기관", "공식공고문 PDF 검증", "토목/하천실증", "안동/일산"],
-        "link": "https://www.kict.re.kr/announcementRecruitWeb/getAnnouncementRecruitList.es?mid=a10513030000",
-        "summary": "국토건설 국책연구기관 한국건설기술연구원(KICT) 수자원하천연구본부에서 하천실험실증 및 방재 연구 인재를 모집합니다.",
-        "qualifications": "하천실험실증연구: 토목공학, 환경공학, 방재공학 전공자 (학위 무관 지원 가능)",
-        "steps": ["서류전형", "면접전형 (직무세미나)", "최종합격"]
+def load_api_key(name):
+    """환경변수 → .env 순으로 인증키 조회 (Actions 러너에는 python-dotenv가 없어서 직접 파싱)"""
+    key = os.environ.get(name, "").strip()
+    if key:
+        return key
+    env_path = os.path.join(BASE_DIR, ".env")
+    if os.path.exists(env_path):
+        with open(env_path, encoding="utf-8") as f:
+            for line in f:
+                if line.startswith(name + "="):
+                    return line.split("=", 1)[1].strip()
+    return ""
+
+
+def call_work24(code, params):
+    """고용24 Open API 호출 후 XML 루트 반환"""
+    url = WORK24_BASE.format(code) + "?" + urllib.parse.urlencode(params)
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(req, timeout=20) as response:
+        root = ET.fromstring(response.read())
+    error = root.findtext("error") or root.findtext(".//errMsg")
+    if error:
+        raise RuntimeError(f"고용24 API 오류({code}): {error}")
+    return root
+
+
+def fetch_open_list(api_key):
+    """공채속보 목록 전체 조회 (empSeqno 순서 유지)"""
+    items = []
+    page = 1
+    while True:
+        root = call_work24("210L21", {
+            "authKey": api_key, "callTp": "L", "returnType": "XML",
+            "startPage": page, "display": LIST_PAGE_SIZE
+        })
+        batch = root.findall("dhsOpenEmpInfo")
+        items.extend(batch)
+        total = int(root.findtext("total") or 0)
+        if not batch or page * LIST_PAGE_SIZE >= total:
+            break
+        page += 1
+    return items
+
+
+def fetch_detail(api_key, seq):
+    return call_work24("210D21", {
+        "authKey": api_key, "callTp": "D", "returnType": "XML", "empSeqno": seq
+    })
+
+
+def clean_text(text):
+    return re.sub(r"\s+", " ", (text or "").replace("&#xd;", " ")).strip()
+
+
+def fmt_date(yyyymmdd):
+    """20261109 → 2026-11-09"""
+    if not yyyymmdd or len(yyyymmdd) != 8:
+        return ""
+    return f"{yyyymmdd[:4]}-{yyyymmdd[4:6]}-{yyyymmdd[6:]}"
+
+
+def classify_category(company, co_type):
+    if co_type in PUBLIC_CO_TYPES or PUBLIC_NAME_RE.search(company):
+        return "public"
+    if ENGINEERING_NAME_RE.search(company):
+        return "engineering"
+    return "builder"
+
+
+def parse_civil_job(root):
+    """상세 XML에서 토목 공고를 정제. 모집분야·지원자격·제목 어디에도 '토목'이 없으면 None"""
+    title = clean_text(root.findtext("empWantedTitle"))
+    recruits = root.findall(".//empRecrListInfo")
+    recruit_texts = [
+        " ".join(clean_text(r.findtext(tag)) for tag in ("empRecrNm", "jobCont", "sptCertEtc"))
+        for r in recruits
+    ]
+    if CIVIL_KEYWORD not in title and not any(CIVIL_KEYWORD in t for t in recruit_texts):
+        return None
+
+    seq = root.findtext("empSeqno")
+    company = clean_text(root.findtext("empBusiNm"))
+    co_type = clean_text(root.findtext("coClcdNm"))
+    hire_types = [t for t in (root.findtext("empWantedTypeNm") or "").split("|") if t and t != "기타"]
+
+    careers = set()
+    for r in recruits:
+        careers.update(c for c in (r.findtext("empWantedCareerNm") or "").split("|") if c)
+    is_intern = "인턴" in title or "인턴" in careers
+    if re.search(r"채용형|전환형|채용연계", title) or "정규직전환형" in hire_types:
+        intern_type = "채용형"
+    elif "체험형" in title:
+        intern_type = "체험형"
+    else:
+        intern_type = ""
+
+    if is_intern:
+        career = "인턴"
+    elif "신입" in careers and "경력" in careers:
+        career = "신입·경력"
+    elif "경력" in careers:
+        career = "경력"
+    elif "신입" in careers:
+        career = "신입"
+    else:
+        career = "신입·경력"  # 경력 구분이 없으면 누구나 지원 가능
+
+    # 토목이 언급된 모집분야를 우선 요약으로 사용
+    civil_recruits = [r for r, t in zip(recruits, recruit_texts) if CIVIL_KEYWORD in t] or recruits
+    fields = [clean_text(r.findtext("empRecrNm")) for r in civil_recruits if r.findtext("empRecrNm")]
+    regions = []
+    for r in recruits:
+        region = clean_text(r.findtext("workRegionNm"))
+        if region and region not in regions:
+            regions.append(region)
+    summary = " / ".join(
+        clean_text(r.findtext("sptCertEtc")) or clean_text(r.findtext("jobCont")) for r in civil_recruits
+    )[:400]
+
+    steps = [clean_text(s.findtext("selsNm")) for s in root.findall(".//empSelsListInfo")]
+    steps = [s for s in steps if s and s != "기타"]
+
+    tags = []
+    if is_intern:
+        tags.append(f"{intern_type} 인턴" if intern_type else "인턴")
+    tags += [t for t in hire_types if t != "정규직전환형" or not is_intern]
+    if co_type:
+        tags.append(co_type)
+
+    category_id = classify_category(company, co_type)
+    start = fmt_date(root.findtext("empWantedStdt"))
+    end = fmt_date(root.findtext("empWantedEndt"))
+    link = (root.findtext("empWantedHomepgDetail") or root.findtext("empWantedHomepg") or "").strip()
+
+    return {
+        "id": f"w24-{seq}",
+        "source": "고용24 공채속보",
+        "company": company,
+        "company_type": co_type,
+        "category_id": category_id,
+        "category_name": CATEGORY_NAMES[category_id],
+        "title": title,
+        "fields": fields,
+        "career": career,
+        "is_intern": is_intern,
+        "intern_type": intern_type,
+        "location": ", ".join(regions) or "공고 원문 참조",
+        "period": f"{start.replace('-', '.')} ~ {end.replace('-', '.')}",
+        "deadline_date": end,
+        "tags": tags,
+        "link": link or "https://www.work24.go.kr",
+        "summary": summary,
+        "steps": steps
     }
-]
+
 
 def is_job_expired(job, now_kst):
-    """채용 공고 마감 여부 정밀 판정 (시간 단위까지 판정하여 마감 항목 자동 내림)"""
+    """마감일 당일까지는 게시 (공채속보는 마감 시각을 제공하지 않음)"""
     deadline = job.get("deadline_date", "")
-    if not deadline or deadline == "상시":
+    if not deadline:
         return False
-    
-    period = job.get("period", "")
-    time_match = re.search(r"(\d{1,2}):(\d{2})\s*마감", period)
-    hour, minute = 23, 59
-    if time_match:
-        hour = int(time_match.group(1))
-        minute = int(time_match.group(2))
-        
+    return deadline < now_kst.strftime("%Y-%m-%d")
+
+
+def load_cache():
     try:
-        deadline_dt = datetime.strptime(deadline, "%Y-%m-%d").replace(hour=hour, minute=minute, second=0, tzinfo=now_kst.tzinfo)
-        return now_kst > deadline_dt
-    except Exception:
-        today_str = now_kst.strftime("%Y-%m-%d")
-        return deadline < today_str
+        with open(CACHE_PATH, encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return {}
+
+
+def write_json_atomic(path, data):
+    temp_path = path + ".tmp"
+    with open(temp_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    os.replace(temp_path, path)
+
+
+def list_fingerprint(item):
+    """목록에서 보이는 항목으로 만든 지문. 마감 연장·제목 수정 등이 있으면 값이 바뀜"""
+    return "|".join((item.findtext(tag) or "").strip() for tag in LIST_FINGERPRINT_TAGS)
+
+
+def collect_work24_jobs(api_key):
+    """공채속보 → 토목 공고 리스트.
+    캐시: {empSeqno: {"fp": 목록 지문, "fetched_at": 조회 시각, "job": 정제된 공고 | null(토목 아님)}}
+    상세 재조회 조건: ① 캐시에 없음 ② 목록 지문 변경 ③ 토목 공고(게시 대상)는 매 실행마다
+    토목이 아닌 공고는 목록 지문이 바뀔 때만 다시 확인 (게시 대상의 정확성을 우선하고 호출량을 줄임)
+    """
+    cache = load_cache()
+    listing = fetch_open_list(api_key)
+    print(f"  [i] 고용24 공채속보 진행 중 공고 {len(listing)}건")
+
+    now = datetime.now(timezone.utc)
+    to_fetch = {}
+    for item in listing:
+        seq = item.findtext("empSeqno")
+        fp = list_fingerprint(item)
+        if seq not in cache:
+            to_fetch[seq] = "신규"
+            continue
+        entry = cache[seq]
+        if not isinstance(entry, dict) or "fp" not in entry:
+            # 구버전 캐시(정제된 공고만 저장)는 현재 지문을 붙여 이전
+            entry = cache[seq] = {"fp": fp, "fetched_at": "", "job": entry}
+        if entry["fp"] != fp:
+            to_fetch[seq] = "수정"
+        elif entry.get("job"):
+            to_fetch[seq] = "갱신"
+
+    new_cache, counts, failed = {}, {"신규": 0, "수정": 0, "갱신": 0}, 0
+    for item in listing:
+        seq = item.findtext("empSeqno")
+        old = cache.get(seq)
+        if seq not in to_fetch:
+            new_cache[seq] = old
+            continue
+        try:
+            job = parse_civil_job(fetch_detail(api_key, seq))
+            new_cache[seq] = {"fp": list_fingerprint(item), "fetched_at": now.isoformat(), "job": job}
+            counts[to_fetch[seq]] += 1
+            if to_fetch[seq] == "수정" and job:
+                print(f"  [~] 수정된 공고 반영: [{job['company']}] {job['title']}")
+        except Exception as e:
+            failed += 1
+            print(f"  [!] 상세 조회 실패 (empSeqno={seq}): {e}")
+            if isinstance(old, dict) and "fp" in old:
+                new_cache[seq] = old  # 이전 정보 유지, 지문이 그대로라 다음 실행 때 재시도 대상
+        time.sleep(0.15)
+    print(f"  [i] 상세 조회 신규 {counts['신규']}건 · 수정 {counts['수정']}건 · 토목 재확인 {counts['갱신']}건, 실패 {failed}건")
+
+    os.makedirs(DATA_DIR, exist_ok=True)
+    write_json_atomic(CACHE_PATH, new_cache)  # 목록에서 내려간 공고는 캐시에서도 제거
+    return [e["job"] for e in new_cache.values() if e and e.get("job")]
+
+
+def fetch_jobalio_ongoing(api_key):
+    """잡알리오 진행 중 채용공시 전체 조회. 목록에 지원자격·우대·전형 설명이 모두 있어 상세 호출 불필요"""
+    items, page = [], 1
+    while True:
+        url = JOBALIO_LIST_URL + "?" + urllib.parse.urlencode({
+            "serviceKey": api_key, "resultType": "json", "ongoingYn": "Y",
+            "numOfRows": JOBALIO_PAGE_SIZE, "pageNo": page
+        })
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=60) as response:
+            data = json.loads(response.read())
+        if data.get("resultCode") != 200:
+            raise RuntimeError(f"잡알리오 API 오류: {data.get('resultMsg')}")
+        batch = data.get("result") or []
+        items.extend(batch)
+        if not batch or page * JOBALIO_PAGE_SIZE >= int(data.get("totalCount") or 0):
+            break
+        page += 1
+    return items
+
+
+def extract_steps(text):
+    """'1. 1차 서류전형 ... 2. 2차 종합면접' 같은 전형 설명에서 단계 이름만 순서대로 추출"""
+    steps, seen = [], set()
+    for m in re.finditer(r"(?:(\d)차\s*)?([가-힣·]*)(전형|면접|시험|검사)", text or ""):
+        order, name, kind = m.groups()
+        if len(name) == 1 or (not name and not order):  # '독자전형'의 '자전형' 같은 조각, 단독 '전형' 제외
+            continue
+        key = (name + kind) if name else (order + kind)  # '1차 전형'과 '1차전형', '2차 종합면접'과 '종합면접'을 같은 단계로 봄
+        if key in seen:
+            continue
+        seen.add(key)
+        steps.append(f"{order}차 {name}{kind}" if order and name else (f"{order}차 {kind}" if order else name + kind))
+    return steps[:6]
+
+
+def is_non_civil_only(text):
+    """'현장보조감독(전기)'처럼 모집 분야가 괄호로 지정됐는데 전부 토목과 무관한 분야면 True"""
+    fields = set()
+    for group in FIELD_PAREN_RE.findall(text):
+        fields.update(f.strip() for f in re.split(r"[/·,]", group) if f.strip() in KNOWN_FIELDS)
+    return bool(fields) and not (fields & CIVIL_COMPATIBLE_FIELDS)
+
+
+def parse_jobalio_job(item):
+    """잡알리오 공고를 정제. 토목 명시 공고와 '건설' 분야 중 토목 관련 공고만 남기고 나머지는 None"""
+    title = clean_text(item.get("recrutPbancTtl"))
+    body = " ".join(clean_text(item.get(k)) for k in ("aplyQlfcCn", "prefCn", "prefCondCn", "scrnprcdrMthdExpln"))
+    hire_types = [t for t in (item.get("hireTypeNmLst") or "").split(",") if t]
+    is_intern = any("청년인턴" in t for t in hire_types) or "인턴" in title
+    is_construction = JOBALIO_NCS_CONSTRUCTION in (item.get("ncsCdLst") or "")
+
+    if CIVIL_KEYWORD in title + body:
+        match_tag = "토목 명시"
+    elif is_construction and (JOBALIO_CIVIL_HINT_RE.search(title) or is_intern) and not is_non_civil_only(body):
+        match_tag = "건설 분야 · 공고문 확인"  # 모집분야는 첨부 공고문에만 있어 토목 포함 여부 확인 필요
+    else:
+        return None
+
+    if "청년인턴(채용형)" in hire_types:
+        intern_type = "채용형"
+    elif "청년인턴(체험형)" in hire_types or "체험형" in title:
+        intern_type = "체험형"
+    else:
+        intern_type = ""
+    recrut_se = item.get("recrutSeNm") or ""
+    if is_intern:
+        career = "인턴"
+    elif recrut_se in ("신입", "경력"):
+        career = recrut_se
+    else:
+        career = "신입·경력"
+
+    regions = [r for r in (item.get("workRgnNmLst") or "").split(",") if r]
+    sn = item.get("recrutPblntSn")
+    start = fmt_date(item.get("pbancBgngYmd"))
+    end = fmt_date(item.get("pbancEndYmd"))
+
+    tags = []
+    if is_intern:
+        tags.append(f"{intern_type} 인턴" if intern_type else "인턴")
+    tags.append(match_tag)  # 카드에는 앞 2개 태그만 보이므로 확인 필요 여부를 앞쪽에 둠
+    tags += [t for t in hire_types if "청년인턴" not in t]
+    if item.get("recrutNope"):
+        tags.append(f"{item['recrutNope']}명")
+
+    return {
+        "id": f"alio-{sn}",
+        "source": "잡알리오",
+        "company": clean_text(item.get("instNm")),
+        "company_type": "공공기관",
+        "category_id": "public",
+        "category_name": CATEGORY_NAMES["public"],
+        "title": title,
+        "fields": [f for f in (item.get("ncsCdNmLst") or "").split(",") if f],
+        "career": career,
+        "is_intern": is_intern,
+        "intern_type": intern_type,
+        "civil_match": match_tag,
+        "location": "전국" if len(regions) >= 8 else (", ".join(regions) or "공고 원문 참조"),
+        "period": f"{start.replace('-', '.')} ~ {end.replace('-', '.')}",
+        "deadline_date": end,
+        "tags": tags,
+        "link": (item.get("srcUrl") or "").strip() or f"https://job.alio.go.kr/recruitview.do?idx={sn}",
+        "summary": clean_text(item.get("aplyQlfcCn"))[:400],
+        "steps": extract_steps(item.get("scrnprcdrMthdExpln"))
+    }
+
+
+def collect_jobalio_jobs(api_key):
+    items = fetch_jobalio_ongoing(api_key)
+    jobs = [job for job in map(parse_jobalio_job, items) if job]
+    explicit = sum(1 for j in jobs if j["civil_match"] == "토목 명시")
+    print(f"  [i] 잡알리오 진행 중 공고 {len(items)}건 → 토목 명시 {explicit}건 · 건설 분야 {len(jobs) - explicit}건")
+    return jobs
+
+
+def normalize_company(name):
+    return re.sub(r"\(주\)|주식회사|\s", "", name or "")
+
+
+def load_previous_jobs(source):
+    try:
+        with open(JOBS_JSON_PATH, encoding="utf-8") as f:
+            return [j for j in json.load(f).get("jobs", []) if j.get("source") == source]
+    except (OSError, ValueError):
+        return []
+
+
+def collect_source(name, key_name, collector):
+    """출처별 수집. 키가 없거나 실패하면 해당 출처의 이전 수집 결과를 유지"""
+    api_key = load_api_key(key_name)
+    if not api_key:
+        print(f"  [!] {key_name}가 없어 {name} 이전 수집 결과를 유지합니다.")
+    else:
+        try:
+            return collector(api_key)
+        except Exception as e:
+            print(f"  [!] {name} 수집 실패, 이전 수집 결과를 유지합니다: {e}")
+    return load_previous_jobs(name)
+
+
 def scrape_civil_jobs():
-    """토목 채용 공고 정밀 수집 및 검증 마감일 필터링"""
+    """토목 채용 공고 수집 및 마감 필터링"""
     print("=" * 60)
-    print("💼 [토목 채용 공고 수집기] 최신 토목 채용 공고를 정밀 검증 및 수집합니다...")
+    print("💼 [토목 채용 공고 수집기] 잡알리오·고용24 공채속보에서 토목 공고를 수집합니다...")
     print("=" * 60)
-    
+
     kst = timezone(timedelta(hours=9))
     now_kst = datetime.now(kst)
-    today_str = now_kst.strftime("%Y-%m-%d")
-    
+
+    alio_jobs = collect_source("잡알리오", "JOBALIO_API_KEY", collect_jobalio_jobs)
+    work24_jobs = collect_source("고용24 공채속보", "WORK24_API_KEY", collect_work24_jobs)
+
+    # 같은 공고가 양쪽에 올라온 경우(기관명+마감일 일치) 정보가 많은 잡알리오 쪽을 사용
+    alio_keys = {(normalize_company(j["company"]), j["deadline_date"]) for j in alio_jobs}
+    duplicates = [j for j in work24_jobs if (normalize_company(j["company"]), j["deadline_date"]) in alio_keys]
+    if duplicates:
+        print(f"  [i] 중복 공고 {len(duplicates)}건은 잡알리오 정보로 표시")
+    jobs = alio_jobs + [j for j in work24_jobs if j not in duplicates]
+
     collected_jobs = []
-    
-    # 1. 마스터 검증 시드 풀 처리 (마감일 및 시간 정밀 확인)
-    for job in VERIFIED_JOBS_MASTER:
+    for job in jobs:
         if is_job_expired(job, now_kst):
-            print(f"  [-] 접수마감 공고 자동 제외: [{job['company']}] {job['title']} (기간: {job.get('period')})")
+            print(f"  [-] 접수마감 공고 제외: [{job['company']}] {job['title']}")
             continue
-            
         collected_jobs.append(job)
+    collected_jobs.sort(key=lambda j: j.get("deadline_date") or "9999")
 
-    print(f"  [+] 유효 활성 채용 공고 총 {len(collected_jobs)}건 정제 완료.")
-    
-    # 신규 채용 카테고리 자동 감지 및 등록 (전체 건수 합산 일치 영구 보장)
-    existing_job_cat_ids = {c["id"] for c in JOB_CATEGORIES}
-    final_job_categories = list(JOB_CATEGORIES)
-    for j in collected_jobs:
-        cid = j.get("category_id")
-        cname = j.get("category_name", cid)
-        if cid and cid not in existing_job_cat_ids:
-            existing_job_cat_ids.add(cid)
-            final_job_categories.append({"id": cid, "name": cname})
+    intern_count = sum(1 for j in collected_jobs if j.get("is_intern"))
+    print(f"  [+] 토목 채용 공고 {len(collected_jobs)}건 (인턴 {intern_count}건)")
 
-    # 최종 JSON 파일 저장
     jobs_data = {
         "last_updated": now_kst.strftime("%Y-%m-%d %H:%M"),
         "last_updated_display": now_kst.strftime("%Y년 %m월 %d일 %H:%M"),
+        "source": "잡알리오(공공기관 채용정보) · 고용24 공채속보 Open API",
         "total_count": len(collected_jobs),
-        "categories": final_job_categories,
-        "jobs": collected_jobs
+        "categories": JOB_CATEGORIES,
+        "jobs": collected_jobs,
+        "career_pages": CAREER_PAGES
     }
-    
+
     os.makedirs(DATA_DIR, exist_ok=True)
-    temp_path = JOBS_JSON_PATH + ".tmp"
-    with open(temp_path, "w", encoding="utf-8") as f:
-        json.dump(jobs_data, f, ensure_ascii=False, indent=2)
-    os.replace(temp_path, JOBS_JSON_PATH)
-        
+    write_json_atomic(JOBS_JSON_PATH, jobs_data)
+
     print(f"  [✓] 채용 데이터베이스 저장 완료: {JOBS_JSON_PATH}")
     print("=" * 60)
     return jobs_data
+
 
 if __name__ == "__main__":
     scrape_civil_jobs()
