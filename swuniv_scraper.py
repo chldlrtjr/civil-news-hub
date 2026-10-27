@@ -490,7 +490,6 @@ def fetch_swuniv_notices(existing_programs=None, max_pages=2):
 
 def save_swuniv_programs():
     os.makedirs(DATA_DIR, exist_ok=True)
-    os.makedirs(STATIC_DATA_DIR, exist_ok=True)
 
     print("[*] Fetching SW Univ programs from swuniv.jbnu.ac.kr...")
     progs = fetch_swuniv_programs(max_pages=3)
