@@ -134,31 +134,33 @@ window.CivilData = (() => {
 
     // 4. 채용 (실제 채용 공고)
     let JOBS = [];
+    const JOB_GRP = { public: 'public', builder: 'major', engineering: 'design' };
     const colors = ['#1F6FB2', '#2F7D4A', '#B5462E', '#34495E', '#7A4DB8', '#C07A12', '#157A7A'];
     if (jobsData && jobsData.jobs && jobsData.jobs.length) {
       JOBS = jobsData.jobs.map((j, idx) => {
         const daysLeft = calcDaysLeft(j.deadline_date || j.period);
-        let grp = 'major';
-        if (j.company.includes('공사') || j.company.includes('공단')) grp = 'public';
-        else if (j.company.includes('엔지니어링') || j.company.includes('기술')) grp = 'design';
 
         return {
           id: j.id || ('j' + (idx + 1)),
-          grp: grp,
+          grp: JOB_GRP[j.category_id] || 'major',
           co: j.company,
           color: colors[idx % colors.length],
           role: j.title,
-          lvl: j.career || '신입',
-          exp: (j.career && j.career.includes('경력')) ? j.career : '',
-          steps: (j.steps && j.steps.length) ? j.steps : ['서류', '면접', '최종'],
+          lvl: j.career || '경력무관',
+          exp: '',
+          steps: (j.steps && j.steps.length) ? j.steps : ['공고 원문 참조'],
           end: daysLeft,
-          loc: j.location || '전국 현장',
-          welfare: (j.tags && j.tags.length) ? j.tags : ['사택 제공', '성과급', '자녀학자금'],
+          loc: j.location || '공고 원문 참조',
+          welfare: j.tags || [],
           link: j.link || '#',
-          summary: j.summary || j.qualifications || ''
+          summary: j.summary || ''
         };
       });
     }
+    // 공채속보에 안 올라오는 주요 기관·기업의 공식 채용 페이지 링크
+    const CAREER_PAGES = ((jobsData && jobsData.career_pages) || []).map(p => ({
+      co: p.company, grp: JOB_GRP[p.category_id] || 'major', link: p.link
+    }));
 
     // 5. 전북대 알바 (실제 아르바이트 공고)
     let ALBA = [];
@@ -231,6 +233,7 @@ window.CivilData = (() => {
       NEWS,
       CONTESTS,
       JOBS,
+      CAREER_PAGES,
       ALBA,
       SW,
       meta: {

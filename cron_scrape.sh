@@ -52,7 +52,7 @@ nice -n 10 "$SCRIPT_DIR/venv/bin/python3" test_contests_integrity.py >> "$LOG_FI
 
 # 8. GitHub 자동 배포 (data 변경분 commit + push → GitHub Pages 자동 반영)
 echo "[8/8] GitHub 자동 배포 중..." >> "$LOG_FILE"
-git add data/news.json data/contests.json data/jobs.json data/jbnu_albas.json data/swuniv_programs.json static/cnh_data_bundle.js >> "$LOG_FILE" 2>&1
+git add data/news.json data/contests.json data/jobs.json data/work24_cache.json data/jbnu_albas.json data/swuniv_programs.json static/cnh_data_bundle.js >> "$LOG_FILE" 2>&1
 
 if git diff --cached --quiet; then
   echo "  ℹ️  데이터 변경 없음 — push 건너뜀" >> "$LOG_FILE"
