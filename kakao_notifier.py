@@ -19,6 +19,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 TOKEN_FILE = os.path.join(BASE_DIR, "kakao_token.json")
+SITE_URL = "https://chldlrtjr.github.io/civil-news-hub/"
 LAST_URL_FILE = os.path.join(BASE_DIR, "data", "last_tunnel_url.txt")
 TUNNEL_LOG_FILE = os.environ.get("TUNNEL_LOG_PATH", "/var/log/civil-tunnel.log")
 
@@ -116,14 +117,6 @@ def send_kakao_notice(tunnel_url, force=False):
         print(f"[*] 이전 전송 주소와 동일하여 건너뜁니다. ({tunnel_url})")
         return True
 
-    tokens = load_tokens()
-    if not tokens:
-        print("[-] 유효한 kakao_token.json이 없습니다.")
-        return False
-
-    access_token = tokens.get("access_token")
-    headers = {"Authorization": f"Bearer {access_token}"}
-
     template_payload = {
         "template_object": json.dumps({
             "object_type": "text",
@@ -142,7 +135,22 @@ def send_kakao_notice(tunnel_url, force=False):
         }, ensure_ascii=False)
     }
 
+    if send_memo(template_payload):
+        print(f"[+] 카카오톡 새 주소 발송 성공! URL: {tunnel_url}")
+        with open(LAST_URL_FILE, "w", encoding="utf-8") as f:
+            f.write(tunnel_url)
+        return True
+    return False
+
+def send_memo(template_payload):
+    """'나와의 채팅방'으로 메모 발송. 토큰 만료(401) 시 자동 갱신 후 1회 재시도"""
+    tokens = load_tokens()
+    if not tokens:
+        print("[-] 유효한 kakao_token.json이 없습니다.")
+        return False
+
     send_url = "https://kapi.kakao.com/v2/api/talk/memo/default/send"
+    headers = {"Authorization": f"Bearer {tokens.get('access_token')}"}
     res = requests.post(send_url, headers=headers, data=template_payload, timeout=10)
 
     # 401 Unauthorized (토큰 만료) 감지 시 자동 갱신 후 재전송
@@ -154,13 +162,23 @@ def send_kakao_notice(tunnel_url, force=False):
             res = requests.post(send_url, headers=headers, data=template_payload, timeout=10)
 
     if res.status_code == 200 and res.json().get("result_code") == 0:
-        print(f"[+] 카카오톡 새 주소 발송 성공! URL: {tunnel_url}")
-        with open(LAST_URL_FILE, "w", encoding="utf-8") as f:
-            f.write(tunnel_url)
         return True
-    else:
-        print(f"[-] 카카오톡 메시지 발송 실패: {res.status_code} {res.text}")
-        return False
+    print(f"[-] 카카오톡 메시지 발송 실패: {res.status_code} {res.text}")
+    return False
+
+def send_text_message(text, link_url=SITE_URL):
+    """임의 텍스트 알림 발송 (예: 자동 수집 실패 알림)"""
+    payload = {
+        "template_object": json.dumps({
+            "object_type": "text",
+            "text": text,
+            "link": {"web_url": link_url, "mobile_web_url": link_url}
+        }, ensure_ascii=False)
+    }
+    ok = send_memo(payload)
+    if ok:
+        print("[+] 카카오톡 알림 발송 성공")
+    return ok
 
 def watch_loop(interval=15):
     """터널 로그를 지속 감시하며 주소 변경 시 즉각 전송"""
@@ -181,7 +199,11 @@ def main():
     parser.add_argument("--url", type=str, help="지정한 URL로 직접 발송")
     parser.add_argument("--refresh", action="store_true", help="토큰 갱신 테스트")
     parser.add_argument("--interval", type=int, default=15, help="감시 간격 (초, 기본: 15초)")
+    parser.add_argument("--message", type=str, help="지정한 텍스트를 알림으로 발송")
     args = parser.parse_args()
+
+    if args.message:
+        sys.exit(0 if send_text_message(args.message) else 1)
 
     if args.refresh:
         tokens = load_tokens()
