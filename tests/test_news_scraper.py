@@ -106,6 +106,33 @@ class ClusterTest(unittest.TestCase):
         self.assertFalse(a["title"].startswith("[사설]"))
 
 
+class GoogleEnrichTest(unittest.TestCase):
+    FALLBACK = "서해안철도 공동 대응. 도로·교량·철도 분야 최신 인프라 동향 및 사업 세부 내용을 확인하세요."
+
+    def test_fallback_snippet_replaced_with_original_lede_and_image(self):
+        arts = [{"title": "서해안철도 공동 대응", "link": "https://news.google.com/rss/articles/a", "snippet": self.FALLBACK, "image": ""},
+                {"title": "네이버 기사", "link": "https://e.com/n", "snippet": "원래 요약", "image": ""}]
+        meta = {"description": "[시사의창=송상교기자] 전북과 전남광주 서해안권 5개 시군이 철도교통 단절 해소와 지역 간 상생발전을 위해 하나로 뭉쳤다.",
+                "image": "https://cdn.e.com/p.jpg"}
+        with mock.patch.object(scraper, "fetch_article_meta", return_value=meta) as fetch:
+            scraper.enrich_google_articles(arts)
+        fetch.assert_called_once_with("https://news.google.com/rss/articles/a")  # 구글 기사만 조회
+        self.assertTrue(arts[0]["snippet"].startswith("[시사의창"))
+        self.assertEqual(arts[0]["image"], "https://cdn.e.com/p.jpg")
+        self.assertEqual(arts[1]["snippet"], "원래 요약")
+
+    def test_short_or_title_only_description_keeps_fallback(self):
+        arts = [{"title": "서해안철도 공동 대응", "link": "https://news.google.com/rss/articles/a", "snippet": self.FALLBACK, "image": ""}]
+        with mock.patch.object(scraper, "fetch_article_meta", return_value={"description": "서해안철도 공동 대응", "image": ""}):
+            scraper.enrich_google_articles(arts)
+        self.assertEqual(arts[0]["snippet"], self.FALLBACK)
+
+    def test_byline_ignored_in_lede_comparison(self):
+        a = scraper.lede_shingles("[시사의창=송상교기자] 전북과 전남광주 서해안권 5개 시군이 철도교통 단절 해소와 지역 간 상생발전을 위해 하나로 뭉쳤다.")
+        b = scraper.lede_shingles("전북과 전남광주 서해안권 5개 시군이 철도교통 단절 해소와 지역 간 상생발전을 위해 하나로 뭉쳤다.")
+        self.assertEqual(a, b)
+
+
 class TrendingKeywordsTest(unittest.TestCase):
     def test_fallback_only_uses_keywords_present_in_articles(self):
         arts = [{"title": "GTX-C 노선 착공", "snippet": ""}, {"title": "고속도로 확장 개통", "snippet": ""}]

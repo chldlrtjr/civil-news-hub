@@ -520,6 +520,7 @@ def scrape_civil_news():
 
     # 유사/중복 기사 군집화 & 사진 우선 대표 선발 (최신순으로 내려가며 사진 있는 기사 우선 대표 승격)
     resolve_unknown_publishers(all_articles)
+    enrich_google_articles(all_articles)
     final_articles, duplicate_count = cluster_related_articles(all_articles)
 
     # 사진이 없는 기사는 큐레이션 예시 사진 대신 언론사(회사) 이름을 썸네일로 표출합니다.
@@ -626,6 +627,7 @@ def lede_shingles(snippet):
     """
     if not snippet or LEDE_FALLBACK_PHRASE in snippet:
         return set()
+    snippet = re.sub(r'^\s*[\[(【][^\])】]{0,30}[\])】]\s*(?:[가-힣]{2,4}\s*기자\s*=?)?', '', snippet)
     text = re.sub(r'[^0-9a-z가-힣]', '', snippet.lower())
     if len(text) < 40:
         return set()
@@ -792,74 +794,112 @@ def upgrade_to_high_res_image(url: str) -> str:
         return re.sub(r'_(thumb|small)\.(jpg|jpeg|png)', r'.\2', url, flags=re.I)
     return url
 
-def extract_news_og_image(link: str) -> str:
-    """
-    구글 뉴스 RSS 링크로부터 원문 주소를 디코딩하고, 기사 원문 페이지의 og:image 태그 URL을 추출
-    규칙:
-    - googlenewsdecoder를 사용하여 원문 URL 디코딩
-    - 원문 페이지에서 meta property='og:image' 추출
-    - 사진 파일을 서버에 내려받지 않고 URL 주소만 저장
-    - 실패 시 빈 문자열 "" 반환
-    """
-    if not link:
+ARTICLE_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+}
+
+
+def _usable_og_image(img: str, page_url: str) -> str:
+    """og:image 값 → 기사 사진 URL (로고·기본 이미지 제외, 고화질 원본 복원, http는 https로 열릴 때만)"""
+    if img.startswith("/"):
+        parsed = urllib.parse.urlparse(page_url)
+        img = f"{parsed.scheme}://{parsed.netloc}{img}"
+
+    # 규칙 2: logo, snslogo, oglogo, default, noimage가 들어간 URL은 기사 사진이 아니므로 제외
+    if any(bad in img.lower() for bad in ['logo', 'snslogo', 'oglogo', 'default', 'noimage']):
         return ""
+
+    # CMS 고화질 원본 자동 복원
+    cand = upgrade_to_high_res_image(img)
+    if cand != img:
+        try:
+            v_res = requests.head(cand, headers=ARTICLE_HEADERS, timeout=2.5, allow_redirects=True)
+            if v_res.status_code == 200:
+                img = cand
+        except Exception:
+            pass
+
+    # 규칙 1: http:// 주소는 https://로 변환하여 접근 가능할 때만 저장, 실패 시 제외
+    if img.startswith("http://"):
+        https_img = "https://" + img[7:]
+        try:
+            res = requests.get(https_img, headers=ARTICLE_HEADERS, timeout=3, stream=True)
+            return https_img if 200 <= res.status_code < 400 else ""
+        except Exception:
+            return ""
+    return img if img.startswith("https://") else ""
+
+
+def fetch_article_meta(link: str) -> dict:
+    """
+    기사 원문 페이지 한 번 조회로 {"image": og:image, "description": og:description} 추출
+    - 구글 뉴스 RSS 링크는 googlenewsdecoder로 원문 주소를 먼저 디코딩
+    - 사진 파일은 내려받지 않고 URL만 저장, 실패한 항목은 빈 문자열
+    """
+    meta = {"image": "", "description": ""}
+    if not link:
+        return meta
     try:
         if "news.google.com" in link:
             if googlenewsdecoder is None:
-                return ""
+                return meta
             dec = googlenewsdecoder.gnewsdecoder(link)
             if not dec or not dec.get("success"):
-                return ""
+                return meta
             orig_url = dec.get("decoded_url", "")
         else:
             orig_url = link
-
         if not orig_url:
-            return ""
+            return meta
 
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-        }
-        r = requests.get(orig_url, headers=headers, timeout=4)
-        if r.status_code == 200:
-            soup = BeautifulSoup(r.text, "html.parser")
-            og = soup.find("meta", property="og:image") or soup.find("meta", attrs={"name": "og:image"})
-            if og and og.get("content"):
-                img = og["content"].strip()
-                if img.startswith("/"):
-                    parsed = urllib.parse.urlparse(orig_url)
-                    img = f"{parsed.scheme}://{parsed.netloc}{img}"
+        r = requests.get(orig_url, headers=ARTICLE_HEADERS, timeout=4)
+        if r.status_code != 200:
+            return meta
+        if r.encoding in (None, "ISO-8859-1"):
+            r.encoding = r.apparent_encoding
+        soup = BeautifulSoup(r.text, "html.parser")
 
-                # 규칙 2: logo, snslogo, oglogo, default, noimage가 들어간 URL은 기사 사진이 아니므로 제외
-                img_lower = img.lower()
-                if any(bad in img_lower for bad in ['logo', 'snslogo', 'oglogo', 'default', 'noimage']):
-                    return ""
+        desc = soup.find("meta", property="og:description") or soup.find("meta", attrs={"name": "description"})
+        if desc and desc.get("content"):
+            meta["description"] = clean_html(desc["content"]).strip()
 
-                # CMS 고화질 원본 자동 복원
-                cand = upgrade_to_high_res_image(img)
-                if cand != img:
-                    try:
-                        v_res = requests.head(cand, headers=headers, timeout=2.5, allow_redirects=True)
-                        if v_res.status_code == 200:
-                            img = cand
-                    except Exception:
-                        pass
-
-                # 규칙 1: http:// 주소는 https://로 변환하여 접근 가능할 때만 저장, 실패 시 제외
-                if img.startswith("http://"):
-                    https_img = "https://" + img[7:]
-                    try:
-                        res = requests.get(https_img, headers=headers, timeout=3, stream=True)
-                        if 200 <= res.status_code < 400:
-                            return https_img
-                        return ""
-                    except Exception:
-                        return ""
-                elif img.startswith("https://"):
-                    return img
+        og = soup.find("meta", property="og:image") or soup.find("meta", attrs={"name": "og:image"})
+        if og and og.get("content"):
+            meta["image"] = _usable_og_image(og["content"].strip(), orig_url)
     except Exception as e:
-        print(f"    [News Image] {link[:80]} 사진 추출 실패: {type(e).__name__}: {e}")
-    return ""
+        print(f"    [News Meta] {link[:80]} 원문 조회 실패: {type(e).__name__}: {e}")
+    return meta
+
+
+def extract_news_og_image(link: str) -> str:
+    """기사 원문 페이지의 대표 사진 URL (실패 시 빈 문자열)"""
+    return fetch_article_meta(link)["image"]
+
+
+def enrich_google_articles(articles, max_workers=15):
+    """
+    구글 뉴스 RSS에는 요약문이 없어 제목으로 만든 대체 문구가 들어가 있음 →
+    원문 og:description(첫 문단)으로 바꿔 같은 보도자료 묶기와 카드 요약에 사용. 같은 조회에서 사진도 채움
+    """
+    from concurrent.futures import ThreadPoolExecutor
+
+    targets = [a for a in articles if "news.google.com" in a.get("link", "") and LEDE_FALLBACK_PHRASE in a.get("snippet", "")]
+    if not targets:
+        return
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        metas = list(executor.map(lambda a: fetch_article_meta(a["link"]), targets))
+
+    filled = 0
+    for a, meta in zip(targets, metas):
+        desc = meta["description"]
+        # 요약이 너무 짧거나 제목을 그대로 반복하면 기존 대체 문구 유지
+        if len(desc) >= 40 and re.sub(r'\W', '', desc) != re.sub(r'\W', '', a["title"]):
+            a["snippet"] = desc[:180].strip()
+            filled += 1
+        if meta["image"] and not a.get("image"):
+            a["image"] = meta["image"]
+    print(f"📝 [구글 뉴스 요약 보완] {len(targets)}건 중 {filled}건 원문 첫 문단으로 교체, 사진 {sum(bool(m['image']) for m in metas)}건 확보")
+
 
 UNKNOWN_PUBLISHERS = {"", "네이버뉴스", "언론사"}
 
