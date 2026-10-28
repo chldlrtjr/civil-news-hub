@@ -189,7 +189,8 @@ window.CivilData = (() => {
           type: type,
           wage: wageNum,
           wageText: a.wage_display || '급여 협의',
-          hours: a.work_time ? (a.work_time.includes('주') ? 15 : 20) : 15,
+          // 공고 근무시간에서 계산한 주 근무시간 (요일·시간이 명확하지 않으면 null → 월 수입 추정 안 함)
+          hours: a.weekly_hours || null,
           // 일급 공고는 공고에 적힌 근무일 수 기준 (없으면 1일)
           days: (a.work_dates && a.work_dates.length) || 1,
           end: daysLeft,

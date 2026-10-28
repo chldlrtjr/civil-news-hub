@@ -35,6 +35,118 @@ def clean_text(text):
     text = re.sub(r'\s+', ' ', text)
     return text.strip()
 
+WEEKDAYS = "월화수목금토일"
+# 요일 묶음: '월~금', '월-토', '월수금', '화,수,목', '토, 일', '월요일, 수요일' (숫자 뒤 '10월'·'31일', '월급' 같은 단어는 제외)
+_DAY = r'[월화수목금토일](?:요일)?'
+DAY_RANGE_RE = re.compile(r'(?<![\d가-힣])([월화수목금토일])(?:요일)?\s*[~\-]\s*([월화수목금토일])(?:요일)?(?![가-힣])')
+DAY_LIST_RE = re.compile(r'(?<![\d가-힣])(' + _DAY + r'(?:\s*[,·\s]?\s*' + _DAY + r')*)(?![가-힣])')
+DAY_WORD_RE = re.compile(r'평일|주말|매일|주\s*(\d)\s*(?:일|회)')
+# 시각: '16:30', '3시 50분', '4시30', '9시반', '오후 2', '9:00AM'
+_TIME = r'(?:(오전|오후|저녁|새벽|밤)\s*)?(\d{1,2})(?:\s*[:시]\s*(\d{1,2}|반)?\s*분?)?\s*(AM|PM|am|pm)?'
+TIME_RANGE_RE = re.compile(r'(?<![\d/.])' + _TIME + r'\s*(?:~|-|–|부터)\s*' + _TIME + r'\s*시?(?!\s*(?:간|회|일|명|만|원|\d))')
+# 선택지·범위가 있어 주 근무시간을 하나로 정할 수 없는 표현
+AMBIGUOUS_RE = re.compile(r'[A-C]\s*조|\d\s*팀|또는|혹은|\bor\b|사이|주\s*\d\s*[~\-]\s*\d|선택')
+SPECIFIC_DATE_RE = re.compile(r'\d{1,2}\s*월\s*\d{1,2}\s*일|\d{1,2}/\d{1,2}')
+
+
+def _to_hours(ampm, h, m, suffix):
+    h = int(h)
+    m = 30 if m == "반" else int(m or 0)
+    if h > 24 or m > 59:
+        return None
+    if ampm in ("오후", "저녁", "밤") or (suffix or "").lower() == "pm":
+        if h < 12:
+            h += 12
+    return (h % 24) + m / 60
+
+
+def _range_hours(match):
+    """시각 범위 → 근무시간(시간). 끝이 시작보다 이르면 오후(+12) 또는 다음 날(+24)로 해석"""
+    a1, h1, m1, s1, a2, h2, m2, s2 = match.groups()
+    start = _to_hours(a1, h1, m1, s1)
+    end = _to_hours(a2, h2, m2, s2)
+    if start is None or end is None:
+        return None
+    if end <= start:
+        end = end + 12 if end + 12 > start else end + 24
+    hours = end - start
+    return hours if 0.5 <= hours <= 14 else None
+
+
+def _day_count(token):
+    """요일 표현 → 주당 근무 일수"""
+    if token.startswith("평일"):
+        return 5
+    if token.startswith("주말"):
+        return 2
+    if token.startswith("매일"):
+        return 7
+    m = re.match(r'주\s*(\d)', token)
+    if m:
+        return int(m.group(1))
+    m = DAY_RANGE_RE.fullmatch(token)
+    if m:
+        a, b = WEEKDAYS.index(m.group(1)), WEEKDAYS.index(m.group(2))
+        return (b - a) % 7 + 1  # '일 - 목'처럼 주를 넘어가는 범위 포함
+    return len(set(re.findall(r'[월화수목금토일](?!요)', token.replace("요일", ""))))
+
+
+def parse_weekly_hours(work_time):
+    """
+    근무시간 원문 → 주 근무시간(시간) 또는 None
+    - 요일과 하루 근무시간이 모두 명확할 때만 계산 ('월~금 16:00-22:00' → 30)
+    - 요일마다 시간이 따로 적히면 합산 ('평일 16:30~20:30 / 토요일 09:00~13:00' → 24)
+    - 선택지·범위(A조/B조, 또는, 주 2~3회), 특정 날짜 단발 근무, 요일이나 시간이 빠진 경우는 None
+    - 계산 결과가 주 84시간(하루 12시간 × 7일)을 넘으면 영업시간을 적은 것으로 보고 None
+    """
+    t = clean_text(work_time)
+    if not t or AMBIGUOUS_RE.search(t) or SPECIFIC_DATE_RE.search(t):
+        return None
+
+    events = []  # (위치, 'days', 일수) / (위치, 'time', 시간)
+    taken = []
+    for m in TIME_RANGE_RE.finditer(t):
+        hours = _range_hours(m)
+        if hours is None:
+            return None
+        events.append((m.start(), "time", hours))
+        taken.append((m.start(), m.end()))
+    for regex in (DAY_RANGE_RE, DAY_WORD_RE, DAY_LIST_RE):
+        for m in regex.finditer(t):
+            if any(a <= m.start() < b for a, b in taken):
+                continue
+            count = _day_count(m.group(0))
+            if not count:
+                return None
+            events.append((m.start(), "days", count))
+            taken.append((m.start(), m.end()))
+    events.sort()
+
+    times = [e for e in events if e[1] == "time"]
+    days = [e for e in events if e[1] == "days"]
+    if not times or not days:
+        return None
+
+    if len(times) == 1 and len(days) == 1:
+        weekly = times[0][2] * days[0][2]
+    else:
+        # 요일-시간 쌍: 각 시간 범위 바로 앞에 그 범위만의 요일 표현이 있어야 함
+        weekly, pending = 0, None
+        for _, kind, value in events:
+            if kind == "days":
+                if pending is not None:
+                    return None  # 요일만 연달아 나오고 시간이 없음
+                pending = value
+            else:
+                if pending is None:
+                    return None  # 요일 없이 시간만 → 선택지로 봄
+                weekly += pending * value
+                pending = None
+        if pending is not None:
+            return None
+    return round(weekly, 1) if 1 <= weekly <= 84 else None  # 84 = 하루 12시간 × 7일 (영업시간을 적은 경우 등 배제)
+
+
 def parse_wage_and_work_condition(company, title, wage_str, work_time_str):
     """
     공고 원본 급여와 근무 조건, 제목, 상호명을 종합 분석하여
@@ -367,6 +479,8 @@ def scrape_jbnu_albas(max_pages=2):
                 "estimate_subtext": calc["pay_subtext"],
                 "estimate_amt": calc["sort_wage"],
                 "work_time": work_time,
+                # 근무시간 원문에서 요일·시간이 모두 명확할 때만 계산한 주 근무시간 (없으면 None → 월 수입 추정 안 함)
+                "weekly_hours": parse_weekly_hours(work_time) if calc["wage_type"] == "hourly" else None,
                 "person": person,
                 "views": views,
                 "dday": dday,

@@ -49,6 +49,44 @@ class AlbaWageTest(unittest.TestCase):
         self.assertEqual((r["wage_type"], r["sort_wage"], r["hourly_wage"]), ("negotiable", 0, 0))
 
 
+class AlbaWeeklyHoursTest(unittest.TestCase):
+    def test_parsed_from_explicit_days_and_times(self):
+        cases = {
+            "월~금 16:00-22:00": 30,
+            "월-금 오후 2-7시": 25,
+            "평일 1:30~8:30": 35,                     # 오후 표기 없는 1:30~8:30
+            "월수금 4:30-8:30": 12,
+            "화 목 시간: 3시 50분~7시 30분": 7.3,
+            "15:00-20:00 (주4일)": 20,                # 요일 정보가 뒤에 오는 경우
+            "주5일 2시20분~6시20분": 20,
+            "평일 16:30~20:30 / 토요일 09:00~13:00": 24,   # 요일별 시간 합산
+            "월 16:30-21:00 화 15:30-21:00": 10,
+            "수요일 22시~04시 금요일 21시~04시": 13,      # 자정 넘김
+            "토요일, 일요일 11시30분 - 2시 20분": 5.7,
+            "일 - 목 23시 ~ 08시 , 금 - 토 24시 ~ 08시": 61,  # 주를 넘어가는 요일 범위
+        }
+        for text, expected in cases.items():
+            self.assertEqual(jbnu_scraper.parse_weekly_hours(text), expected, text)
+
+    def test_ambiguous_or_incomplete_is_none(self):
+        for text in [
+            "16:30-20:30",                                   # 요일 없음
+            "평일", "토, 일",                                  # 시간 없음
+            "4~6시간", "2시간 ~ 4시간",                          # 하루 근무시간 범위
+            "A조 : 오후 1시~4시 / B조 : 오후 2시~5시",            # 선택지
+            "3시~8시 또는 3시~9시30",
+            "주 2~3회", "월,수,금, 토, 일(6시~10시 사이) 주2회 선택",
+            "월-금 13:00~18:00 / 09:00~15:00(1시간 휴게포함)",    # 요일 없는 대안 시간
+            "10월 31일 토요일 10:30 ~ 16:30",                   # 단발 근무
+            "월~일(협의 가능) / 10:30~23:00",                    # 영업시간 (주 84시간 초과)
+            "협의", "",
+        ]:
+            self.assertIsNone(jbnu_scraper.parse_weekly_hours(text), text)
+
+    def test_month_word_is_not_monday(self):
+        self.assertIsNone(jbnu_scraper.parse_weekly_hours("월급제 16:00-22:00"))
+
+
 class AlbaFailureTest(unittest.TestCase):
     def test_unreachable_board_raises_and_keeps_file(self):
         with mock.patch.object(jbnu_scraper.urllib.request, "urlopen", side_effect=OSError("down")), \
