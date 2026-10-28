@@ -205,18 +205,23 @@ def extract_naver_publisher(link, originallink, title):
     return "네이버뉴스"
 
 def fetch_naver_news_for_term(term, client_id, client_secret, display=15):
-    """네이버 검색 오픈 API를 통한 뉴스 기사 수집 (요청 실패 시 None)"""
+    """
+    네이버 뉴스 검색 API 수집 (요청 실패 시 None)
+    - 2026년 검색 API가 개발자센터(openapi.naver.com)에서 네이버 클라우드 NAVER API HUB로 이관됨
+      → 키는 NCP 콘솔 > NAVER API HUB > Application의 인증 정보 (개발자센터 키는 사용 불가)
+    - API HUB는 한시적 무료, 유료 전환 시 사전 공지 예정
+    """
     if not client_id or not client_secret:
         return []
-    
+
     encoded_q = urllib.parse.quote(term)
-    url = f"https://openapi.naver.com/v1/search/news.json?query={encoded_q}&display={display}&sort=date"
-    
+    url = f"https://naverapihub.apigw.ntruss.com/search/v1/news?query={encoded_q}&display={display}&sort=date"
+
     req = urllib.request.Request(
         url,
         headers={
-            "X-Naver-Client-Id": client_id,
-            "X-Naver-Client-Secret": client_secret,
+            "X-NCP-APIGW-API-KEY-ID": client_id,
+            "X-NCP-APIGW-API-KEY": client_secret,
             "User-Agent": "CivilNewsHub/1.0"
         }
     )
@@ -449,14 +454,17 @@ def scrape_civil_news():
     has_naver_api = bool(naver_client_id and naver_client_secret)
     
     if has_naver_api:
-        print("🔑 [네이버 뉴스] 공식 Open API 연동 모드로 수집합니다.")
+        print("🔑 [네이버 뉴스] NAVER API HUB 연동 모드로 수집합니다. (실패 시 직접 수집으로 전환)")
     else:
         print("🌐 [네이버 뉴스] 직접 웹 스크래핑 엔진 가동 (API 키 불필요: 구글 + 네이버 하이브리드 수집)")
     if GNEWS_DECODER_ERROR:
         print(f"⚠️ [News Image] googlenewsdecoder 불러오기 실패 → 구글 뉴스 기사 사진 추출 불가: {GNEWS_DECODER_ERROR}")
 
     # 수집원별 요청 성공/실패 횟수 (검색어 전부 실패한 수집원은 실패로 보고 exit 1 → cron 알림)
+    # API HUB가 전부 실패하면(유료 전환·키 만료·한도 초과 등) 직접 수집으로 기사는 채우되 실패로 기록해 알림을 받는다
     request_stats = {"구글 뉴스 RSS": [0, 0], "네이버 뉴스": [0, 0]}
+    if has_naver_api:
+        request_stats["네이버 API HUB"] = [0, 0]
 
     for cat in CATEGORIES:
         cat_count = 0
@@ -477,10 +485,12 @@ def scrape_civil_news():
                     all_articles.append(article)
                     cat_count += 1
             
-            # 2. 네이버 뉴스 수집 (API 키가 있으면 API 모드, 없으면 직접 웹 스크래핑 모드)
+            # 2. 네이버 뉴스 수집 (API 키가 있으면 API HUB, 없거나 실패하면 직접 웹 스크래핑)
+            naver_items = None
             if has_naver_api:
                 naver_items = fetch_naver_news_for_term(term, naver_client_id, naver_client_secret, display=15)
-            else:
+                request_stats["네이버 API HUB"][0 if naver_items is not None else 1] += 1
+            if naver_items is None:
                 naver_items = scrape_naver_news_direct(term, max_items=10, now_kst=datetime.now(kst))
             request_stats["네이버 뉴스"][0 if naver_items is not None else 1] += 1
 

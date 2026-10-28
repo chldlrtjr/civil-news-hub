@@ -89,6 +89,22 @@ class FailureHandlingTest(unittest.TestCase):
                 scraper.scrape_civil_news()
             replace.assert_not_called()
 
+    def test_api_hub_failure_falls_back_to_direct_and_is_reported(self):
+        now = rfc822(datetime.now(KST))
+        direct = [{"title": "국도 77호선 교량 착공", "link": "https://e.com/n1", "originallink": "https://e.com/n1",
+                   "publisher": "테스트일보", "pubDate": now, "description": ""}]
+        with mock.patch.object(scraper, "fetch_rss_for_term", return_value=[]), \
+                mock.patch.object(scraper, "fetch_naver_news_for_term", return_value=None), \
+                mock.patch.object(scraper, "scrape_naver_news_direct", return_value=direct) as direct_mock, \
+                mock.patch.object(scraper, "cluster_related_articles", side_effect=lambda a: ([dict(x, related_articles=[]) for x in a], 0)), \
+                mock.patch.dict(os.environ, {"NAVER_CLIENT_ID": "id", "NAVER_CLIENT_SECRET": "secret"}), \
+                mock.patch.object(scraper.os, "replace"), \
+                mock.patch("builtins.open", mock.mock_open()):
+            result = scraper.scrape_civil_news()
+        self.assertTrue(direct_mock.called)
+        self.assertEqual(result["total_count"], 1)
+        self.assertEqual(result["failed_sources"], ["네이버 API HUB"])
+
     def test_non_google_link_works_without_decoder(self):
         html = '<meta property="og:image" content="https://cdn.example.com/photo/1.jpg">'
         with mock.patch.object(scraper, "googlenewsdecoder", None), \
