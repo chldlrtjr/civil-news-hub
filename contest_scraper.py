@@ -7,6 +7,7 @@ Civil News Hub - 토목 공모전 수집 파이프라인 (contest_scraper.py)
 - manual : contest_notice_parser.MANUAL_CONTESTS (사람이 공식 공고를 보고 기재)
 - wevity : wevity_contest_scraper (위비티 건축/건설 분야 접수중 목록)
 - campus : jbnu_contest_scraper (전북대 교내·학생공지)
+- devevent / wevity_it : it_contest_scraper (컴퓨터공학 공모전·해커톤, track="it"으로 따로 표시)
 규칙 준수 (GEMINI.md):
 1. contest_validator로 마감/과거/블랙리스트 항목 차단, 저장 직전 전수 재검증
 2. 접수 마감된 공모전은 목록에서 즉시 제외 (Rule 1-⑤)
@@ -24,6 +25,7 @@ from datetime import datetime, timezone, timedelta
 from bs4 import BeautifulSoup
 import contest_notice_parser
 import contest_validator
+import it_contest_scraper
 import jbnu_contest_scraper
 import wevity_contest_scraper
 
@@ -44,6 +46,8 @@ SOURCES = [
     ("manual", "수동 등록", contest_notice_parser.get_manual_contests),
     ("campus", "전북대 공지", jbnu_contest_scraper.fetch_jbnu_contest_notices),
     ("wevity", "위비티", wevity_contest_scraper.fetch_wevity_contests),
+    ("devevent", "데브이벤트", it_contest_scraper.fetch_devevent_contests),
+    ("wevity_it", "위비티 IT", it_contest_scraper.fetch_wevity_it_contests),
 ]
 
 
@@ -107,9 +111,17 @@ def normalize_title(title: str) -> str:
 def source_of(contest: dict) -> str:
     """이전 contests.json 항목의 수집원 키 (source 필드가 없던 예전 수동 항목은 manual)"""
     src = contest.get("source")
-    if src in ("campus", "wevity"):
+    if src in ("campus", "wevity", "devevent", "wevity_it"):
         return src
     return "manual"
+
+
+def is_duplicate_title(ntitle: str, seen_titles: set) -> bool:
+    """정규화 제목이 같거나, 충분히 긴 제목이 다른 제목을 통째로 포함하면 같은 공모전으로 본다
+    (예: '…앱 개발 공모전'과 '…앱 개발 공모전 (Code your App …)')"""
+    if ntitle in seen_titles:
+        return True
+    return any(min(len(ntitle), len(t)) >= 12 and (ntitle in t or t in ntitle) for t in seen_titles)
 
 
 def load_previous_contests() -> list:
@@ -163,7 +175,7 @@ def scrape_civil_contests():
     for c in collected:
         cid = c.get("id")
         ntitle = normalize_title(c.get("title", ""))
-        if (cid and cid in seen_ids) or (ntitle and ntitle in seen_titles):
+        if (cid and cid in seen_ids) or (ntitle and is_duplicate_title(ntitle, seen_titles)):
             continue
         if cid:
             seen_ids.add(cid)
@@ -185,6 +197,8 @@ def scrape_civil_contests():
         else:
             c["category"] = "일반"
             c["badge_color"] = "blue"
+        # 공모전 페이지 섹션: civil(토목·건설) / it(컴퓨터공학 공모전·해커톤)
+        c["track"] = "it" if c.get("track") == "it" else "civil"
 
         is_valid, reason = contest_validator.validate_contest(c)
         if not is_valid:
@@ -244,6 +258,8 @@ def scrape_civil_contests():
         print(f"  • {cat}: {cnt}건")
         cat_sum += cnt
 
+    it_cnt = len([c for c in active_contests if c.get("track") == "it"])
+    print(f"  (섹션) 토목·건설 {len(active_contests) - it_cnt}건 / 컴퓨터공학·해커톤 {it_cnt}건")
     print(f"  -------------------------------------")
     print(f"  총 건수 [ALL]: {len(active_contests)}건 | 개별 카테고리 합계: {cat_sum}건")
     if len(active_contests) == cat_sum:

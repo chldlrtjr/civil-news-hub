@@ -6,6 +6,7 @@ from unittest import mock
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import contest_scraper  # noqa: E402
+import it_contest_scraper as it  # noqa: E402
 import jbnu_contest_scraper as jbnu  # noqa: E402
 import wevity_contest_scraper as wevity  # noqa: E402
 
@@ -117,6 +118,73 @@ class WevityParseTest(unittest.TestCase):
 
     def test_missing_list_means_layout_changed(self):
         self.assertIsNone(wevity.parse_list_page("<html><body>점검중</body></html>", datetime.now(KST), 24))
+
+
+DEVEVENT_MD = """
+## `26년 12월`
+- __[2026 HAI(하이)! - Hecto AI x Wallet Service Challenge](https://daker.ai/public/hackathons/hai)__
+  - 분류: `온라인`, `무료`, `대회`, `AI`, `블록체인`
+  - 주최: 헥토(Hecto)
+  - 접수: 10. 26(월) 10:00 ~ 01. 05(화)
+
+- __[AWSKRUG 세미나](https://www.meetup.com/awskrug/events/1/)__
+  - 분류: `오프라인(서울 성동구)`, `무료`, `세미나`, `AI`
+  - 주최: AWSKRUG
+  - 접수: 12. 01(화) ~ 12. 03(목) 19:00
+- __[Hello World AI 해커톤](https://hackon.kr/e/1)__
+  - 분류: `오프라인(서울 강남구)`, `무료`, `모임`, `AI`
+  - 주최: HACK:ON
+  - 일시: 12. 12(토) 13:00
+- __[쿵야 IP 로블록스 게임 콘텐츠 제작 공모전](https://www.wevity.com/?c=find&s=1&gbn=view&ix=110895)__
+  - 분류: `온라인`, `무료`, `대회`, `기술일반`
+  - 주최: 넷마블엠엔비
+  - 접수: 09. 11(금) ~ 12. 20(일)
+- __[항만 AI 기술 공모전](https://www.wevity.com/?c=find&s=1&gbn=view&ix=777)__
+  - 분류: `온라인`, `무료`, `대회`, `AI`
+  - 주최: 해양수산부
+  - 접수: 09. 30(수) ~ 12. 02(수) 10:00
+"""
+
+
+class DevEventParseTest(unittest.TestCase):
+    def test_parses_contests_and_hackathons_only(self):
+        items = it.parse_devevent_readme(DEVEVENT_MD)
+        self.assertEqual([c["title"] for c in items],
+                         ["2026 HAI(하이)! - Hecto AI x Wallet Service Challenge", "Hello World AI 해커톤", "항만 AI 기술 공모전"])
+        hai, hackon, port = items
+        # 12월 섹션의 1월 마감은 다음 해, 접수 시각이 없으면 23:59
+        self.assertEqual((hai["deadline_date"], hai["deadline_time"]), ("2027-01-05", "23:59"))
+        self.assertEqual(hai["organizer"], "헥토(Hecto)")
+        self.assertEqual(hai["track"], "it")
+        self.assertNotIn("무료", hai["fields"])
+        # 접수 기간 없이 행사 일시만 있으면 행사 시작 시각이 마감
+        self.assertEqual((hackon["deadline_date"], hackon["deadline_time"]), ("2026-12-12", "13:00"))
+        # 위비티 공고 링크는 위비티 id로 묶여 중복 제거된다
+        self.assertEqual(port["id"], "wevity-777")
+        self.assertEqual(port["deadline_time"], "10:00")
+
+    def test_missing_sections_means_format_changed(self):
+        self.assertIsNone(it.parse_devevent_readme("# 점검 중"))
+
+    def test_it_filter(self):
+        def keep(title):
+            return it.is_it({"title": title})
+
+        self.assertTrue(keep("현대자동차그룹 차량용 앱 개발 공모전"))
+        self.assertTrue(keep("2026 사회보장 데이터를 활용한 AI 혁신 아이디어 경진대회"))
+        self.assertTrue(keep("2026 동남 버그바운티 대회"))
+        self.assertFalse(keep("선샤인 TIME TRAVEL 숏폼 영상 공모전"))
+        self.assertFalse(keep("2026 AI 플레이 콘텐츠 제작 공모전"))
+        self.assertFalse(keep("2026 대경권 캠퍼스 IR 챔피언십 (창업 공모전)"))
+        self.assertFalse(keep("공모전 준비 중이라면? AI 교정 서비스 [교정의 신]과 함께!"))
+
+
+class DuplicateTitleTest(unittest.TestCase):
+    def test_long_title_containing_another_is_duplicate(self):
+        seen = {contest_scraper.normalize_title("현대자동차그룹 차량용 앱 개발 공모전")}
+        longer = contest_scraper.normalize_title("현대자동차그룹 차량용 앱 개발 공모전 (Code your App into Pleos App Market)")
+        self.assertTrue(contest_scraper.is_duplicate_title(longer, seen))
+        self.assertFalse(contest_scraper.is_duplicate_title(contest_scraper.normalize_title("AI 공모전 2"), {"ai공모전"}))
 
 
 class SourceFallbackTest(unittest.TestCase):

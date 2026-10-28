@@ -127,10 +127,10 @@ def parse_list_page(html: str, today: datetime, cidx: int) -> list:
     return items
 
 
-def fetch_wevity_contests() -> list:
-    """위비티 접수중 공모전 중 토목 관련만 수집. 모든 요청이 실패하면 WevityFetchError"""
+def fetch_wevity(categories, keep, label: str, source: str = "wevity") -> list:
+    """위비티 접수중 공모전 중 keep(contest)을 통과한 것만 수집. 모든 요청이 실패하면 WevityFetchError"""
     print("\n" + "-" * 60)
-    print("🌐 [Wevity] 위비티 토목 분야 접수중 공모전 수집 시작")
+    print(f"🌐 [Wevity] 위비티 {label} 분야 접수중 공모전 수집 시작")
     print("-" * 60)
 
     today = datetime.now(KST)
@@ -139,9 +139,9 @@ def fetch_wevity_contests() -> list:
     ok_pages = 0
     errors = []
 
-    for cidx, label, max_pages in CATEGORIES:
+    for cidx, cat_label, max_pages in categories:
         seen_in_category = set()
-        civil_count = 0
+        kept_count = 0
         for page in range(1, max_pages + 1):
             url = f"{BASE_URL}?c=find&s=1&gub=1&cidx={cidx}&mode=ing&gp={page}"
             try:
@@ -149,11 +149,11 @@ def fetch_wevity_contests() -> list:
                 r.raise_for_status()
                 r.encoding = "utf-8"
             except Exception as e:
-                errors.append(f"{label} p{page}: {e}")
+                errors.append(f"{cat_label} p{page}: {e}")
                 break
             items = parse_list_page(r.text, today, cidx)
             if items is None:
-                errors.append(f"{label} p{page}: 목록 영역(ul.list)을 찾지 못함 — 페이지 구조 변경 의심")
+                errors.append(f"{cat_label} p{page}: 목록 영역(ul.list)을 찾지 못함 — 페이지 구조 변경 의심")
                 break
             ok_pages += 1
             new = [c for c in items if c["id"] not in seen_in_category]
@@ -161,20 +161,26 @@ def fetch_wevity_contests() -> list:
                 break  # 마지막 페이지를 넘기면 빈 목록이거나 같은 목록이 반복됨
             for c in new:
                 seen_in_category.add(c["id"])
-                if c["id"] in seen or not is_civil(c):
+                if c["id"] in seen or not keep(c):
                     continue
                 seen.add(c["id"])
+                c["source"] = source
                 results.append(c)
-                civil_count += 1
-        print(f"  • {label}: 토목 관련 {civil_count}건 (전체 {len(seen_in_category)}건 중)")
+                kept_count += 1
+        print(f"  • {cat_label}: {label} 관련 {kept_count}건 (전체 {len(seen_in_category)}건 중)")
 
     for e in errors:
         print(f"  ⚠️ [Wevity] {e}")
     if ok_pages == 0:
         raise WevityFetchError("; ".join(errors) or "목록 페이지를 하나도 읽지 못함")
 
-    print(f"🎯 [Wevity] 접수중 공모전 총 {len(results)}건 수집")
+    print(f"🎯 [Wevity] {label} 접수중 공모전 총 {len(results)}건 수집")
     return results
+
+
+def fetch_wevity_contests() -> list:
+    """위비티 접수중 공모전 중 토목 관련만 수집"""
+    return fetch_wevity(CATEGORIES, is_civil, "토목")
 
 
 if __name__ == "__main__":

@@ -128,6 +128,7 @@ window.CivilData = (() => {
           added: idx,
           link: c.link || '#',
           period: c.period || '',
+          track: c.track === 'it' ? 'it' : 'civil',
           description: c.description || c.target_details || c.submission_info || ''
         };
       });

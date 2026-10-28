@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-10-29 01:01:43",
-  "last_updated_display": "10월 29일 01:01",
-  "total_count": 14,
-  "featured_count": 14,
+  "last_updated": "2026-10-29 01:51:23",
+  "last_updated_display": "10월 29일 01:51",
+  "total_count": 36,
+  "featured_count": 36,
   "categories": [
     "ALL",
     "전북대",
@@ -74,6 +74,7 @@
       "description": "휴게소 보행안전, 지하고속도로 입출구부, 생태통로 등 인프라 시설물의 심미성과 안전성을 높이는 대국민 디자인 공모전",
       "link": "https://www.ex-contest.co.kr/design26",
       "is_active": true,
+      "track": "civil",
       "dday_info": {
         "text": "오늘마감",
         "days": 0,
@@ -101,6 +102,7 @@
       "link": "https://www.jbnu.ac.kr/web/Board/218667/detailView.do",
       "image": "https://www.jbnu.ac.kr/common/file.do?file=OhNWrFkjI5WQ4QSPEwKp4ZmYOKd01oYYdevRH/Nj2pQ7YYJXC1/6i5WORLW8/ORi",
       "is_active": true,
+      "track": "civil",
       "dday_info": {
         "text": "오늘마감",
         "days": 0,
@@ -127,10 +129,300 @@
       "link": "https://www.jbnu.ac.kr/web/Board/218336/detailView.do",
       "image": "https://www.jbnu.ac.kr/common/file.do?file=Y4JxnW6eBwKOWuP9KFH9TdH5BcpwYUCQEL0SAWiRcTd+15wYzz+mnZTvEHUsidpW",
       "is_active": true,
+      "track": "civil",
       "dday_info": {
         "text": "D-1",
         "days": 1,
         "is_urgent": true,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-be88f0121a",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "2026년 양자내성암호 전환 경진대회·해커톤",
+      "organizer": "과학기술정보통신부 / 한국인터넷진흥원(KISA)",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.10.30 마감",
+      "deadline_date": "2026-10-30",
+      "deadline_time": "16:00",
+      "fields": [
+        "온라인",
+        "오프라인(서울 서초구)",
+        "대회",
+        "기술일반"
+      ],
+      "description": "과학기술정보통신부 / 한국인터넷진흥원(KISA) 주최 · 온라인, 오프라인(서울 서초구), 무료, 대회, 기술일반",
+      "link": "https://www.pqcchallenge.kr/",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-1",
+        "days": 1,
+        "is_urgent": true,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-036dd4afe8",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "c0mpiled-17: Seoul",
+      "organizer": "Transpose Platform / 아산나눔재단 / 한국벤처캐피탈협회 / 한국벤처투자 / 한국무역협회",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.10.30 마감",
+      "deadline_date": "2026-10-30",
+      "deadline_time": "23:30",
+      "fields": [
+        "오프라인(서울 강남구)",
+        "대회",
+        "AI"
+      ],
+      "description": "Transpose Platform / 아산나눔재단 / 한국벤처캐피탈협회 / 한국벤처투자 / 한국무역협회 주최 · 오프라인(서울 강남구), 무료, 대회, AI",
+      "link": "https://luma.com/compiled-8lsr",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-1",
+        "days": 1,
+        "is_urgent": true,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-6336fea5e0",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "Hello World AI 해커톤 — 개인전, 하루 안에 배포까지",
+      "organizer": "HACK:ON",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.10.31 행사 시작 전 신청",
+      "deadline_date": "2026-10-31",
+      "deadline_time": "13:00",
+      "fields": [
+        "오프라인(서울 강남구)",
+        "대회",
+        "AI"
+      ],
+      "description": "HACK:ON 주최 · 오프라인(서울 강남구), 무료, 대회, AI",
+      "link": "https://hackon.kr/e/1a32b615",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-2",
+        "days": 2,
+        "is_urgent": true,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-4e28da74e8",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "코드트리 양떼 목장 (4주 코테 습관 만들기)",
+      "organizer": "코드트리",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.10.31 마감",
+      "deadline_date": "2026-10-31",
+      "deadline_time": "23:59",
+      "fields": [
+        "온라인",
+        "대회"
+      ],
+      "description": "코드트리 주최 · 온라인, 무료, 대회",
+      "link": "https://www.codetree.ai/ko/sheep-sheep-sheep",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-2",
+        "days": 2,
+        "is_urgent": true,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-184d6a8f34",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "2026년 AI 라이프 솔루션 챌린지",
+      "organizer": "산업통상부 / 한국산업기술기획평가원(KEIT)",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.10.31 마감",
+      "deadline_date": "2026-10-31",
+      "deadline_time": "23:59",
+      "fields": [
+        "온라인",
+        "대회",
+        "AI"
+      ],
+      "description": "산업통상부 / 한국산업기술기획평가원(KEIT) 주최 · 온라인, 무료, 대회, AI",
+      "link": "https://www.keit.re.kr/board.es?mid=a10301010000&bid=0009&act=view&list_no=128385",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-2",
+        "days": 2,
+        "is_urgent": true,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-61bb12a654",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "젝커톤 2026 | 젝트 X 스위프 AI 해커톤",
+      "organizer": "젝트(JECT) · 스위프(SWYP)",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.10.31 마감",
+      "deadline_date": "2026-10-31",
+      "deadline_time": "23:59",
+      "fields": [
+        "오프라인(서울 강남구)",
+        "대회",
+        "AI"
+      ],
+      "description": "젝트(JECT) · 스위프(SWYP) 주최 · 오프라인(서울 강남구), 유료, 대회, AI",
+      "link": "https://jeckathon.ject.kr/",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-2",
+        "days": 2,
+        "is_urgent": true,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-01a4f5f713",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "항만 문제해결을 위한 AI 기술 공모전",
+      "organizer": "해양수산부 / 울산항만공사 / 한국정보산업연합회",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.02 마감",
+      "deadline_date": "2026-11-02",
+      "deadline_time": "10:00",
+      "fields": [
+        "온라인",
+        "대회",
+        "AI"
+      ],
+      "description": "해양수산부 / 울산항만공사 / 한국정보산업연합회 주최 · 온라인, 무료, 대회, AI",
+      "link": "https://dacon.io/competitions/official/236771/overview/description",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-4",
+        "days": 4,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-5c3eeaf7a6",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "화이트햇 2026 (WHITEHAT 2026) 국방 사이버보안 콘테스트",
+      "organizer": "국방부 / 사이버작전사령부",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.02 마감",
+      "deadline_date": "2026-11-02",
+      "deadline_time": "23:30",
+      "fields": [
+        "온라인",
+        "오프라인(서울 강남구)",
+        "대회",
+        "기술일반"
+      ],
+      "description": "국방부 / 사이버작전사령부 주최 · 온라인, 오프라인(서울 강남구), 무료, 대회, 기술일반",
+      "link": "https://whitehat2026.kr/",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-4",
+        "days": 4,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-3de75fe425",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "2026 청도 바이브코딩 해커톤 with 해커그라운드",
+      "organizer": "해커그라운드 · 대구한의대학교",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.03 마감",
+      "deadline_date": "2026-11-03",
+      "deadline_time": "23:30",
+      "fields": [
+        "오프라인(경북 청도)",
+        "대회",
+        "AI"
+      ],
+      "description": "해커그라운드 · 대구한의대학교 주최 · 오프라인(경북 청도), 무료, 대회, AI",
+      "link": "https://hackersground.kr/",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-5",
+        "days": 5,
+        "is_urgent": false,
         "is_closed": false
       }
     },
@@ -153,6 +445,7 @@
       "link": "https://www.jbnu.ac.kr/web/Board/218992/detailView.do",
       "image": "https://www.jbnu.ac.kr/common/file.do?file=pfYleG6eDllcTZKsE2Ho/+tDANtPfBU8+L4Gh+7KX3s6qY2GB1TRgfGmTigx0S4n",
       "is_active": true,
+      "track": "civil",
       "dday_info": {
         "text": "D-6",
         "days": 6,
@@ -179,6 +472,7 @@
       "link": "https://www.jbnu.ac.kr/web/Board/218755/detailView.do",
       "image": "https://www.jbnu.ac.kr/common/file.do?file=I3jIsbLZScZrx+JKTFh8LRfntvR+VH5mNMdcUGG0YKFlOIXsKble6f6XzE3qqz/5",
       "is_active": true,
+      "track": "civil",
       "dday_info": {
         "text": "D-6",
         "days": 6,
@@ -246,9 +540,107 @@
       "link": "https://www.jbnu.ac.kr/web/Board/217679/detailView.do",
       "is_active": true,
       "image": "https://www.jbnu.ac.kr/common/file.do?file=aDnf2Nbsc5JCVXjNcuja6hp6EOxg4LFfVvZE2KPyqg/B6wkWztYndrgNSVSNzFTT",
+      "track": "civil",
       "dday_info": {
         "text": "D-8",
         "days": 8,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-d730ba577b",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "2026 DATA·AI 분석 경진대회",
+      "organizer": "과학기술정보통신부 / 한국과학기술정보연구원(KISTI)",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.06 마감",
+      "deadline_date": "2026-11-06",
+      "deadline_time": "23:59",
+      "fields": [
+        "온라인",
+        "오프라인(대전)",
+        "대회",
+        "AI"
+      ],
+      "description": "과학기술정보통신부 / 한국과학기술정보연구원(KISTI) 주최 · 온라인, 오프라인(대전), 무료, 대회, AI",
+      "link": "https://aida.kisti.re.kr/competition/main/competition/COMP_000000000000050/detail.do",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-8",
+        "days": 8,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-36cb2f0eb2",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "TRILLION AGENT AI HACKATHON 2026",
+      "organizer": "트릴리온랩스(Trillion Labs)",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.06 마감",
+      "deadline_date": "2026-11-06",
+      "deadline_time": "23:59",
+      "fields": [
+        "오프라인(서울 서초구)",
+        "대회",
+        "AI"
+      ],
+      "description": "트릴리온랩스(Trillion Labs) 주최 · 오프라인(서울 서초구), 무료, 대회, AI",
+      "link": "https://hackathon.trillionlabs.co/",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-8",
+        "days": 8,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-e7c487a6f8",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "MAWD 대학생 START-UP HACKATHON",
+      "organizer": "MAWD",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.07 마감",
+      "deadline_date": "2026-11-07",
+      "deadline_time": "23:59",
+      "fields": [
+        "오프라인(서울 성동구)",
+        "대회",
+        "AI"
+      ],
+      "description": "MAWD 주최 · 오프라인(서울 성동구), 무료, 대회, AI",
+      "link": "https://event-us.kr/teammawd/event/138375",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-9",
+        "days": 9,
         "is_urgent": false,
         "is_closed": false
       }
@@ -275,6 +667,37 @@
       "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=111667",
       "image": "",
       "is_active": true,
+      "track": "civil",
+      "dday_info": {
+        "text": "D-11",
+        "days": 11,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-111087",
+      "source": "wevity_it",
+      "source_name": "위비티",
+      "title": "[의정부도시공사] AI 혁신 아이디어 공모전",
+      "organizer": "의정부도시공사",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.09 마감",
+      "deadline_date": "2026-11-09",
+      "deadline_time": "23:59",
+      "fields": [
+        "기획/아이디어"
+      ],
+      "description": "의정부도시공사 주최 · 분야: 기획/아이디어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=111087",
+      "image": "",
+      "is_active": true,
+      "track": "it",
       "dday_info": {
         "text": "D-11",
         "days": 11,
@@ -301,9 +724,199 @@
       "link": "https://www.jbnu.ac.kr/web/Board/219057/detailView.do",
       "image": "",
       "is_active": true,
+      "track": "civil",
       "dday_info": {
         "text": "D-12",
         "days": 12,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-663b5b5c59",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "국부펀드 KIC, AI 에이전트 공모전",
+      "organizer": "한국투자공사(KIC)",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.12 마감",
+      "deadline_date": "2026-11-12",
+      "deadline_time": "10:00",
+      "fields": [
+        "온라인",
+        "대회",
+        "AI"
+      ],
+      "description": "한국투자공사(KIC) 주최 · 온라인, 무료, 대회, AI",
+      "link": "https://daker.ai/public/hackathons/kic-ai-agent-competition",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-14",
+        "days": 14,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-111965",
+      "source": "wevity_it",
+      "source_name": "위비티",
+      "title": "2026 AI 활용 전국 대학생 창업 해커톤 참가자 모집",
+      "organizer": "교육부, 한국교육학술정보원(KERIS)",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.12 마감",
+      "deadline_date": "2026-11-12",
+      "deadline_time": "23:59",
+      "fields": [
+        "기획/아이디어"
+      ],
+      "description": "교육부, 한국교육학술정보원(KERIS) 주최 · 분야: 기획/아이디어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=111965",
+      "image": "",
+      "is_active": true,
+      "track": "it",
+      "dday_info": {
+        "text": "D-14",
+        "days": 14,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-beb8940624",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "2026 동남 버그바운티 대회",
+      "organizer": "과학기술정보통신부 / 부산광역시 / 한국인터넷진흥원 / 부산정보산업진흥원 외",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.13 마감",
+      "deadline_date": "2026-11-13",
+      "deadline_time": "23:59",
+      "fields": [
+        "온라인",
+        "대회",
+        "기술일반"
+      ],
+      "description": "과학기술정보통신부 / 부산광역시 / 한국인터넷진흥원 / 부산정보산업진흥원 외 주최 · 온라인, 무료, 대회, 기술일반",
+      "link": "https://linkareer.com/activity/352004",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-15",
+        "days": 15,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-5ac401b71d",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "2026 NASA International Space Apps Challenge Seoul",
+      "organizer": "NASA Space Apps Seoul",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.14 행사 시작 전 신청",
+      "deadline_date": "2026-11-14",
+      "deadline_time": "00:00",
+      "fields": [
+        "온라인",
+        "대회",
+        "기술일반"
+      ],
+      "description": "NASA Space Apps Seoul 주최 · 온라인, 무료, 대회, 기술일반",
+      "link": "https://www.spaceappschallenge.org/2026/local-events/seoul/",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-16",
+        "days": 16,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-111912",
+      "source": "wevity_it",
+      "source_name": "위비티",
+      "title": "[CJ제일제당] 햇반 30주년 AI 공모전 (갓 지은 AI디어)",
+      "organizer": "CJ제일제당",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.14 마감",
+      "deadline_date": "2026-11-14",
+      "deadline_time": "23:59",
+      "fields": [
+        "웹/모바일/IT"
+      ],
+      "description": "CJ제일제당 주최 · 분야: 웹/모바일/IT",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=view&ix=111912",
+      "image": "",
+      "is_active": true,
+      "track": "it",
+      "dday_info": {
+        "text": "D-16",
+        "days": 16,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-b33316d351",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "현대자동차그룹 차량용 앱 개발 공모전 (Code your App into Pleos App Market)",
+      "organizer": "현대자동차그룹",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.15 마감",
+      "deadline_date": "2026-11-15",
+      "deadline_time": "23:59",
+      "fields": [
+        "온라인",
+        "오프라인(서울 강남구)",
+        "대회",
+        "기술일반"
+      ],
+      "description": "현대자동차그룹 주최 · 온라인, 오프라인(서울 강남구), 무료, 대회, 기술일반",
+      "link": "https://appdevchallenge.auto-hmg.io/",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-17",
+        "days": 17,
         "is_urgent": false,
         "is_closed": false
       }
@@ -330,6 +943,7 @@
       "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=111666",
       "image": "",
       "is_active": true,
+      "track": "civil",
       "dday_info": {
         "text": "D-18",
         "days": 18,
@@ -356,6 +970,7 @@
       "link": "https://www.jbnu.ac.kr/web/Board/218972/detailView.do",
       "image": "https://www.jbnu.ac.kr/common/file.do?file=6xx0iZo7X0AEBG0FCLFvgOncDWwQuaIIjDY2sTSzU8zTY1ehDat3r34f5tD+RSlI",
       "is_active": true,
+      "track": "civil",
       "dday_info": {
         "text": "D-20",
         "days": 20,
@@ -381,6 +996,39 @@
       "description": "1. 귀 대학의 무궁한 발전을 기원합니다 . 2. 한국사회보장정보원에서는 사회보장 데이터와 ai 기술을 활용하여 공공성을 추구하는 아이디어 발굴을 위해 「 2026 사회보장 데이터를 활용한 ai 혁신 아이디어 경진대회 」 를 아래와 같이 개최하고자 합니다 . 3. 이에 , 귀 대학의 우수한 인재들이 적극 참여할 수 있도록 홍보 등에 협조하여 주시기 바랍니다…",
       "link": "https://www.jbnu.ac.kr/web/Board/218771/detailView.do",
       "image": "https://www.jbnu.ac.kr/common/file.do?file=DUFwt0w451rl0U6E6rgq192UbQExsCwqrXI+u2WTKjCo39EGVIpGQvMU9GBo+ijJ",
+      "is_active": true,
+      "track": "civil",
+      "dday_info": {
+        "text": "D-22",
+        "days": 22,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-1e1f66f18d",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "제주 AI·빅데이터 활용 AI Agent 개발 챌린지",
+      "organizer": "제주테크노파크",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.20 마감",
+      "deadline_date": "2026-11-20",
+      "deadline_time": "10:00",
+      "fields": [
+        "온라인",
+        "대회",
+        "AI"
+      ],
+      "description": "제주테크노파크 주최 · 온라인, 무료, 대회, AI",
+      "link": "https://daker.ai/public/hackathons/jeju-ai-bigdata-agent-challenge",
+      "image": "",
       "is_active": true,
       "dday_info": {
         "text": "D-22",
@@ -411,9 +1059,73 @@
       "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=24&gbn=view&ix=111726",
       "image": "",
       "is_active": true,
+      "track": "civil",
       "dday_info": {
         "text": "D-23",
         "days": 23,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-111567",
+      "source": "wevity_it",
+      "source_name": "위비티",
+      "title": "2026 대구광역시 기후·환경·탄소중립 공공 데이터 AI 활용대회",
+      "organizer": "대구광역시 탄소중립지원센",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.21 마감",
+      "deadline_date": "2026-11-21",
+      "deadline_time": "23:59",
+      "fields": [
+        "웹/모바일/IT"
+      ],
+      "description": "대구광역시 탄소중립지원센 주최 · 분야: 웹/모바일/IT",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=view&ix=111567",
+      "image": "",
+      "is_active": true,
+      "track": "it",
+      "dday_info": {
+        "text": "D-23",
+        "days": 23,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-7d0263024d",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "2026 HAI(하이)! - Hecto AI x Wallet Service Challenge",
+      "organizer": "헥토(Hecto)",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.12.21 마감",
+      "deadline_date": "2026-12-21",
+      "deadline_time": "10:00",
+      "fields": [
+        "온라인",
+        "대회",
+        "AI",
+        "블록체인"
+      ],
+      "description": "헥토(Hecto) 주최 · 온라인, 무료, 대회, AI, 블록체인",
+      "link": "https://daker.ai/public/hackathons/2026-hai-hecto-ai-challenge",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-53",
+        "days": 53,
         "is_urgent": false,
         "is_closed": false
       }
@@ -473,6 +1185,7 @@
       "link": "https://www.jbnu.ac.kr/web/Board/217447/detailView.do",
       "is_active": true,
       "image": "https://www.jbnu.ac.kr/common/file.do?file=4cALo6DfxWUFYlylMujIYMjaKF2GJWIBKn6sJyYGF2UlCjZ8sV+4j56lZgKcZFvm",
+      "track": "civil",
       "dday_info": {
         "text": "D-8",
         "days": 8,
@@ -529,6 +1242,7 @@
       "description": "철도 폐선부지, 복합역사 하부공간 및 선로 유휴부지를 활용한 주민친화 공간 조성 및 스마트 인프라 개발 제안 공모",
       "link": "https://www.kr.or.kr/boardCnts/view.do?boardID=52&boardSeq=1122113",
       "is_active": true,
+      "track": "civil",
       "dday_info": {
         "text": "D-63",
         "days": 63,
