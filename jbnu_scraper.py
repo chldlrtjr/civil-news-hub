@@ -9,8 +9,8 @@
 
 import os
 import re
+import sys
 import json
-import ssl
 import urllib.request
 from datetime import datetime, timezone, timedelta
 
@@ -41,50 +41,12 @@ def parse_wage_and_work_condition(company, title, wage_str, work_time_str):
     실제 구인 성격(단기·일급 / 시급제 / 월급제 / 협의)에 맞는 정확한 급여 정보 생성.
     - 억지로 일급/단기 알바를 월급으로 환산하거나 부풀리지 않고, 공고 사실 그대로 정직하게 제공.
     """
-    c = clean_text(company)
     t = clean_text(title)
     w = clean_text(wage_str)
     tm = clean_text(work_time_str)
-    combined = f"{c} {t} {w} {tm}"
+    # hourly_wage: 공고에 시급이 적힌 경우에만 값이 있고, 일급·월급·협의는 0 (임의 환산 금지)
 
-    # 1. 특수 케이스: JTV 페스티벌 20만원(10만원*2일)
-    if "10만원*2일" in w or ("페스티벌" in combined and re.search(r'(?<!\d)20\s*만', w)):
-        return {
-            "wage_type": "daily",
-            "wage_display": "총 20만원 (10만원 × 2일)",
-            "pay_badge": "⚡ 단기 행사 (2일)",
-            "pay_highlight": "총 200,000원 (2일간)",
-            "pay_subtext": "1일 10만원 × 2일 단기 페스티벌 스태프",
-            "sort_wage": 200000,
-            "hourly_wage": 14285
-        }
-
-    # 2. 다복솔식품 일당 18만원 (9/15~9/23 단기 식품공장)
-    if "18만원" in w or "18만원" in t:
-        return {
-            "wage_type": "daily",
-            "wage_display": "일당 180,000원",
-            "pay_badge": "⚡ 단기 집중 (야간)",
-            "pay_highlight": "일당 180,000원",
-            "pay_subtext": "9/15~9/23 단기 야간 근무 (주휴수당 별도)",
-            "sort_wage": 180000,
-            "hourly_wage": 15000
-        }
-
-    # 3. 홈경기 스태프 (NCS, 일꾸미 등) -> 일급 8만원 / 80,000
-    if any(k in combined for k in ["전북현대", "홈경기", "홈 경기", "경기 진행스탭", "경기스태프"]):
-        if any(k in w for k in ["80,000", "80000", "8만원"]):
-            return {
-                "wage_type": "daily",
-                "wage_display": "일급 80,000원",
-                "pay_badge": "⚡ 경기 당일 단기 스태프",
-                "pay_highlight": "일급 80,000원",
-                "pay_subtext": "홈경기 당일 일정 진행스태프 (시간당 약 11,400원)",
-                "sort_wage": 80000,
-                "hourly_wage": 11428
-            }
-
-    # 4. 명시적 일급/일당
+    # 1. 명시적 일급/일당
     daily_m = re.search(r'(?:일급|일당)\s*([\d,]+)\s*(만)?원?', w + " " + t)
     if daily_m:
         amt = int(daily_m.group(1).replace(',', ''))
@@ -97,19 +59,35 @@ def parse_wage_and_work_condition(company, title, wage_str, work_time_str):
             "pay_highlight": f"일급 {amt:,}원",
             "pay_subtext": f"근무시간: {tm}" if tm and tm not in [".", "0"] else "단기 일정 근무",
             "sort_wage": amt,
-            "hourly_wage": amt // 8
+            "hourly_wage": 0
         }
 
-    # 5. 월급제 (월 150만원, 120만원, 2800000, 월 220부터, 전임 300만원 등)
-    if "2800000" in w:
+    # 2. 금액만 적힌 단기 행사형: 5만~30만원 + 근무시간에 특정 날짜('10월31일', '11/3')가 있으면 일급으로 판단
+    plain_m = re.fullmatch(r'([\d,]{5,9})\s*원?', w)
+    if plain_m and re.search(r'\d{1,2}\s*월\s*\d{1,2}\s*일|\d{1,2}/\d{1,2}', tm):
+        amt = int(plain_m.group(1).replace(',', ''))
+        if 50000 <= amt <= 300000:
+            return {
+                "wage_type": "daily",
+                "wage_display": f"일급 {amt:,}원",
+                "pay_badge": "⚡ 단기·일급",
+                "pay_highlight": f"일급 {amt:,}원",
+                "pay_subtext": f"근무일시: {tm}",
+                "sort_wage": amt,
+                "hourly_wage": 0
+            }
+
+    # 3. 월급제 (월 150만원, 120만원, 2800000, 1,500,000, 월 220부터, 전임 300만원 등)
+    if plain_m and int(plain_m.group(1).replace(',', '')) >= 1000000:
+        val = int(plain_m.group(1).replace(',', ''))
         return {
             "wage_type": "monthly",
-            "wage_display": "월 2,800,000원",
+            "wage_display": f"월 {val:,}원",
             "pay_badge": "💼 전임·월급제",
-            "pay_highlight": "월 2,800,000원",
-            "pay_subtext": f"근무시간: {tm}" if tm and tm not in [".", "0"] else "전임 전담 강사",
-            "sort_wage": 2800000,
-            "hourly_wage": 2800000 // 209
+            "pay_highlight": f"월 {val:,}원",
+            "pay_subtext": f"근무시간: {tm}" if tm and tm not in [".", "0"] else "근무시간 협의",
+            "sort_wage": val,
+            "hourly_wage": 0
         }
 
     monthly_man_m = re.search(r'(?:월\s*|월급\s*|전임\s*)?([\d,]+)\s*만\s*원?', w)
@@ -124,9 +102,9 @@ def parse_wage_and_work_condition(company, title, wage_str, work_time_str):
             "wage_display": f"월 {val:,}원{suffix}",
             "pay_badge": "💼 전임·월급제",
             "pay_highlight": f"월 {val:,}원{suffix}",
-            "pay_subtext": f"근무시간: {tm}" if tm and tm not in [".", "0"] else "전임 전담 강사",
+            "pay_subtext": f"근무시간: {tm}" if tm and tm not in [".", "0"] else "근무시간 협의",
             "sort_wage": val,
-            "hourly_wage": val // 209
+            "hourly_wage": 0
         }
 
     # 월 220부터 등
@@ -141,7 +119,7 @@ def parse_wage_and_work_condition(company, title, wage_str, work_time_str):
             "pay_highlight": f"월 {val:,}원부터",
             "pay_subtext": "경력 및 능력에 따라 조정 협의",
             "sort_wage": val,
-            "hourly_wage": val // 209
+            "hourly_wage": 0
         }
 
     # 6. 시급제
@@ -208,18 +186,41 @@ def parse_wage_and_work_condition(company, title, wage_str, work_time_str):
         "pay_highlight": clean_w,
         "pay_subtext": f"근무시간: {tm}" if tm and tm not in [".", "0"] else "면접 시 일정 및 급여 협의",
         "sort_wage": 0,
-        "hourly_wage": 10030
+        "hourly_wage": 0
     }
 
+class AlbaFetchError(Exception):
+    """아르바이트 게시판을 한 페이지도 읽지 못했을 때 (기존 데이터 유지)"""
+
+
+def deadline_from_dday(dday, today):
+    """게시판 D-day는 '오늘' 기준 남은 일수 → 마감일 = 오늘 + n (등록일 기준이 아님)"""
+    if dday in ("D-day", "D-0", "D-Day"):
+        return today.strftime("%Y-%m-%d")
+    m = re.fullmatch(r'D-(\d+)', dday)
+    if m:
+        return (today + timedelta(days=int(m.group(1)))).strftime("%Y-%m-%d")
+    return None
+
+
+def infer_work_date(month, day, reg_dt):
+    """연도 없는 근무일(10월 31일) → 등록일 기준 연도, 등록일보다 2달 넘게 이전이면 다음 해"""
+    d = datetime(reg_dt.year, month, day)
+    if d < reg_dt - timedelta(days=60):
+        d = datetime(reg_dt.year + 1, month, day)
+    return d
+
+
 def scrape_jbnu_albas(max_pages=2):
-    """전북대 아르바이트 게시판 크롤링 및 데이터 정제"""
+    """전북대 아르바이트 게시판 크롤링 및 데이터 정제 (한 페이지도 못 읽으면 AlbaFetchError)"""
     base_url = "https://www.jbnu.ac.kr/web/unvrslife/square/sub02/1.do"
-    ctx = ssl.create_default_context()
-    ctx.check_hostname = False
-    ctx.verify_mode = ssl.CERT_NONE
+    kst = timezone(timedelta(hours=9))
+    today = datetime.now(kst).date()
 
     all_jobs = []
     seen_ids = set()
+    ok_pages = 0
+    closed_count = 0
 
     for page in range(1, max_pages + 1):
         url = f"{base_url}?pageIndex={page}"
@@ -227,11 +228,12 @@ def scrape_jbnu_albas(max_pages=2):
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
         })
         try:
-            with urllib.request.urlopen(req, context=ctx, timeout=12) as resp:
+            with urllib.request.urlopen(req, timeout=12) as resp:
                 html = resp.read().decode("utf-8", errors="ignore")
         except Exception as e:
             print(f"⚠️ [JBNU Alba] 페이지 {page} 수집 실패: {e}")
             break
+        ok_pages += 1
 
         table_m = re.findall(r'<table.*?</table>', html, re.DOTALL)
         if not table_m:
@@ -299,49 +301,47 @@ def scrape_jbnu_albas(max_pages=2):
 
             # 등록일
             date_m = re.search(r'<div class="deadline">\s*(.*?)\s*</div>', tr, re.DOTALL)
-            reg_date = clean_text(date_m.group(1)) if date_m else datetime.now().strftime("%Y-%m-%d")
+            reg_date = clean_text(date_m.group(1)) if date_m else today.strftime("%Y-%m-%d")
+
+            # 접수 마감된 공고는 저장하지 않음 (프론트가 D-day를 해석 못 하면 기본값으로 노출되던 문제 방지)
+            if "마감" in dday:
+                closed_count += 1
+                continue
 
             # 공고 팩트 기반 급여 및 근무 형태 정밀 분석
             calc = parse_wage_and_work_condition(company, title, raw_wage, work_time)
 
             # 캘린더용 접수 마감일(deadline_date) 및 단기/행사 근무일(work_dates) 산출
-            deadline_date = None
-            if dday in ["D-day", "D-0", "D-Day"]:
-                deadline_date = reg_date
-            elif dday.startswith("D-"):
-                try:
-                    days = int(re.search(r'\d+', dday).group(0))
-                    base_dt = datetime.strptime(reg_date, "%Y-%m-%d")
-                    deadline_date = (base_dt + timedelta(days=days)).strftime("%Y-%m-%d")
-                except Exception:
-                    deadline_date = None
+            deadline_date = deadline_from_dday(dday, today)
+
+            try:
+                reg_dt = datetime.strptime(reg_date, "%Y-%m-%d")
+            except ValueError:
+                reg_dt = datetime.combine(today, datetime.min.time())
 
             work_dates = []
             full_txt = title + " " + work_time
             range_m = re.search(r'(\d{1,2})[/\.월]\s*(\d{1,2})일?\s*[~-]\s*(\d{1,2})[/\.월]\s*(\d{1,2})일?', full_txt)
             if range_m:
-                m1, d1, m2, d2 = int(range_m.group(1)), int(range_m.group(2)), int(range_m.group(3)), int(range_m.group(4))
+                m1, d1, m2, d2 = (int(g) for g in range_m.groups())
                 try:
-                    cur_year = datetime.strptime(reg_date, "%Y-%m-%d").year
-                    start_d = datetime(cur_year, m1, d1)
-                    end_d = datetime(cur_year, m2, d2)
+                    start_d = infer_work_date(m1, d1, reg_dt)
+                    end_d = infer_work_date(m2, d2, reg_dt)
                     if 0 <= (end_d - start_d).days <= 31:
                         cur = start_d
                         while cur <= end_d:
                             work_dates.append(cur.strftime("%Y-%m-%d"))
                             cur += timedelta(days=1)
-                except Exception:
+                except ValueError:
                     pass
 
             for sm in re.finditer(r'(\d{1,2})월\s*(\d{1,2})일', full_txt):
-                m_val, d_val = int(sm.group(1)), int(sm.group(2))
                 try:
-                    cur_year = datetime.strptime(reg_date, "%Y-%m-%d").year
-                    w_d = datetime(cur_year, m_val, d_val).strftime("%Y-%m-%d")
-                    if w_d not in work_dates:
-                        work_dates.append(w_d)
-                except Exception:
-                    pass
+                    w_d = infer_work_date(int(sm.group(1)), int(sm.group(2)), reg_dt).strftime("%Y-%m-%d")
+                except ValueError:
+                    continue
+                if w_d not in work_dates:
+                    work_dates.append(w_d)
 
             # 상세 링크 (전북대 공식 공고 직결)
             official_link = f"https://www.jbnu.ac.kr/web/Board/{pst_id}/detailView.do"
@@ -374,23 +374,20 @@ def scrape_jbnu_albas(max_pages=2):
                 "deadline_date": deadline_date,
                 "work_dates": work_dates,
                 "link": official_link,
-                "is_urgent": bool(re.search(r'^D-[0-3]$', dday)),
-                "is_active": (dday != "접수마감")
+                "is_urgent": bool(re.search(r'^D-[0-3]$', dday)) or dday in ("D-day", "D-Day", "D-0"),
+                "is_active": True
             }
             all_jobs.append(job_entry)
 
-    # 데이터 저장 (네트워크 오류 등으로 0건일 경우 기존 유효 데이터 보존)
-    if not all_jobs and os.path.exists(JBNU_JSON_PATH):
-        print(f"⚠️ [JBNU Alba] 수집된 공고가 없어 기존 캐시 데이터를 유지합니다: {JBNU_JSON_PATH}")
-        try:
-            with open(JBNU_JSON_PATH, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception:
-            pass
+    # 게시판을 한 페이지도 못 읽었으면 기존 데이터 유지 + 실패 처리 (cron 알림)
+    if ok_pages == 0:
+        raise AlbaFetchError("전북대 아르바이트 게시판에 접속하지 못했습니다 — 기존 데이터를 유지합니다")
+    if closed_count:
+        print(f"  [-] 접수 마감 공고 {closed_count}건 제외")
 
     os.makedirs(DATA_DIR, exist_ok=True)
     payload = {
-        "updated_at": datetime.now(timezone(timedelta(hours=9))).strftime("%Y-%m-%d %H:%M:%S KST"),
+        "updated_at": datetime.now(kst).strftime("%Y-%m-%d %H:%M:%S KST"),
         "total_count": len(all_jobs),
         "jobs": all_jobs
     }
@@ -403,4 +400,8 @@ def scrape_jbnu_albas(max_pages=2):
     return payload
 
 if __name__ == "__main__":
-    scrape_jbnu_albas()
+    try:
+        scrape_jbnu_albas()
+    except AlbaFetchError as e:
+        print(f"❌ [JBNU Alba] {e}")
+        sys.exit(1)  # cron_scrape.sh가 카카오톡 실패 알림 발송

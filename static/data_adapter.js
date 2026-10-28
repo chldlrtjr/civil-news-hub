@@ -167,15 +167,13 @@ window.CivilData = (() => {
     let ALBA = [];
     if (albasData && albasData.jobs && albasData.jobs.length) {
       ALBA = albasData.jobs.map((a, idx) => {
-        let wageNum = 10320;
-        if (a.sort_wage) wageNum = a.sort_wage;
-        else if (a.hourly_wage) wageNum = a.hourly_wage;
-        else if (a.wage_display) {
-          const wMatch = a.wage_display.replace(/,/g, '').match(/(\d+)/);
-          if (wMatch) wageNum = parseInt(wMatch[1]);
-        }
+        // 급여 유형: hour(시급) · day(일급) · month(월급) · nego(협의·금액 불명확)
+        // 공고에 금액이 없거나 해석이 안 되면 임의 시급을 넣지 않고 원문(wage_display)을 그대로 보여 줌
+        const TYPE = { hourly: 'hour', daily: 'day', monthly: 'month' };
+        const type = (a.sort_wage && TYPE[a.wage_type]) || 'nego';
+        const wageNum = type === 'nego' ? 0 : a.sort_wage;
 
-        let daysLeft = 7;
+        let daysLeft = 99;  // D-day가 없으면 마감일 미상 (상시)
         if (a.dday) {
           const dMatch = a.dday.match(/D[-]?(\d+)/i);
           if (dMatch) daysLeft = parseInt(dMatch[1]);
@@ -188,10 +186,12 @@ window.CivilData = (() => {
           id: a.id || ('a' + (idx + 1)),
           title: a.title,
           where: a.company || '전북대학교',
-          type: (a.wage_type === 'day' || (a.wage_display && a.wage_display.includes('일급'))) ? 'day' : 'hour',
+          type: type,
           wage: wageNum,
+          wageText: a.wage_display || '급여 협의',
           hours: a.work_time ? (a.work_time.includes('주') ? 15 : 20) : 15,
-          days: 3,
+          // 일급 공고는 공고에 적힌 근무일 수 기준 (없으면 1일)
+          days: (a.work_dates && a.work_dates.length) || 1,
           end: daysLeft,
           tag: a.category_name || '교내',
           link: a.link || '#',

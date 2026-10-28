@@ -15,8 +15,8 @@
 
 import os
 import re
+import sys
 import json
-import ssl
 import time
 import urllib.request
 from datetime import datetime, timezone, timedelta
@@ -28,16 +28,27 @@ SWUNIV_JSON_PATH = os.path.join(DATA_DIR, "swuniv_programs.json")
 
 KST = timezone(timedelta(hours=9))
 
-ctx = ssl.create_default_context()
-ctx.check_hostname = False
-ctx.verify_mode = ssl.CERT_NONE
-
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
     "Referer": "https://swuniv.jbnu.ac.kr/main/jbnusw"
 }
+
+# 본문이 포스터 이미지뿐이라 기간을 텍스트로 읽을 수 없는 공지는 사람이 포스터를 보고 기재 (제목 완전 일치 시에만 적용)
+# 다음 해 공고는 제목이 달라 자동 적용되지 않으므로, 새 공고가 나오면 여기에 추가
+MANUAL_NOTICE_FACTS = {
+    "2026년 외부 경진대회 및 학회 참가 지원 안내": {
+        "period": ("2026-03-30", "2026-11-27"),
+        "title": "2026년 외부 경진대회 및 학회 참가 지원 (참가비·여비 최대 100만원 지원)",
+        "thumbnail": "https://swuniv.jbnu.ac.kr/r/VEr8VBbDm8A5",
+        "capacity": "SW학과 15명 / 비SW학과 10명",
+        "location": "국내 및 국외 경진대회·학회",
+        "point": "참가등록비+여비 최대 100만원 지원",
+        "activity_period": "2026.04.03 ~ 2026.12.18",
+    },
+}
+
 
 def clean_text(text):
     if not text:
@@ -50,7 +61,7 @@ def safe_fetch(url, max_retries=3, timeout=12):
     req = urllib.request.Request(url, headers=HEADERS)
     for attempt in range(max_retries):
         try:
-            with urllib.request.urlopen(req, context=ctx, timeout=timeout) as resp:
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
                 return resp.read().decode('utf-8', errors='ignore')
         except Exception as e:
             if attempt < max_retries - 1:
@@ -67,45 +78,85 @@ def normalize_title(title):
 
 def is_same_program(t1, t2):
     """동일 프로그램 중복 여부 판정 (온라인 신청 게시판 vs 공지사항)"""
-    w1 = set(re.findall(r'[가-힣a-zA-Z0-9]{3,}', normalize_title(t1)))
-    w2 = set(re.findall(r'[가-힣a-zA-Z0-9]{3,}', normalize_title(t2)))
-    overlap = w1 & w2
-    if len(overlap) >= 2:
-        return True
-    if any(stem in normalize_title(t1) and stem in normalize_title(t2) for stem in ["metamobil", "자율주행"]):
-        return True
-    return False
+    # 원본 제목을 띄어쓰기 단위로 비교 (normalize_title은 공백까지 없애 단어가 하나로 붙어버림)
+    # 공고 제목마다 붙는 흔한 단어는 같은 프로그램 판단 근거에서 제외
+    generic = {"모집", "안내", "참가자", "참가", "프로그램", "신청", "운영", "학생", "지원", "선발", "공고", "개최", "모집안내"}
 
-def parse_period_from_string(text, default_year=2026):
-    """문자열에서 시작일과 마감일을 추출 (점, 대시, 슬래시 및 한글 연월일 포맷 지원)"""
+    def words(t):
+        t = re.sub(r'202\d(?:학년도|년)?|\[[^\]]+\]|\([^\)]+\)', ' ', t)
+        return {w.lower() for w in re.findall(r'[가-힣a-zA-Z0-9]{2,}', t)} - generic
+    w1, w2 = words(t1), words(t2)
+    if not w1 or not w2:
+        return False
+    overlap = w1 & w2
+    # 공통 단어가 2개 이상이면서 짧은 쪽 제목 단어의 60% 이상이 겹칠 때만 같은 프로그램으로 봄
+    return len(overlap) >= 2 and len(overlap) / min(len(w1), len(w2)) >= 0.6
+
+class SwunivFetchError(Exception):
+    """SW사업단 두 게시판을 모두 읽지 못했을 때 (기존 데이터 유지)"""
+
+
+def infer_date(month, day, ref):
+    """연도 없는 날짜(11.4, 1월 15일) → 기준일(ref) 연도로 보되, 기준일보다 2달 넘게 이전이면 다음 해
+    (연말에 올라온 '~ 1.15' 공고가 올해 1월로 해석돼 마감 처리되던 문제 방지)"""
+    d = datetime(ref.year, month, day, tzinfo=KST).date()
+    if d < ref - timedelta(days=60):
+        d = datetime(ref.year + 1, month, day, tzinfo=KST).date()
+    return d
+
+
+def parse_period_from_string(text, ref=None):
+    """문자열에서 시작일과 마감일을 추출 (점, 대시, 슬래시 및 한글 연월일 포맷 지원). ref: 연도 추론 기준일"""
     if not text:
         return None
+    ref = ref or datetime.now(KST).date()
 
-    # Pattern 1: YYYY.MM.DD ~ YYYY.MM.DD or YYYY년 MM월 DD일 ~ MM월 DD일
-    m = re.search(r'(?:(\d{4})[\.\-\/년\s]*\s*)?(\d{1,2})[\.\-\/월\s]*\s*(\d{1,2})\s*일?\.?(?:\([^\)]*\))?\s*~\s*(?:(\d{4})[\.\-\/년\s]*\s*)?(\d{1,2})[\.\-\/월\s]*\s*(\d{1,2})\s*일?', text)
+    # 날짜 한 개: [YYYY. / YY.] M. D (월·일 사이 구분자 필수 — 없으면 '17'이 1월 7일, '27'이 2월 7일로 쪼개짐)
+    DATE = r'(?:(\d{4}|\d{2})\s*[\.\-\/년]\s*)?(\d{1,2})\s*[\.\-\/월]\s*(\d{1,2})(?!\d)\s*일?\.?'
+    DOW = r'(?:\s*\([^\)]*\))?'
+
+    def to_date(y, mo, d, fallback_ref):
+        if y:
+            y = int(y) + 2000 if len(y) == 2 else int(y)  # '26.10.27' → 2026
+            return datetime(y, int(mo), int(d), tzinfo=KST).date()
+        return infer_date(int(mo), int(d), fallback_ref)
+
+    # Pattern 1: YYYY.MM.DD ~ YYYY.MM.DD / M월 D일 ~ M월 D일
+    m = re.search(DATE + DOW + r'\s*~\s*' + DATE, text)
     if m:
         sy, sm, sd, ey, em, ed = m.groups()
-        start_yr = int(sy) if sy else default_year
-        end_yr = int(ey) if ey else (int(sy) if sy else default_year)
         try:
-            return (
-                datetime(start_yr, int(sm), int(sd), tzinfo=KST).date(),
-                datetime(end_yr, int(em), int(ed), tzinfo=KST).date()
-            )
-        except Exception:
+            start = to_date(sy, sm, sd, ref)
+            if ey:
+                end = to_date(ey, em, ed, ref)
+            else:
+                end = datetime(start.year, int(em), int(ed), tzinfo=KST).date()
+                if end < start and start.month >= 10 and end.month <= 3:  # '12.20 ~ 1.10'처럼 해를 넘기는 기간
+                    end = datetime(start.year + 1, int(em), int(ed), tzinfo=KST).date()
+            if end >= start:
+                return start, end
+        except ValueError:
             pass
 
-    # Pattern 2: ~ MM.DD or ~ MM월 DD일
-    m2 = re.search(r'~\s*(?:(\d{4})[\.\-\/년\s]*\s*)?(\d{1,2})[\.\/월\s]*\s*(\d{1,2})', text)
-    if m2:
+    # Pattern 2: 'M. D. ~ D.' — 끝 날짜에 일만 적힌 경우 (같은 달)
+    m = re.search(DATE + DOW + r'\s*~\s*(\d{1,2})(?!\d)\s*일?\.?(?!\s*[\.\-\/월]\s*\d)', text)
+    if m:
+        sy, sm, sd, ed = m.groups()
         try:
-            ey, em, ed = m2.groups()
-            end_yr = int(ey) if ey else default_year
-            return (
-                datetime.now(KST).date(),
-                datetime(end_yr, int(em), int(ed), tzinfo=KST).date()
-            )
-        except Exception:
+            start = to_date(sy, sm, sd, ref)
+            end = datetime(start.year, start.month, int(ed), tzinfo=KST).date()
+            if end >= start:
+                return start, end
+        except ValueError:
+            pass
+
+    # Pattern 3: '~ M.D' (마감일만)
+    m = re.search(r'~\s*' + DATE, text)
+    if m:
+        ey, em, ed = m.groups()
+        try:
+            return datetime.now(KST).date(), to_date(ey, em, ed, ref)
+        except ValueError:
             pass
 
     return None
@@ -127,9 +178,8 @@ def parse_dday(apply_period_str, now_kst=None):
         single = re.findall(r'(\d{1,2})\s*[\.\-\/]\s*(\d{1,2})', apply_period_str)
         if single:
             m, d = int(single[-1][0]), int(single[-1][1])
-            y = 2026
             try:
-                end_date = datetime(y, m, d, 23, 59, 59, tzinfo=KST).date()
+                end_date = infer_date(m, d, today)
                 diff = (end_date - today).days
                 if diff < 0:
                     return {"dday": "마감", "status": "접수마감", "days_left": -1, "deadline_date": end_date.strftime("%Y-%m-%d"), "start_date": ""}
@@ -200,6 +250,7 @@ def fetch_swuniv_programs(max_pages=3):
     """SW중심대학사업단 온라인 신청 게시판(gc=Program) 크롤링"""
     programs = []
     seen_ids = set()
+    ok_pages = 0
     now_kst = datetime.now(KST)
 
     for page in range(1, max_pages + 1):
@@ -207,6 +258,7 @@ def fetch_swuniv_programs(max_pages=3):
         html = safe_fetch(url)
         if not html:
             continue
+        ok_pages += 1
 
         soup = BeautifulSoup(html, "html.parser")
         items = soup.select("a.Fix_ListBtns")
@@ -301,7 +353,7 @@ def fetch_swuniv_programs(max_pages=3):
                 "collected_at": now_kst.strftime("%Y-%m-%d %H:%M")
             })
 
-    return programs
+    return programs if ok_pages else None  # 한 페이지도 못 읽었으면 None (게시판 0건과 구분)
 
 
 def fetch_swuniv_notices(existing_programs=None, max_pages=2):
@@ -310,6 +362,7 @@ def fetch_swuniv_notices(existing_programs=None, max_pages=2):
     """
     notices = []
     seen_ids = set()
+    ok_pages = 0
     now_kst = datetime.now(KST)
     today = now_kst.date()
 
@@ -327,6 +380,7 @@ def fetch_swuniv_notices(existing_programs=None, max_pages=2):
         html = safe_fetch(url)
         if not html:
             continue
+        ok_pages += 1
 
         soup = BeautifulSoup(html, "html.parser")
         rows = soup.select("table tbody tr")
@@ -366,20 +420,24 @@ def fetch_swuniv_notices(existing_programs=None, max_pages=2):
                     continue
 
             # 2. 기간 및 상세 정보 추출
-            period = parse_period_from_string(raw_title, default_year=2026)
+            try:
+                post_day = datetime.strptime(post_date.replace(".", "-")[:10], "%Y-%m-%d").date()
+            except ValueError:
+                post_day = today
+            period = parse_period_from_string(raw_title, ref=post_day)
             thumbnail = ""
             detail_text = ""
             is_sangsi = "상시" in raw_title
 
-            # 고정 공고(외부 경진대회 및 학회 참가 지원 안내) 팩트 우선 처리
-            if "외부 경진대회 및 학회 참가 지원" in raw_title:
-                period = (datetime(2026, 3, 30, tzinfo=KST).date(), datetime(2026, 11, 27, tzinfo=KST).date())
-                thumbnail = "https://swuniv.jbnu.ac.kr/r/VEr8VBbDm8A5"
-                capacity = "SW학과 15명 / 비SW학과 10명"
-                location = "국내 및 국외 경진대회·학회"
-                point = "참가등록비+여비 최대 100만원 지원"
-                clean_tit = "2026년 외부 경진대회 및 학회 참가 지원 (참가비·여비 최대 100만원 지원)"
-                activity_period = "2026.04.03 ~ 2026.12.18"
+            manual = MANUAL_NOTICE_FACTS.get(raw_title)
+            if manual:
+                period = tuple(datetime.strptime(d, "%Y-%m-%d").date() for d in manual["period"])
+                thumbnail = manual["thumbnail"]
+                capacity = manual["capacity"]
+                location = manual["location"]
+                point = manual["point"]
+                activity_period = manual["activity_period"]
+                clean_tit = manual["title"]
             else:
                 capacity = "상세 공고 참조"
                 location = "전북대학교 / 온라인"
@@ -407,9 +465,10 @@ def fetch_swuniv_notices(existing_programs=None, max_pages=2):
 
                         # 본문 전체 텍스트에서 기간 및 상시 파싱
                         if not period and detail_text:
-                            if "상시" in detail_text:
+                            # '상시' 단어가 아무 데나 있다고 상시접수로 보지 않고, 신청·접수·모집과 붙어 있을 때만 인정
+                            if re.search(r'(?:신청|접수|모집)[^.\n]{0,15}상시|상시\s*(?:신청|접수|모집)', detail_text):
                                 is_sangsi = True
-                            p_candidate = parse_period_from_string(detail_text, default_year=2026)
+                            p_candidate = parse_period_from_string(detail_text, ref=post_day)
                             if p_candidate:
                                 period = p_candidate
 
@@ -486,16 +545,19 @@ def fetch_swuniv_notices(existing_programs=None, max_pages=2):
                 "collected_at": now_kst.strftime("%Y-%m-%d %H:%M")
             })
 
-    return notices
+    return notices if ok_pages else None  # 한 페이지도 못 읽었으면 None (게시판 0건과 구분)
 
 def save_swuniv_programs():
+    """두 게시판을 모두 읽지 못하면 SwunivFetchError (기존 데이터 유지)"""
     os.makedirs(DATA_DIR, exist_ok=True)
 
     print("[*] Fetching SW Univ programs from swuniv.jbnu.ac.kr...")
     progs = fetch_swuniv_programs(max_pages=3)
     nots = fetch_swuniv_notices(existing_programs=progs, max_pages=2)
+    if progs is None and nots is None:
+        raise SwunivFetchError("SW사업단 프로그램·공지 게시판에 모두 접속하지 못했습니다 — 기존 데이터를 유지합니다")
 
-    all_programs = progs + nots
+    all_programs = (progs or []) + (nots or [])
     # 마감일 임박순 정렬 (상시모집 999는 후순위)
     all_programs.sort(key=lambda x: (x["days_left"] if x["days_left"] >= 0 else 9999))
 
@@ -507,19 +569,18 @@ def save_swuniv_programs():
         "programs": all_programs
     }
 
-    with open(SWUNIV_JSON_PATH, "w", encoding="utf-8") as f:
+    temp_path = SWUNIV_JSON_PATH + ".tmp"
+    with open(temp_path, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, indent=2)
+    os.replace(temp_path, SWUNIV_JSON_PATH)
 
     print(f"[+] Saved to {SWUNIV_JSON_PATH}")
-
-    # 정적 데이터 번들 자동 갱신
-    try:
-        import build_data_bundle
-        build_data_bundle.build_bundle()
-    except Exception as e:
-        print(f"⚠️ build_data_bundle failed: {e}")
-
+    # 정적 번들은 cron_scrape.sh의 build_data_bundle 단계에서 한 번만 빌드
     return payload
 
 if __name__ == "__main__":
-    save_swuniv_programs()
+    try:
+        save_swuniv_programs()
+    except SwunivFetchError as e:
+        print(f"[-] {e}")
+        sys.exit(1)  # cron_scrape.sh가 카카오톡 실패 알림 발송

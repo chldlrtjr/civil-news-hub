@@ -25,7 +25,7 @@ if ('caches' in window) {
 try { localStorage.removeItem('cnh-live-cache-v1'); } catch(e){}
 </script>
 <script src="./static/cnh_data_bundle.js?v=20261018_2116"></script>
-<script src="./static/data_adapter.js?v=20261028_2230"></script>
+<script src="./static/data_adapter.js?v=20261028_2345"></script>
 <style>
 /* Layout: plain solid ground, sticky header + tab nav, dashboard = main column + deadline rail; phones get a bottom tab bar and bottom-sheet drawer */
 :root{
@@ -859,10 +859,15 @@ SW.forEach((s,i)=>{ if(!s.id) s.id='s'+(i+1); });
 
 /* ---------- 계산 ---------- */
 function monthly(a){
+  if (a.type === 'nego') return null;   // 급여 협의·금액 불명확: 임의 금액으로 계산하지 않음
+  if (a.type === 'month') return a.wage;
   if (a.type === 'day') return a.wage * a.days;
   const weekly = a.wage * a.hours + (a.hours >= 15 ? a.wage * a.hours / 5 : 0);
   return Math.round(weekly * 4.345 / 100) * 100;
 }
+const incomeText = a => { const v = monthly(a); return v == null ? a.wageText : `₩${fmt(v)}`; };
+const incomeLabel = a => a.type==='day' ? `총 예상 수입 (${a.days}일)` : a.type==='month' ? '월 급여' : a.type==='nego' ? '급여' : '예상 월 수입';
+const wageDetail = a => a.type==='day' ? `일급 ${fmt(a.wage)}원 (${a.days}일)` : a.type==='hour' ? `시급 ${fmt(a.wage)}원 (주 ${a.hours}시간 기준)` : a.wageText;
 function toggleSave(id, btn){
   saved.has(id) ? saved.delete(id) : saved.add(id);
   persistSaved();
@@ -880,7 +885,7 @@ function savedItems(){
   return [
     ...CONTESTS.filter(c=>saved.has(c.id)).map(c=>({id:c.id,open:'contest:'+c.id,kind:'공모전',k:'var(--accent)',t:c.title,sub:`${c.org} · 총 상금 ${fmt(c.prize)}만원`,end:c.end})),
     ...JOBS.filter(j=>saved.has(j.id)).map(j=>({id:j.id,open:'job:'+j.id,kind:GRP[j.grp]+' 채용',k:'var(--c-road)',t:`${j.co} ${j.role}`,sub:`${j.lvl} · ${j.loc}`,end:j.end})),
-    ...ALBA.filter(a=>saved.has(a.id)).map(a=>({id:a.id,open:'alba:'+a.id,kind:'전북대 알바',k:'var(--ok)',t:a.title,sub:`${a.where} · ${a.type==='day'?'일급':'시급'} ${fmt(a.wage)}원`,end:a.end})),
+    ...ALBA.filter(a=>saved.has(a.id)).map(a=>({id:a.id,open:'alba:'+a.id,kind:'전북대 알바',k:'var(--ok)',t:a.title,sub:`${a.where} · ${a.type==='day'?`일급 ${fmt(a.wage)}원`:a.type==='hour'?`시급 ${fmt(a.wage)}원`:a.wageText}`,end:a.end})),
     ...SW.filter(s=>saved.has(s.id)).map(s=>({id:s.id,open:'sw:'+s.id,kind:'전북대 SW '+s.kind,k:'var(--c-smart)',t:s.title,sub:`${s.when} · 모집 ${s.seats}`,end:s.end})),
     // 뉴스는 마감이 없어서 맨 뒤에 둬요
     ...NEWS.filter(n=>saved.has(n.id)).map(n=>({id:n.id,go:'news',kind:'뉴스 · '+catName(n.cat),k:`var(--c-${n.cat})`,t:n.title,sub:n.src,end:null})),
@@ -1067,9 +1072,9 @@ function renderJobs(){
 function renderJbnu(){
   $('#alba-list').innerHTML = ALBA.map(a=>`<article class="card click" data-open="alba:${a.id}" tabindex="0">
     <div class="card-top"><span class="pill">${a.tag}</span><div class="card-top-r">${ddayBadge(a.end)}${bmBtn(a.id)}</div></div>
-    <div><div class="income-l">${a.type==='day'?`총 예상 수입 (${a.days}일)`:'예상 월 수입'}</div><div class="income">₩${fmt(monthly(a))}</div></div>
+    <div><div class="income-l">${incomeLabel(a)}</div><div class="income">${incomeText(a)}</div></div>
     <h3>${a.title}</h3>
-    <div class="wage-row">${a.type==='day'?`<span>일급 <b>${fmt(a.wage)}</b></span>`:`<span>시급 <b>${fmt(a.wage)}</b></span><span>주 <b>${a.hours}</b>시간</span>`}</div>
+    <div class="wage-row">${a.type==='day'?`<span>일급 <b>${fmt(a.wage)}</b></span>`:a.type==='hour'?`<span>시급 <b>${fmt(a.wage)}</b></span><span>주 <b>${a.hours}</b>시간</span>`:''}</div>
     <div class="meta"><span>${a.where}</span><span>${a.type==='hour'&&a.hours>=15?'주휴수당 포함':a.type==='hour'?'주휴수당 없음':''}</span></div>
   </article>`).join('');
   $('#sw-list').innerHTML = SW.map(s=>`<article class="card click title-first" data-open="sw:${s.id}" tabindex="0">
@@ -1122,11 +1127,11 @@ function openDrawer(key, fromSaved){
     $('#dr-kind').textContent = '전북대 알바 요강';
     html = `<div class="card-top">${ddayBadge(a.end)}${bmBtn(a.id)}</div>
       <h2 id="dr-title">${a.title}</h2>
-      <div class="income" style="margin:4px 0 14px">₩${fmt(monthly(a))}<small style="font-size:var(--t-small);color:var(--muted);font-weight:500;margin-left:6px">${a.type==='day'?'총 예상 수입':'월 예상 수입'}</small></div>
+      <div class="income" style="margin:4px 0 14px">${incomeText(a)}<small style="font-size:var(--t-small);color:var(--muted);font-weight:500;margin-left:6px">${incomeLabel(a)}</small></div>
       <dl class="spec">
         <dt>근무처</dt><dd>${a.where}</dd>
         <dt>구분</dt><dd>${a.tag}</dd>
-        <dt>급여</dt><dd>${a.type==='day' ? `일급 ${fmt(a.wage)}원 (${a.days}일 기준)` : `시급 ${fmt(a.wage)}원 (주 ${a.hours}시간 기준)`}</dd>
+        <dt>급여</dt><dd>${wageDetail(a)}</dd>
         <dt>근무시간</dt><dd>${a.time || '공고 본문 참조'}</dd>
         <dt>모집인원</dt><dd>${a.person || '0명'}</dd>
         <dt>마감일</dt><dd class="mono">${a.deadline_date ? a.deadline_date : `~${md(day(a.end))}`} (${ddayBadge(a.end)})</dd>
@@ -1365,10 +1370,15 @@ ALBA.forEach((a,i)=>{ if(!a.id) a.id='a'+(i+1); });
 SW.forEach((s,i)=>{ if(!s.id) s.id='s'+(i+1); });
 
 function monthly(a){
+  if (a.type === 'nego') return null;   // 급여 협의·금액 불명확: 임의 금액으로 계산하지 않음
+  if (a.type === 'month') return a.wage;
   if (a.type === 'day') return a.wage * a.days;
   const weekly = a.wage * a.hours + (a.hours >= 15 ? a.wage * a.hours / 5 : 0);
   return Math.round(weekly * 4.345 / 100) * 100;
 }
+const incomeText = a => { const v = monthly(a); return v == null ? a.wageText : `₩${fmt(v)}`; };
+const incomeLabel = a => a.type==='day' ? `총 예상 수입 (${a.days}일)` : a.type==='month' ? '월 급여' : a.type==='nego' ? '급여' : '예상 월 수입';
+const wageDetail = a => a.type==='day' ? `일급 ${fmt(a.wage)}원 (${a.days}일)` : a.type==='hour' ? `시급 ${fmt(a.wage)}원 (주 ${a.hours}시간 기준)` : a.wageText;
 
 /* ---------- 저장 ---------- */
 function toggleSave(id){
@@ -1424,7 +1434,7 @@ const jobRow = j => `<button class="row" data-open="j:${j.id}"><div class="logo"
 const albaRow = a => `<div class="row click" data-open="a:${a.id}" role="button" tabindex="0"><div class="row-main">
   <div class="row-meta alba-meta">${ddPill(a.end)}<span class="cat" style="--cat:var(--ok)">${a.tag}</span><span class="where">${a.where}</span></div>
   <div class="row-title">${a.title}</div>
-  <div class="row-sub alba-pay"><span class="income-inline"><b class="num">₩${fmt(monthly(a))}</b> ${a.type==='day'?'총 예상':'월 예상'}</span><span>${a.type==='day'?`일급 ${fmt(a.wage)}원, ${a.days}일`:`시급 ${fmt(a.wage)}원, 주 ${a.hours}시간`}</span></div></div>
+  <div class="row-sub alba-pay"><span class="income-inline"><b class="num">${incomeText(a)}</b> ${a.type==='day'?'총 예상':a.type==='hour'?'월 예상':''}</span>${a.type==='nego'||a.type==='month'?'':`<span>${a.type==='day'?`일급 ${fmt(a.wage)}원, ${a.days}일`:`시급 ${fmt(a.wage)}원, 주 ${a.hours}시간`}</span>`}</div></div>
   ${saveIcon(a.id)}</div>`;
 /* SW 사업단 행: 포스터 배너 → 분류 줄(오른쪽에 마감 배지) → 제목 → 활동 기간 줄(오른쪽에 북마크) */
 const swRow = s => `<div class="sw click" data-open="s:${s.id}" role="button" tabindex="0">${thumb(s.image,'banner')}
@@ -1562,11 +1572,11 @@ function openSheet(key){
     const a = ALBA.find(x=>x.id===id);
     kind = '전북대 알바';
     body = `<div style="display:flex;gap:14px;align-items:center">${ddPill(a.end)}<h2 id="sh-title">${a.title}</h2></div>
-      <div class="income" style="margin:8px 0 14px"><b>₩${fmt(monthly(a))}</b><small style="font-size:var(--t-small);color:var(--muted);margin-left:6px">${a.type==='day'?'총 예상 수입':'월 예상 수입'}</small></div>
+      <div class="income" style="margin:8px 0 14px"><b>${incomeText(a)}</b><small style="font-size:var(--t-small);color:var(--muted);margin-left:6px">${incomeLabel(a)}</small></div>
       <dl class="spec">
         <div><dt>근무처</dt><dd>${a.where}</dd></div>
         <div><dt>구분</dt><dd>${a.tag}</dd></div>
-        <div><dt>급여</dt><dd class="num">${a.type==='day' ? `일급 ${fmt(a.wage)}원 (${a.days}일)` : `시급 ${fmt(a.wage)}원 (주 ${a.hours}시간)`}</dd></div>
+        <div><dt>급여</dt><dd class="num">${wageDetail(a)}</dd></div>
         <div><dt>근무 시간</dt><dd>${a.time || '상세 공고 참조'}</dd></div>
         <div><dt>모집 인원</dt><dd>${a.person || '0명'}</dd></div>
         <div><dt>마감</dt><dd><span class="num">${a.deadline_date ? a.deadline_date : `~${md(day(a.end))}`}</span> ${ddPill(a.end)}</dd></div>
