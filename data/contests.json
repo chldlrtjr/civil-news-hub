@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-10-28 23:01:48",
-  "last_updated_display": "10월 28일 23:01",
+  "last_updated": "2026-10-29 00:01:44",
+  "last_updated_display": "10월 29일 00:01",
   "total_count": 14,
   "featured_count": 14,
   "categories": [
@@ -75,8 +75,8 @@
       "link": "https://www.ex-contest.co.kr/design26",
       "is_active": true,
       "dday_info": {
-        "text": "D-1",
-        "days": 1,
+        "text": "오늘마감",
+        "days": 0,
         "is_urgent": true,
         "is_closed": false
       },
@@ -102,8 +102,8 @@
       "image": "https://www.jbnu.ac.kr/common/file.do?file=OhNWrFkjI5WQ4QSPEwKp4ZmYOKd01oYYdevRH/Nj2pQ7YYJXC1/6i5WORLW8/ORi",
       "is_active": true,
       "dday_info": {
-        "text": "D-1",
-        "days": 1,
+        "text": "오늘마감",
+        "days": 0,
         "is_urgent": true,
         "is_closed": false
       }
@@ -128,8 +128,8 @@
       "image": "https://www.jbnu.ac.kr/common/file.do?file=Y4JxnW6eBwKOWuP9KFH9TdH5BcpwYUCQEL0SAWiRcTd+15wYzz+mnZTvEHUsidpW",
       "is_active": true,
       "dday_info": {
-        "text": "D-2",
-        "days": 2,
+        "text": "D-1",
+        "days": 1,
         "is_urgent": true,
         "is_closed": false
       }
@@ -154,8 +154,8 @@
       "image": "https://www.jbnu.ac.kr/common/file.do?file=pfYleG6eDllcTZKsE2Ho/+tDANtPfBU8+L4Gh+7KX3s6qY2GB1TRgfGmTigx0S4n",
       "is_active": true,
       "dday_info": {
-        "text": "D-7",
-        "days": 7,
+        "text": "D-6",
+        "days": 6,
         "is_urgent": false,
         "is_closed": false
       }
@@ -180,8 +180,8 @@
       "image": "https://www.jbnu.ac.kr/common/file.do?file=I3jIsbLZScZrx+JKTFh8LRfntvR+VH5mNMdcUGG0YKFlOIXsKble6f6XzE3qqz/5",
       "is_active": true,
       "dday_info": {
-        "text": "D-7",
-        "days": 7,
+        "text": "D-6",
+        "days": 6,
         "is_urgent": false,
         "is_closed": false
       }
@@ -247,8 +247,8 @@
       "is_active": true,
       "image": "https://www.jbnu.ac.kr/common/file.do?file=aDnf2Nbsc5JCVXjNcuja6hp6EOxg4LFfVvZE2KPyqg/B6wkWztYndrgNSVSNzFTT",
       "dday_info": {
-        "text": "D-9",
-        "days": 9,
+        "text": "D-8",
+        "days": 8,
         "is_urgent": false,
         "is_closed": false
       }
@@ -265,8 +265,8 @@
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.11.08 마감",
-      "deadline_date": "2026-11-08",
+      "period": "~ 2026.11.09 마감",
+      "deadline_date": "2026-11-09",
       "deadline_time": "23:59",
       "fields": [
         "기획/아이디어"
@@ -302,8 +302,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-13",
-        "days": 13,
+        "text": "D-12",
+        "days": 12,
         "is_urgent": false,
         "is_closed": false
       }
@@ -320,8 +320,8 @@
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.11.15 마감",
-      "deadline_date": "2026-11-15",
+      "period": "~ 2026.11.16 마감",
+      "deadline_date": "2026-11-16",
       "deadline_time": "23:59",
       "fields": [
         "기획/아이디어"
@@ -357,8 +357,8 @@
       "image": "https://www.jbnu.ac.kr/common/file.do?file=6xx0iZo7X0AEBG0FCLFvgOncDWwQuaIIjDY2sTSzU8zTY1ehDat3r34f5tD+RSlI",
       "is_active": true,
       "dday_info": {
-        "text": "D-21",
-        "days": 21,
+        "text": "D-20",
+        "days": 20,
         "is_urgent": false,
         "is_closed": false
       }
@@ -383,8 +383,8 @@
       "image": "https://www.jbnu.ac.kr/common/file.do?file=DUFwt0w451rl0U6E6rgq192UbQExsCwqrXI+u2WTKjCo39EGVIpGQvMU9GBo+ijJ",
       "is_active": true,
       "dday_info": {
-        "text": "D-23",
-        "days": 23,
+        "text": "D-22",
+        "days": 22,
         "is_urgent": false,
         "is_closed": false
       }
@@ -401,8 +401,8 @@
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.11.20 마감",
-      "deadline_date": "2026-11-20",
+      "period": "~ 2026.11.21 마감",
+      "deadline_date": "2026-11-21",
       "deadline_time": "23:59",
       "fields": [
         "건축/건설/인테리어"
@@ -474,8 +474,8 @@
       "is_active": true,
       "image": "https://www.jbnu.ac.kr/common/file.do?file=4cALo6DfxWUFYlylMujIYMjaKF2GJWIBKn6sJyYGF2UlCjZ8sV+4j56lZgKcZFvm",
       "dday_info": {
-        "text": "D-9",
-        "days": 9,
+        "text": "D-8",
+        "days": 8,
         "is_urgent": false,
         "is_closed": false
       }
@@ -530,8 +530,8 @@
       "link": "https://www.kr.or.kr/boardCnts/view.do?boardID=52&boardSeq=1122113",
       "is_active": true,
       "dday_info": {
-        "text": "D-64",
-        "days": 64,
+        "text": "D-63",
+        "days": 63,
         "is_urgent": false,
         "is_closed": false
       },

@@ -1,8 +1,9 @@
 {
-  "last_updated": "2026-10-28 23:01",
-  "last_updated_display": "2026년 10월 28일 23:01",
+  "last_updated": "2026-10-29 00:01",
+  "last_updated_display": "2026년 10월 29일 00:01",
   "source": "잡알리오(공공기관 채용정보) · 고용24 공채속보 Open API",
-  "total_count": 31,
+  "total_count": 30,
+  "failed_sources": [],
   "categories": [
     {
       "id": "all",
@@ -22,82 +23,6 @@
     }
   ],
   "jobs": [
-    {
-      "id": "alio-306002",
-      "source": "잡알리오",
-      "company": "한국수자원공사",
-      "company_type": "공공기관",
-      "category_id": "public",
-      "category_name": "공기업·공공기관",
-      "title": "[한국수자원공사] 충남중부권지사 논산수도센터 특수직(기술관리_건설사업) 채용 공고",
-      "fields": [
-        "사업관리",
-        "건설",
-        "기계",
-        "전기.전자",
-        "정보통신",
-        "환경.에너지.안전"
-      ],
-      "career": "신입·경력",
-      "is_intern": false,
-      "intern_type": "",
-      "civil_match": "건설 분야 · 공고문 확인",
-      "location": "충남",
-      "period": "2026.10.14 ~ 2026.10.28",
-      "deadline_date": "2026-10-28",
-      "tags": [
-        "건설 분야 · 공고문 확인",
-        "비정규직",
-        "2명"
-      ],
-      "link": "https://k-water.recruiter.co.kr/",
-      "summary": "□ 연령, 성별, 학력 제한 없음 □ 남자의 경우 병역필 또는 면제자(병역특례 근무중인 자 제외) □ 우리 공사 인사규정에 의한 결격사유가 없는 자 □ 채용예정일부터 현업 전일근무가 가능한 자",
-      "steps": [
-        "1차 전형",
-        "인성검사",
-        "2차 전형",
-        "인성면접",
-        "실무면접"
-      ]
-    },
-    {
-      "id": "alio-305981",
-      "source": "잡알리오",
-      "company": "한국수자원공사",
-      "company_type": "공공기관",
-      "category_id": "public",
-      "category_name": "공기업·공공기관",
-      "title": "[한국수자원공사] 한강유역협력단 원주 공군SWM팀 특수직(기술관리_건설사업) 채용 공고",
-      "fields": [
-        "사업관리",
-        "건설",
-        "기계",
-        "전기.전자",
-        "정보통신",
-        "환경.에너지.안전"
-      ],
-      "career": "신입·경력",
-      "is_intern": false,
-      "intern_type": "",
-      "civil_match": "건설 분야 · 공고문 확인",
-      "location": "강원",
-      "period": "2026.10.14 ~ 2026.10.28",
-      "deadline_date": "2026-10-28",
-      "tags": [
-        "건설 분야 · 공고문 확인",
-        "비정규직",
-        "1명"
-      ],
-      "link": "https://k-water.recruiter.co.kr",
-      "summary": "□ 연령, 성별, 학력 제한 없음 □ 남자의 경우 병역필 또는 면제자(병역특례 근무중인 자 제외) □ 우리 공사 인사규정에 의한 결격사유가 없는 자 □ 채용예정일로부터 현업 전일근무가 가능한 자",
-      "steps": [
-        "1차 전형",
-        "인성검사",
-        "2차 전형",
-        "인성면접",
-        "실무면접"
-      ]
-    },
     {
       "id": "alio-306037",
       "source": "잡알리오",
@@ -1075,6 +1000,36 @@
       ]
     },
     {
+      "id": "alio-306415",
+      "source": "잡알리오",
+      "company": "한국토지주택공사",
+      "company_type": "공공기관",
+      "category_id": "public",
+      "category_name": "공기업·공공기관",
+      "title": "한국토지주택공사 토지주택연구원 기간제근로자 채용공고",
+      "fields": [
+        "연구"
+      ],
+      "career": "신입·경력",
+      "is_intern": false,
+      "intern_type": "",
+      "civil_match": "토목 명시",
+      "location": "대전",
+      "period": "2026.10.29 ~ 2026.11.12",
+      "deadline_date": "2026-11-12",
+      "tags": [
+        "토목 명시",
+        "비정규직",
+        "1명"
+      ],
+      "link": "http://lh.or.kr/",
+      "summary": "[공통] ○ 한국토지주택공사「인사규정」제9조(채용금지) 및 「기간제근로자 운영지침」제15조(채용금지)에 해당되지 아니한 자 ○ 남성의 경우 병역필 또는 면제자 [모집단위1] 촉탁연구(연구2) ○ 공고일(’26.10.29.) 현재 관련학과* 석사학위 이상 소지자 * 관련학과 : 건축공학과, 토목공학과, 환경공학과 등",
+      "steps": [
+        "서류전형",
+        "면접전형"
+      ]
+    },
+    {
       "id": "alio-306327",
       "source": "잡알리오",
       "company": "국립부산과학관",
@@ -1173,12 +1128,7 @@
     {
       "company": "삼안",
       "category_id": "engineering",
-      "link": "https://www.samaneng.co.kr/board/bbs/board.php?bo_table=recruit2"
-    },
-    {
-      "company": "동명기술공단",
-      "category_id": "engineering",
-      "link": "http://www.dmec.co.kr"
+      "link": "https://samaneng.com/board/recruit2/index.html"
     },
     {
       "company": "도화엔지니어링",
