@@ -68,6 +68,44 @@ class PublisherResolveTest(unittest.TestCase):
         self.assertEqual([a["publisher"] for a in arts], ["울산신문", "울산신문", "jtv.co.kr", "언론사", "연합뉴스"])
 
 
+class ClusterTest(unittest.TestCase):
+    @staticmethod
+    def art(title, snippet="", iso="2026-10-28T10:00:00+09:00"):
+        return {"id": title[:8], "title": title, "snippet": snippet, "link": "https://e.com/" + title[:4],
+                "publisher": "언론사", "iso_date": iso, "image": "x"}
+
+    def cluster(self, arts):
+        with mock.patch.object(scraper, "extract_images_for_article_list"):
+            final, dup = scraper.cluster_related_articles(arts)
+        return final
+
+    def test_same_press_release_with_different_titles_is_grouped(self):
+        # 실제 사례: 제목 공통 단어는 '지하안전평가' 하나뿐이지만 첫 문단이 같은 보도자료
+        a = self.art("장종태의원, 지하안전평가 받고도 땅 꺼졌다.",
+                     "장종태 더불어민주당 국회의원(대전 서구.갑) 굴착공사 현장 인근에서 발생한 싱크홀 56건 가운데 30건, "
+                     "절반 이상이 이미 지하안전평가를 마친 현장에서 일어난 것으로 나타났다.")
+        b = self.art("장종태 의원, 싱크홀 56건 가운데 30건 절반 이상 지하안전평가 완료",
+                     "굴착공사 현장 인근에서 발생한 싱크홀 56건 가운데 30건 절반 이상이 이미 지하안전평가를 마친 "
+                     "현장에서 일어난 것으로 나타났다. 더불어민주당 장종태(초선, 대전 서구갑) 의원이 22일")
+        self.assertEqual(len(self.cluster([a, b])), 1)
+
+    def test_fallback_snippet_is_not_compared(self):
+        a = self.art("교량 공사 착공", "교량 공사 착공. 도로·교량·철도 분야 최신 인프라 동향 및 사업 세부 내용을 확인하세요.")
+        b = self.art("터널 공사 준공", "터널 공사 준공. 도로·교량·철도 분야 최신 인프라 동향 및 사업 세부 내용을 확인하세요.")
+        self.assertEqual(len(self.cluster([a, b])), 2)
+
+    def test_opinion_piece_is_never_grouped(self):
+        column = self.art("[이용희 칼럼] 동천 생태하천 복원 전략은 자연기반해법으로")
+        news = self.art("인천 굴포천, 666억원 투입해 생태하천 복원…부평구 장관 표창")
+        self.assertEqual(len(self.cluster([column, news])), 2)
+
+    def test_opinion_flag_survives_prefix_stripping(self):
+        now = rfc822(datetime.now(KST))
+        a = scraper.process_candidate_article("[사설] 싱크홀 대책 시급한 도로", "https://e.com/s", now, "", "신문", CAT, KST, set())
+        self.assertTrue(a["is_opinion"])
+        self.assertFalse(a["title"].startswith("[사설]"))
+
+
 class TrendingKeywordsTest(unittest.TestCase):
     def test_fallback_only_uses_keywords_present_in_articles(self):
         arts = [{"title": "GTX-C 노선 착공", "snippet": ""}, {"title": "고속도로 확장 개통", "snippet": ""}]

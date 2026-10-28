@@ -384,7 +384,8 @@ def process_candidate_article(raw_title, raw_link, raw_pub_date, raw_desc, publi
             publisher = parts[1].strip()
         title = parts[0].strip()
     
-    # 접두사 머리말 정제
+    # 접두사 머리말 정제 ('[사설]', '[칼럼]'이 지워지기 전에 의견 기사 여부를 기록)
+    opinion = is_opinion_piece(title)
     title = re.sub(r'^\[(단독|속보|포토|사설|기획|종합|현장|전문|인터뷰|칼럼|기고|알림|인사|부고)\]\s*', '', title).strip()
 
     if not publisher:
@@ -428,7 +429,8 @@ def process_candidate_article(raw_title, raw_link, raw_pub_date, raw_desc, publi
         "snippet": snippet[:180].strip(),
         "iso_date": iso_date,
         "published_at": display_date,
-        "relative_date": relative_date
+        "relative_date": relative_date,
+        "is_opinion": opinion
     }
 
 class NewsFetchError(Exception):
@@ -614,6 +616,37 @@ def is_similar_article(title_a, tokens_a, title_b, tokens_b):
         
     return False
 
+LEDE_FALLBACK_PHRASE = "분야 최신 인프라 동향 및 사업 세부 내용을 확인하세요"
+
+
+def lede_shingles(snippet):
+    """
+    요약문 → 글자 3-gram 집합. 같은 보도자료를 받아 쓴 기사는 제목은 언론사마다 바꿔도 첫 문단은 거의 같음.
+    요약이 짧거나 수집기가 제목으로 채운 대체 문구면 비교하지 않음(빈 집합)
+    """
+    if not snippet or LEDE_FALLBACK_PHRASE in snippet:
+        return set()
+    text = re.sub(r'[^0-9a-z가-힣]', '', snippet.lower())
+    if len(text) < 40:
+        return set()
+    return {text[i:i + 3] for i in range(len(text) - 2)}
+
+
+def is_same_lede(a, b):
+    """짧은 쪽 요약의 3-gram 중 60% 이상이 겹치면 같은 기사 (앞에 '○○ 의원은' 같은 문구가 붙어도 판정)"""
+    if not a or not b:
+        return False
+    return len(a & b) / min(len(a), len(b)) >= 0.6
+
+
+OPINION_RE = re.compile(r'^\s*[\[【<〈]?[^\]】>〉]{0,12}(칼럼|사설|기고|시론|기자수첩|오피니언|논단|데스크)[^\]】>〉]{0,8}[\]】>〉]')
+
+
+def is_opinion_piece(title):
+    """'[이용희 칼럼] …', '[사설] …', '[기고] …' 같은 의견 기사"""
+    return bool(OPINION_RE.match(title or ""))
+
+
 def cluster_related_articles(articles, max_workers=15):
     """동일/유사 보도자료를 발행한 타 언론사 기사들을 대표 기사 하위로 묶음.
     [원칙]:
@@ -628,16 +661,27 @@ def cluster_related_articles(articles, max_workers=15):
     clusters = []
     for art in articles:
         tokens = extract_article_keywords(art['title'])
+        shingles = lede_shingles(art.get('snippet', ''))
+        # 칼럼·사설·기고는 필자가 직접 쓴 글이라 보도자료 묶음에 넣지도, 다른 기사를 받지도 않음
+        if art.get('is_opinion') or is_opinion_piece(art['title']):
+            clusters.append({'tokens': set(), 'shingles': [], 'items': [art], 'opinion': True})
+            continue
         placed = False
         for cluster in clusters:
+            if cluster.get('opinion'):
+                continue
             primary = cluster['items'][0]
-            if is_similar_article(primary['title'], cluster['tokens'], art['title'], tokens):
+            # 제목이 비슷하거나, 군집 안 어느 기사와든 요약(첫 문단)이 거의 같으면 같은 보도자료로 봄
+            if is_similar_article(primary['title'], cluster['tokens'], art['title'], tokens) \
+                    or any(is_same_lede(shingles, s) for s in cluster['shingles']):
                 cluster['items'].append(art)
+                cluster['shingles'].append(shingles)
                 placed = True
                 break
         if not placed:
             clusters.append({
                 'tokens': tokens,
+                'shingles': [shingles],
                 'items': [art]
             })
 
