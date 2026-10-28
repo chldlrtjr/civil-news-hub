@@ -1,6 +1,8 @@
 import os
+import sys
 import json
 import re
+import hashlib
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -10,6 +12,15 @@ from collections import Counter
 from dotenv import load_dotenv
 import requests
 from bs4 import BeautifulSoup
+
+# 구글 뉴스 링크 → 원문 URL 디코더. 의존성(selectolax 등) 문제로 import가 깨져도
+# 구글이 아닌 기사의 사진 추출은 계속되도록 따로 불러오고, 실패 사유는 수집 로그에 남긴다
+try:
+    import googlenewsdecoder
+    GNEWS_DECODER_ERROR = ""
+except Exception as e:
+    googlenewsdecoder = None
+    GNEWS_DECODER_ERROR = f"{type(e).__name__}: {e}"
 
 # 디렉토리 경로
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -74,8 +85,13 @@ EXCLUDE_KEYWORDS = [
     # 사건사고 및 잡담 (단순 교통사고, 화재속보 등)
     "화재사고", "추돌사고", "교통사고", "단순사고", "시위", "집회", "시식", "맛집",
     # 노이즈 / 도박 / 단순 인사
-    "토토", "사설토토", "바카라", "카지노", "불법도박", "승진인사", "정기인사", "부고", "동정", "화촉"
+    "토토", "사설토토", "바카라", "카지노", "불법도박", "승진인사", "정기인사", "부고", "동정", "화촉",
+    # 공기업 사회공헌·스포츠단 (예: '한국도로공사 ○○본부, 성금 기탁', 도로공사 배구단)
+    "기탁", "성금", "후원금", "봉사활동", "배구", "V리그", "축구대회"
 ]
+
+# 이보다 오래된 기사는 수집하지 않음 (구글 RSS는 when:3d로 이미 제한, 네이버 직접 수집의 과거 기사 차단용)
+MAX_ARTICLE_AGE_DAYS = 7
 
 def clean_html(raw_html):
     """HTML 태그 제거 및 특수문자 변환"""
@@ -111,7 +127,7 @@ def format_relative_time(dt_kst):
     return dt_kst.strftime("%Y.%m.%d")
 
 def fetch_rss_for_term(term, when="3d"):
-    """구글 뉴스 RSS 단일 검색어 수집"""
+    """구글 뉴스 RSS 단일 검색어 수집 (요청 실패 시 None — 결과 0건과 구분)"""
     encoded_q = urllib.parse.quote(f'{term} when:{when}')
     url = f"https://news.google.com/rss/search?q={encoded_q}&hl=ko&gl=KR&ceid=KR:ko"
     
@@ -129,7 +145,7 @@ def fetch_rss_for_term(term, when="3d"):
             return root.findall("./channel/item")
     except Exception as e:
         print(f"    [RSS 수집 에러 ({term})]: {e}")
-        return []
+        return None
 
 # 네이버 뉴스 언론사 코드 매핑
 NAVER_PRESS_CODES = {
@@ -189,7 +205,7 @@ def extract_naver_publisher(link, originallink, title):
     return "네이버뉴스"
 
 def fetch_naver_news_for_term(term, client_id, client_secret, display=15):
-    """네이버 검색 오픈 API를 통한 뉴스 기사 수집"""
+    """네이버 검색 오픈 API를 통한 뉴스 기사 수집 (요청 실패 시 None)"""
     if not client_id or not client_secret:
         return []
     
@@ -212,11 +228,11 @@ def fetch_naver_news_for_term(term, client_id, client_secret, display=15):
                 return data.get("items", [])
     except Exception as e:
         print(f"    [네이버 뉴스 수집 에러 ({term})]: {e}")
-        return []
-    return []
+        return None
+    return None
 
 def scrape_naver_news_direct(term, max_items=10, now_kst=None):
-    """네이버 웹 검색을 통한 실시간 뉴스 직접 수집 (API 키 불필요 모드)"""
+    """네이버 웹 검색을 통한 실시간 뉴스 직접 수집 (API 키 불필요 모드, 요청 실패 시 None)"""
     kst = timezone(timedelta(hours=9))
     if not now_kst or not isinstance(now_kst, datetime):
         now_kst = datetime.now(kst)
@@ -230,7 +246,8 @@ def scrape_naver_news_direct(term, max_items=10, now_kst=None):
     try:
         resp = requests.get(url, headers=headers, timeout=5)
         if resp.status_code != 200:
-            return []
+            print(f"    [네이버 직접 수집 에러 ({term})]: HTTP {resp.status_code}")
+            return None
         soup = BeautifulSoup(resp.text, "html.parser")
         
         articles = []
@@ -292,23 +309,24 @@ def scrape_naver_news_direct(term, max_items=10, now_kst=None):
             nv_a = card.select_one("a[href*='n.news.naver.com/mnews/article'], a[href*='news.naver.com/main/read']")
             final_link = nv_a["href"] if nv_a and nv_a.get("href") else orig_link
 
-            # 날짜 계산
-            dt = now_kst
-            m = re.search(r'(\d+)\s*분\s*전', rel_date)
-            if m:
-                dt = now_kst - timedelta(minutes=int(m.group(1)))
+            # 날짜 계산 (해석할 수 없으면 빈 값 → process_candidate_article에서 제외)
+            dt = None
+            m_abs = re.match(r'^(\d{4})\.(\d{1,2})\.(\d{1,2})', rel_date)
+            if m_abs:
+                dt = datetime(int(m_abs.group(1)), int(m_abs.group(2)), int(m_abs.group(3)), tzinfo=kst)
+            elif "방금" in rel_date:
+                dt = now_kst
             else:
-                m = re.search(r'(\d+)\s*시간\s*전', rel_date)
-                if m:
-                    dt = now_kst - timedelta(hours=int(m.group(1)))
-                else:
-                    m = re.search(r'(\d+)\s*일\s*전', rel_date)
+                for pattern, unit in [(r'(\d+)\s*분\s*전', "minutes"), (r'(\d+)\s*시간\s*전', "hours"), (r'(\d+)\s*일\s*전', "days")]:
+                    m = re.search(pattern, rel_date)
                     if m:
-                        dt = now_kst - timedelta(days=int(m.group(1)))
-                    elif "어제" in rel_date:
+                        dt = now_kst - timedelta(**{unit: int(m.group(1))})
+                        break
+                else:
+                    if "어제" in rel_date:
                         dt = now_kst - timedelta(days=1)
-            
-            pub_date_str = dt.strftime("%a, %d %b %Y %H:%M:%S +0900")
+
+            pub_date_str = dt.strftime("%a, %d %b %Y %H:%M:%S +0900") if dt else ""
 
             articles.append({
                 "title": title,
@@ -324,7 +342,7 @@ def scrape_naver_news_direct(term, max_items=10, now_kst=None):
         return articles
     except Exception as e:
         print(f"    [네이버 직접 수집 에러 ({term})]: {e}")
-        return []
+        return None
 
 
 def clean_clause(text):
@@ -367,42 +385,35 @@ def process_candidate_article(raw_title, raw_link, raw_pub_date, raw_desc, publi
     if not publisher:
         publisher = "언론사"
     
-    # 중복 검사 키 (영문/한글/숫자 앞 20자리)
-    clean_key = re.sub(r'[^a-zA-Z0-9가-힣]', '', title)[:20]
+    # 날짜 파싱 (발행일을 알 수 없거나 너무 오래된 기사는 제외 — 수집 시각으로 대체하면 옛 기사가 최신처럼 보임)
+    try:
+        dt_kst = parsedate_to_datetime(raw_pub_date).astimezone(kst)
+    except Exception:
+        return None
+    if datetime.now(kst) - dt_kst > timedelta(days=MAX_ARTICLE_AGE_DAYS):
+        return None
+    iso_date = dt_kst.isoformat()
+    display_date = dt_kst.strftime("%Y-%m-%d %H:%M")
+    relative_date = format_relative_time(dt_kst)
+
+    # 중복 검사 키 (영문/한글/숫자만 남긴 제목 전체)
+    clean_key = re.sub(r'[^a-zA-Z0-9가-힣]', '', title)
     if not clean_key or clean_key in seen_keys:
         return None
     seen_keys.add(clean_key)
-    
-    # 날짜 파싱
-    iso_date = ""
-    display_date = ""
-    relative_date = ""
-    try:
-        dt = parsedate_to_datetime(raw_pub_date)
-        dt_kst = dt.astimezone(kst)
-        iso_date = dt_kst.isoformat()
-        display_date = dt_kst.strftime("%Y-%m-%d %H:%M")
-        relative_date = format_relative_time(dt_kst)
-    except Exception:
-        now_time = datetime.now(kst)
-        iso_date = now_time.isoformat()
-        display_date = now_time.strftime("%Y-%m-%d %H:%M")
-        relative_date = "최근"
-    
+
     # 설명(스니펫) 정제
     snippet = clean_html(raw_desc)
     if publisher and snippet.endswith(publisher):
         snippet = snippet[:-len(publisher)].strip()
-
-    # 기본 조회수 배정
-    base_views = 120 + (abs(hash(title)) % 2280)
 
     # 설명(스니펫) 정제: 비어있거나 무의미한 경우 기사 제목 기반 보완
     if not snippet or snippet == title or "원문 기사를 확인하세요" in snippet or len(snippet) < 15:
         snippet = f"{title}. {cat['name']} 분야 최신 인프라 동향 및 사업 세부 내용을 확인하세요."
 
     return {
-        "id": str(abs(hash(title + raw_link)))[-10:],
+        # 링크 기반 고정 ID (내장 hash()는 실행마다 값이 바뀌어 북마크가 매시간 끊어졌음)
+        "id": hashlib.sha1(raw_link.encode("utf-8")).hexdigest()[:12],
         "title": title,
         "link": raw_link,
         "publisher": publisher,
@@ -412,12 +423,19 @@ def process_candidate_article(raw_title, raw_link, raw_pub_date, raw_desc, publi
         "snippet": snippet[:180].strip(),
         "iso_date": iso_date,
         "published_at": display_date,
-        "relative_date": relative_date,
-        "views": base_views
+        "relative_date": relative_date
     }
 
+class NewsFetchError(Exception):
+    """수집된 기사가 하나도 없을 때 (기존 news.json 유지)"""
+
+
 def scrape_civil_news():
-    """모든 카테고리 뉴스 정밀 수집, 필터링 및 JSON 저장 (구글 뉴스 RSS + 네이버 오픈 API 하이브리드)"""
+    """
+    모든 카테고리 뉴스 정밀 수집, 필터링 및 JSON 저장 (구글 뉴스 RSS + 네이버 하이브리드)
+    - 한 수집원이 전부 실패하면 나머지로 저장하고 결과의 failed_sources에 기록
+    - 기사가 0건이면 저장하지 않고 NewsFetchError
+    """
     print("=" * 60)
     print("🚀 [토목 뉴스 수집기] 토목 관련 순수 기사를 정밀 수집합니다...")
     print("=" * 60)
@@ -434,13 +452,19 @@ def scrape_civil_news():
         print("🔑 [네이버 뉴스] 공식 Open API 연동 모드로 수집합니다.")
     else:
         print("🌐 [네이버 뉴스] 직접 웹 스크래핑 엔진 가동 (API 키 불필요: 구글 + 네이버 하이브리드 수집)")
-    
+    if GNEWS_DECODER_ERROR:
+        print(f"⚠️ [News Image] googlenewsdecoder 불러오기 실패 → 구글 뉴스 기사 사진 추출 불가: {GNEWS_DECODER_ERROR}")
+
+    # 수집원별 요청 성공/실패 횟수 (검색어 전부 실패한 수집원은 실패로 보고 exit 1 → cron 알림)
+    request_stats = {"구글 뉴스 RSS": [0, 0], "네이버 뉴스": [0, 0]}
+
     for cat in CATEGORIES:
         cat_count = 0
         for term in cat["queries"]:
             # 1. 구글 뉴스 RSS 수집
             rss_items = fetch_rss_for_term(term, when="3d")
-            for item in rss_items:
+            request_stats["구글 뉴스 RSS"][0 if rss_items is not None else 1] += 1
+            for item in rss_items or []:
                 raw_title = item.find("title").text if item.find("title") is not None else ""
                 raw_link = item.find("link").text if item.find("link") is not None else ""
                 raw_pub_date = item.find("pubDate").text if item.find("pubDate") is not None else ""
@@ -458,8 +482,9 @@ def scrape_civil_news():
                 naver_items = fetch_naver_news_for_term(term, naver_client_id, naver_client_secret, display=15)
             else:
                 naver_items = scrape_naver_news_direct(term, max_items=10, now_kst=datetime.now(kst))
-                
-            for n_item in naver_items:
+            request_stats["네이버 뉴스"][0 if naver_items is not None else 1] += 1
+
+            for n_item in naver_items or []:
                 raw_title = n_item.get("title", "")
                 raw_link = n_item.get("originallink") or n_item.get("link", "")
                 raw_pub_date = n_item.get("pubDate", "")
@@ -473,13 +498,20 @@ def scrape_civil_news():
                 
         print(f"  - [{cat['name']}] 엄선된 기사 {cat_count}건 수집 완료")
 
-    
-    # 유사/중복 기사 군집화 & 사진 우선 대표 선발 (조회순으로 내려가며 사진 있는 기사 우선 대표 승격)
+    failed_sources = [name for name, (ok, fail) in request_stats.items() if ok == 0 and fail > 0]
+    for name in failed_sources:
+        print(f"❌ [{name}] 검색어 {request_stats[name][1]}개 요청이 모두 실패했습니다")
+
+    # 기사가 하나도 없으면 기존 news.json을 덮어쓰지 않음 (빈 피드 배포 방지)
+    if not all_articles:
+        raise NewsFetchError("수집된 기사가 0건입니다 — 기존 news.json을 유지합니다")
+
+    # 유사/중복 기사 군집화 & 사진 우선 대표 선발 (최신순으로 내려가며 사진 있는 기사 우선 대표 승격)
     final_articles, duplicate_count = cluster_related_articles(all_articles)
 
     # 사진이 없는 기사는 큐레이션 예시 사진 대신 언론사(회사) 이름을 썸네일로 표출합니다.
 
-    # 당일 아침 7시 수집 기사 기반 대표 트렌딩 키워드 동적 추출 (8대 전문 분야 1-Keyword-Per-Domain)
+    # 수집 기사 기반 대표 트렌딩 키워드 동적 추출 (8대 전문 분야 1-Keyword-Per-Domain)
     trending_keywords = extract_trending_keywords(final_articles, max_keywords=8)
     print(f"🔥 [오늘의 대표 키워드 추출] {', '.join(f'#{k}' for k in trending_keywords)}")
     
@@ -491,6 +523,7 @@ def scrape_civil_news():
         "total_count": len(final_articles),
         "raw_total_count": len(all_articles),
         "duplicate_count": duplicate_count,
+        "failed_sources": failed_sources,
         "trending_keywords": trending_keywords,
         "categories": (lambda: [
             *([{"id": c["id"], "name": c["name"], "badge_color": c["badge_color"]} for c in CATEGORIES]),
@@ -573,11 +606,11 @@ def is_similar_article(title_a, tokens_a, title_b, tokens_b):
 def cluster_related_articles(articles, max_workers=15):
     """동일/유사 보도자료를 발행한 타 언론사 기사들을 대표 기사 하위로 묶음.
     [원칙]:
-    1. 같은 기사 군집(단락)에서 기본적으로 '조회수 기준'으로 정렬.
+    1. 같은 기사 군집(단락)에서 기본적으로 '최신순'으로 정렬 (실제 조회수 데이터는 없음).
     2. 메인 대표 기사(Lead) 선정 시:
-       - 조회수 1위 기사에 사진(image)이 있다면 그대로 대표 기사로 선정.
-       - 조회수 1위 기사에 사진이 없다면, 조회순으로 내려가며 사진이 있는 기사를 우선 대표 기사로 승격.
-       - 군집 내 모든 기사에 사진이 아예 없는 경우는 원래 조회수 1위 기사를 유지 (언론사 썸네일 표출).
+       - 가장 최신 기사에 사진(image)이 있다면 그대로 대표 기사로 선정.
+       - 가장 최신 기사에 사진이 없다면, 최신순으로 내려가며 사진이 있는 기사를 우선 대표 기사로 승격.
+       - 군집 내 모든 기사에 사진이 아예 없는 경우는 가장 최신 기사를 유지 (언론사 썸네일 표출).
     3. 모두보기(관련 기사) 목록은 최신순 정렬.
     4. 전체 피드는 클러스터 내 가장 최신 기사 일시 기준 최신순 정렬 유지.
     """
@@ -597,11 +630,11 @@ def cluster_related_articles(articles, max_workers=15):
                 'items': [art]
             })
 
-    # 각 클러스터 내 기사들을 조회수 내림차순으로 사전 정렬
+    # 각 클러스터 내 기사들을 최신순으로 사전 정렬
     for c in clusters:
-        c['items'].sort(key=lambda x: x.get('views', 0), reverse=True)
+        c['items'].sort(key=lambda x: x.get('iso_date', ''), reverse=True)
 
-    # 1단계: 모든 클러스터의 '조회수 1위 기사'들의 이미지 병렬 추출
+    # 1단계: 모든 클러스터의 '가장 최신 기사'들의 이미지 병렬 추출
     phase1_candidates = [c['items'][0] for c in clusters]
     print(f"\n🖼️ [News Image] 1단계: {len(phase1_candidates)}개 대표 후보 기사 대표 사진(og:image) 병렬 추출...")
     extract_images_for_article_list(phase1_candidates, max_workers=max_workers)
@@ -628,7 +661,7 @@ def cluster_related_articles(articles, max_workers=15):
             item['related_articles'] = []
             final_articles.append(item)
         else:
-            # 대표 기사 선정: 조회순으로 내려가면서 사진이 있는 기사를 우선 선정
+            # 대표 기사 선정: 최신순으로 내려가면서 사진이 있는 기사를 우선 선정
             primary_idx = 0
             found_photo = False
             for idx, cand in enumerate(items):
@@ -659,7 +692,6 @@ def cluster_related_articles(articles, max_workers=15):
                     'relative_date': a.get('relative_date', '최근'),
                     'published_at': a.get('published_at', ''),
                     'iso_date': a.get('iso_date', ''),
-                    'views': a.get('views', 0),
                     'image': a.get('image', '')
                 }
                 for a in other_articles_sorted_newest
@@ -687,7 +719,6 @@ def upgrade_to_high_res_image(url: str) -> str:
     """
     if not url:
         return ""
-    import re
     # 1. NDSoft CMS: /thumbnail/ -> /photo/, _v150 제거
     if '/thumbnail/' in url and re.search(r'_v\d+\.(jpg|jpeg|png|webp)', url, re.I):
         return re.sub(r'_v\d+\.(jpg|jpeg|png|webp)', r'.\1', url.replace('/thumbnail/', '/photo/'), flags=re.I)
@@ -695,7 +726,6 @@ def upgrade_to_high_res_image(url: str) -> str:
     if 'daumcdn.net/thumb/' in url and 'fname=' in url:
         m = re.search(r'fname=([^&]+)', url)
         if m:
-            import urllib.parse
             raw = urllib.parse.unquote(m.group(1))
             if raw.startswith('http'):
                 return raw
@@ -719,11 +749,9 @@ def extract_news_og_image(link: str) -> str:
     if not link:
         return ""
     try:
-        import googlenewsdecoder
-        import requests
-        from bs4 import BeautifulSoup
-
         if "news.google.com" in link:
+            if googlenewsdecoder is None:
+                return ""
             dec = googlenewsdecoder.gnewsdecoder(link)
             if not dec or not dec.get("success"):
                 return ""
@@ -774,8 +802,8 @@ def extract_news_og_image(link: str) -> str:
                         return ""
                 elif img.startswith("https://"):
                     return img
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"    [News Image] {link[:80]} 사진 추출 실패: {type(e).__name__}: {e}")
     return ""
 
 def extract_images_for_article_list(articles, max_workers=15):
@@ -806,27 +834,7 @@ def extract_trending_keywords(articles, max_keywords=8):
     동일 키워드 완전 중복 및 어근/형태소(철도, 도로 등)가 겹치는 유사 키워드의 중복 생성을 원천 차단합니다.
     """
     if not articles:
-        return ["스마트건설", "지하안전", "GTX", "수자원", "철도망", "싱크홀", "교량", "신기술"]
-
-    # 1. 노이즈 및 과도하게 일반적인 단어 배제 불용어
-    GENERIC_STOPWORDS = {
-        '토목', '건설', '공사', '도로', '철도', '터널', '교량', '사업', '시공', '한국', 
-        '인프라', '현장', '안전', '점검', '추진', '본격', '선정', '착공', '개통', '발주', 
-        '수주', '사업비', '조원', '억원', '지역', '전국', '계획', '발표', '시작', '마련', 
-        '개최', '참여', '지원', '협력', '체결', '업무협약', '대책', '확정', '회의', '논의', 
-        '개발', '조성', '구축', '도입', '확대', '운영', '관리', '실시', '진행', '완공', 
-        '연내', '내년', '올해', '기자', '뉴스', '보도', '사진', '종합', '단독', '속보', 
-        '포토', '투자', '설계', '정부', '지자체', '공개', '강화', '조사', '위해', '통해', 
-        '관련', '위한', '국가철도망', '구축계획', '총력', '반영', '유치', '건의', '촉구', 
-        '호재', '기자회견', '간담회', '주민설명회', '설명회', '토론회', '맞손', '업무', 
-        '대한', '통한', '따른', '등을', '하는', '있는', '것으로', '대해', '이상', '이번', 
-        '지난', '앞서', '이날', '이후', '최근', '주요', '최대', '역대', '의원', '박수현', 
-        '피해', '필요', '노조', '논란', '주민', '대응', '반발', '통과', '추석', '사고', 
-        '시민', '적용', '문제', '요구', '주장', '확인', '예정', '우려', '방안', '개선',
-        '서울', '경기', '부산', '대구', '인천', '광주', '대전', '울산', '경기도', '4개', '4대', '1위',
-        '거제', '청도', '가평', '통영', '안산', '광양', '남원', '포항', '전주', '창원',
-        '통합', '시스템', '투입', '지하철', '연장', '다자녀', '현안', '하루', '글로벌', '본격화', '중단'
-    }
+        return []
 
     # 2. 토목 8대 세부 전문 도메인 사전 패턴 (도메인당 1개만 선정하여 '2개씩 생기는 현상' 원천 차단)
     DOMAIN_PATTERNS = [
@@ -869,20 +877,6 @@ def extract_trending_keywords(articles, max_keywords=8):
             elif re.search(p_re, text, re.IGNORECASE):
                 scores[pattern] += int(1 * boost)
 
-    # 3. 제목에서 3회 이상 등장하는 고유명사/프로젝트명 추가 탐색
-    title_token_counts = Counter()
-    for a in articles:
-        title = a.get('title', '')
-        clean = re.sub(r'\[.*?\]|\(.*?\)|<.*?>|[^\w\s]', ' ', title)
-        words = set(w for w in clean.split() if 2 <= len(w) <= 6 and w not in GENERIC_STOPWORDS)
-        for w in words:
-            title_token_counts[w] += 1
-
-    for w, count in title_token_counts.items():
-        if count >= 3 and w not in scores:
-            scores[w] += count * 2
-            kw_group[w] = 'misc'
-
     # 4. 키워드 상호 겹침(어근/형태소 중복) 판별기
     def is_overlapping(k1, k2):
         if k1 == k2 or k1 in k2 or k2 in k1:
@@ -904,9 +898,9 @@ def extract_trending_keywords(articles, max_keywords=8):
     used_groups = set()
 
     for cand in sorted_candidates:
-        cand_group = kw_group.get(cand, 'misc')
-        # 일반 명사나 지역명 등 비도메인 토큰 배제 및 동일 도메인 중복 선택 금지
-        if cand_group == 'misc' or cand_group in used_groups:
+        cand_group = kw_group[cand]
+        # 동일 도메인 중복 선택 금지
+        if cand_group in used_groups:
             continue
 
         # 이미 선정된 키워드와 어근/부분문자열 겹침 여부 확인
@@ -921,12 +915,13 @@ def extract_trending_keywords(articles, max_keywords=8):
                 break
         if not overlap:
             final_keywords.append(cand)
-            if cand_group != 'misc':
-                used_groups.add(cand_group)
+            used_groups.add(cand_group)
         if len(final_keywords) >= 8:
             break
 
     # 7. 부족할 경우 분야별 대표 fallback 키워드로 중복 없이 1개씩 보충
+    #    (단, 오늘 기사에 실제로 등장한 키워드만 — 기사 0건인 키워드를 '대표 키워드'로 내보내지 않음)
+    all_text = " ".join(f"{a.get('title', '')} {a.get('snippet', '')}" for a in articles)
     fallback_by_group = [
         ('smart_tech', '스마트건설'),
         ('safety_ground', '싱크홀'),
@@ -941,7 +936,7 @@ def extract_trending_keywords(articles, max_keywords=8):
     for group, fb in fallback_by_group:
         if len(final_keywords) >= 8:
             break
-        if group in used_groups:
+        if group in used_groups or fb not in all_text:
             continue
         overlap = False
         for chosen in final_keywords:
@@ -966,4 +961,10 @@ def scrape_civil_contests():
         return None
 
 if __name__ == "__main__":
-    scrape_civil_news()
+    # 0건이거나 수집원 하나가 전부 실패하면 exit 1 → cron_scrape.sh가 카카오톡 실패 알림 발송
+    try:
+        result = scrape_civil_news()
+    except NewsFetchError as e:
+        print(f"❌ {e}")
+        sys.exit(1)
+    sys.exit(1 if result["failed_sources"] else 0)

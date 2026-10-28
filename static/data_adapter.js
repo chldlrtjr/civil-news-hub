@@ -46,7 +46,7 @@ window.CivilData = (() => {
     // 1. 트렌딩 키워드 (실제 크롤링된 실시간 키워드)
     const TRENDS = (newsData && newsData.trending_keywords && newsData.trending_keywords.length)
       ? newsData.trending_keywords.map((kw, idx) => [kw, idx % 2 === 0 ? 1 : 0])
-      : [['고속도로', 1], ['국토부', 1], ['스마트건설', 1], ['지하안전', 1], ['새만금', 0], ['신기술', 1]];
+      : [];
 
     // 2. 뉴스 (실제 크롤링 기사)
     let NEWS = [];
