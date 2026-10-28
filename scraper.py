@@ -517,6 +517,7 @@ def scrape_civil_news():
         raise NewsFetchError("수집된 기사가 0건입니다 — 기존 news.json을 유지합니다")
 
     # 유사/중복 기사 군집화 & 사진 우선 대표 선발 (최신순으로 내려가며 사진 있는 기사 우선 대표 승격)
+    resolve_unknown_publishers(all_articles)
     final_articles, duplicate_count = cluster_related_articles(all_articles)
 
     # 사진이 없는 기사는 큐레이션 예시 사진 대신 언론사(회사) 이름을 썸네일로 표출합니다.
@@ -815,6 +816,58 @@ def extract_news_og_image(link: str) -> str:
     except Exception as e:
         print(f"    [News Image] {link[:80]} 사진 추출 실패: {type(e).__name__}: {e}")
     return ""
+
+UNKNOWN_PUBLISHERS = {"", "네이버뉴스", "언론사"}
+
+
+def clean_site_name(name: str) -> str:
+    """'울산매일 - 울산최초, 최고의 조간신문' → '울산매일', '컨슈머타임스(Consumertimes)' → '컨슈머타임스'"""
+    name = re.split(r"\s+[-|:]\s+|\s*\(", name.strip())[0].strip()
+    return name[:20]
+
+
+def fetch_site_name(url: str) -> str:
+    """기사 원문 페이지의 og:site_name (없거나 실패하면 '')"""
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"}
+    try:
+        r = requests.get(url, headers=headers, timeout=4)
+        if r.status_code != 200:
+            return ""
+        if r.encoding in (None, "ISO-8859-1"):
+            r.encoding = r.apparent_encoding
+        meta = BeautifulSoup(r.text, "html.parser").find("meta", property="og:site_name")
+        if meta and meta.get("content"):
+            return clean_site_name(meta["content"])
+    except Exception:
+        pass
+    return ""
+
+
+def resolve_unknown_publishers(articles, max_workers=15):
+    """
+    언론사명을 모르는 기사(네이버 API 응답엔 언론사명이 없음)를 원문 og:site_name으로 채움.
+    같은 도메인은 한 번만 조회하고, 끝내 모르면 도메인(예: jtv.co.kr)을 표시.
+    """
+    from concurrent.futures import ThreadPoolExecutor
+
+    by_domain = {}
+    for a in articles:
+        link = a.get("link", "")
+        if a.get("publisher", "") in UNKNOWN_PUBLISHERS and link.startswith("http") and "news.google.com" not in link:
+            domain = urllib.parse.urlparse(link).netloc.lower()
+            by_domain.setdefault(domain, []).append(a)
+    if not by_domain:
+        return
+
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        names = dict(zip(by_domain, executor.map(lambda d: fetch_site_name(by_domain[d][0]["link"]), by_domain)))
+
+    for domain, arts in by_domain.items():
+        name = names.get(domain) or re.sub(r"^www\.", "", domain)
+        for a in arts:
+            a["publisher"] = name
+    print(f"📰 [언론사명 보완] 원문 사이트 {len(by_domain)}곳 조회 → 기사 {sum(len(v) for v in by_domain.values())}건 언론사명 채움")
+
 
 def extract_images_for_article_list(articles, max_workers=15):
     """기사 목록에 대해 병렬로 og:image를 추출하여 기사 객체에 image 필드 세팅"""

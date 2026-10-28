@@ -47,6 +47,27 @@ class ProcessCandidateTest(unittest.TestCase):
         self.assertIsNone(self.process("한국도로공사 충북본부, 청주 취약계층에 온누리상품권 300만원 기탁", now))
 
 
+class PublisherResolveTest(unittest.TestCase):
+    def test_clean_site_name(self):
+        self.assertEqual(scraper.clean_site_name("울산매일 - 울산최초, 최고의 조간신문"), "울산매일")
+        self.assertEqual(scraper.clean_site_name("컨슈머타임스(Consumertimes)"), "컨슈머타임스")
+        self.assertEqual(scraper.clean_site_name("국제신문"), "국제신문")
+
+    def test_resolves_once_per_domain_and_falls_back_to_domain(self):
+        arts = [
+            {"link": "https://www.ulsanpress.net/news/1", "publisher": "네이버뉴스"},
+            {"link": "https://www.ulsanpress.net/news/2", "publisher": "네이버뉴스"},
+            {"link": "https://jtv.co.kr/news/article.php?id=1", "publisher": "네이버뉴스"},
+            {"link": "https://news.google.com/rss/articles/x", "publisher": "언론사"},
+            {"link": "https://www.yna.co.kr/1", "publisher": "연합뉴스"},
+        ]
+        names = {"https://www.ulsanpress.net/news/1": "울산신문", "https://jtv.co.kr/news/article.php?id=1": ""}
+        with mock.patch.object(scraper, "fetch_site_name", side_effect=lambda u: names[u]) as fetch:
+            scraper.resolve_unknown_publishers(arts)
+        self.assertEqual(fetch.call_count, 2)
+        self.assertEqual([a["publisher"] for a in arts], ["울산신문", "울산신문", "jtv.co.kr", "언론사", "연합뉴스"])
+
+
 class TrendingKeywordsTest(unittest.TestCase):
     def test_fallback_only_uses_keywords_present_in_articles(self):
         arts = [{"title": "GTX-C 노선 착공", "snippet": ""}, {"title": "고속도로 확장 개통", "snippet": ""}]
