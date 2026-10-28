@@ -25,7 +25,7 @@ if ('caches' in window) {
 try { localStorage.removeItem('cnh-live-cache-v1'); } catch(e){}
 </script>
 <script src="./static/cnh_data_bundle.js?v=20261018_2116"></script>
-<script src="./static/data_adapter.js?v=20261029_0200"></script>
+<script src="./static/data_adapter.js?v=20261029_0218"></script>
 <style>
 /* Layout: plain solid ground, sticky header + tab nav, dashboard = main column + deadline rail; phones get a bottom tab bar and bottom-sheet drawer */
 :root{
@@ -263,7 +263,7 @@ h1,h2,h3{text-wrap:balance;margin:0}
 /* jobs */
 #ca .job-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
 #ca .co{display:flex;align-items:center;gap:10px;min-width:0}
-#ca .logo-mark{width:38px;height:38px;border-radius:8px;display:grid;place-items:center;font-weight:700;color:#fff;flex:none;font-size:var(--t-body)}
+#ca .logo-mark{display:none !important;width:0;height:0;overflow:hidden}
 #ca .co-name{font-weight:600;font-size:var(--t-small)}
 #ca .co-type{font-size:var(--t-small);color:var(--muted)}
 #ca .steps{display:flex;align-items:center;gap:0;font-size:var(--t-label);overflow-x:auto}
@@ -483,7 +483,8 @@ h1,h2,h3{line-height:1.3;letter-spacing:-.01em}
 #m .pd{flex:none;font-family:var(--f-body);font-size:var(--t-small);font-weight:700;padding:4px 8px;border-radius:8px;background:var(--surface-2);color:var(--muted);align-self:center}
 #m .pd.soon{background:var(--accent-soft);color:var(--accent)}
 #m .pd.hot{background:var(--accent);color:#fff}
-#m .logo{flex:none;width:46px;height:46px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:700;font-size:var(--t-lead)}
+#m .logo{display:none !important;width:0;height:0;overflow:hidden}
+#m .row > .logo, #m #m-sh-body .logo{display:none !important}
 #m .income{flex:none;text-align:right;align-self:center}
 /* 게시글 사진: 있으면 보여주고, 없거나 못 불러오면 칸째 지워서 글만 있는 원래 행으로 돌아감 */
 #m .thumb{flex:none;display:block;overflow:hidden;border-radius:10px;background:linear-gradient(135deg,var(--surface-2) 0%,color-mix(in srgb,var(--surface-2) 80%,var(--line)) 100%);border:1px solid var(--line)}
@@ -951,7 +952,7 @@ function contestCard(c, pool = CONTESTS){
 function jobCard(j){
   return `<article class="card click" data-open="job:${j.id}" tabindex="0">
     <div class="card-top">
-      <div class="co"><div class="logo-mark" style="background:${j.color}">${j.co[0]}</div><div><div class="co-name">${j.co}</div><div class="co-type">${GRP[j.grp]} · ${j.loc}</div></div></div>
+      <div class="co"><div><div class="co-name">${j.co}</div><div class="co-type">${GRP[j.grp]} · ${j.loc}</div></div></div>
       <div class="card-top-r">${ddayBadge(j.end)}${bmBtn(j.id)}</div>
     </div>
     <h3>${j.role}</h3>
@@ -1169,7 +1170,7 @@ function openDrawer(key, fromSaved){
   } else {
     const j = JOBS.find(x=>x.id===id);
     $('#dr-kind').textContent = GRP[j.grp] + ' 채용';
-    html = `<div class="card-top"><div class="co"><div class="logo-mark" style="background:${j.color}">${j.co[0]}</div><div><div class="co-name">${j.co}</div><div class="co-type">${j.loc}</div></div></div>${ddayBadge(j.end)}</div>
+    html = `<div class="card-top"><div class="co"><div><div class="co-name">${j.co}</div><div class="co-type">${j.loc}</div></div></div>${ddayBadge(j.end)}</div>
       <h2 id="dr-title">${j.role}</h2>
       <dl class="spec">
         <dt>지원 자격</dt><dd>${j.lvl}${j.exp?' ('+j.exp+')':''} · 토목 관련 전공</dd>
@@ -1445,7 +1446,7 @@ const contestRow = c => {
   <div class="row-meta"><span class="cat" style="--cat:${isJbnu ? 'var(--c-water)' : 'var(--c-road)'}">${catName}</span>${c.award?`<span>${c.award}</span>`:''}${c.added<=2?'<span class="tagn">새 공고</span>':''}</div>
   <div class="row-title">${c.title}</div><div class="row-sub">${c.prize?`총 상금 <b class="num">${fmt(c.prize)}만원</b>`:`<span class="src-line"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H8l-4 4z"/></svg>${c.srcName || '공모전'}</span>`} · ${c.org}</div></div></button>`;
 };
-const jobRow = j => `<button class="row" data-open="j:${j.id}"><div class="logo" style="background:${j.color}">${j.co[0]}</div><div class="row-main">
+const jobRow = j => `<button class="row" data-open="j:${j.id}"><div class="row-main">
   <div class="row-meta"><span>${j.co}</span><span class="lv">${j.lvl}${j.exp&&j.exp!==j.lvl?' '+j.exp:''}</span></div>
   <div class="row-title">${j.role}</div><div class="row-sub">${j.loc}, 전형 ${j.steps.length}단계</div></div>${ddPill(j.end)}</button>`;
 const albaRow = a => `<div class="row click" data-open="a:${a.id}" role="button" tabindex="0"><div class="row-main">
@@ -1621,7 +1622,7 @@ function openSheet(key){
   } else {
     const j = JOBS.find(x=>x.id===id);
     kind = GRP[j.grp] + ' 채용';
-    body = `<div style="display:flex;gap:14px;align-items:center"><div class="logo" style="background:${j.color}">${j.co[0]}</div><div><div class="row-meta"><span>${j.co}</span></div><h2 id="sh-title">${j.role}</h2></div></div>
+    body = `<div><div class="row-meta"><span>${j.co}</span></div><h2 id="sh-title">${j.role}</h2></div>
       <dl class="spec">
         <div><dt>지원 자격</dt><dd>${j.lvl}${j.exp&&j.exp!==j.lvl?' ('+j.exp+')':''}, 토목 관련 전공</dd></div>
         <div><dt>근무지</dt><dd>${j.loc}</dd></div>
