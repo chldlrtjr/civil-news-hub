@@ -79,7 +79,8 @@ window.CivilData = (() => {
       CONTESTS = contestsData.contests.map((c, idx) => {
         const isJbnu = c.category === '전북대' || (c.id && (c.id.includes('jbnu') || c.id.startsWith('campus-')));
         const campus = c.source === 'campus' || isJbnu;
-        let prizeNum = campus ? 0 : 2000;
+        // 상금을 알 수 없으면 0 → 카드에 '총 상금' 대신 '○○에서 모집'으로 표시 (임의 금액 표기 금지)
+        let prizeNum = 0;
         if (c.prize) {
           const pMatch = c.prize.replace(/,/g, '').match(/(\d+)\s*만/);
           if (pMatch) prizeNum = parseInt(pMatch[1]);
@@ -88,7 +89,7 @@ window.CivilData = (() => {
             if (pMatch2) prizeNum = parseInt(pMatch2[1]) * 10000;
           }
         }
-        let award = '대상';
+        let award = '';
         if (c.prize && c.prize.includes('장관상')) award = '장관상';
         else if (c.prize && c.prize.includes('사장상')) award = '사장상';
         else if (c.prize && c.prize.includes('이사장상')) award = '이사장상';
@@ -121,7 +122,7 @@ window.CivilData = (() => {
           targetText: campus && typeof c.target === 'string' ? c.target : '',
           campus: campus,
           image: c.image || c.poster || '',
-          srcName: c.source_name || (isJbnu ? '전북대 공지' : '학교 공지'),
+          srcName: c.source_name || (isJbnu ? '전북대 공지' : '주최 측'),
           start: -7,
           end: daysLeft,
           added: idx,

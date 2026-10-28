@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-10-28 21:00:49",
-  "last_updated_display": "10월 28일 21:00",
-  "total_count": 4,
-  "featured_count": 4,
+  "last_updated": "2026-10-28 21:21:39",
+  "last_updated_display": "10월 28일 21:21",
+  "total_count": 14,
+  "featured_count": 14,
   "categories": [
     "ALL",
     "전북대",
@@ -10,6 +10,8 @@
   ],
   "contests": [
     {
+      "source": "manual",
+      "source_name": "공식 홈페이지",
       "id": "fc-ex-design26",
       "title": "제15회 도로경관디자인 대전",
       "organizer": "한국도로공사 (후원 국토교통부)",
@@ -73,12 +75,116 @@
       "link": "https://www.ex-contest.co.kr/design26",
       "is_active": true,
       "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
+        "text": "D-1",
+        "days": 1,
         "is_urgent": true,
         "is_closed": false
       },
       "image": "https://img.spectory.net/portal/src/2026/08/20/64615a79-f3ad-46ed-8bd6-b0301b10a87a"
+    },
+    {
+      "id": "campus-218667",
+      "source": "campus",
+      "source_name": "교내공지",
+      "title": "[창업지원단] Global Inbound Start-up Idea Camp 참여자 모집(~10.29. 목)",
+      "organizer": "창업지원단",
+      "category": "전북대",
+      "badge_color": "teal",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.10.21 ~ 10.29 (23:59 마감)",
+      "deadline_date": "2026-10-29",
+      "deadline_time": "23:59",
+      "description": "전북대학교 창업지원단에서는 전북권역 내 유학생들의 창업역량 강화를 위해 \"Global Inbound Start-up Idea Camp\" 참여자를 아래와 같이 모집합니다. Jeonbuk National University's Start-up Support Group recruits participants in the \"Global Inbound Start-u…",
+      "link": "https://www.jbnu.ac.kr/web/Board/218667/detailView.do",
+      "image": "https://www.jbnu.ac.kr/common/file.do?file=OhNWrFkjI5WQ4QSPEwKp4ZmYOKd01oYYdevRH/Nj2pQ7YYJXC1/6i5WORLW8/ORi",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-1",
+        "days": 1,
+        "is_urgent": true,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "campus-218336",
+      "source": "campus",
+      "source_name": "교내공지",
+      "title": "「2026 청년정책 공모전」개최 안내 및 홍보 협조 요청",
+      "organizer": "사무국 총무과",
+      "category": "전북대",
+      "badge_color": "teal",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.10.13 ~ 10.30 (23:59 마감)",
+      "deadline_date": "2026-10-30",
+      "deadline_time": "23:59",
+      "description": "1. 관련 : 「 2026 청년정책 공모전 」 개최 안내 및 홍보 협조 요청 ( 국무조정실 청년정책협력관 -785, '26.10.7. 시행 ) 2. 국무조정실에서 청년의 삶을 지원하고 개선할 수 있는 다양한 과제를 적극 발굴하기 위해 , 청년 당사자가 직접 정책을 제안하는 「 2026 청년정책 공모전 」 을 개최합니다 . 「 2026 청년정책 공모전 」 개…",
+      "link": "https://www.jbnu.ac.kr/web/Board/218336/detailView.do",
+      "image": "https://www.jbnu.ac.kr/common/file.do?file=Y4JxnW6eBwKOWuP9KFH9TdH5BcpwYUCQEL0SAWiRcTd+15wYzz+mnZTvEHUsidpW",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-2",
+        "days": 2,
+        "is_urgent": true,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "campus-218992",
+      "source": "campus",
+      "source_name": "교내공지",
+      "title": "[김수환추기경연구소] 2026년 제1회 김수환추기경연구소 숏폼 공모전 참여 모집 안내",
+      "organizer": "김수환추기경연구소",
+      "category": "전북대",
+      "badge_color": "teal",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.10.27 ~ 11.04 (10:00 마감)",
+      "deadline_date": "2026-11-04",
+      "deadline_time": "10:00",
+      "description": "1. 귀교의 무궁한 발전을 기원합니다 . 2. 가톨릭대학교 김수환추기경연구소는 김수환 추기경님께서 생전 몸소 실천하셨던 사랑과 나눔의 삶을 기억하고 , 그 뜻을 이어가기 위해 설립되었습니다 . 개인주의가 확산되며 점차 삭막해지는 사회 현실 속에서 김수환 추기경님의 나눔 정신을 다시 한번 되새기는 시간을 갖고자 전국의 대학생 및 대학원생 , 교직원들을 대상으…",
+      "link": "https://www.jbnu.ac.kr/web/Board/218992/detailView.do",
+      "image": "https://www.jbnu.ac.kr/common/file.do?file=pfYleG6eDllcTZKsE2Ho/+tDANtPfBU8+L4Gh+7KX3s6qY2GB1TRgfGmTigx0S4n",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-7",
+        "days": 7,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "campus-218755",
+      "source": "campus",
+      "source_name": "교내공지",
+      "title": "[SW중심대학사업] 제11회 호남·제주권 SW 프로그래밍 경진대회 참가 학생 모집",
+      "organizer": "SW중심대학사업",
+      "category": "전북대",
+      "badge_color": "teal",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.10.23 ~ 11.04 (23:59 마감)",
+      "deadline_date": "2026-11-04",
+      "deadline_time": "23:59",
+      "description": "전남대학교 sw 중심대학사업단에서는 프로그래머스 pccp( 코딩전문역량인증시험 ) 을 활용하여 대학생들의 프로그래밍 역량을 강화하고 , 우수 SW 인재를 양성하고자 「 2026 호남 · 제주 sw 프로그래밍 경진대회 」 를 개최하고자 하오니, 관심 있는 학생들의 많은 참가 부탁드립니다. 1 . 대 회 명 : 2026 호남 · 제주 sw 프로그래밍 경진대회 …",
+      "link": "https://www.jbnu.ac.kr/web/Board/218755/detailView.do",
+      "image": "https://www.jbnu.ac.kr/common/file.do?file=I3jIsbLZScZrx+JKTFh8LRfntvR+VH5mNMdcUGG0YKFlOIXsKble6f6XzE3qqz/5",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-7",
+        "days": 7,
+        "is_urgent": false,
+        "is_closed": false
+      }
     },
     {
       "id": "campus-217679",
@@ -141,8 +247,173 @@
       "is_active": true,
       "image": "https://www.jbnu.ac.kr/common/file.do?file=aDnf2Nbsc5JCVXjNcuja6hp6EOxg4LFfVvZE2KPyqg/B6wkWztYndrgNSVSNzFTT",
       "dday_info": {
-        "text": "D-8",
-        "days": 8,
+        "text": "D-9",
+        "days": 9,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-111667",
+      "source": "wevity",
+      "source_name": "위비티",
+      "title": "[국토안전관리원] 위험현장 사고조사를 위한 첨단기술 활용 아이디어 공모전",
+      "organizer": "국토안전관리원",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.08 마감",
+      "deadline_date": "2026-11-08",
+      "deadline_time": "23:59",
+      "fields": [
+        "기획/아이디어"
+      ],
+      "description": "국토안전관리원 주최 · 분야: 기획/아이디어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=111667",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-11",
+        "days": 11,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "campus-219057",
+      "source": "campus",
+      "source_name": "교내공지",
+      "title": "2026년도 JST공유대학 공동연구 지원사업 공모",
+      "organizer": "JST공유대학본부",
+      "category": "전북대",
+      "badge_color": "teal",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.10.28 ~ 11.10 (23:59 마감)",
+      "deadline_date": "2026-11-10",
+      "deadline_time": "23:59",
+      "description": "2026년도 JST공유대학 공동연구 지원사업 공모 JST공유대학본부는 전북특별자치도 전략산업의 기술수요와 지역사회 문제 및 현안에 대응하기 위해 대학·연구기관·기업 및 공공기관의 전문역량을 결합하는 공동 연구를 지원하고자 합니다. 수요기반 공동기획, 기관별 실질적 연구수행, 객관적 성능검증·현장실증 및 연구성과의 교육·산업·지역사회 환류를 지원하는 경쟁형 …",
+      "link": "https://www.jbnu.ac.kr/web/Board/219057/detailView.do",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-13",
+        "days": 13,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-111666",
+      "source": "wevity",
+      "source_name": "위비티",
+      "title": "[한국도로공사] AI 활용 아이디어 공모전",
+      "organizer": "한국도로공사",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.15 마감",
+      "deadline_date": "2026-11-15",
+      "deadline_time": "23:59",
+      "fields": [
+        "기획/아이디어"
+      ],
+      "description": "한국도로공사 주최 · 분야: 기획/아이디어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=111666",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-18",
+        "days": 18,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "campus-218972",
+      "source": "campus",
+      "source_name": "교내공지",
+      "title": "2026년 전남광주통합특별시 중국언어문화경진대회 안내 및 참가 협조",
+      "organizer": "사무국 총무과",
+      "category": "전북대",
+      "badge_color": "teal",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.10.27 ~ 11.18 (23:59 마감)",
+      "deadline_date": "2026-11-18",
+      "deadline_time": "23:59",
+      "description": "1. 귀 교의 무궁한 발전을 기원합니다 . 2. 한 · 중 양국의 우호 증진과 양국 문화 · 예술에 대한 올바른 이해를 위하여 2026 년 전남 광주통합특별시 중국언어문화경진대회를 다음과 같이 개최하오니 많은 참여 바랍니다 . 가 . 대회개요 1) 대 회 명 : 2026 년 전남광주통합특별시 중국언어문화경진대회 2) 모집기간 : 2026. 10. 19.( …",
+      "link": "https://www.jbnu.ac.kr/web/Board/218972/detailView.do",
+      "image": "https://www.jbnu.ac.kr/common/file.do?file=6xx0iZo7X0AEBG0FCLFvgOncDWwQuaIIjDY2sTSzU8zTY1ehDat3r34f5tD+RSlI",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-21",
+        "days": 21,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "campus-218771",
+      "source": "campus",
+      "source_name": "교내공지",
+      "title": "「2026 사회보장 데이터를 활용한 AI 혁신 아이디어 경진대회」 홍보 협조 요청",
+      "organizer": "사무국 총무과",
+      "category": "전북대",
+      "badge_color": "teal",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.10.23 ~ 11.20 (23:59 마감)",
+      "deadline_date": "2026-11-20",
+      "deadline_time": "23:59",
+      "description": "1. 귀 대학의 무궁한 발전을 기원합니다 . 2. 한국사회보장정보원에서는 사회보장 데이터와 ai 기술을 활용하여 공공성을 추구하는 아이디어 발굴을 위해 「 2026 사회보장 데이터를 활용한 ai 혁신 아이디어 경진대회 」 를 아래와 같이 개최하고자 합니다 . 3. 이에 , 귀 대학의 우수한 인재들이 적극 참여할 수 있도록 홍보 등에 협조하여 주시기 바랍니다…",
+      "link": "https://www.jbnu.ac.kr/web/Board/218771/detailView.do",
+      "image": "https://www.jbnu.ac.kr/common/file.do?file=DUFwt0w451rl0U6E6rgq192UbQExsCwqrXI+u2WTKjCo39EGVIpGQvMU9GBo+ijJ",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-23",
+        "days": 23,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-111726",
+      "source": "wevity",
+      "source_name": "위비티",
+      "title": "용산국제업무지구 AI 스마트도시 아이디어 공모",
+      "organizer": "서울특별시",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.20 마감",
+      "deadline_date": "2026-11-20",
+      "deadline_time": "23:59",
+      "fields": [
+        "건축/건설/인테리어"
+      ],
+      "description": "서울특별시 주최 · 분야: 건축/건설/인테리어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=24&gbn=view&ix=111726",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-23",
+        "days": 23,
         "is_urgent": false,
         "is_closed": false
       }
@@ -203,13 +474,15 @@
       "is_active": true,
       "image": "https://www.jbnu.ac.kr/common/file.do?file=4cALo6DfxWUFYlylMujIYMjaKF2GJWIBKn6sJyYGF2UlCjZ8sV+4j56lZgKcZFvm",
       "dday_info": {
-        "text": "D-8",
-        "days": 8,
+        "text": "D-9",
+        "days": 9,
         "is_urgent": false,
         "is_closed": false
       }
     },
     {
+      "source": "manual",
+      "source_name": "공식 홈페이지",
       "id": "fc-rail-idle2026",
       "title": "국가철도공단 철도 유휴부지 활용사업 공모",
       "organizer": "국가철도공단",
@@ -257,8 +530,8 @@
       "link": "https://www.kr.or.kr/boardCnts/view.do?boardID=52&boardSeq=1122113",
       "is_active": true,
       "dday_info": {
-        "text": "D-63",
-        "days": 63,
+        "text": "D-64",
+        "days": 64,
         "is_urgent": false,
         "is_closed": false
       },

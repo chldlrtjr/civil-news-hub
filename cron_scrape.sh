@@ -29,7 +29,7 @@ run_step() {
 }
 
 run_step "[1/8] 뉴스 수집 중" scraper.py || true
-run_step "[2/8] 공모전 전담 수집 및 요강 실사 중" contest_scraper.py || true
+run_step "[2/8] 공모전 수집 중 (수동 등록·전북대 공지·위비티)" contest_scraper.py || true
 run_step "[3/8] 채용 공고 수집 중" job_scraper.py || true
 run_step "[4/8] 전북대 아르바이트 수집 및 정제 중" jbnu_scraper.py || true
 run_step "[5/8] 전북대 SW사업단 프로그램 수집 중" swuniv_scraper.py || true

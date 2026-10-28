@@ -19,8 +19,7 @@ from datetime import datetime, timezone, timedelta
 PERMANENT_BANNED_SIGNATURES = [
     {"keyword": "삼성 epc", "reason": "2026.09.04 접수 마감 완료 (영구 배제)"},
     {"keyword": "삼성epc", "reason": "2026.09.04 접수 마감 완료 (영구 배제)"},
-    {"keyword": "지하안전관리", "reason": "2025년 과거 공모전 / 2026년 공고 미게재 (영구 배제)"},
-    {"keyword": "지하안전", "reason": "2025년 과거 공모전 / 2026년 공고 미게재 (영구 배제)"},
+    {"keyword": "지하안전관리 우수사례", "reason": "2025년 과거 공모전 / 2026년 공고 미게재 (영구 배제)"},
     {"keyword": "물 빅데이터", "reason": "2021년 과거 공모전 (영구 배제)"},
     {"keyword": "물빅데이터", "reason": "2021년 과거 공모전 (영구 배제)"},
     {"keyword": "ktx & 인프라", "reason": "2026.07.30 접수 마감 완료 (영구 배제)"},

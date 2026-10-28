@@ -2,31 +2,30 @@
 # -*- coding: utf-8 -*-
 
 """
-Civil News Hub - 전북대학교 공지사항 공모전 전담 크롤링 및 팩트 실사 엔진 (jbnu_contest_scraper.py)
+Civil News Hub - 전북대학교 공지사항 공모전 수집기 (jbnu_contest_scraper.py)
 출처:
 - 전북대 교내공지: https://www.jbnu.ac.kr/web/news/notice/sub01.do (menu=2377)
 - 전북대 학생공지: https://www.jbnu.ac.kr/web/news/notice/sub02.do (menu=2378)
-규칙 준수 (GEMINI.md):
-1. 팩트 기반 검증 원칙 (실체 없는 공모전, 설명회, 마감 공모전 원천 배제)
-2. 주최 기관 및 전용 딥링크 직결 (https://www.jbnu.ac.kr/web/Board/{pst_id}/detailView.do)
-3. 시·분 단위 마감 시간, 상세 시상 내역, 참가대상 명시
-4. 신규 카테고리 '전북대' 자동 등록 및 카테고리별 건수 일치 보장
+동작:
+1. 두 게시판을 '공모전/경진대회/공모'로 검색해 후보 글을 찾는다.
+2. VERIFIED_JBNU_FACTS(사람이 공고를 보고 상금·대상까지 기재한 항목)에 있는 글은 그 데이터를 쓴다.
+3. 등록되지 않은 새 글은 공지 제목·본문에 적힌 마감일을 추출해 기본 카드로 만든다.
+   마감일이 글에 명시돼 있지 않으면(포스터 이미지만 있는 글 등) 노출하지 않고 로그로 남긴다.
 """
 
-import os
 import re
-import ssl
-import json
 import urllib.request
 import urllib.parse
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone, timedelta, date
 from bs4 import BeautifulSoup
 import contest_validator
 
-# 배제 키워드 목록 (설명회, 과거 대회, 취소, 단순 동아리 모집 등)
+KST = timezone(timedelta(hours=9))
+
+# 배제 키워드 목록 (설명회, 취소, 단순 동아리 모집 등)
 EXCLUDE_KEYWORDS = [
     "설명회", "취소", "신입기수", "동아리", "선발", "단기근무", "합격", "결과발표",
-    "6.25", "7.", "마약", "도민체육대회", "아동권리영화제"
+    "마약", "도민체육대회", "아동권리영화제"
 ]
 
 # 전북대 공모전 검증 팩트 데이터베이스 (Verified Fact Knowledge Base)
@@ -348,20 +347,19 @@ def clean_text(text: str) -> str:
     text = re.sub(r'\s+', ' ', text)
     return text.strip()
 
-def get_ssl_context():
-    ctx = ssl.create_default_context()
-    ctx.check_hostname = False
-    ctx.verify_mode = ssl.CERT_NONE
-    return ctx
 
-def scrape_jbnu_board(base_url: str, menu_id: int, keywords: list, max_pages: int = 1) -> list:
+class JbnuFetchError(Exception):
+    """전북대 게시판 검색 요청이 전부 실패했을 때"""
+
+
+def scrape_jbnu_board(base_url: str, menu_id: int, keywords: list, max_pages: int = 1) -> tuple:
     """
     전북대 공지사항 게시판(교내공지 or 학생공지) 실시간 크롤링
-    반환: [{'pst_id': str, 'title': str, 'date': str, 'writer': str, 'board_menu': int}]
+    반환: ([{'pst_id', 'title', 'date', 'writer', 'menu'}], 성공한 요청 수)
     """
-    ctx = get_ssl_context()
     discovered = []
     seen_ids = set()
+    ok_requests = 0
 
     for kw in keywords:
         for page in range(1, max_pages + 1):
@@ -376,11 +374,12 @@ def scrape_jbnu_board(base_url: str, menu_id: int, keywords: list, max_pages: in
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
             })
             try:
-                with urllib.request.urlopen(req, context=ctx, timeout=8) as resp:
+                with urllib.request.urlopen(req, timeout=8) as resp:
                     html = resp.read().decode("utf-8", errors="ignore")
             except Exception as e:
                 print(f"⚠️ [JBNU Scraper] {base_url} (menu={menu_id}, kw='{kw}') 페이지 {page} 오류: {e}")
                 continue
+            ok_requests += 1
 
             soup = BeautifulSoup(html, "html.parser")
             rows = soup.select("table tbody tr")
@@ -388,7 +387,7 @@ def scrape_jbnu_board(base_url: str, menu_id: int, keywords: list, max_pages: in
                 title_a = tr.select_one("td.td-title a.title")
                 if not title_a:
                     continue
-                
+
                 title_text = clean_text(title_a.get_text())
                 onclick = title_a.get("onclick", "")
                 m = re.search(r'pf_DetailMove\([\'"]?(\d+)[\'"]?\)', onclick)
@@ -417,44 +416,183 @@ def scrape_jbnu_board(base_url: str, menu_id: int, keywords: list, max_pages: in
                     "menu": menu_id
                 })
 
-    return discovered
+    return discovered, ok_requests
 
-def extract_jbnu_poster_image(pst_id: str) -> str:
+
+def fetch_jbnu_post_detail(pst_id: str) -> tuple:
     """
-    전북대학교 공지 상세 페이지에서 공식 포스터 이미지 추출
-    규칙 (GEMINI.md & User Prompt):
-    - 첨부파일 아이콘 또는 본문 영역에서 visibility: hidden 팝업 배너 제외
-    - style에 max-width:100%가 포함된 첫 번째 /common/file.do 이미지
-    - https://www.jbnu.ac.kr 전체 URL 반환, 없으면 빈 문자열 ""
+    전북대 공지 상세 페이지에서 (본문 텍스트, 포스터 이미지 URL) 추출
+    포스터 규칙: visibility:hidden 팝업 배너 제외, style에 max-width:100%가 포함된 첫 번째 /common/file.do 이미지
     """
     url = f"https://www.jbnu.ac.kr/web/Board/{pst_id}/detailView.do"
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+    body_text, poster = "", ""
     try:
         req = urllib.request.Request(url, headers=headers)
         with urllib.request.urlopen(req, timeout=8) as resp:
             html = resp.read().decode("utf-8", errors="ignore")
-            soup = BeautifulSoup(html, "html.parser")
-            
-            for img in soup.find_all("img"):
-                src = img.get("src", "")
-                style = img.get("style", "")
-                if "/common/file.do" in src:
-                    if "visibility: hidden" in style:
-                        continue
-                    if "max-width:100%" in style or "max-width: 100%" in style:
-                        if src.startswith("/"):
-                            return f"https://www.jbnu.ac.kr{src}"
-                        return src
+        soup = BeautifulSoup(html, "html.parser")
+
+        content = soup.select_one(".com-post-content-01")
+        if content:
+            body_text = re.sub(r"\s+", " ", content.get_text(" ")).strip()
+
+        for img in soup.find_all("img"):
+            src = img.get("src", "")
+            style = img.get("style", "")
+            if "/common/file.do" in src:
+                if "visibility: hidden" in style:
+                    continue
+                if "max-width:100%" in style or "max-width: 100%" in style:
+                    poster = f"https://www.jbnu.ac.kr{src}" if src.startswith("/") else src
+                    break
     except Exception as e:
-        print(f"⚠️ [JBNU Poster] {pst_id} 포스터 추출 실패: {e}")
-    return ""
+        print(f"⚠️ [JBNU Detail] {pst_id} 상세 페이지 조회 실패: {e}")
+    return body_text, poster
+
+
+def extract_jbnu_poster_image(pst_id: str) -> str:
+    return fetch_jbnu_post_detail(pst_id)[1]
+
+
+# 날짜 표기: '2026년 11월 4일', '2026. 11. 4.', '2026-11-04', '11월 4일', '11/4', '11.4.' (+ 선택적 요일 괄호)
+_FULL_DATE = re.compile(r"(20\d{2})\s*[년.\-/]\s*(\d{1,2})\s*[월.\-/]\s*(\d{1,2})(?!\d)\s*일?\.?")
+_SHORT_DATE = re.compile(r"(?<![\d.])(\d{1,2})\s*(?:월\s*(\d{1,2})\s*일|[./]\s*(\d{1,2})(?!\d))\.?")
+_TIME = re.compile(r"^\s*(?:\(\s*[월화수목금토일]\s*\))?\s*(?:[월화수목금토일]요일)?\s*(?:(\d{1,2}):(\d{2})|(오전|오후)?\s*(\d{1,2})\s*시)")
+# 마감일이 놓이는 문맥: '…까지' 바로 앞, 또는 '마감/기한/OO기간/( 기간 )' 바로 뒤
+_UNTIL = re.compile(r"까지")
+_DEADLINE_KW = re.compile(r"마감|기한|(?:접수|신청|공모|모집|응모|제출)\s*기간|[(\[]\s*기간\s*[)\]]")
+_TILDE = re.compile(r"[~∼〜]")
+
+
+def _find_dates(segment: str, posted: date) -> list:
+    """segment 안의 [(날짜, 날짜 끝 위치)] (등장 순). 연도가 없으면 게시일 기준으로 보정"""
+    found = []
+    taken = []
+    for m in _FULL_DATE.finditer(segment):
+        try:
+            found.append((m.start(), date(int(m.group(1)), int(m.group(2)), int(m.group(3))), m.end()))
+            taken.append((m.start(), m.end()))
+        except ValueError:
+            pass
+    for m in _SHORT_DATE.finditer(segment):
+        if any(a <= m.start() < b for a, b in taken):
+            continue
+        month = int(m.group(1))
+        day = int(m.group(2) or m.group(3))
+        try:
+            d = date(posted.year, month, day)
+            if d < posted - timedelta(days=30):
+                d = date(posted.year + 1, month, day)
+        except ValueError:
+            continue
+        found.append((m.start(), d, m.end()))
+    found.sort(key=lambda x: x[0])
+    return [(d, end) for _, d, end in found]
+
+
+def _time_after(segment: str, pos: int):
+    """날짜 바로 뒤의 '18:00' / '오후 6시' → 'HH:MM'"""
+    m = _TIME.match(segment[pos:pos + 25])
+    if not m:
+        return None
+    if m.group(1):
+        hour, minute = int(m.group(1)), int(m.group(2))
+    else:
+        hour, minute = int(m.group(4)), 0
+        if m.group(3) == "오후" and hour < 12:
+            hour += 12
+    return f"{hour:02d}:{minute:02d}" if hour <= 23 and minute <= 59 else None
+
+
+def extract_deadline(text: str, posted: date, title: str = ""):
+    """
+    공지 제목·본문에서 접수 마감일시 추출 → (date, 'HH:MM') 또는 None
+    - '…까지' 바로 앞(40자 이내)의 마지막 날짜
+    - '마감/기한/OO기간' 바로 뒤(70자 이내): '~'가 있으면 그 뒤 첫 날짜, 없으면 첫 날짜
+    - 제목의 '(~10.29.)' 표기 (본문의 '~'는 행사 일정일 수 있어 제목에서만 인정)
+    - 후보가 여러 개면 가장 늦은 날짜 (1차·최종 마감이 같이 적힌 경우 최종 기준)
+    - 게시일 이전이거나 게시일로부터 180일 넘게 떨어진 날짜는 오인식으로 보고 버림
+    - 시각이 없으면 23:59
+    """
+    candidates = []
+    for m in _TILDE.finditer(title):
+        seg = title[m.end():m.end() + 20]
+        dates = _find_dates(seg, posted) if re.match(r"\s*\d", seg) else []
+        if dates:
+            d, end = dates[0]
+            candidates.append((d, _time_after(seg, end)))
+    text = f"{title} {text}"
+    for m in _UNTIL.finditer(text):
+        seg = text[max(0, m.start() - 40):m.start()]
+        dates = _find_dates(seg, posted)
+        if dates:
+            d, end = dates[-1]
+            candidates.append((d, _time_after(seg, end)))
+    for m in _DEADLINE_KW.finditer(text):
+        seg = text[m.end():m.end() + 70]
+        tilde = re.search(r"[~∼〜]", seg)
+        if tilde:
+            seg = seg[tilde.end():]
+        dates = _find_dates(seg, posted)
+        if dates:
+            d, end = dates[0]
+            candidates.append((d, _time_after(seg, end)))
+
+    candidates = [(d, t) for d, t in candidates if posted <= d <= posted + timedelta(days=180)]
+    if not candidates:
+        return None
+    best = max(d for d, _ in candidates)
+    times = [t for d, t in candidates if d == best and t]
+    return best, (times[0] if times else "23:59")
+
+
+def build_basic_contest(item: dict, body_text: str, poster: str):
+    """팩트 DB에 없는 새 공지 → 마감일이 명시된 경우에만 기본 카드 dict, 아니면 None"""
+    try:
+        posted = datetime.strptime(item["date"], "%Y-%m-%d").date()
+    except ValueError:
+        posted = datetime.now(KST).date()
+
+    found = extract_deadline(body_text, posted, title=item["title"])
+    if not found:
+        return None
+    deadline, deadline_time = found
+
+    # 제목 앞 '[부서명]' 표기는 주관 부서로 사용
+    m = re.match(r"^\s*\[([^\]]+)\]", item["title"])
+    organizer = m.group(1) if m and m.group(1) != "공모전" else (item.get("writer") or "전북대학교")
+    desc = body_text[:200] + ("…" if len(body_text) > 200 else "")
+
+    return {
+        "id": f"campus-{item['pst_id']}",
+        "source": "campus",
+        "source_name": "교내공지" if item.get("menu") == 2377 else "학생공지",
+        "title": item["title"],
+        "organizer": organizer,
+        "category": "전북대",
+        "badge_color": "teal",
+        "prize": "",
+        "target": "",
+        "status": "접수중",
+        "status_color": "emerald",
+        "period": f"{posted.strftime('%Y.%m.%d')} ~ {deadline.strftime('%m.%d')} ({deadline_time} 마감)",
+        "deadline_date": deadline.strftime("%Y-%m-%d"),
+        "deadline_time": deadline_time,
+        "description": desc or item["title"],
+        "link": f"https://www.jbnu.ac.kr/web/Board/{item['pst_id']}/detailView.do",
+        "image": poster,
+        "is_active": True
+    }
+
 
 def fetch_jbnu_contest_notices(max_pages: int = 1) -> list:
     """
-    교내공지(sub01.do) 및 학생공지(sub02.do)에서 실시간 활성 공모전을 수집하고 무결성을 검증하여 반환
+    교내공지(sub01.do) 및 학생공지(sub02.do)에서 접수중 공모전을 수집하고 검증하여 반환
+    게시판 요청이 전부 실패하면 JbnuFetchError
     """
     print("\n" + "-"*60)
-    print("🎓 [JBNU Contest] 전북대학교 교내공지 & 학생공지 공모전 실시간 수집 시작")
+    print("🎓 [JBNU Contest] 전북대학교 교내공지 & 학생공지 공모전 수집 시작")
     print("-"*60)
 
     boards = [
@@ -464,35 +602,51 @@ def fetch_jbnu_contest_notices(max_pages: int = 1) -> list:
     keywords = ["공모전", "경진대회", "공모"]
 
     all_discovered = []
+    total_ok = 0
     for label, base_url, menu_id in boards:
-        items = scrape_jbnu_board(base_url, menu_id, keywords, max_pages=max_pages)
-        print(f"  • {label} (menu={menu_id}) 실시간 탐색: {len(items)}건의 공모전 후보 감지")
+        items, ok = scrape_jbnu_board(base_url, menu_id, keywords, max_pages=max_pages)
+        total_ok += ok
+        print(f"  • {label} (menu={menu_id}) 탐색: {len(items)}건의 공모전 후보 감지")
         all_discovered.extend(items)
+    if total_ok == 0:
+        raise JbnuFetchError("전북대 공지 게시판 검색 요청이 모두 실패했습니다")
 
     valid_contests = []
     processed_ids = set()
+    no_deadline = []
 
-    # 1. 팩트 데이터베이스에 등록된 유효 공모전 매핑 (100% 팩트 보장)
     for item in all_discovered:
         pst_id = item["pst_id"]
         if pst_id in processed_ids:
             continue
         processed_ids.add(pst_id)
 
+        # 1. 팩트 DB에 있는 글: 사람이 기재한 상세 데이터 사용
         if pst_id in VERIFIED_JBNU_FACTS:
             contest_data = dict(VERIFIED_JBNU_FACTS[pst_id])
             is_valid, reason = contest_validator.validate_contest(contest_data)
             if is_valid:
-                # 포스터 이미지 추출
-                poster_img = extract_jbnu_poster_image(pst_id)
-                contest_data["image"] = poster_img
-                img_status = f"포스터 확보: {poster_img[:50]}..." if poster_img else "포스터 없음"
-                print(f"  ✅ [전북대 팩트 매핑 성공] [{contest_data['category']}] {contest_data['title']} (마감: {contest_data['deadline_date']} | {img_status})")
+                contest_data["image"] = extract_jbnu_poster_image(pst_id)
+                print(f"  ✅ [팩트 DB] {contest_data['title']} (마감: {contest_data['deadline_date']})")
                 valid_contests.append(contest_data)
             else:
                 print(f"  ⛔ [검증 엔진 제외] {contest_data['title']} -> {reason}")
+            continue
 
-    # 2. 팩트 DB에 수록된 유효 항목 중 크롤링 결과(페이징) 누락 항목 자동 병합
+        # 2. 새 글: 본문·제목에서 마감일을 찾을 수 있을 때만 기본 카드로 노출
+        body_text, poster = fetch_jbnu_post_detail(pst_id)
+        contest_data = build_basic_contest(item, body_text, poster)
+        if contest_data is None:
+            no_deadline.append(item)
+            continue
+        is_valid, reason = contest_validator.validate_contest(contest_data)
+        if is_valid:
+            print(f"  🆕 [자동 수집] {contest_data['title']} (마감: {contest_data['deadline_date']} {contest_data['deadline_time']})")
+            valid_contests.append(contest_data)
+        else:
+            print(f"  ⛔ [검증 엔진 제외] {contest_data['title']} -> {reason}")
+
+    # 3. 팩트 DB 항목 중 이번 검색 결과(1페이지)에 안 잡힌 유효 항목 병합
     for pst_id, fact in VERIFIED_JBNU_FACTS.items():
         if pst_id not in processed_ids:
             is_valid, reason = contest_validator.validate_contest(fact)
@@ -502,7 +656,12 @@ def fetch_jbnu_contest_notices(max_pages: int = 1) -> list:
                 valid_contests.append(c_data)
                 processed_ids.add(pst_id)
 
-    print(f"🎯 [JBNU Contest] 최종 전북대학교 실시간 유효 공모전: 총 {len(valid_contests)}건 확보")
+    if no_deadline:
+        print(f"  ℹ️ 마감일이 글에 명시되지 않아 제외한 후보 {len(no_deadline)}건 (필요하면 VERIFIED_JBNU_FACTS에 수동 등록):")
+        for item in no_deadline:
+            print(f"     - [{item['pst_id']}] {item['date']} {item['title']}")
+
+    print(f"🎯 [JBNU Contest] 최종 전북대학교 접수중 공모전: 총 {len(valid_contests)}건")
     print("-"*60 + "\n")
     return valid_contests
 
