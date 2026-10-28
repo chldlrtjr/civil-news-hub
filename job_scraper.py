@@ -23,6 +23,7 @@ Civil News Hub - 토목 채용 공고 자동 수집 스크립트 (job_scraper.py
 
 import os
 import re
+import sys
 import json
 import time
 import urllib.request
@@ -79,8 +80,8 @@ CAREER_PAGES = [
     {"company": "GS건설", "category_id": "builder", "link": "https://gsenc.recruiter.co.kr/career/home"},
     {"company": "포스코이앤씨", "category_id": "builder", "link": "https://recruit.posco.com"},
     {"company": "유신", "category_id": "engineering", "link": "https://www.yooshin.com/career/career_opportunities"},
-    {"company": "삼안", "category_id": "engineering", "link": "https://www.samaneng.co.kr/board/bbs/board.php?bo_table=recruit2"},
-    {"company": "동명기술공단", "category_id": "engineering", "link": "http://www.dmec.co.kr"},
+    {"company": "삼안", "category_id": "engineering", "link": "https://samaneng.com/board/recruit2/index.html"},
+    # 동명기술공단(dmec.co.kr)은 구형 DHE 암호화만 지원해 최신 브라우저에서 접속 불가 → 제외 (2026-10)
     {"company": "도화엔지니어링", "category_id": "engineering", "link": "https://dohwa.recruiter.co.kr/career/home"},
     {"company": "한국종합기술", "category_id": "engineering", "link": "https://recruit.kecc.co.kr/"}
 ]
@@ -453,16 +454,16 @@ def load_previous_jobs(source):
 
 
 def collect_source(name, key_name, collector):
-    """출처별 수집. 키가 없거나 실패하면 해당 출처의 이전 수집 결과를 유지"""
+    """출처별 수집 → (공고 목록, 실패 여부). 키가 없거나 실패하면 해당 출처의 이전 수집 결과를 유지"""
     api_key = load_api_key(key_name)
     if not api_key:
         print(f"  [!] {key_name}가 없어 {name} 이전 수집 결과를 유지합니다.")
     else:
         try:
-            return collector(api_key)
+            return collector(api_key), False
         except Exception as e:
             print(f"  [!] {name} 수집 실패, 이전 수집 결과를 유지합니다: {e}")
-    return load_previous_jobs(name)
+    return load_previous_jobs(name), True
 
 
 def scrape_civil_jobs():
@@ -474,8 +475,9 @@ def scrape_civil_jobs():
     kst = timezone(timedelta(hours=9))
     now_kst = datetime.now(kst)
 
-    alio_jobs = collect_source("잡알리오", "JOBALIO_API_KEY", collect_jobalio_jobs)
-    work24_jobs = collect_source("고용24 공채속보", "WORK24_API_KEY", collect_work24_jobs)
+    alio_jobs, alio_failed = collect_source("잡알리오", "JOBALIO_API_KEY", collect_jobalio_jobs)
+    work24_jobs, work24_failed = collect_source("고용24 공채속보", "WORK24_API_KEY", collect_work24_jobs)
+    failed_sources = [name for name, failed in (("잡알리오", alio_failed), ("고용24 공채속보", work24_failed)) if failed]
 
     # 같은 공고가 양쪽에 올라온 경우(기관명+마감일 일치) 정보가 많은 잡알리오 쪽을 사용
     alio_keys = {(normalize_company(j["company"]), j["deadline_date"]) for j in alio_jobs}
@@ -500,6 +502,7 @@ def scrape_civil_jobs():
         "last_updated_display": now_kst.strftime("%Y년 %m월 %d일 %H:%M"),
         "source": "잡알리오(공공기관 채용정보) · 고용24 공채속보 Open API",
         "total_count": len(collected_jobs),
+        "failed_sources": failed_sources,
         "categories": JOB_CATEGORIES,
         "jobs": collected_jobs,
         "career_pages": CAREER_PAGES
@@ -509,9 +512,12 @@ def scrape_civil_jobs():
     write_json_atomic(JOBS_JSON_PATH, jobs_data)
 
     print(f"  [✓] 채용 데이터베이스 저장 완료: {JOBS_JSON_PATH}")
+    if failed_sources:
+        print(f"  [!] 수집 실패 출처: {', '.join(failed_sources)} (이전 수집 결과로 유지됨)")
     print("=" * 60)
     return jobs_data
 
 
 if __name__ == "__main__":
-    scrape_civil_jobs()
+    # 출처 하나라도 실패하면(키 누락·만료, API 오류) exit 1 → cron_scrape.sh가 카카오톡 실패 알림 발송
+    sys.exit(1 if scrape_civil_jobs()["failed_sources"] else 0)
