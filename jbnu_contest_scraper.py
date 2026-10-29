@@ -10,7 +10,9 @@ Civil News Hub - 전북대학교 공지사항 공모전 수집기 (jbnu_contest_
 1. 두 게시판을 '공모전/경진대회/공모'로 검색해 후보 글을 찾는다.
 2. VERIFIED_JBNU_FACTS(사람이 공고를 보고 상금·대상까지 기재한 항목)에 있는 글은 그 데이터를 쓴다.
 3. 등록되지 않은 새 글은 공지 제목·본문에 적힌 마감일을 추출해 기본 카드로 만든다.
-   마감일이 글에 명시돼 있지 않으면(포스터 이미지만 있는 글 등) 노출하지 않고 로그로 남긴다.
+4. 본문에 마감일이 없고 포스터만 있는 글은 contest_poster_reader로 포스터를 읽어,
+   근거 문장 검증을 통과한 마감일이 있을 때만 카드로 만든다. 그래도 없으면 노출하지 않고 로그로 남긴다.
+5. 머리말만 다른 재공지(같은 공모전)는 최신 글 하나만 남긴다.
 """
 
 import re
@@ -18,6 +20,7 @@ import urllib.request
 import urllib.parse
 from datetime import datetime, timezone, timedelta, date
 from bs4 import BeautifulSoup
+import contest_poster_reader
 import contest_validator
 
 KST = timezone(timedelta(hours=9))
@@ -547,18 +550,40 @@ def extract_deadline(text: str, posted: date, title: str = ""):
     return best, (times[0] if times else "23:59")
 
 
+def posted_date(item: dict) -> date:
+    try:
+        return datetime.strptime(item["date"], "%Y-%m-%d").date()
+    except ValueError:
+        return datetime.now(KST).date()
+
+
 def build_basic_contest(item: dict, body_text: str, poster: str):
     """팩트 DB에 없는 새 공지 → 마감일이 명시된 경우에만 기본 카드 dict, 아니면 None"""
-    try:
-        posted = datetime.strptime(item["date"], "%Y-%m-%d").date()
-    except ValueError:
-        posted = datetime.now(KST).date()
-
-    found = extract_deadline(body_text, posted, title=item["title"])
+    found = extract_deadline(body_text, posted_date(item), title=item["title"])
     if not found:
         return None
-    deadline, deadline_time = found
+    return make_card(item, body_text, poster, *found)
 
+
+def build_poster_contest(item: dict, poster: str, info: dict) -> dict:
+    """포스터 판독 결과(contest_poster_reader.verify 통과분) → 기본 카드 + 상금·참가대상"""
+    transcript = re.sub(r"\s+", " ", info["transcript"]).strip()
+    card = make_card(item, transcript, poster, info["deadline"], info["deadline_time"])
+    card["prize"] = info["prize"]
+    card["target"] = info["target"]
+    card["deadline_source"] = "poster"
+    return card
+
+
+def repost_key(title: str) -> str:
+    """'(전주시도시재생센터) …' / '(전주시도시재생지원센터) …'처럼 머리말만 다른 재공지를 같은 글로 묶는 키"""
+    t = re.sub(r"^\s*(?:[(\[][^)\]]*[)\]]\s*)+", "", title)
+    t = re.sub(r"\(?(?:재공고|기간\s*연장|마감\s*연장)\)?", "", t)
+    return re.sub(r"[^0-9a-z가-힣]", "", t.lower())
+
+
+def make_card(item: dict, body_text: str, poster: str, deadline: date, deadline_time: str) -> dict:
+    posted = posted_date(item)
     # 제목 앞 '[부서명]' 표기는 주관 부서로 사용
     m = re.match(r"^\s*\[([^\]]+)\]", item["title"])
     organizer = m.group(1) if m and m.group(1) != "공모전" else (item.get("writer") or "전북대학교")
@@ -614,12 +639,23 @@ def fetch_jbnu_contest_notices(max_pages: int = 1) -> list:
     valid_contests = []
     processed_ids = set()
     no_deadline = []
+    seen_reposts = set()
+    poster_cache = contest_poster_reader.load_cache()
+    api_key = contest_poster_reader.load_api_key()
+    poster_quota_hit = False
 
+    # 최신 글부터 처리해야 재공지 중 최신 글이 남는다
+    all_discovered.sort(key=lambda it: int(it["pst_id"]) if it["pst_id"].isdigit() else 0, reverse=True)
     for item in all_discovered:
         pst_id = item["pst_id"]
         if pst_id in processed_ids:
             continue
         processed_ids.add(pst_id)
+        rkey = repost_key(item["title"])
+        if rkey in seen_reposts and pst_id not in VERIFIED_JBNU_FACTS:
+            print(f"  ♻️ [재공지 중복 제외] [{pst_id}] {item['title']}")
+            continue
+        seen_reposts.add(rkey)
 
         # 1. 팩트 DB에 있는 글: 사람이 기재한 상세 데이터 사용
         if pst_id in VERIFIED_JBNU_FACTS:
@@ -636,12 +672,27 @@ def fetch_jbnu_contest_notices(max_pages: int = 1) -> list:
         # 2. 새 글: 본문·제목에서 마감일을 찾을 수 있을 때만 기본 카드로 노출
         body_text, poster = fetch_jbnu_post_detail(pst_id)
         contest_data = build_basic_contest(item, body_text, poster)
+
+        # 3. 본문에 마감일이 없으면 포스터를 읽어 검증된 마감일이 있을 때만 카드로
+        if contest_data is None and poster and api_key and not poster_quota_hit:
+            try:
+                info = contest_poster_reader.read_poster(
+                    pst_id, poster, posted_date(item), _find_dates, poster_cache, api_key)
+                if info:
+                    contest_data = build_poster_contest(item, poster, info)
+            except contest_poster_reader.PosterQuotaError:
+                poster_quota_hit = True
+                print("  ⚠️ [포스터 판독] Gemini 무료 한도 초과 — 남은 포스터는 다음 회차에 다시 시도")
+            except Exception as e:
+                print(f"  ⚠️ [포스터 판독] {pst_id} 실패 (다음 회차 재시도): {e}")
+
         if contest_data is None:
             no_deadline.append(item)
             continue
         is_valid, reason = contest_validator.validate_contest(contest_data)
         if is_valid:
-            print(f"  🆕 [자동 수집] {contest_data['title']} (마감: {contest_data['deadline_date']} {contest_data['deadline_time']})")
+            via = " · 포스터 판독" if contest_data.get("deadline_source") == "poster" else ""
+            print(f"  🆕 [자동 수집{via}] {contest_data['title']} (마감: {contest_data['deadline_date']} {contest_data['deadline_time']})")
             valid_contests.append(contest_data)
         else:
             print(f"  ⛔ [검증 엔진 제외] {contest_data['title']} -> {reason}")
@@ -656,8 +707,13 @@ def fetch_jbnu_contest_notices(max_pages: int = 1) -> list:
                 valid_contests.append(c_data)
                 processed_ids.add(pst_id)
 
+    try:
+        contest_poster_reader.save_cache(poster_cache)
+    except OSError as e:
+        print(f"  ⚠️ [포스터 판독] 캐시 저장 실패: {e}")
+
     if no_deadline:
-        print(f"  ℹ️ 마감일이 글에 명시되지 않아 제외한 후보 {len(no_deadline)}건 (필요하면 VERIFIED_JBNU_FACTS에 수동 등록):")
+        print(f"  ℹ️ 마감일이 글·포스터에 명시되지 않아 제외한 후보 {len(no_deadline)}건 (필요하면 VERIFIED_JBNU_FACTS에 수동 등록):")
         for item in no_deadline:
             print(f"     - [{item['pst_id']}] {item['date']} {item['title']}")
 

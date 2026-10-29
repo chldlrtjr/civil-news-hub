@@ -17,3 +17,5 @@ screenshot_*.png
 scratch/
 .cron_fail_state
 backup.log
+data/poster_ocr_cache.json
+data/poster_ocr_cache.json.tmp
