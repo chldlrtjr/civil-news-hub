@@ -1,88 +1,14 @@
 {
-  "last_updated": "2026-10-29 17:02:51",
-  "last_updated_display": "10월 29일 17:02",
-  "total_count": 38,
-  "featured_count": 38,
+  "last_updated": "2026-10-29 18:02:40",
+  "last_updated_display": "10월 29일 18:02",
+  "total_count": 37,
+  "featured_count": 37,
   "categories": [
     "ALL",
     "전북대",
     "일반"
   ],
   "contests": [
-    {
-      "source": "manual",
-      "source_name": "공식 홈페이지",
-      "id": "fc-ex-design26",
-      "title": "제15회 도로경관디자인 대전",
-      "organizer": "한국도로공사 (후원 국토교통부)",
-      "category": "일반",
-      "badge_color": "blue",
-      "prize": "총 상금 2,240만원 · 국토교통부 장관상 (대상 500만원)",
-      "prize_details": [
-        {
-          "rank": "대상",
-          "award": "국토교통부 장관상",
-          "prize": "1점 (500만원)"
-        },
-        {
-          "rank": "최우수상",
-          "award": "한국도로공사 사장상",
-          "prize": "2점 (각 200만원)"
-        },
-        {
-          "rank": "우수상",
-          "award": "한국도로공사 사장상",
-          "prize": "4점 (각 100만원)"
-        },
-        {
-          "rank": "장려상",
-          "award": "한국도로공사 사장상",
-          "prize": "6점 (각 50만원)"
-        },
-        {
-          "rank": "입선",
-          "award": "한국도로공사 사장상",
-          "prize": "10점 (각 20만원)"
-        }
-      ],
-      "benefits": [
-        "수상작 실제 고속도로 설계 및 현장 시공 적극 반영",
-        "국토교통부 장관상 및 한국도로공사 사장상 공식 표창",
-        "수상작 공식 작품 도록 발간 및 온·오프라인 전국 전시회 개최"
-      ],
-      "target": "대한민국 국민 누구나 (대학생, 일반 / 2인 이하 팀)",
-      "target_details": "대한민국 국민 누구나 지원 가능 (대학생 부문, 일반 부문 분리 평가 / 개인 또는 최대 2인 이내 팀)",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.08.24 ~ 10.29 (18:00 마감)",
-      "deadline_date": "2026-10-29",
-      "deadline_time": "18:00",
-      "fields": [
-        "지하고속도로 입출구부 경관",
-        "휴게시설 보행안전 디자인",
-        "스마트 생태통로",
-        "고속도로 교량 및 방음시설"
-      ],
-      "submission_info": "참가신청서, 작품설명서(A4 3매 이내 PDF), 작품패널(A2 규격 JPG, 300dpi 해상도, 30MB 이내)",
-      "evaluation_steps": [
-        "1차 서류 및 패널 예선심사 (24팀 선발)",
-        "2차 전문가 본선 발표심사",
-        "대국민 온라인 국민참여 투표",
-        "최종 시상식"
-      ],
-      "contact": "도로경관디자인 대전 공모전 운영사무국 (02-6953-1310 / ex@contestweb.net)",
-      "description": "휴게소 보행안전, 지하고속도로 입출구부, 생태통로 등 인프라 시설물의 심미성과 안전성을 높이는 대국민 디자인 공모전",
-      "link": "https://www.ex-contest.co.kr/design26",
-      "is_active": true,
-      "track": "civil",
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      },
-      "image": "https://img.spectory.net/portal/src/2026/08/20/64615a79-f3ad-46ed-8bd6-b0301b10a87a"
-    },
     {
       "id": "campus-218667",
       "source": "campus",
