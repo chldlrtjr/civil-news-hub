@@ -1,41 +1,14 @@
 {
-  "last_updated": "2026-10-29 23:02:41",
-  "last_updated_display": "10월 29일 23:02",
-  "total_count": 37,
-  "featured_count": 37,
+  "last_updated": "2026-10-30 00:03:14",
+  "last_updated_display": "10월 30일 00:03",
+  "total_count": 36,
+  "featured_count": 36,
   "categories": [
     "ALL",
     "전북대",
     "일반"
   ],
   "contests": [
-    {
-      "id": "campus-218667",
-      "source": "campus",
-      "source_name": "교내공지",
-      "title": "[창업지원단] Global Inbound Start-up Idea Camp 참여자 모집(~10.29. 목)",
-      "organizer": "창업지원단",
-      "category": "전북대",
-      "badge_color": "teal",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.10.21 ~ 10.29 (23:59 마감)",
-      "deadline_date": "2026-10-29",
-      "deadline_time": "23:59",
-      "description": "전북대학교 창업지원단에서는 전북권역 내 유학생들의 창업역량 강화를 위해 \"Global Inbound Start-up Idea Camp\" 참여자를 아래와 같이 모집합니다. Jeonbuk National University's Start-up Support Group recruits participants in the \"Global Inbound Start-u…",
-      "link": "https://www.jbnu.ac.kr/web/Board/218667/detailView.do",
-      "image": "https://www.jbnu.ac.kr/common/file.do?file=OhNWrFkjI5WQ4QSPEwKp4ZmYOKd01oYYdevRH/Nj2pQ7YYJXC1/6i5WORLW8/ORi",
-      "is_active": true,
-      "track": "civil",
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
     {
       "id": "campus-218336",
       "source": "campus",
@@ -57,8 +30,8 @@
       "is_active": true,
       "track": "civil",
       "dday_info": {
-        "text": "D-1",
-        "days": 1,
+        "text": "오늘마감",
+        "days": 0,
         "is_urgent": true,
         "is_closed": false
       }
@@ -90,8 +63,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-1",
-        "days": 1,
+        "text": "오늘마감",
+        "days": 0,
         "is_urgent": true,
         "is_closed": false
       }
@@ -122,8 +95,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-1",
-        "days": 1,
+        "text": "오늘마감",
+        "days": 0,
         "is_urgent": true,
         "is_closed": false
       }
@@ -154,8 +127,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-2",
-        "days": 2,
+        "text": "D-1",
+        "days": 1,
         "is_urgent": true,
         "is_closed": false
       }
@@ -185,8 +158,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-2",
-        "days": 2,
+        "text": "D-1",
+        "days": 1,
         "is_urgent": true,
         "is_closed": false
       }
@@ -217,8 +190,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-2",
-        "days": 2,
+        "text": "D-1",
+        "days": 1,
         "is_urgent": true,
         "is_closed": false
       }
@@ -249,8 +222,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-2",
-        "days": 2,
+        "text": "D-1",
+        "days": 1,
         "is_urgent": true,
         "is_closed": false
       }
@@ -281,9 +254,9 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-4",
-        "days": 4,
-        "is_urgent": false,
+        "text": "D-3",
+        "days": 3,
+        "is_urgent": true,
         "is_closed": false
       }
     },
@@ -314,9 +287,9 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-4",
-        "days": 4,
-        "is_urgent": false,
+        "text": "D-3",
+        "days": 3,
+        "is_urgent": true,
         "is_closed": false
       }
     },
@@ -346,8 +319,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-5",
-        "days": 5,
+        "text": "D-4",
+        "days": 4,
         "is_urgent": false,
         "is_closed": false
       }
@@ -373,8 +346,8 @@
       "is_active": true,
       "track": "civil",
       "dday_info": {
-        "text": "D-6",
-        "days": 6,
+        "text": "D-5",
+        "days": 5,
         "is_urgent": false,
         "is_closed": false
       }
@@ -400,8 +373,8 @@
       "is_active": true,
       "track": "civil",
       "dday_info": {
-        "text": "D-6",
-        "days": 6,
+        "text": "D-5",
+        "days": 5,
         "is_urgent": false,
         "is_closed": false
       }
@@ -427,8 +400,8 @@
       "is_active": true,
       "track": "civil",
       "dday_info": {
-        "text": "D-6",
-        "days": 6,
+        "text": "D-5",
+        "days": 5,
         "is_urgent": false,
         "is_closed": false
       }
@@ -495,8 +468,8 @@
       "image": "https://www.jbnu.ac.kr/common/file.do?file=aDnf2Nbsc5JCVXjNcuja6hp6EOxg4LFfVvZE2KPyqg/B6wkWztYndrgNSVSNzFTT",
       "track": "civil",
       "dday_info": {
-        "text": "D-8",
-        "days": 8,
+        "text": "D-7",
+        "days": 7,
         "is_urgent": false,
         "is_closed": false
       }
@@ -528,8 +501,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-8",
-        "days": 8,
+        "text": "D-7",
+        "days": 7,
         "is_urgent": false,
         "is_closed": false
       }
@@ -560,8 +533,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-8",
-        "days": 8,
+        "text": "D-7",
+        "days": 7,
         "is_urgent": false,
         "is_closed": false
       }
@@ -592,8 +565,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-9",
-        "days": 9,
+        "text": "D-8",
+        "days": 8,
         "is_urgent": false,
         "is_closed": false
       }
@@ -610,8 +583,8 @@
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.11.08 마감",
-      "deadline_date": "2026-11-08",
+      "period": "~ 2026.11.09 마감",
+      "deadline_date": "2026-11-09",
       "deadline_time": "23:59",
       "fields": [
         "기획/아이디어"
@@ -640,8 +613,8 @@
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.11.08 마감",
-      "deadline_date": "2026-11-08",
+      "period": "~ 2026.11.09 마감",
+      "deadline_date": "2026-11-09",
       "deadline_time": "23:59",
       "fields": [
         "기획/아이디어"
@@ -679,38 +652,8 @@
       "is_active": true,
       "track": "civil",
       "dday_info": {
-        "text": "D-12",
-        "days": 12,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "wevity-111965",
-      "source": "wevity_it",
-      "source_name": "위비티",
-      "title": "2026 AI 활용 전국 대학생 창업 해커톤 참가자 모집",
-      "organizer": "교육부, 한국교육학술정보원(KERIS)",
-      "category": "일반",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.11.11 마감",
-      "deadline_date": "2026-11-11",
-      "deadline_time": "23:59",
-      "fields": [
-        "기획/아이디어"
-      ],
-      "description": "교육부, 한국교육학술정보원(KERIS) 주최 · 분야: 기획/아이디어",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=111965",
-      "image": "",
-      "is_active": true,
-      "track": "it",
-      "dday_info": {
-        "text": "D-13",
-        "days": 13,
+        "text": "D-11",
+        "days": 11,
         "is_urgent": false,
         "is_closed": false
       }
@@ -741,8 +684,38 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-14",
-        "days": 14,
+        "text": "D-13",
+        "days": 13,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-111965",
+      "source": "wevity_it",
+      "source_name": "위비티",
+      "title": "2026 AI 활용 전국 대학생 창업 해커톤 참가자 모집",
+      "organizer": "교육부, 한국교육학술정보원(KERIS)",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.12 마감",
+      "deadline_date": "2026-11-12",
+      "deadline_time": "23:59",
+      "fields": [
+        "기획/아이디어"
+      ],
+      "description": "교육부, 한국교육학술정보원(KERIS) 주최 · 분야: 기획/아이디어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=111965",
+      "image": "",
+      "is_active": true,
+      "track": "it",
+      "dday_info": {
+        "text": "D-13",
+        "days": 13,
         "is_urgent": false,
         "is_closed": false
       }
@@ -773,38 +746,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-15",
-        "days": 15,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "wevity-111912",
-      "source": "wevity_it",
-      "source_name": "위비티",
-      "title": "[CJ제일제당] 햇반 30주년 AI 공모전 (갓 지은 AI디어)",
-      "organizer": "CJ제일제당",
-      "category": "일반",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.11.13 마감",
-      "deadline_date": "2026-11-13",
-      "deadline_time": "23:59",
-      "fields": [
-        "웹/모바일/IT"
-      ],
-      "description": "CJ제일제당 주최 · 분야: 웹/모바일/IT",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=view&ix=111912",
-      "image": "",
-      "is_active": true,
-      "track": "it",
-      "dday_info": {
-        "text": "D-15",
-        "days": 15,
+        "text": "D-14",
+        "days": 14,
         "is_urgent": false,
         "is_closed": false
       }
@@ -835,8 +778,38 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-16",
-        "days": 16,
+        "text": "D-15",
+        "days": 15,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-111912",
+      "source": "wevity_it",
+      "source_name": "위비티",
+      "title": "[CJ제일제당] 햇반 30주년 AI 공모전 (갓 지은 AI디어)",
+      "organizer": "CJ제일제당",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.14 마감",
+      "deadline_date": "2026-11-14",
+      "deadline_time": "23:59",
+      "fields": [
+        "웹/모바일/IT"
+      ],
+      "description": "CJ제일제당 주최 · 분야: 웹/모바일/IT",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=view&ix=111912",
+      "image": "",
+      "is_active": true,
+      "track": "it",
+      "dday_info": {
+        "text": "D-15",
+        "days": 15,
         "is_urgent": false,
         "is_closed": false
       }
@@ -862,38 +835,8 @@
       "is_active": true,
       "track": "civil",
       "dday_info": {
-        "text": "D-17",
-        "days": 17,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "wevity-111666",
-      "source": "wevity",
-      "source_name": "위비티",
-      "title": "[한국도로공사] AI 활용 아이디어 공모전",
-      "organizer": "한국도로공사",
-      "category": "일반",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.11.15 마감",
-      "deadline_date": "2026-11-15",
-      "deadline_time": "23:59",
-      "fields": [
-        "기획/아이디어"
-      ],
-      "description": "한국도로공사 주최 · 분야: 기획/아이디어",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=111666",
-      "image": "",
-      "is_active": true,
-      "track": "civil",
-      "dday_info": {
-        "text": "D-17",
-        "days": 17,
+        "text": "D-16",
+        "days": 16,
         "is_urgent": false,
         "is_closed": false
       }
@@ -925,6 +868,36 @@
       "image": "",
       "is_active": true,
       "dday_info": {
+        "text": "D-16",
+        "days": 16,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-111666",
+      "source": "wevity",
+      "source_name": "위비티",
+      "title": "[한국도로공사] AI 활용 아이디어 공모전",
+      "organizer": "한국도로공사",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.16 마감",
+      "deadline_date": "2026-11-16",
+      "deadline_time": "23:59",
+      "fields": [
+        "기획/아이디어"
+      ],
+      "description": "한국도로공사 주최 · 분야: 기획/아이디어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=111666",
+      "image": "",
+      "is_active": true,
+      "track": "civil",
+      "dday_info": {
         "text": "D-17",
         "days": 17,
         "is_urgent": false,
@@ -952,8 +925,8 @@
       "is_active": true,
       "track": "civil",
       "dday_info": {
-        "text": "D-20",
-        "days": 20,
+        "text": "D-19",
+        "days": 19,
         "is_urgent": false,
         "is_closed": false
       }
@@ -979,38 +952,8 @@
       "is_active": true,
       "track": "civil",
       "dday_info": {
-        "text": "D-22",
-        "days": 22,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "wevity-111726",
-      "source": "wevity",
-      "source_name": "위비티",
-      "title": "용산국제업무지구 AI 스마트도시 아이디어 공모",
-      "organizer": "서울특별시",
-      "category": "일반",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.11.20 마감",
-      "deadline_date": "2026-11-20",
-      "deadline_time": "23:59",
-      "fields": [
-        "건축/건설/인테리어"
-      ],
-      "description": "서울특별시 주최 · 분야: 건축/건설/인테리어",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=24&gbn=view&ix=111726",
-      "image": "",
-      "is_active": true,
-      "track": "civil",
-      "dday_info": {
-        "text": "D-22",
-        "days": 22,
+        "text": "D-21",
+        "days": 21,
         "is_urgent": false,
         "is_closed": false
       }
@@ -1041,6 +984,36 @@
       "image": "",
       "is_active": true,
       "dday_info": {
+        "text": "D-21",
+        "days": 21,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-111726",
+      "source": "wevity",
+      "source_name": "위비티",
+      "title": "용산국제업무지구 AI 스마트도시 아이디어 공모",
+      "organizer": "서울특별시",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.21 마감",
+      "deadline_date": "2026-11-21",
+      "deadline_time": "23:59",
+      "fields": [
+        "건축/건설/인테리어"
+      ],
+      "description": "서울특별시 주최 · 분야: 건축/건설/인테리어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=24&gbn=view&ix=111726",
+      "image": "",
+      "is_active": true,
+      "track": "civil",
+      "dday_info": {
         "text": "D-22",
         "days": 22,
         "is_urgent": false,
@@ -1059,8 +1032,8 @@
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.11.20 마감",
-      "deadline_date": "2026-11-20",
+      "period": "~ 2026.11.21 마감",
+      "deadline_date": "2026-11-21",
       "deadline_time": "23:59",
       "fields": [
         "웹/모바일/IT"
@@ -1104,8 +1077,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-53",
-        "days": 53,
+        "text": "D-52",
+        "days": 52,
         "is_urgent": false,
         "is_closed": false
       }
@@ -1167,8 +1140,8 @@
       "image": "https://www.jbnu.ac.kr/common/file.do?file=4cALo6DfxWUFYlylMujIYMjaKF2GJWIBKn6sJyYGF2UlCjZ8sV+4j56lZgKcZFvm",
       "track": "civil",
       "dday_info": {
-        "text": "D-8",
-        "days": 8,
+        "text": "D-7",
+        "days": 7,
         "is_urgent": false,
         "is_closed": false
       }
@@ -1224,8 +1197,8 @@
       "is_active": true,
       "track": "civil",
       "dday_info": {
-        "text": "D-63",
-        "days": 63,
+        "text": "D-62",
+        "days": 62,
         "is_urgent": false,
         "is_closed": false
       },
