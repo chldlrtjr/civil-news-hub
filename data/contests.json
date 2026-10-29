@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-10-30 06:02:03",
-  "last_updated_display": "10월 30일 06:02",
-  "total_count": 36,
-  "featured_count": 36,
+  "last_updated": "2026-10-30 07:01:43",
+  "last_updated_display": "10월 30일 07:01",
+  "total_count": 39,
+  "featured_count": 39,
   "categories": [
     "ALL",
     "전북대",
@@ -326,33 +326,6 @@
       }
     },
     {
-      "id": "campus-218992",
-      "source": "campus",
-      "source_name": "교내공지",
-      "title": "[김수환추기경연구소] 2026년 제1회 김수환추기경연구소 숏폼 공모전 참여 모집 안내",
-      "organizer": "김수환추기경연구소",
-      "category": "전북대",
-      "badge_color": "teal",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.10.27 ~ 11.04 (10:00 마감)",
-      "deadline_date": "2026-11-04",
-      "deadline_time": "10:00",
-      "description": "1. 귀교의 무궁한 발전을 기원합니다 . 2. 가톨릭대학교 김수환추기경연구소는 김수환 추기경님께서 생전 몸소 실천하셨던 사랑과 나눔의 삶을 기억하고 , 그 뜻을 이어가기 위해 설립되었습니다 . 개인주의가 확산되며 점차 삭막해지는 사회 현실 속에서 김수환 추기경님의 나눔 정신을 다시 한번 되새기는 시간을 갖고자 전국의 대학생 및 대학원생 , 교직원들을 대상으…",
-      "link": "https://www.jbnu.ac.kr/web/Board/218992/detailView.do",
-      "image": "https://www.jbnu.ac.kr/common/file.do?file=pfYleG6eDllcTZKsE2Ho/+tDANtPfBU8+L4Gh+7KX3s6qY2GB1TRgfGmTigx0S4n",
-      "is_active": true,
-      "track": "civil",
-      "dday_info": {
-        "text": "D-5",
-        "days": 5,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
       "id": "campus-219123",
       "source": "campus",
       "source_name": "교내공지",
@@ -370,6 +343,33 @@
       "description": "전북대학교 창업지원단에서는 전북권역 내 유학생들의 창업역량 강화를 위해 \"Global Inbound Start-up Idea Camp\" 참여자를 아래와 같이 모집합니다. Jeonbuk National University's Start-up Support Group recruits participants in the \"Global Inbound Start-u…",
       "link": "https://www.jbnu.ac.kr/web/Board/219123/detailView.do",
       "image": "https://www.jbnu.ac.kr/common/file.do?file=vjiwnVrKPi1q+dw70v1m+NniUxzyPRnqgqRWZjnhi4dGKR72Aht6QPiviCyb7Xkz",
+      "is_active": true,
+      "track": "civil",
+      "dday_info": {
+        "text": "D-5",
+        "days": 5,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "campus-218992",
+      "source": "campus",
+      "source_name": "교내공지",
+      "title": "[김수환추기경연구소] 2026년 제1회 김수환추기경연구소 숏폼 공모전 참여 모집 안내",
+      "organizer": "김수환추기경연구소",
+      "category": "전북대",
+      "badge_color": "teal",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.10.27 ~ 11.04 (10:00 마감)",
+      "deadline_date": "2026-11-04",
+      "deadline_time": "10:00",
+      "description": "1. 귀교의 무궁한 발전을 기원합니다 . 2. 가톨릭대학교 김수환추기경연구소는 김수환 추기경님께서 생전 몸소 실천하셨던 사랑과 나눔의 삶을 기억하고 , 그 뜻을 이어가기 위해 설립되었습니다 . 개인주의가 확산되며 점차 삭막해지는 사회 현실 속에서 김수환 추기경님의 나눔 정신을 다시 한번 되새기는 시간을 갖고자 전국의 대학생 및 대학원생 , 교직원들을 대상으…",
+      "link": "https://www.jbnu.ac.kr/web/Board/218992/detailView.do",
+      "image": "https://www.jbnu.ac.kr/common/file.do?file=pfYleG6eDllcTZKsE2Ho/+tDANtPfBU8+L4Gh+7KX3s6qY2GB1TRgfGmTigx0S4n",
       "is_active": true,
       "track": "civil",
       "dday_info": {
@@ -721,6 +721,34 @@
       }
     },
     {
+      "id": "campus-218172",
+      "source": "campus",
+      "source_name": "학생공지",
+      "title": "(한국산업기술진흥원) 5극3특 성장엔진 미래지도 AI영상 공모전 개최 안내",
+      "organizer": "학생취업진로처 학생지원과",
+      "category": "전북대",
+      "badge_color": "teal",
+      "prize": "총 21점 (최우수상 200만원, 우수상 100만원, 장려상 50만원)",
+      "target": "대한민국 거주 누구나(개인 또는 팀 4인 이하)",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.10.07 ~ 11.13 (18:00 마감)",
+      "deadline_date": "2026-11-13",
+      "deadline_time": "18:00",
+      "description": "IMAGINE THE NEXT KOREA. 당신의 상상이 대한민국의 미래가 됩니다 5극3특 AI 영상 공모전 성장엔진 미래지도 성장엔진이 바꿀 대한민국의 미래 접수기간 2026. 10. 6.(화) 09:00 ~ 11. 13.(금) 18:00 참가대상 대한민국 거주 누구나(개인 또는 팀 4인 이하) 출품규격 생성형 AI 영상(30초~2분) | 16:9 가로형…",
+      "link": "https://www.jbnu.ac.kr/web/Board/218172/detailView.do",
+      "image": "https://www.jbnu.ac.kr/common/file.do?file=MwjW4z0phNHIvDfRCzyXR1s2kAIiCONzB75xudjs5i2ZHNrRtjMz2Qe325Z1R2fY",
+      "is_active": true,
+      "deadline_source": "poster",
+      "track": "civil",
+      "dday_info": {
+        "text": "D-14",
+        "days": 14,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
       "id": "devevent-beb8940624",
       "source": "devevent",
       "source_name": "데브이벤트",
@@ -905,6 +933,34 @@
       }
     },
     {
+      "id": "campus-218184",
+      "source": "campus",
+      "source_name": "학생공지",
+      "title": "(한국과학기술원) 2026년 「외국발 허위정보 대응 대학생 아이디어 공모전」 개최 안내",
+      "organizer": "학생취업진로처 학생지원과",
+      "category": "전북대",
+      "badge_color": "teal",
+      "prize": "대상 1명 300만원 KAIST 총장상, 최우수상 4명 각 100만원 안보융합원장상, 우수상 10명 각 50만원",
+      "target": "국내 대학(원)생 (휴학생 포함 개인 또는 팀)",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.10.08 ~ 11.17 (23:59 마감)",
+      "deadline_date": "2026-11-17",
+      "deadline_time": "23:59",
+      "description": "2026년-2차, 외국발 허위정보 대응 대학생 아이디어 공모전 (Counter-Disinformation Challenge) 공모 부문 외국발 허위정보에 대한 경각심을 높이기 위한 카드뉴스 또는 숏폼 동영상 제작 접수 기간 2026년 10월 6일(화) ~ 11월 17일(화) 참가 대상 국내 대학(원)생 (휴학생 포함 개인 또는 팀) 공모 일정 접수 : 26…",
+      "link": "https://www.jbnu.ac.kr/web/Board/218184/detailView.do",
+      "image": "https://www.jbnu.ac.kr/common/file.do?file=e5JZdq6hG8md0RDZVMDF4V1vi6sYoxAdZ4l9gFrlWUheqNd3ESMiRI3lEQxnYX1w",
+      "is_active": true,
+      "deadline_source": "poster",
+      "track": "civil",
+      "dday_info": {
+        "text": "D-18",
+        "days": 18,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
       "id": "campus-218972",
       "source": "campus",
       "source_name": "교내공지",
@@ -1079,6 +1135,34 @@
       "dday_info": {
         "text": "D-52",
         "days": 52,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "campus-219053",
+      "source": "campus",
+      "source_name": "교내공지",
+      "title": "2026학년도 J-ABLE 활용 학습 수기 공모전 운영 안내",
+      "organizer": "교육혁신본부 교육혁신부",
+      "category": "전북대",
+      "badge_color": "teal",
+      "prize": "최우수상 1명(30만원), 우수상 3명(20만원), 장려상 6명(15만원), 입상 10명(10만원)",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.10.28 ~ 12.31 (23:59 마감)",
+      "deadline_date": "2026-12-31",
+      "deadline_time": "23:59",
+      "description": "전북대학교 글로컬대학 30 교육혁신본부 2026학년도 J-ABLE 활용 학습 수기 공모전 * JBNU AI Based Learning & Evaluation 지금부터 J-ABLE로 공부해요! 공모 내용 J-ABLE 프로그램 참여 계기 및 참여 과정 AI 맞춤형 보완 학습을 활용한 학습 과정 및 방법 프로그램 참여 전·후 학습 태도 및 성취도 변화 등 참여 …",
+      "link": "https://www.jbnu.ac.kr/web/Board/219053/detailView.do",
+      "image": "https://www.jbnu.ac.kr/common/file.do?file=s+/Vt2IuFvS+6uCXA1NIJ1tzE6r6T3mHxWjcIjWGvvm1ilhQ1ILWiqTpjCTOfd9o",
+      "is_active": true,
+      "deadline_source": "poster",
+      "track": "civil",
+      "dday_info": {
+        "text": "D-62",
+        "days": 62,
         "is_urgent": false,
         "is_closed": false
       }
