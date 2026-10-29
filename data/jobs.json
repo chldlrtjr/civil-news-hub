@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-10-29 13:02",
-  "last_updated_display": "2026년 10월 29일 13:02",
+  "last_updated": "2026-10-29 14:03",
+  "last_updated_display": "2026년 10월 29일 14:03",
   "source": "잡알리오(공공기관 채용정보) · 고용24 공채속보 Open API",
-  "total_count": 30,
+  "total_count": 31,
   "failed_sources": [],
   "categories": [
     {
@@ -792,6 +792,38 @@
         "서류전형",
         "면접전형",
         "개별면접"
+      ]
+    },
+    {
+      "id": "w24-183177",
+      "source": "고용24 공채속보",
+      "company": "녹십자이엠",
+      "company_type": "중견기업",
+      "category_id": "builder",
+      "category_name": "건설·민간기업",
+      "title": "26-31차 공사팀 본사 공무관리(경력)",
+      "fields": [
+        "공사팀 : 본사 공무(경력직)"
+      ],
+      "career": "경력",
+      "is_intern": false,
+      "intern_type": "",
+      "location": "경기 성남시 분당구",
+      "period": "2026.10.13 ~ 2026.11.08",
+      "deadline_date": "2026-11-08",
+      "tags": [
+        "정규직",
+        "중견기업"
+      ],
+      "link": "https://careers.gcbiopharma.com/job/GC%EB%85%B9%EC%8B%AD%EC%9E%90EM-26-31%EC%B0%A8-%EA%B3%B5%EC%82%AC%ED%8C%80-%EB%B3%B8%EC%82%AC-%EA%B3%B5%EB%AC%B4%EA%B4%80%EB%A6%AC%28%EA%B2%BD%EB%A0%A5%29/4545950/",
+      "summary": "- 경력 : 건설/플랜트 공무 실무 경력 5년 이상 - 자격(필수) · 직무 관련 산업기사 이상 자격증 보유자 필수(건축, 기계설비, 토목 등) · 해외여행 및 건강상 결격 사유가 없는 자",
+      "steps": [
+        "서류 전형",
+        "인성 검사(온라인)",
+        "1차 면접",
+        "처우 협의",
+        "2차 면접",
+        "최종 합격"
       ]
     },
     {
