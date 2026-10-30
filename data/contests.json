@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-10-30 15:02:50",
-  "last_updated_display": "10월 30일 15:02",
-  "total_count": 39,
-  "featured_count": 39,
+  "last_updated": "2026-10-30 19:02:20",
+  "last_updated_display": "10월 30일 19:02",
+  "total_count": 38,
+  "featured_count": 38,
   "categories": [
     "ALL",
     "전북대",
@@ -29,39 +29,6 @@
       "image": "https://www.jbnu.ac.kr/common/file.do?file=Y4JxnW6eBwKOWuP9KFH9TdH5BcpwYUCQEL0SAWiRcTd+15wYzz+mnZTvEHUsidpW",
       "is_active": true,
       "track": "civil",
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "devevent-be88f0121a",
-      "source": "devevent",
-      "source_name": "데브이벤트",
-      "track": "it",
-      "title": "2026년 양자내성암호 전환 경진대회·해커톤",
-      "organizer": "과학기술정보통신부 / 한국인터넷진흥원(KISA)",
-      "category": "일반",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.10.30 마감",
-      "deadline_date": "2026-10-30",
-      "deadline_time": "16:00",
-      "fields": [
-        "온라인",
-        "오프라인(서울 서초구)",
-        "대회",
-        "기술일반"
-      ],
-      "description": "과학기술정보통신부 / 한국인터넷진흥원(KISA) 주최 · 온라인, 오프라인(서울 서초구), 무료, 대회, 기술일반",
-      "link": "https://www.pqcchallenge.kr/",
-      "image": "",
-      "is_active": true,
       "dday_info": {
         "text": "오늘마감",
         "days": 0,
