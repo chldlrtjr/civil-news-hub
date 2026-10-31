@@ -1,46 +1,14 @@
 {
-  "last_updated": "2026-10-31 12:01:59",
-  "last_updated_display": "10월 31일 12:01",
-  "total_count": 36,
-  "featured_count": 36,
+  "last_updated": "2026-10-31 13:01:58",
+  "last_updated_display": "10월 31일 13:01",
+  "total_count": 35,
+  "featured_count": 35,
   "categories": [
     "ALL",
     "전북대",
     "일반"
   ],
   "contests": [
-    {
-      "id": "devevent-6336fea5e0",
-      "source": "devevent",
-      "source_name": "데브이벤트",
-      "track": "it",
-      "title": "Hello World AI 해커톤 — 개인전, 하루 안에 배포까지",
-      "organizer": "HACK:ON",
-      "category": "일반",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.10.31 행사 시작 전 신청",
-      "deadline_date": "2026-10-31",
-      "deadline_time": "13:00",
-      "fields": [
-        "오프라인(서울 강남구)",
-        "대회",
-        "AI"
-      ],
-      "description": "HACK:ON 주최 · 오프라인(서울 강남구), 무료, 대회, AI",
-      "link": "https://hackon.kr/e/1a32b615",
-      "image": "",
-      "is_active": true,
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
     {
       "id": "devevent-4e28da74e8",
       "source": "devevent",
