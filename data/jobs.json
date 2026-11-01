@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-01 22:01",
-  "last_updated_display": "2026년 11월 01일 22:01",
+  "last_updated": "2026-11-02 00:01",
+  "last_updated_display": "2026년 11월 02일 00:01",
   "source": "잡알리오(공공기관 채용정보) · 고용24 공채속보 Open API",
-  "total_count": 28,
+  "total_count": 26,
   "failed_sources": [],
   "categories": [
     {
@@ -23,70 +23,6 @@
     }
   ],
   "jobs": [
-    {
-      "id": "alio-306074",
-      "source": "잡알리오",
-      "company": "한국환경공단",
-      "company_type": "공공기관",
-      "category_id": "public",
-      "category_name": "공기업·공공기관",
-      "title": "한국환경공단 수도권동부환경본부 환경시설관리처 기간제근로자(촉탁직) 채용 재공고",
-      "fields": [
-        "건설",
-        "환경.에너지.안전"
-      ],
-      "career": "신입·경력",
-      "is_intern": false,
-      "intern_type": "",
-      "civil_match": "토목 명시",
-      "location": "경기",
-      "period": "2026.10.21 ~ 2026.11.01",
-      "deadline_date": "2026-11-01",
-      "tags": [
-        "토목 명시",
-        "비정규직",
-        "1명"
-      ],
-      "link": "https://www.keco.or.kr/web/lay1/bbs/S1T1205C1207/A/22/view.do?article_seq=100764&cpage=1&rows=10&condition=&keyword=",
-      "summary": "[촉탁나급(토목)] - 해당분야의 박사학위 또는 기술사 자격을 취득한 자 - 해당분야의 기사자격을 취득한 후 10년 이상 당해분야의 경력이 있는 자 - 관련협회(건설기술인협회) 해당분야 기술인 등급 고급 이상인 자 ※ 자세한 사항은 채용 공고문 참조",
-      "steps": [
-        "1차 전형",
-        "서류전형",
-        "2차 전형",
-        "면접전형"
-      ]
-    },
-    {
-      "id": "w24-182673",
-      "source": "고용24 공채속보",
-      "company": "신영씨앤디",
-      "company_type": "중견기업",
-      "category_id": "builder",
-      "category_name": "건설·민간기업",
-      "title": "경력사원 정규직, PJT 채용 (건축·설비·전기·토목·안전)",
-      "fields": [
-        "[정규직, PJT] 토목"
-      ],
-      "career": "경력",
-      "is_intern": false,
-      "intern_type": "",
-      "location": "강원, 서울",
-      "period": "2026.10.22 ~ 2026.11.01",
-      "deadline_date": "2026-11-01",
-      "tags": [
-        "정규직",
-        "기간제",
-        "중견기업"
-      ],
-      "link": "https://www.shinyoungcnd.com/cr/jobopeningdetail.aspx?srg_seq=130",
-      "summary": "- 경력5년이상, 관련자격증 소지자(중급이상)",
-      "steps": [
-        "입사지원",
-        "서류전형",
-        "면접전형",
-        "최종합격"
-      ]
-    },
     {
       "id": "alio-306285",
       "source": "잡알리오",
