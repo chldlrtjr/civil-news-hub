@@ -24,8 +24,8 @@ if ('caches' in window) {
 // 구버전 더미 데이터가 포함되었던 localStorage 캐시 즉각 삭제
 try { localStorage.removeItem('cnh-live-cache-v1'); } catch(e){}
 </script>
-<script src="./static/cnh_data_bundle.js?v=20261018_2116"></script>
-<script src="./static/data_adapter.js?v=20261029_0218"></script>
+<script src="./static/cnh_data_bundle.js?v=20261102_2115"></script>
+<script src="./static/data_adapter.js?v=20261102_2115"></script>
 <style>
 /* Layout: plain solid ground, sticky header + tab nav, dashboard = main column + deadline rail; phones get a bottom tab bar and bottom-sheet drawer */
 :root{
@@ -232,6 +232,8 @@ h1,h2,h3{text-wrap:balance;margin:0}
 #ca .dr-img{border-radius:var(--r);overflow:hidden;background:var(--surface-2);border:1px solid var(--line)}
 #ca .dr-img img{display:block;width:100%;height:auto}
 #ca .pill.campus{background:color-mix(in srgb,var(--c-water) 15%,transparent);color:var(--c-water);font-weight:700}
+#ca .pill.civil-pill{background:color-mix(in srgb,var(--c-road) 15%,transparent);color:var(--c-road);font-weight:700}
+#ca .pill.it-pill{background:color-mix(in srgb,var(--c-smart) 15%,transparent);color:var(--c-smart);font-weight:700}
 #ca .pill.general{background:color-mix(in srgb,var(--c-road) 15%,transparent);color:var(--c-road);font-weight:600}
 #ca .pill.new{background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok);font-weight:600}
 #ca .pill.exp{background:color-mix(in srgb,var(--c-road) 15%,transparent);color:var(--c-road);font-weight:600}
@@ -782,9 +784,18 @@ h1,h2,h3{line-height:1.3;letter-spacing:-.01em}
       <div class="sort"><label class="eyebrow" for="sort">정렬</label>
       <select id="sort"><option value="dday">마감 임박순</option><option value="prize">상금 높은순</option><option value="new">최신 등록순</option></select></div>
     </div>
-    <div class="contest-grid" id="contest-list"></div>
-    <div class="sec-head it-head"><h2>컴퓨터공학 공모전 · 해커톤 <span class="mono" id="it-contest-count">0</span></h2><span class="notice">개발·AI·데이터·보안 분야 공모전과 해커톤을 데브이벤트·위비티에서 모았어요</span></div>
-    <div class="contest-grid" id="it-contest-list"></div>
+    <div class="contest-section" id="sec-civil-contests">
+      <div class="sec-head"><h2>전북대 토목 공모전 <span class="mono" id="civil-contest-count">0</span></h2><span class="notice">토목·건설·교통·인프라·도시계획 분야 공모전을 모았어요</span></div>
+      <div class="contest-grid" id="civil-contest-list"></div>
+    </div>
+    <div class="contest-section" id="sec-jbnu-contests">
+      <div class="sec-head it-head"><h2>전북대 교내 공모전 <span class="mono" id="jbnu-contest-count">0</span></h2><span class="notice">전북대학교 학생 대상 교내·비교과·학술 공모전을 모았어요</span></div>
+      <div class="contest-grid" id="jbnu-contest-list"></div>
+    </div>
+    <div class="contest-section" id="sec-it-contests">
+      <div class="sec-head it-head"><h2>컴퓨터공학 공모전 · 해커톤 <span class="mono" id="it-contest-count">0</span></h2><span class="notice">개발·AI·데이터·보안 분야 공모전과 해커톤을 모았어요</span></div>
+      <div class="contest-grid" id="it-contest-list"></div>
+    </div>
   </section>
 
   <section class="view" id="v-jobs" hidden>
@@ -1034,15 +1045,15 @@ function newsCard(n, i){
   </article>`;
 }
 function contestCard(c, pool = CONTESTS){
-  const isJbnu = c.category === '전북대' || c.campus;
-  const catName = c.category || (isJbnu ? '전북대' : '일반');
+  const cat = c.category || (c.track === 'it' ? '컴퓨터공학' : (c.campus ? '전북대' : '전북대 토목'));
+  const pillCls = cat === '전북대 토목' ? 'civil-pill' : (cat === '컴퓨터공학' ? 'it-pill' : 'campus');
   return `<article class="card click title-first" data-open="contest:${c.id}" tabindex="0">
     ${c.image?`<div class="card-img"><img src="${c.image}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add('ph');this.remove()"></div>`
       : pool.some(x=>x.image) ? '<div class="card-img ph" aria-hidden="true"></div>' : ''}
     <div class="card-top">${ddayBadge(c.end)}${bmBtn(c.id)}</div>
     <h3>${c.title}</h3>
     <div class="prize-line">${c.prize?`총 상금 <b>${fmt(c.prize)}만원</b>`:`${c.srcName}에서 모집`}</div>
-    <div class="pills">${c.award?`<span class="pill award">${c.award}</span>`:''}<span class="pill ${isJbnu?'campus':'general'}">${catName}</span>${c.added<=2?'<span class="pill new">NEW</span>':''}</div>
+    <div class="pills">${c.award?`<span class="pill award">${c.award}</span>`:''}<span class="pill ${pillCls}">${cat}</span>${c.added<=2?'<span class="pill new">NEW</span>':''}</div>
     <div class="meta"><span>${c.org}</span><span class="mono">~${md(day(c.end))}</span></div>
   </article>`;
 }
@@ -1155,20 +1166,54 @@ function fitNewsLines(){
 
 let target = '전체', sortBy = 'dday';
 function renderContests(){
-  const cats = ['전체', '전북대', '일반'];
+  const cats = ['전체', '전북대 토목', '전북대', '컴퓨터공학'];
+  const activeAll = CONTESTS.filter(c=>c.end>=0);
+
+  const sortFn = sortBy==='prize'?(a,b)=>b.prize-a.prize : sortBy==='new'?(a,b)=>a.added-b.added : (a,b)=>a.end-b.end;
+  const q = ($('#q') ? $('#q').value.trim() : '').toLowerCase();
+  const filterFn = c => !q || (c.title && c.title.toLowerCase().includes(q)) || (c.org && c.org.toLowerCase().includes(q));
+
+  const civilAll = activeAll.filter(c=>c.category==='전북대 토목' && filterFn(c)).sort(sortFn);
+  const jbnuAll = activeAll.filter(c=>c.category==='전북대' && filterFn(c)).sort(sortFn);
+  const itAll = activeAll.filter(c=>c.category==='컴퓨터공학' && filterFn(c)).sort(sortFn);
+
   $('#target-chips').innerHTML = cats.map(cat => {
-    const cnt = cat === '전체' ? CONTESTS.filter(c=>c.end>=0).length : CONTESTS.filter(c=>c.end>=0 && (c.category===cat || (cat==='전북대'&&c.campus))).length;
+    const cnt = cat === '전체'
+      ? activeAll.filter(filterFn).length
+      : (cat === '전북대 토목' ? civilAll.length : (cat === '전북대' ? jbnuAll.length : itAll.length));
     return `<button class="chip" data-target="${cat}" aria-pressed="${cat===target}">${cat} <span class="mono">${cnt}</span></button>`;
   }).join('');
-  const q = $('#q').value.trim();
-  let list = CONTESTS.filter(c => c.end >= 0 && (target === '전체' || c.category === target || (target === '전북대' && c.campus)) && (!q || c.title.includes(q)));
-  list.sort(sortBy==='prize'?(a,b)=>b.prize-a.prize : sortBy==='new'?(a,b)=>a.added-b.added : (a,b)=>a.end-b.end);
-  // 토목·건설 공모전은 위, 컴퓨터공학 공모전·해커톤은 아래 섹션에 따로 모은다
-  const civil = list.filter(c=>c.track!=='it'), it = list.filter(c=>c.track==='it');
-  $('#contest-count').textContent = civil.length;
-  $('#contest-list').innerHTML = civil.map(c=>contestCard(c, civil)).join('') || '<p class="notice">조건에 맞는 공모전이 없어요. 카테고리 필터를 바꿔 보세요.</p>';
-  $('#it-contest-count').textContent = it.length;
-  $('#it-contest-list').innerHTML = it.map(c=>contestCard(c, it)).join('') || '<p class="notice">조건에 맞는 컴퓨터공학 공모전·해커톤이 없어요.</p>';
+
+  const civilSec = $('#sec-civil-contests');
+  const jbnuSec = $('#sec-jbnu-contests');
+  const itSec = $('#sec-it-contests');
+
+  const showCivil = target === '전체' || target === '전북대 토목';
+  const showJbnu = target === '전체' || target === '전북대';
+  const showIt = target === '전체' || target === '컴퓨터공학';
+
+  if (civilSec) civilSec.style.display = showCivil ? '' : 'none';
+  if (jbnuSec) jbnuSec.style.display = showJbnu ? '' : 'none';
+  if (itSec) itSec.style.display = showIt ? '' : 'none';
+
+  if ($('#civil-contest-count')) $('#civil-contest-count').textContent = civilAll.length;
+  if ($('#jbnu-contest-count')) $('#jbnu-contest-count').textContent = jbnuAll.length;
+  if ($('#it-contest-count')) $('#it-contest-count').textContent = itAll.length;
+
+  if (showCivil && $('#civil-contest-list')) {
+    $('#civil-contest-list').innerHTML = civilAll.map(c=>contestCard(c, civilAll)).join('') || '<p class="notice">진행 중인 전북대 토목 공모전이 없어요.</p>';
+  }
+  if (showJbnu && $('#jbnu-contest-list')) {
+    $('#jbnu-contest-list').innerHTML = jbnuAll.map(c=>contestCard(c, jbnuAll)).join('') || '<p class="notice">진행 중인 전북대 교내 공모전이 없어요.</p>';
+  }
+  if (showIt && $('#it-contest-list')) {
+    $('#it-contest-list').innerHTML = itAll.map(c=>contestCard(c, itAll)).join('') || '<p class="notice">진행 중인 컴퓨터공학 공모전·해커톤이 없어요.</p>';
+  }
+
+  const visibleTotal = target === '전체'
+    ? (civilAll.length + jbnuAll.length + itAll.length)
+    : (target === '전북대 토목' ? civilAll.length : (target === '전북대' ? jbnuAll.length : itAll.length));
+  if ($('#contest-count')) $('#contest-count').textContent = visibleTotal;
 }
 
 let jobGrp = 'public', lvl = '전체';
@@ -1539,10 +1584,10 @@ const newsRow = (n,i) => {
   <div class="row-title">${rowTitle(n)}</div>${rowLede(n)?`<div class="row-sub lede">${rowLede(n)}</div>`:''}</div>${thumb(n.image,'t-news',n.isCurated,n.src)}</button>`;
 };
 const contestRow = c => {
-  const isJbnu = c.category === '전북대' || c.campus;
-  const catName = c.category || (isJbnu ? '전북대' : '일반');
+  const cat = c.category || (c.track === 'it' ? '컴퓨터공학' : (c.campus ? '전북대' : '전북대 토목'));
+  const catColor = cat === '전북대 토목' ? 'var(--c-road)' : (cat === '컴퓨터공학' ? 'var(--c-smart)' : 'var(--c-water)');
   return `<button class="row" data-open="c:${c.id}">${ddBox(c.end)}<div class="row-main">
-  <div class="row-meta"><span class="cat" style="--cat:${isJbnu ? 'var(--c-water)' : 'var(--c-road)'}">${catName}</span>${c.award?`<span>${c.award}</span>`:''}${c.added<=2?'<span class="tagn">새 공고</span>':''}</div>
+  <div class="row-meta"><span class="cat" style="--cat:${catColor}">${cat}</span>${c.award?`<span>${c.award}</span>`:''}${c.added<=2?'<span class="tagn">새 공고</span>':''}</div>
   <div class="row-title">${c.title}</div><div class="row-sub">${c.prize?`총 상금 <b class="num">${fmt(c.prize)}만원</b>`:`<span class="src-line"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H8l-4 4z"/></svg>${c.srcName || '공모전'}</span>`} · ${c.org}</div></div></button>`;
 };
 const jobRow = j => `<button class="row" data-open="j:${j.id}"><div class="row-main">
@@ -1603,19 +1648,45 @@ const VIEWS = {
       ${list(rows.map(([n,i])=>newsRow(n,i)).join(''))}`;
   },
   contest(){
-    let all = CONTESTS.filter(c=>c.end>=0 && (target==='전체'||c.target.includes(target)));
-    all.sort(sortBy==='prize'?(a,b)=>b.prize-a.prize : sortBy==='new'?(a,b)=>a.added-b.added : (a,b)=>a.end-b.end);
-    // 토목·건설 공모전은 위, 컴퓨터공학 공모전·해커톤은 아래 섹션
-    const rows = all.filter(c=>c.track!=='it'), itRows = all.filter(c=>c.track==='it');
-    return head('공모전', `지금 접수 중인 공모전 ${rows.length}개`) + `
+    const sortFn = sortBy==='prize'?(a,b)=>b.prize-a.prize : sortBy==='new'?(a,b)=>a.added-b.added : (a,b)=>a.end-b.end;
+    let all = CONTESTS.filter(c=>c.end>=0);
+    const civilRows = all.filter(c=>c.category==='전북대 토목').sort(sortFn);
+    const jbnuRows = all.filter(c=>c.category==='전북대').sort(sortFn);
+    const itRows = all.filter(c=>c.category==='컴퓨터공학').sort(sortFn);
+
+    const cats = ['전체', '전북대 토목', '전북대', '컴퓨터공학'];
+    const totalCount = target === '전체' ? all.length : (target === '전북대 토목' ? civilRows.length : (target === '전북대' ? jbnuRows.length : itRows.length));
+
+    const showCivil = target === '전체' || target === '전북대 토목';
+    const showJbnu = target === '전체' || target === '전북대';
+    const showIt = target === '전체' || target === '컴퓨터공학';
+
+    let sectionsHtml = '';
+    if (showCivil) {
+      sectionsHtml += `<section class="sec"><div class="sec-h"><h2>전북대 토목 공모전<small>${civilRows.length}</small></h2></div>
+        <p class="note">토목·건설·교통·인프라·도시계획 분야 공모전을 모았어요</p>
+        ${civilRows.length ? list(civilRows.map(contestRow).join('')) : '<p class="empty">진행 중인 전북대 토목 공모전이 없어요.</p>'}</section>`;
+    }
+    if (showJbnu) {
+      sectionsHtml += `<section class="sec"><div class="sec-h"><h2>전북대 교내 공모전<small>${jbnuRows.length}</small></h2></div>
+        <p class="note">전북대학교 학생 대상 교내·비교과·학술 공모전을 모았어요</p>
+        ${jbnuRows.length ? list(jbnuRows.map(contestRow).join('')) : '<p class="empty">진행 중인 전북대 교내 공모전이 없어요.</p>'}</section>`;
+    }
+    if (showIt) {
+      sectionsHtml += `<section class="sec"><div class="sec-h"><h2>컴퓨터공학 공모전 · 해커톤<small>${itRows.length}</small></h2></div>
+        <p class="note">개발·AI·데이터·보안 분야 공모전과 해커톤을 모았어요</p>
+        ${itRows.length ? list(itRows.map(contestRow).join('')) : '<p class="empty">진행 중인 컴퓨터공학 공모전·해커톤이 없어요.</p>'}</section>`;
+    }
+
+    return head('공모전', `지금 접수 중인 공모전 ${totalCount}개`) + `
       <div class="filters">
-        <div class="chips">${['전체','대학생','스타트업','일반','청소년'].map(t=>`<button class="chip" data-tg="${t}" aria-pressed="${t===target}">${t}</button>`).join('')}</div>
+        <div class="chips">${cats.map(t=>{
+          const cnt = t==='전체'?all.length:(t==='전북대 토목'?civilRows.length:(t==='전북대'?jbnuRows.length:itRows.length));
+          return `<button class="chip" data-tg="${t}" aria-pressed="${t===target}">${t} <span class="mono">${cnt}</span></button>`;
+        }).join('')}</div>
         <div class="seg">${[['dday','마감 임박순'],['prize','상금 높은순'],['new','최신순']].map(([k,v])=>`<button data-sort="${k}" aria-pressed="${k===sortBy}">${v}</button>`).join('')}</div>
       </div>
-      ${rows.length ? list(rows.map(contestRow).join('')) : '<p class="empty">이 대상으로 열린 공모전이 아직 없어요. 다른 대상을 골라 보세요.</p>'}
-      <section class="sec"><div class="sec-h"><h2>컴퓨터공학 공모전 · 해커톤<small>${itRows.length}</small></h2></div>
-        <p class="note">개발·AI·데이터·보안 분야 공모전과 해커톤을 데브이벤트·위비티에서 모았어요</p>
-        ${itRows.length ? list(itRows.map(contestRow).join('')) : '<p class="empty">이 대상으로 열린 컴퓨터공학 공모전·해커톤이 아직 없어요.</p>'}</section>`;
+      ${sectionsHtml}`;
   },
   jobs(){
     const rows = JOBS.filter(j=>j.grp===jobGrp&&(lvl==='전체'||j.lvl.includes(lvl))).sort((a,b)=>a.end-b.end);

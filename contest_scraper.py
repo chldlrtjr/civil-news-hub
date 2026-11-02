@@ -34,11 +34,12 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 CONTESTS_JSON_PATH = os.path.join(DATA_DIR, "contests.json")
 KST = timezone(timedelta(hours=9))
 
-# 카테고리 기본 정의 (전북대 & 일반 2분류 원칙)
+# 카테고리 기본 정의 (전북대 토목, 전북대, 컴퓨터공학 3분류 원칙)
 CONTEST_CATEGORIES = [
     "ALL",
+    "전북대 토목",
     "전북대",
-    "일반"
+    "컴퓨터공학"
 ]
 
 # (수집원 키, 이름, 수집 함수) — 앞에 있을수록 같은 공모전이 중복될 때 우선
@@ -186,19 +187,34 @@ def scrape_civil_contests():
     # 2. 유효 공모전 검증 (Rule 1-①, 1-⑤, 1-⑦: 무결성 검증 게이트)
     active_contests = []
     for c in raw_contests:
-        # [카테고리 2분류 정규화: 전북대 vs 일반]
+        # [카테고리 3분류 정규화: 전북대 토목 / 전북대 / 컴퓨터공학]
         link = str(c.get("link", ""))
         source = str(c.get("source", ""))
         organizer = str(c.get("organizer", ""))
         title = str(c.get("title", ""))
-        if source == "campus" or "jbnu.ac.kr" in link or "전북대" in organizer or "전북대" in title or "JBNU" in title:
-            c["category"] = "전북대"
-            c["badge_color"] = "teal"
-        else:
-            c["category"] = "일반"
+        description = str(c.get("description", ""))
+        track = str(c.get("track", ""))
+        combined = f"{title} {organizer} {description}".lower()
+
+        is_civil_domain = any(k in combined for k in [
+            "도로", "철도", "토목", "도시계획", "수자원", "하천", "인프라",
+            "교량", "터널", "지반", "건설", "스마트시티", "스마트도시",
+            "국토", "한국도로공사", "국가철도공단", "k-water", "수자원공사",
+            "성남시 창의도시계획", "물빛정원"
+        ])
+
+        if (track == "it" or source in ("devevent", "wevity_it")) and not is_civil_domain:
+            c["category"] = "컴퓨터공학"
+            c["track"] = "it"
             c["badge_color"] = "blue"
-        # 공모전 페이지 섹션: civil(토목·건설) / it(컴퓨터공학 공모전·해커톤)
-        c["track"] = "it" if c.get("track") == "it" else "civil"
+        elif is_civil_domain or source in ("manual", "wevity"):
+            c["category"] = "전북대 토목"
+            c["track"] = "civil"
+            c["badge_color"] = "emerald"
+        else:
+            c["category"] = "전북대"
+            c["track"] = "campus"
+            c["badge_color"] = "teal"
 
         is_valid, reason = contest_validator.validate_contest(c)
         if not is_valid:

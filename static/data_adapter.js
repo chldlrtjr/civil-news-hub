@@ -109,7 +109,12 @@ window.CivilData = (() => {
           ? c.dday_info.days
           : (c.days_left ?? calcDaysLeft(c.deadline_date || c.period));
 
-        const category = c.category || (campus ? '전북대' : '일반');
+        let category = c.category;
+        if (!category || category === '일반') {
+          if (c.track === 'it') category = '컴퓨터공학';
+          else if (c.track === 'civil') category = '전북대 토목';
+          else category = campus ? '전북대' : '전북대 토목';
+        }
 
         return {
           id: c.id || ('c' + (idx + 1)),

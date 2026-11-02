@@ -34,9 +34,11 @@ PERMANENT_BANNED_SIGNATURES = [
 # 허용되는 유효 상태 목록 (GEMINI.md Rule 1-⑤: 접수마감 항목 절대 불허)
 VALID_STATUSES = {"접수중", "접수예정", "상시접수"}
 
-# 필수 기본 카테고리 목록 (전북대 & 일반 2분류 원칙)
+# 필수 기본 카테고리 목록 (전북대 토목, 전북대, 컴퓨터공학 3분류 원칙)
 VALID_CATEGORIES = {
+    "전북대 토목",
     "전북대",
+    "컴퓨터공학",
     "일반"
 }
 
@@ -129,7 +131,7 @@ def validate_contest(contest: dict, current_time: datetime = None) -> tuple[bool
     if not category:
         return False, "MISSING_CATEGORY: 카테고리가 지정되지 않았습니다."
     if category not in VALID_CATEGORIES:
-        return False, f"INVALID_CATEGORY: 허용되지 않은 카테고리입니다 ('{category}'). '전북대' 또는 '일반'이어야 합니다."
+        return False, f"INVALID_CATEGORY: 허용되지 않은 카테고리입니다 ('{category}'). '전북대 토목', '전북대', '컴퓨터공학'이어야 합니다."
 
     return True, "VALID"
 
