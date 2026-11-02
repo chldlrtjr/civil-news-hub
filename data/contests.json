@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-02 17:02:10",
-  "last_updated_display": "11월 02일 17:02",
-  "total_count": 33,
-  "featured_count": 33,
+  "last_updated": "2026-11-02 18:02:16",
+  "last_updated_display": "11월 02일 18:02",
+  "total_count": 34,
+  "featured_count": 34,
   "categories": [
     "ALL",
     "전북대",
@@ -875,6 +875,33 @@
       "dday_info": {
         "text": "D-18",
         "days": 18,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "campus-219352",
+      "source": "campus",
+      "source_name": "교내공지",
+      "title": "서울미래인재재단 대표 캐릭터 공모전 홍보 협조 요청",
+      "organizer": "사무국 총무과",
+      "category": "전북대",
+      "badge_color": "teal",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.02 ~ 11.30 (23:59 마감)",
+      "deadline_date": "2026-11-30",
+      "deadline_time": "23:59",
+      "description": "1. 귀 기관의 무궁한 발전을 기원합니다 . 2. 서울미래인재재단은 재단의 대표 캐릭터 개발을 위한 창의적인 아이디어를 발굴하고자 캐릭터 공모전 「 서울의 미래 , 새로운 얼굴 」 을 개최합니다 . 3. 공모전에 관심 있는 분들의 적극적인 참여를 위해 홍보에 협조하여 주시기 바랍니다 . 서울미래인재재단 대표 캐릭터 공모전 개요 □ 공모전명 : 서울의 미래 …",
+      "link": "https://www.jbnu.ac.kr/web/Board/219352/detailView.do",
+      "image": "https://www.jbnu.ac.kr/common/file.do?file=OStBhNzdjXPlYeNQa1G8ex3qiMewyiaiqJxx27lG20IwwX4SA7I/OBRvqOunRao7",
+      "is_active": true,
+      "track": "civil",
+      "dday_info": {
+        "text": "D-28",
+        "days": 28,
         "is_urgent": false,
         "is_closed": false
       }
