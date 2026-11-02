@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-02 14:02:23",
-  "last_updated_display": "11월 02일 14:02",
-  "total_count": 32,
-  "featured_count": 32,
+  "last_updated": "2026-11-02 15:02:09",
+  "last_updated_display": "11월 02일 15:02",
+  "total_count": 33,
+  "featured_count": 33,
   "categories": [
     "ALL",
     "전북대",
@@ -875,6 +875,33 @@
       "dday_info": {
         "text": "D-18",
         "days": 18,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "campus-219309",
+      "source": "campus",
+      "source_name": "교내공지",
+      "title": "제27기 학생홍보대사 모집 안내",
+      "organizer": "홍보실",
+      "category": "전북대",
+      "badge_color": "teal",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.02 ~ 12.02 (14:00 마감)",
+      "deadline_date": "2026-12-02",
+      "deadline_time": "14:00",
+      "description": "[제27기 학생홍보대사 모집 안내] ○ 모집 인원 : 총 15명 내외 ○ 접수 기간 : 2026. 11. 16.(월) ~ 2026. 12. 2.(수) 14:00까지 ○ 서류심사 결과 발표 : 2026. 12. 7.(월) 18:00 ○ 면접 일정 : 2026. 12. 10.(목) ~ 2026. 12. 11.(금) 중 1일 ※면접 대상자는 양일 중 지정된 1일…",
+      "link": "https://www.jbnu.ac.kr/web/Board/219309/detailView.do",
+      "image": "",
+      "is_active": true,
+      "track": "civil",
+      "dday_info": {
+        "text": "D-30",
+        "days": 30,
         "is_urgent": false,
         "is_closed": false
       }
