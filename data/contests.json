@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-02 11:01:46",
-  "last_updated_display": "11월 02일 11:01",
-  "total_count": 30,
-  "featured_count": 30,
+  "last_updated": "2026-11-02 12:01:41",
+  "last_updated_display": "11월 02일 12:01",
+  "total_count": 32,
+  "featured_count": 32,
   "categories": [
     "ALL",
     "전북대",
@@ -348,6 +348,36 @@
       }
     },
     {
+      "id": "wevity-111965",
+      "source": "wevity_it",
+      "source_name": "위비티",
+      "title": "2026 AI 활용 전국 대학생 창업 해커톤 참가자 모집",
+      "organizer": "교육부, 한국교육학술정보원(KERIS)",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.11 마감",
+      "deadline_date": "2026-11-11",
+      "deadline_time": "23:59",
+      "fields": [
+        "기획/아이디어"
+      ],
+      "description": "교육부, 한국교육학술정보원(KERIS) 주최 · 분야: 기획/아이디어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=111965",
+      "image": "",
+      "is_active": true,
+      "track": "it",
+      "dday_info": {
+        "text": "D-9",
+        "days": 9,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
       "id": "devevent-663b5b5c59",
       "source": "devevent",
       "source_name": "데브이벤트",
@@ -372,36 +402,6 @@
       "link": "https://daker.ai/public/hackathons/kic-ai-agent-competition",
       "image": "",
       "is_active": true,
-      "dday_info": {
-        "text": "D-10",
-        "days": 10,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "wevity-111965",
-      "source": "wevity_it",
-      "source_name": "위비티",
-      "title": "2026 AI 활용 전국 대학생 창업 해커톤 참가자 모집",
-      "organizer": "교육부, 한국교육학술정보원(KERIS)",
-      "category": "일반",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.11.12 마감",
-      "deadline_date": "2026-11-12",
-      "deadline_time": "23:59",
-      "fields": [
-        "기획/아이디어"
-      ],
-      "description": "교육부, 한국교육학술정보원(KERIS) 주최 · 분야: 기획/아이디어",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=111965",
-      "image": "",
-      "is_active": true,
-      "track": "it",
       "dday_info": {
         "text": "D-10",
         "days": 10,
@@ -470,6 +470,36 @@
       }
     },
     {
+      "id": "wevity-111912",
+      "source": "wevity_it",
+      "source_name": "위비티",
+      "title": "[CJ제일제당] 햇반 30주년 AI 공모전 (갓 지은 AI디어)",
+      "organizer": "CJ제일제당",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.13 마감",
+      "deadline_date": "2026-11-13",
+      "deadline_time": "23:59",
+      "fields": [
+        "웹/모바일/IT"
+      ],
+      "description": "CJ제일제당 주최 · 분야: 웹/모바일/IT",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=view&ix=111912",
+      "image": "",
+      "is_active": true,
+      "track": "it",
+      "dday_info": {
+        "text": "D-11",
+        "days": 11,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
       "id": "devevent-5ac401b71d",
       "source": "devevent",
       "source_name": "데브이벤트",
@@ -502,31 +532,55 @@
       }
     },
     {
-      "id": "wevity-111912",
-      "source": "wevity_it",
-      "source_name": "위비티",
-      "title": "[CJ제일제당] 햇반 30주년 AI 공모전 (갓 지은 AI디어)",
-      "organizer": "CJ제일제당",
-      "category": "일반",
-      "badge_color": "blue",
+      "id": "campus-219334",
+      "source": "campus",
+      "source_name": "교내공지",
+      "title": "국립청주해양과학관 「개관 기념 대국민 슬로건 공모전」 개최 안내",
+      "organizer": "사무국 총무과",
+      "category": "전북대",
+      "badge_color": "teal",
       "prize": "",
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.11.14 마감",
-      "deadline_date": "2026-11-14",
+      "period": "2026.11.02 ~ 11.15 (23:59 마감)",
+      "deadline_date": "2026-11-15",
       "deadline_time": "23:59",
-      "fields": [
-        "웹/모바일/IT"
-      ],
-      "description": "CJ제일제당 주최 · 분야: 웹/모바일/IT",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=view&ix=111912",
+      "description": "1. 귀 기관 ( 교 ) 의 무궁한 발전을 기원합니다 . 2. 국립청주해양과학관에서는 내륙지역 최초 해양과학관의 정체성과 비전을 아우르고 , 국민과의 공감대 형성 및 기관 인지도 제고를 위해 「 국립청주해양과학관 개관 기념 대국민 슬로건 공모전 」 을 개최합니다 . 3. 이에 다음과 같이 슬로건 공모전을 안내하오니 , 귀 기관 ( 교 ) 의 누리집 ( 홈페…",
+      "link": "https://www.jbnu.ac.kr/web/Board/219334/detailView.do",
       "image": "",
       "is_active": true,
-      "track": "it",
+      "track": "civil",
       "dday_info": {
-        "text": "D-12",
-        "days": 12,
+        "text": "D-13",
+        "days": 13,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "campus-219333",
+      "source": "campus",
+      "source_name": "교내공지",
+      "title": "「이런(e-Learn) 한 컷, 영상 공모전」 개최에 따른 홍보 및 참여 협조 요청",
+      "organizer": "사무국 총무과",
+      "category": "전북대",
+      "badge_color": "teal",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.02 ~ 11.15 (23:59 마감)",
+      "deadline_date": "2026-11-15",
+      "deadline_time": "23:59",
+      "description": "1. 귀 기관의 무궁한 발전을 기원합니다 . 2. 한국보건복지인재원은 보건복지부 산하 공공기관으로 , 보건 · 복지 관련 종사자 및 대국민 대상 전문성 강화를 위해 다양한 교육프로그램을 운영하고 있는 교육 전문 기관입니다 . 3. 우리 원에서는 kohi 이러닝 학습을 통한 변화와 성과를 발굴하고 , 창의적인 디지털 콘텐츠 확산을 위해 「 이런 (e-lear…",
+      "link": "https://www.jbnu.ac.kr/web/Board/219333/detailView.do",
+      "image": "https://www.jbnu.ac.kr/common/file.do?file=I/N+qtMg3hBWgnCi3HclHzgBCbCn9mlmfjI2RISUwlHvytS+IZpcldnFK0wewJhb",
+      "is_active": true,
+      "track": "civil",
+      "dday_info": {
+        "text": "D-13",
+        "days": 13,
         "is_urgent": false,
         "is_closed": false
       }
@@ -549,6 +603,36 @@
       "description": "[2026년 SW융합 포트폴리오 공모전 안내] ○ 접수기간 : 2026. 10. 29.(수) ~ 11. 15.(일) ○ 신청자격 1) 컴퓨터인공지능학부를 복수·부전공으로 이수 중인 학생 2) SW중심대학사업단 관련 SW융합트랙, SW융합·연계전공을 이수 중인 학생 3) 사업단 참여학과 재학생 *[붙임1] 참조 4) 해당 모집단위 1학년 재학생 *[붙임1] …",
       "link": "https://www.jbnu.ac.kr/web/Board/219110/detailView.do",
       "image": "https://www.jbnu.ac.kr/common/file.do?file=yOLA1ewXcwKdIX23zFmFzMWFNJjci5Fsur3LTATUayfVPOZPW9fDVnFp+wVxK66X",
+      "is_active": true,
+      "track": "civil",
+      "dday_info": {
+        "text": "D-13",
+        "days": 13,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-111666",
+      "source": "wevity",
+      "source_name": "위비티",
+      "title": "[한국도로공사] AI 활용 아이디어 공모전",
+      "organizer": "한국도로공사",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.15 마감",
+      "deadline_date": "2026-11-15",
+      "deadline_time": "23:59",
+      "fields": [
+        "기획/아이디어"
+      ],
+      "description": "한국도로공사 주최 · 분야: 기획/아이디어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=111666",
+      "image": "",
       "is_active": true,
       "track": "civil",
       "dday_info": {
@@ -587,36 +671,6 @@
       "dday_info": {
         "text": "D-13",
         "days": 13,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "wevity-111666",
-      "source": "wevity",
-      "source_name": "위비티",
-      "title": "[한국도로공사] AI 활용 아이디어 공모전",
-      "organizer": "한국도로공사",
-      "category": "일반",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.11.16 마감",
-      "deadline_date": "2026-11-16",
-      "deadline_time": "23:59",
-      "fields": [
-        "기획/아이디어"
-      ],
-      "description": "한국도로공사 주최 · 분야: 기획/아이디어",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=111666",
-      "image": "",
-      "is_active": true,
-      "track": "civil",
-      "dday_info": {
-        "text": "D-14",
-        "days": 14,
         "is_urgent": false,
         "is_closed": false
       }
@@ -704,6 +758,36 @@
       }
     },
     {
+      "id": "wevity-111726",
+      "source": "wevity",
+      "source_name": "위비티",
+      "title": "용산국제업무지구 AI 스마트도시 아이디어 공모",
+      "organizer": "서울특별시",
+      "category": "일반",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.20 마감",
+      "deadline_date": "2026-11-20",
+      "deadline_time": "23:59",
+      "fields": [
+        "건축/건설/인테리어"
+      ],
+      "description": "서울특별시 주최 · 분야: 건축/건설/인테리어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=24&gbn=view&ix=111726",
+      "image": "",
+      "is_active": true,
+      "track": "civil",
+      "dday_info": {
+        "text": "D-18",
+        "days": 18,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
       "id": "devevent-1e1f66f18d",
       "source": "devevent",
       "source_name": "데브이벤트",
@@ -736,36 +820,6 @@
       }
     },
     {
-      "id": "wevity-111726",
-      "source": "wevity",
-      "source_name": "위비티",
-      "title": "용산국제업무지구 AI 스마트도시 아이디어 공모",
-      "organizer": "서울특별시",
-      "category": "일반",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.11.21 마감",
-      "deadline_date": "2026-11-21",
-      "deadline_time": "23:59",
-      "fields": [
-        "건축/건설/인테리어"
-      ],
-      "description": "서울특별시 주최 · 분야: 건축/건설/인테리어",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=24&gbn=view&ix=111726",
-      "image": "",
-      "is_active": true,
-      "track": "civil",
-      "dday_info": {
-        "text": "D-19",
-        "days": 19,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
       "id": "wevity-112029",
       "source": "wevity_it",
       "source_name": "위비티",
@@ -777,8 +831,8 @@
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.11.21 마감",
-      "deadline_date": "2026-11-21",
+      "period": "~ 2026.11.20 마감",
+      "deadline_date": "2026-11-20",
       "deadline_time": "23:59",
       "fields": [
         "웹/모바일/IT"
@@ -789,8 +843,8 @@
       "is_active": true,
       "track": "it",
       "dday_info": {
-        "text": "D-19",
-        "days": 19,
+        "text": "D-18",
+        "days": 18,
         "is_urgent": false,
         "is_closed": false
       }
@@ -807,8 +861,8 @@
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.11.21 마감",
-      "deadline_date": "2026-11-21",
+      "period": "~ 2026.11.20 마감",
+      "deadline_date": "2026-11-20",
       "deadline_time": "23:59",
       "fields": [
         "웹/모바일/IT"
@@ -819,8 +873,8 @@
       "is_active": true,
       "track": "it",
       "dday_info": {
-        "text": "D-19",
-        "days": 19,
+        "text": "D-18",
+        "days": 18,
         "is_urgent": false,
         "is_closed": false
       }
