@@ -409,7 +409,7 @@ h1,h2,h3{line-height:1.3;letter-spacing:-.01em}
   --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
   /* type scale: minor third (1.2) from a 16px phone base */
   --t-label:12px; --t-small:14px; --t-body:16px; --t-lead:18px; --t-h3:21px; --t-h2:26px; --t-h1:32px;
-  --bar-h:52px; --tab-h:58px;
+  --bar-h:52px; --ntab-h:44px; --tab-h:58px;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #m{
   --out:#060E17; --bg:#0A1521; --surface:#112131; --surface-2:#1A2F44; --ink:#E4ECF4; --muted:#93A5B8; --line:#233850;
@@ -433,18 +433,24 @@ h1,h2,h3{line-height:1.3;letter-spacing:-.01em}
 @media (min-width:480px){#m .app{border-inline:1px solid var(--line)}}
 
 /* top bar: small title fades in once the large title scrolls away */
-#m .bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;height:var(--bar-h);display:flex;align-items:center;padding:0 6px 0 16px;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:border-color .2s}
-#m .bar.scrolled{border-bottom-color:var(--line)}
-#m .bar-title{flex:1;font-size:var(--t-body);font-weight:700;opacity:0;transition:opacity .2s}
-#m .bar.scrolled .bar-title{opacity:1}
+/* 포털 앱 스타일 헤더: 로고 + 테두리 검색창. 스크롤하면 위로 사라지고 탭 줄만 남아요 */
+#m .bar{display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 8px;background:var(--surface)}
+/* 글자 탭 줄: 선택된 탭은 굵은 글씨 + 밑줄, 옆으로 넘겨 볼 수 있어요 */
+#m .ntabs{position:sticky;top:0;z-index:20;height:var(--ntab-h);display:flex;gap:2px;overflow-x:auto;padding:0 8px;background:var(--surface);border-bottom:1px solid var(--line);scrollbar-width:none;transition:box-shadow .2s}
+#m .ntabs::-webkit-scrollbar{display:none}
+#m .ntabs.scrolled{box-shadow:0 2px 6px rgba(15,42,68,.08);padding-top:env(safe-area-inset-top,0px);height:calc(var(--ntab-h) + env(safe-area-inset-top,0px))}
+#m .ntabs button{flex:none;position:relative;border:0;background:none;padding:0 12px;font-size:var(--t-lead);font-weight:500;color:var(--muted);letter-spacing:-.02em}
+#m .ntabs [aria-current="page"]{color:var(--ink);font-weight:800}
+#m .ntabs [aria-current="page"]::after{content:"";position:absolute;left:12px;right:12px;bottom:-1px;height:3px;border-radius:2px;background:var(--ink)}
+#m .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 #m .brand{font-family:var(--f-body);font-size:var(--t-small);font-weight:700;background:var(--ink);color:var(--bg);padding:3px 6px;border-radius:5px;margin-right:10px}
 #m .ibtn{width:44px;height:44px;border:0;background:none;border-radius:12px;display:grid;place-items:center}
 #m .ibtn svg{width:22px;height:22px}
 #m .ibtn:active{background:var(--surface-2)}
 
-#m .page-head{padding:4px 16px 18px}
+#m .page-head{padding:14px 16px 12px}
 #m .page-head h1{font-size:var(--t-h1);font-weight:700;letter-spacing:-.02em;line-height:1.2}
-#m .page-head p{margin:6px 0 0;color:var(--muted);font-size:var(--t-small)}
+#m .page-head p{margin:0;color:var(--muted);font-size:var(--t-small)}
 
 #m .sec{margin-top:28px}
 #m .sec:first-of-type{margin-top:0}
@@ -529,7 +535,7 @@ h1,h2,h3{line-height:1.3;letter-spacing:-.01em}
 #m .save-i[aria-pressed="true"] svg{fill:currentColor}
 
 /* filters */
-#m .filters{position:sticky;top:calc(var(--bar-h) + env(safe-area-inset-top,0px));z-index:10;background:var(--bg);padding-bottom:12px;display:flex;flex-direction:column;gap:10px}
+#m .filters{position:sticky;top:calc(var(--ntab-h) + env(safe-area-inset-top,0px));z-index:10;background:var(--bg);padding:12px 0;display:flex;flex-direction:column;gap:10px}
 #m .chips{display:flex;gap:8px;overflow-x:auto;padding:0 16px;scrollbar-width:none}
 #m .chips::-webkit-scrollbar{display:none}
 #m .chips.wrap{flex-wrap:wrap}
@@ -554,11 +560,14 @@ h1,h2,h3{line-height:1.3;letter-spacing:-.01em}
 #m .foot-note{padding:28px 16px 0;margin:0;font-size:var(--t-small);color:var(--muted)}
 
 /* tab bar */
-#m .tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:440px;z-index:30;display:grid;grid-template-columns:repeat(5,1fr);background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+/* 하단 앱 바: 홈 · 저장 · (가운데 동그란 검색) · 테마 · 맨 위 */
+#m .tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:440px;z-index:30;display:grid;grid-template-columns:repeat(5,1fr);align-items:center;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
 #m .tabbar button{height:var(--tab-h);border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:var(--t-label);color:var(--muted)}
 #m .tabbar svg{width:24px;height:24px}
 #m .tabbar [aria-current="page"]{color:var(--ink);font-weight:700}
-#m .tabbar [aria-current="page"] svg{color:var(--accent)}
+#m .tabbar [aria-current="page"] svg{fill:currentColor;fill-opacity:.12}
+#m .tabbar .dot span{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;color:#fff;background:linear-gradient(140deg,color-mix(in srgb,var(--accent) 80%,#fff),var(--accent));box-shadow:0 4px 12px color-mix(in srgb,var(--accent) 40%,transparent)}
+#m .tabbar .dot:active span{transform:scale(.94)}
 
 /* bottom sheet */
 #m .scrim{position:fixed;inset:0;background:var(--scrim);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s}
@@ -610,14 +619,94 @@ h1,h2,h3{line-height:1.3;letter-spacing:-.01em}
 #m .toast{position:fixed;left:50%;bottom:calc(var(--tab-h) + env(safe-area-inset-bottom,0px) + 14px);transform:translate(-50%,16px);width:max-content;max-width:calc(100% - 32px);background:var(--ink);color:var(--bg);padding:12px 16px;border-radius:12px;font-size:var(--t-small);z-index:60;opacity:0;transition:.2s;pointer-events:none}
 #m .toast.on{opacity:1;transform:translate(-50%,0)}
 
-@media (prefers-reduced-motion:reduce){#m .sheet,#m .scrim,#m .toast,#m .bar,#m .bar-title{transition:none}}
+@media (prefers-reduced-motion:reduce){#m .sheet,#m .scrim,#m .toast,#m .ntabs{transition:none}}
 
 /* typography: one family (Plex Sans KR); page titles and headline figures get weight 700 and size, not a second face */
 #m{word-break:keep-all;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;line-height:1.6}
 #m h1,#m h2,#m h3{line-height:1.3;letter-spacing:-.01em}
 #m .page-head h1,#m .dd b,#m .tile .n,#m .prize,#m .income b{font-weight:700;letter-spacing:-.01em}
-#m .page-head h1{line-height:1.15}
 #m .row-title,#m .sheet-body h2{line-height:1.45}
+
+/* ===== 포털 뉴스 앱 레이아웃 (네이버 모바일 뉴스 수치 기준: 탭 17px/43px, 구획 8px 회색 띠,
+   목록 좌우 20px·위아래 11px, 썸네일 106×70 둥근 8px 왼쪽, 제목 16px/21px 보통 굵기, 언론사 14px 회색) ===== */
+#m{--f-body:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;
+  --hdr:#0F2A44; --hdr-ink:#FFFFFF; --sel:#3F66A8; --gap:#EEF1F6; --hair:#F0F2F5; --title:#303038; --sub:#767678}
+:root[data-theme="dark"] #m{--hdr:#112131; --sel:#7FA3E0; --gap:#0A1521; --hair:#1F3349; --title:#DADDE0; --sub:#A5A5A7}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #m{--hdr:#112131; --sel:#7FA3E0; --gap:#0A1521; --hair:#1F3349; --title:#DADDE0; --sub:#A5A5A7}}
+#m .app{background:var(--surface)}
+#m{line-height:1.4}
+
+/* 헤더: 색이 꽉 찬 바. 로고 · 서비스명 | 바로가기 글자 · 오른쪽 아이콘 */
+#m .bar{height:auto;min-height:52px;padding:env(safe-area-inset-top,0px) 4px 0 16px;gap:0;background:var(--hdr);color:var(--hdr-ink)}
+#m .brand{background:var(--hdr-ink);color:var(--hdr);font-size:13px;padding:2px 5px;border-radius:4px;margin-right:6px;letter-spacing:-.02em}
+#m .svc{font-size:19px;font-weight:800;letter-spacing:-.06em;margin-right:8px;white-space:nowrap}
+#m .fam{flex:1;display:flex;align-items:center;min-width:0;overflow:hidden}
+#m .fam button{border:0;background:none;color:color-mix(in srgb,var(--hdr-ink) 78%,transparent);font-size:15px;letter-spacing:-.04em;padding:0 9px;white-space:nowrap;position:relative}
+#m .fam button::before{content:"";position:absolute;left:0;top:50%;width:1px;height:12px;margin-top:-6px;background:color-mix(in srgb,var(--hdr-ink) 35%,transparent)}
+#m .hbtn{color:var(--hdr-ink)}
+#m .hbtn:active{background:color-mix(in srgb,var(--hdr-ink) 15%,transparent)}
+
+/* 탭 줄: 17px 보통 굵기 회색, 선택은 굵게 + 색 + 글자 폭만큼 2px 밑줄 */
+#m .ntabs{height:var(--ntab-h);padding:0 4px;gap:0;background:var(--surface);border-bottom:1px solid var(--line)}
+#m .ntabs button{padding:0 12px;font-size:17px;font-weight:400;letter-spacing:-.53px;color:var(--sub)}
+#m .ntabs [aria-current="page"]{color:var(--sel);font-weight:700}
+#m .ntabs [aria-current="page"]::after{left:10px;right:10px;bottom:0;height:2px;border-radius:0;background:var(--sel)}
+
+/* 구획: 흰 바탕 섹션을 8px 회색 띠로 나눠요 */
+#m .page-head{padding:12px 20px;border-bottom:8px solid var(--gap)}
+#m .page-head p{font-size:13px;color:var(--sub);letter-spacing:-.3px}
+#m .sec{margin-top:0;padding:20px 0 9px;border-top:8px solid var(--gap)}
+#m .page-head + .sec{border-top:0}
+#m .sec-h{padding:0 20px 11px;min-height:0}
+#m .sec-h h2{font-size:16px;font-weight:700;letter-spacing:-.5px}
+#m .sec-h small{font-size:14px;color:var(--sel);font-weight:700;margin-left:4px}
+#m .more{min-height:0;padding:0;color:var(--sub);font-size:14px;font-weight:400;letter-spacing:-.5px}
+#m .more::after{content:" ›"}
+#m .note{padding:0 20px 8px;font-size:13px;color:var(--sub)}
+#m .filters{background:var(--surface);padding:12px 0;border-bottom:1px solid var(--hair)}
+#m .chips{padding:0 20px}
+#m .chip{min-height:34px;padding:0 13px;border-radius:17px;font-size:14px;letter-spacing:-.3px;border-color:var(--line);background:var(--surface)}
+#m .chip[aria-pressed="true"]{background:var(--title);border-color:var(--title);color:var(--surface)}
+#m .seg{margin:0 20px;border-radius:8px}
+#m .seg button{min-height:34px;border-radius:6px;font-size:14px}
+#m .more-row{display:block;width:100%;border:0;border-top:1px solid var(--hair);background:var(--surface);padding:12px 7px 3px;margin-top:2px;font-size:15px;letter-spacing:-1px;color:var(--title)}
+#m .more-row::after{content:"";display:inline-block;width:6px;height:6px;margin:0 0 3px 6px;border:solid currentColor;border-width:0 1.5px 1.5px 0;transform:rotate(45deg)}
+
+/* 목록 줄: 썸네일 왼쪽 → 제목(2줄) → 회색 출처 줄 */
+#m .list{background:none;border:0;padding:0 20px}
+#m .row{gap:12px;align-items:center;padding:11px 0;border-top:1px solid var(--hair);min-height:92px}
+#m .list > .row:first-child,#m .list > .sw:first-child{border-top:0}
+#m .row+.row::before,#m .sw+.sw::before{display:none}
+#m .sw{padding:14px 0;border-top:1px solid var(--hair)}
+#m .row-main{display:flex;flex-direction:column;gap:6px}
+#m .row-title{order:-1;margin:0;font-size:16px;line-height:21px;font-weight:400;letter-spacing:-.5px;color:var(--title)}
+#m .row-meta{font-size:14px;line-height:15px;color:var(--sub);letter-spacing:-.5px;gap:0 6px}
+#m .row-meta > span + span::before{content:"";display:inline-block;width:2px;height:2px;border-radius:50%;background:currentColor;vertical-align:middle;margin-right:6px;opacity:.7}
+#m .cat{color:var(--sub);font-weight:400}
+#m .row-sub{margin:0;font-size:14px;line-height:18px;color:var(--sub);letter-spacing:-.5px}
+#m .row .row-sub.lede{display:none}
+#m .row .thumb{order:-1}
+#m .t-news{width:106px;height:70px;border-radius:8px;border:0}
+#m .t-poster{width:53px;height:70px;border-radius:6px}
+#m .cnt{margin-left:auto;padding-left:8px;color:var(--sel);font-size:12px;font-weight:500;letter-spacing:-.3px;white-space:nowrap}
+#m .row-meta > span.cnt::before,#m .row-meta > .tagn::before,#m .row-meta > .lv::before{display:none}
+#m .row-meta .src{flex:0 1 auto;max-width:150px}
+#m .row-sub .src-line{display:inline-flex;vertical-align:-2px}
+#m .tagn,#m .lv,#m .campus{font-size:12px;font-weight:500;padding:1px 5px;border-radius:3px}
+#m .dd{width:53px;height:53px;border-radius:8px}
+#m .dd b{font-size:14px}
+#m .pd{font-size:13px;border-radius:4px;padding:3px 6px}
+#m .save-i{margin:-8px -8px -8px 0}
+
+/* 홈 첫 기사: 큰 사진 + 제목 */
+#m .hero{padding:0 20px 11px}
+#m .hero .thumb{border-radius:8px;margin-bottom:10px;border:0}
+#m .hero .row-title{font-size:19px;line-height:25px;font-weight:700;letter-spacing:-.6px;margin-top:6px}
+#m .hero .row-meta{font-size:13px}
+#m .tile{border-radius:8px;background:var(--surface);border-color:var(--line);min-height:132px}
+#m .strip{padding:0 20px 4px;scroll-padding-inline:20px}
+#m .empty{margin:0 20px 11px;border-radius:8px}
+#m .foot-note{padding:20px 20px 0;font-size:12px;color:var(--sub);border-top:8px solid var(--gap)}
 </style>
 
 
@@ -734,20 +823,28 @@ h1,h2,h3{line-height:1.3;letter-spacing:-.01em}
 <div id="m" hidden>
 
 <div class="app">
+  <!-- 포털 앱 구성: 로고 + 검색창(스크롤하면 위로 사라짐) → 글자 탭 줄(상단 고정) → 하단 앱 바 -->
   <header class="bar" id="m-bar">
-    <span class="brand">CNH</span><span class="bar-title" id="m-bar-title">오늘</span>
-    <button class="ibtn" id="m-open-search" aria-label="검색"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
-    <button class="ibtn" id="m-theme" aria-label="화면 테마 바꾸기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+    <span class="brand">CNH</span><b class="svc">토목허브</b>
+    <span class="fam"><button data-go="contest">공모전</button><button data-go="jobs">채용</button><button data-go="jbnu">전북대</button></span>
+    <button class="ibtn hbtn" id="m-open-search" aria-label="검색"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
   </header>
+  <nav class="ntabs" id="m-ntabs" aria-label="주요 메뉴">
+    <button data-go="home">오늘</button>
+    <button data-go="news">뉴스</button>
+    <button data-go="contest">공모전</button>
+    <button data-go="jobs">채용</button>
+    <button data-go="jbnu">전북대</button>
+  </nav>
   <main id="m-view"></main>
 </div>
 
 <nav class="tabbar" aria-label="하단 메뉴">
-  <button data-go="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11 12 4l9 7v9H3z"/></svg>오늘</button>
-  <button data-go="news"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h10M7 17h6"/></svg>뉴스</button>
-  <button data-go="contest"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/></svg>공모전</button>
-  <button data-go="jobs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V4h6v3"/></svg>채용</button>
-  <button data-go="jbnu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m2 9 10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/></svg>전북대</button>
+  <button data-go="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11 12 4l9 7v9H3z"/></svg>홈</button>
+  <button data-go="saved"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"/></svg>저장</button>
+  <button class="dot" id="m-dot-search" aria-label="검색"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span></button>
+  <button id="m-theme" aria-label="화면 테마 바꾸기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>테마</button>
+  <button id="m-top" aria-label="맨 위로"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V5M5 11l7-7 7 7"/></svg>맨 위</button>
 </nav>
 
 <div class="scrim" id="m-scrim"></div>
@@ -1204,12 +1301,13 @@ const VIEWS = ['home','news','contest','jobs','jbnu'];
 function go(v){
   if (v === 'contests') v = 'contest';
   if (v === 'recruit') v = 'jobs';
+  const keepHash = v === 'saved'; // 휴대폰 화면 전용 '저장' 주소는 그대로 두고, 컴퓨터 화면에선 홈을 보여 줘요
   if (!VIEWS.includes(v)) v = 'home';
   VIEWS.forEach(x=>$('#v-'+x).hidden = x!==v);
   document.querySelectorAll('#ca nav [data-go], #ca .bottom-bar [data-go]').forEach(b=>{
     if (b.dataset.go===v) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current');
   });
-  if (location.hash.slice(1)!==v) history.replaceState(null,'','#'+v);
+  if (!keepHash && location.hash.slice(1)!==v) history.replaceState(null,'','#'+v);
   if (v==='news' || v==='home') {
     requestAnimationFrame(() => { fitNewsLines(); requestAnimationFrame(fitNewsLines); });
   }
@@ -1358,7 +1456,7 @@ const today = new Date(); today.setHours(0,0,0,0);
 const day = off => { const d = new Date(today); d.setDate(d.getDate()+off); return d; };
 const DAY = ['일','월','화','수','목','금','토'];
 const md = d => `${d.getMonth()+1}.${String(d.getDate()).padStart(2,'0')}(${DAY[d.getDay()]})`;
-const urg = off => off <= 3 ? 'hot' : off <= 7 ? 'soon' : '';
+const urg = off => off < 0 ? '' : off <= 3 ? 'hot' : off <= 7 ? 'soon' : '';
 
 /* ---------- 실시간 정적 번들 및 캐시 기반 팩트 데이터 즉시 초기화 (모바일 인라인 뷰) ---------- */
 let CATS = [{id:'general',name:'토목종합'},{id:'road',name:'도로·철도'},{id:'water',name:'수자원·항만'},{id:'tunnel',name:'터널·지반'},{id:'smart',name:'스마트건설'}];
@@ -1403,13 +1501,14 @@ function toggleSave(id){
   saved.has(id) ? saved.delete(id) : saved.add(id);
   persistSaved();
   document.querySelectorAll(`[data-save="${id}"]`).forEach(b=>{ b.setAttribute('aria-pressed', saved.has(id)); if (!b.classList.contains('save-i')) b.textContent = saved.has(id) ? '저장됨' : '저장'; });
-  toast(saved.has(id) ? '저장했어요. 오늘 탭에서 다시 볼 수 있어요.' : '저장을 취소했어요.');
+  toast(saved.has(id) ? '저장했어요. 아래 저장 버튼에서 모아 볼 수 있어요.' : '저장을 취소했어요.');
 }
 
 /* ---------- 행 ---------- */
 const saveIcon = id => `<button class="save-i" data-save="${id}" aria-pressed="${saved.has(id)}" aria-label="저장"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"/></svg></button>`;
-const ddBox = off => `<div class="dd ${urg(off)} ${off===0?'today':''}"><b>${off===0?'D-Day':(off>=60?'상시':'D-'+off)}</b></div>`;
-const ddPill = off => `<span class="pd ${urg(off)}">${off===0?'D-Day':(off>=60?'상시':'D-'+off)}</span>`;
+const ddText = off => off<0 ? '마감' : off===0 ? 'D-Day' : off>=60 ? '상시' : 'D-'+off;
+const ddBox = off => `<div class="dd ${urg(off)} ${off===0?'today':''}"><b>${ddText(off)}</b></div>`;
+const ddPill = off => `<span class="pd ${urg(off)}">${ddText(off)}</span>`;
 /* 수집기가 붙이는 '제목 + ○○ 분야 최신 인프라 동향…' 요약은 새 정보가 없어서 모바일 목록에선 빼요 */
 const rowTitle = n => { const m = n.title.match(/^(.*\S)\s*[-|]\s*(.+)$/); return m && m[2].trim() === n.src.trim() ? m[1] : n.title; };
 const rowLede = n => {
@@ -1429,14 +1528,14 @@ const newsHero = (n,i) => {
   const count = (n.clusters && n.clusters.length) ? n.clusters.length : (n.n || 0);
   const safeSrc = (n.src || '언론사').replace(/"/g, '&quot;');
   return `<button class="hero" data-open="n:${i}">${thumb(n.image,'',n.isCurated,n.src)}
-  <div class="row-meta"><span class="cat" style="--cat:var(--c-${n.cat})">${catName(n.cat)}</span><span class="src" title="${safeSrc}">${n.src}</span><span>관련 ${count}건</span></div>
+  <div class="row-meta"><span class="src" title="${safeSrc}">${n.src}</span><span class="cat">${catName(n.cat)}</span>${count?`<span class="cnt">관련 ${count}</span>`:''}</div>
   <div class="row-title">${rowTitle(n)}</div></button>`;
 };
 const newsRow = (n,i) => {
   const count = (n.clusters && n.clusters.length) ? n.clusters.length : (n.n || 0);
   const safeSrc = (n.src || '언론사').replace(/"/g, '&quot;');
   return `<button class="row" data-open="n:${i}"><div class="row-main">
-  <div class="row-meta"><span class="cat" style="--cat:var(--c-${n.cat})">${catName(n.cat)}</span><span class="src" title="${safeSrc}">${n.src}</span><span>관련 ${count}건</span></div>
+  <div class="row-meta"><span class="src" title="${safeSrc}">${n.src}</span><span class="cat">${catName(n.cat)}</span>${count?`<span class="cnt">관련 ${count}</span>`:''}</div>
   <div class="row-title">${rowTitle(n)}</div>${rowLede(n)?`<div class="row-sub lede">${rowLede(n)}</div>`:''}</div>${thumb(n.image,'t-news',n.isCurated,n.src)}</button>`;
 };
 const contestRow = c => {
@@ -1460,33 +1559,41 @@ const swRow = s => `<div class="sw click" data-open="s:${s.id}" role="button" ta
   <div class="row-title">${s.title}</div>
   <div class="sw-line"><div class="row-sub">활동 ${s.when}</div>${saveIcon(s.id)}</div></div>`;
 const list = rows => `<div class="list">${rows}</div>`;
-const head = (t, p) => `<div class="page-head"><h1>${t}</h1>${p?`<p>${p}</p>`:''}</div>`;
+// 탭 이름은 위쪽 탭 줄에 이미 보이므로 제목은 화면 읽기용으로만 두고, 요약 한 줄만 보여 줘요
+const head = (t, p) => `<div class="page-head"><h1 class="sr">${t}</h1>${p?`<p>${p}</p>`:''}</div>`;
 
 /* ---------- 화면 ---------- */
 let tab = 'home', newsCat = 'all', target = '전체', sortBy = 'dday', jobGrp = 'public', lvl = '전체';
-const TITLES = {home:'오늘', news:'뉴스', contest:'공모전', jobs:'채용', jbnu:'전북대'};
+const TITLES = {home:'오늘', news:'뉴스', contest:'공모전', jobs:'채용', jbnu:'전북대', saved:'저장'};
+
+const savedRowsHtml = () => [
+  ...CONTESTS.filter(c=>saved.has(c.id)).map(contestRow), ...JOBS.filter(j=>saved.has(j.id)).map(jobRow),
+  ...ALBA.filter(a=>saved.has(a.id)).map(albaRow), ...SW.filter(s=>saved.has(s.id)).map(swRow),
+  ...NEWS.map((n,i)=>[n,i]).filter(([n])=>saved.has(n.id)).map(([n,i])=>newsRow(n,i)),
+].join('');
+const SAVED_EMPTY = '<p class="empty">뉴스·공모전·채용을 열고 저장을 누르거나, 전북대 항목의 북마크 아이콘을 누르면 여기에 모여요.</p>';
 
 const VIEWS = {
+  saved(){
+    const rows = savedRowsHtml();
+    return head('저장', `저장한 항목 ${saved.size}개`) + (rows ? list(rows) : SAVED_EMPTY);
+  },
   home(){
     const items = [
       ...CONTESTS.map(c=>({k:'공모전',c:'var(--accent)',t:c.title,end:c.end,open:'c:'+c.id})),
       ...JOBS.map(j=>({k:'채용',c:'var(--c-road)',t:`${j.co} ${j.role}`,end:j.end,open:'j:'+j.id})),
       ...SW.map(s=>({k:'SW '+s.kind,c:'var(--c-smart)',t:s.title,end:s.end,open:'s:'+s.id})),
     ].filter(x=>x.end>=0 && x.end<60).sort((a,b)=>a.end-b.end).slice(0,5);
-    const savedRows = [
-      ...CONTESTS.filter(c=>saved.has(c.id)).map(contestRow), ...JOBS.filter(j=>saved.has(j.id)).map(jobRow),
-      ...ALBA.filter(a=>saved.has(a.id)).map(albaRow), ...SW.filter(s=>saved.has(s.id)).map(swRow),
-      ...NEWS.map((n,i)=>[n,i]).filter(([n])=>saved.has(n.id)).map(([n,i])=>newsRow(n,i)),
-    ].join('');
+    const savedRows = savedRowsHtml();
     return head('오늘', `${today.getMonth()+1}월 ${today.getDate()}일 ${DAY[today.getDay()]}요일, 다가오는 주요 일정 ${items.length}개`) + `
       <section class="sec"><div class="sec-h"><h2>마감 임박</h2></div>
         <div class="strip">${items.map(x=>`<button class="tile ${x.end<=3?'hot':x.end<=7?'soon':''}" style="--kind:${x.c}" ${x.open?`data-open="${x.open}"`:`data-go="${x.go}"`}>
           <span class="k">${x.k}</span><span class="n">${x.end===0?'D-Day':(x.end>=60?'상시':'D-'+x.end)}</span><span class="t">${x.t}</span></button>`).join('')}</div></section>
-      <section class="sec"><div class="sec-h"><h2>주요 뉴스</h2><button class="more" data-go="news">전체 보기</button></div>${NEWS[0]&&NEWS[0].image ? newsHero(NEWS[0],0) + list(NEWS.slice(1,4).map((n,k)=>newsRow(n,k+1)).join('')) : list(NEWS.slice(0,4).map(newsRow).join(''))}</section>
+      <section class="sec"><div class="sec-h"><h2>주요 뉴스</h2></div>${NEWS[0]&&NEWS[0].image ? newsHero(NEWS[0],0) + list(NEWS.slice(1,4).map((n,k)=>newsRow(n,k+1)).join('')) : list(NEWS.slice(0,4).map(newsRow).join(''))}<button class="more-row" data-go="news">주요 뉴스 더보기</button></section>
       <section class="sec"><div class="sec-h"><h2>지금 많이 찾는 키워드</h2></div>
         <div class="chips wrap">${TRENDS.map(t=>`<button class="chip" data-q="${t}">#${t}</button>`).join('')}</div></section>
       <section class="sec"><div class="sec-h"><h2>저장한 항목<small>${saved.size}</small></h2></div>
-        ${savedRows ? list(savedRows) : '<p class="empty">뉴스·공모전·채용을 열고 저장을 누르거나, 전북대 항목의 북마크 아이콘을 누르면 여기에 모여요.</p>'}</section>
+        ${savedRows ? list(savedRows) : SAVED_EMPTY}</section>
       <p class="foot-note" id="m-live-notice">실시간 자동 수집 데이터 (토목 뉴스 136건, 채용, 공모전, 전북대 알바)</p>`;
   },
   news(){
@@ -1532,8 +1639,9 @@ const VIEWS = {
 
 function render(toTop = true){
   $('#m-view').innerHTML = VIEWS[tab]();
-  $('#m-bar-title').textContent = TITLES[tab];
-  document.querySelectorAll('.tabbar [data-go]').forEach(b=> b.dataset.go===tab ? b.setAttribute('aria-current','page') : b.removeAttribute('aria-current'));
+  document.querySelectorAll('#m-ntabs [data-go], #m .tabbar [data-go]').forEach(b=> b.dataset.go===tab ? b.setAttribute('aria-current','page') : b.removeAttribute('aria-current'));
+  const on = $('#m-ntabs [aria-current]');
+  if (on) on.scrollIntoView({block:'nearest', inline:'center'});
   if (toTop) window.scrollTo({top:0});
   onScroll();
   requestAnimationFrame(() => { fitMobileNewsLines(); requestAnimationFrame(fitMobileNewsLines); });
@@ -1717,7 +1825,9 @@ document.addEventListener('keydown', e=>{
     e.preventDefault(); e.target.click();
   }
 });
-function onScroll(){ $('#m-bar').classList.toggle('scrolled', scrollY > 44); }
+function onScroll(){ $('#m-ntabs').classList.toggle('scrolled', scrollY > $('#m-bar').offsetHeight); }
+$('#m-dot-search').onclick = () => openSearch();
+$('#m-top').onclick = () => window.scrollTo({top:0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
 addEventListener('scroll', onScroll, {passive:true});
 
 $('#m-theme').onclick = ()=>{
@@ -1731,7 +1841,7 @@ try { const th = localStorage.getItem('cnh-theme'); if (th) document.documentEle
 // 다른 화면이나 다른 기기에서 북마크가 바뀌면 저장 버튼과 오늘 탭을 다시 그려요
 savedListeners.push(()=>{
   document.querySelectorAll('#m [data-save]').forEach(b=>{ const on = saved.has(b.dataset.save); b.setAttribute('aria-pressed', on); if (!b.classList.contains('save-i')) b.textContent = on ? '저장됨' : '저장'; });
-  if (tab === 'home' && !document.getElementById('m').hidden) render(false);
+  if ((tab === 'home' || tab === 'saved') && !document.getElementById('m').hidden) rerender();
 });
 go(location.hash.slice(1) || 'home');
 
