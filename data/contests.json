@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-04 11:01:59",
-  "last_updated_display": "11월 04일 11:01",
+  "last_updated": "2026-11-04 12:01:50",
+  "last_updated_display": "11월 04일 12:01",
   "total_count": 35,
   "featured_count": 35,
   "categories": [
@@ -446,6 +446,36 @@
       }
     },
     {
+      "id": "wevity-111912",
+      "source": "wevity_it",
+      "source_name": "위비티",
+      "title": "[CJ제일제당] 햇반 30주년 AI 공모전 (갓 지은 AI디어)",
+      "organizer": "CJ제일제당",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.13 마감",
+      "deadline_date": "2026-11-13",
+      "deadline_time": "23:59",
+      "fields": [
+        "웹/모바일/IT"
+      ],
+      "description": "CJ제일제당 주최 · 분야: 웹/모바일/IT",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=view&ix=111912",
+      "image": "",
+      "is_active": true,
+      "track": "it",
+      "dday_info": {
+        "text": "D-9",
+        "days": 9,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
       "id": "devevent-5ac401b71d",
       "source": "devevent",
       "source_name": "데브이벤트",
@@ -470,36 +500,6 @@
       "link": "https://www.spaceappschallenge.org/2026/local-events/seoul/",
       "image": "",
       "is_active": true,
-      "dday_info": {
-        "text": "D-10",
-        "days": 10,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "wevity-111912",
-      "source": "wevity_it",
-      "source_name": "위비티",
-      "title": "[CJ제일제당] 햇반 30주년 AI 공모전 (갓 지은 AI디어)",
-      "organizer": "CJ제일제당",
-      "category": "컴퓨터공학",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.11.14 마감",
-      "deadline_date": "2026-11-14",
-      "deadline_time": "23:59",
-      "fields": [
-        "웹/모바일/IT"
-      ],
-      "description": "CJ제일제당 주최 · 분야: 웹/모바일/IT",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=view&ix=111912",
-      "image": "",
-      "is_active": true,
-      "track": "it",
       "dday_info": {
         "text": "D-10",
         "days": 10,
@@ -589,6 +589,36 @@
       }
     },
     {
+      "id": "wevity-111666",
+      "source": "wevity",
+      "source_name": "위비티",
+      "title": "[한국도로공사] AI 활용 아이디어 공모전",
+      "organizer": "한국도로공사",
+      "category": "전북대 토목",
+      "badge_color": "emerald",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.15 마감",
+      "deadline_date": "2026-11-15",
+      "deadline_time": "23:59",
+      "fields": [
+        "기획/아이디어"
+      ],
+      "description": "한국도로공사 주최 · 분야: 기획/아이디어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=111666",
+      "image": "",
+      "is_active": true,
+      "track": "civil",
+      "dday_info": {
+        "text": "D-11",
+        "days": 11,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
       "id": "devevent-b33316d351",
       "source": "devevent",
       "source_name": "데브이벤트",
@@ -617,36 +647,6 @@
       "dday_info": {
         "text": "D-11",
         "days": 11,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "wevity-111666",
-      "source": "wevity",
-      "source_name": "위비티",
-      "title": "[한국도로공사] AI 활용 아이디어 공모전",
-      "organizer": "한국도로공사",
-      "category": "전북대 토목",
-      "badge_color": "emerald",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.11.16 마감",
-      "deadline_date": "2026-11-16",
-      "deadline_time": "23:59",
-      "fields": [
-        "기획/아이디어"
-      ],
-      "description": "한국도로공사 주최 · 분야: 기획/아이디어",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=111666",
-      "image": "",
-      "is_active": true,
-      "track": "civil",
-      "dday_info": {
-        "text": "D-12",
-        "days": 12,
         "is_urgent": false,
         "is_closed": false
       }
@@ -734,6 +734,36 @@
       }
     },
     {
+      "id": "wevity-111726",
+      "source": "wevity",
+      "source_name": "위비티",
+      "title": "용산국제업무지구 AI 스마트도시 아이디어 공모",
+      "organizer": "서울특별시",
+      "category": "전북대 토목",
+      "badge_color": "emerald",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.20 마감",
+      "deadline_date": "2026-11-20",
+      "deadline_time": "23:59",
+      "fields": [
+        "건축/건설/인테리어"
+      ],
+      "description": "서울특별시 주최 · 분야: 건축/건설/인테리어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=24&gbn=view&ix=111726",
+      "image": "",
+      "is_active": true,
+      "track": "civil",
+      "dday_info": {
+        "text": "D-16",
+        "days": 16,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
       "id": "devevent-1e1f66f18d",
       "source": "devevent",
       "source_name": "데브이벤트",
@@ -766,36 +796,6 @@
       }
     },
     {
-      "id": "wevity-111726",
-      "source": "wevity",
-      "source_name": "위비티",
-      "title": "용산국제업무지구 AI 스마트도시 아이디어 공모",
-      "organizer": "서울특별시",
-      "category": "전북대 토목",
-      "badge_color": "emerald",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.11.21 마감",
-      "deadline_date": "2026-11-21",
-      "deadline_time": "23:59",
-      "fields": [
-        "건축/건설/인테리어"
-      ],
-      "description": "서울특별시 주최 · 분야: 건축/건설/인테리어",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=24&gbn=view&ix=111726",
-      "image": "",
-      "is_active": true,
-      "track": "civil",
-      "dday_info": {
-        "text": "D-17",
-        "days": 17,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
       "id": "wevity-112049",
       "source": "wevity_it",
       "source_name": "위비티",
@@ -807,8 +807,8 @@
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.11.21 마감",
-      "deadline_date": "2026-11-21",
+      "period": "~ 2026.11.20 마감",
+      "deadline_date": "2026-11-20",
       "deadline_time": "23:59",
       "fields": [
         "웹/모바일/IT"
@@ -819,8 +819,8 @@
       "is_active": true,
       "track": "it",
       "dday_info": {
-        "text": "D-17",
-        "days": 17,
+        "text": "D-16",
+        "days": 16,
         "is_urgent": false,
         "is_closed": false
       }
@@ -837,8 +837,8 @@
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.11.21 마감",
-      "deadline_date": "2026-11-21",
+      "period": "~ 2026.11.20 마감",
+      "deadline_date": "2026-11-20",
       "deadline_time": "23:59",
       "fields": [
         "웹/모바일/IT"
@@ -849,8 +849,8 @@
       "is_active": true,
       "track": "it",
       "dday_info": {
-        "text": "D-17",
-        "days": 17,
+        "text": "D-16",
+        "days": 16,
         "is_urgent": false,
         "is_closed": false
       }
@@ -867,8 +867,8 @@
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.11.21 마감",
-      "deadline_date": "2026-11-21",
+      "period": "~ 2026.11.20 마감",
+      "deadline_date": "2026-11-20",
       "deadline_time": "23:59",
       "fields": [
         "웹/모바일/IT"
@@ -879,8 +879,8 @@
       "is_active": true,
       "track": "it",
       "dday_info": {
-        "text": "D-17",
-        "days": 17,
+        "text": "D-16",
+        "days": 16,
         "is_urgent": false,
         "is_closed": false
       }
