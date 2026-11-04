@@ -34,10 +34,10 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 CONTESTS_JSON_PATH = os.path.join(DATA_DIR, "contests.json")
 KST = timezone(timedelta(hours=9))
 
-# 카테고리 기본 정의 (전북대 토목, 전북대, 컴퓨터공학 3분류 원칙)
+# 카테고리 기본 정의 (토목, 전북대, 컴퓨터공학 3분류 원칙)
 CONTEST_CATEGORIES = [
     "ALL",
-    "전북대 토목",
+    "토목",
     "전북대",
     "컴퓨터공학"
 ]
@@ -187,7 +187,7 @@ def scrape_civil_contests():
     # 2. 유효 공모전 검증 (Rule 1-①, 1-⑤, 1-⑦: 무결성 검증 게이트)
     active_contests = []
     for c in raw_contests:
-        # [카테고리 3분류 정규화: 전북대 토목 / 전북대 / 컴퓨터공학]
+        # [카테고리 3분류 정규화: 토목 / 전북대 / 컴퓨터공학]
         link = str(c.get("link", ""))
         source = str(c.get("source", ""))
         organizer = str(c.get("organizer", ""))
@@ -208,7 +208,7 @@ def scrape_civil_contests():
             c["track"] = "it"
             c["badge_color"] = "blue"
         elif is_civil_domain or source in ("manual", "wevity"):
-            c["category"] = "전북대 토목"
+            c["category"] = "토목"
             c["track"] = "civil"
             c["badge_color"] = "emerald"
         else:

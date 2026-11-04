@@ -14,7 +14,13 @@ from datetime import date, datetime
 import requests
 import wevity_contest_scraper as wevity
 
-DEVEVENT_README_URL = "https://raw.githubusercontent.com/brave-people/Dev-Event/master/README.md"
+# jcloud 서버 DNS가 raw.githubusercontent.com을 NXDOMAIN으로 막아서(2026-10-30~) 접속되는 주소를 순서대로 시도한다
+DEVEVENT_README_SOURCES = [
+    ("https://api.github.com/repos/brave-people/Dev-Event/contents/README.md",
+     {"Accept": "application/vnd.github.raw"}),
+    ("https://cdn.jsdelivr.net/gh/brave-people/Dev-Event@master/README.md", {}),
+    ("https://raw.githubusercontent.com/brave-people/Dev-Event/master/README.md", {}),
+]
 
 WEVITY_CATEGORIES = [
     (20, "웹/모바일/IT", 3),
@@ -183,13 +189,19 @@ def fetch_devevent_contests() -> list:
     print("\n" + "-" * 60)
     print("🌐 [DevEvent] 데브이벤트 개발자 대회·해커톤 수집 시작")
     print("-" * 60)
-    try:
-        r = requests.get(DEVEVENT_README_URL, headers=wevity.HEADERS, timeout=15)
-        r.raise_for_status()
-        r.encoding = "utf-8"
-    except Exception as e:
-        raise DevEventFetchError(f"README 요청 실패: {e}")
-    items = parse_devevent_readme(r.text)
+    readme, errors = None, []
+    for url, extra in DEVEVENT_README_SOURCES:
+        try:
+            r = requests.get(url, headers={**wevity.HEADERS, **extra}, timeout=15)
+            r.raise_for_status()
+            r.encoding = "utf-8"
+            readme = r.text
+            break
+        except Exception as e:
+            errors.append(f"{url.split('/')[2]}: {e}")
+    if readme is None:
+        raise DevEventFetchError("README 요청 실패: " + " | ".join(errors))
+    items = parse_devevent_readme(readme)
     if items is None:
         raise DevEventFetchError("월 섹션(## `YY년 MM월`)을 찾지 못함 — README 형식 변경 의심")
 
