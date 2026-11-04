@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-04 18:02:27",
-  "last_updated_display": "11월 04일 18:02",
-  "total_count": 37,
-  "featured_count": 37,
+  "last_updated": "2026-11-04 19:02:04",
+  "last_updated_display": "11월 04일 19:02",
+  "total_count": 38,
+  "featured_count": 38,
   "categories": [
     "ALL",
     "토목",
@@ -1006,6 +1006,36 @@
       "dday_info": {
         "text": "D-26",
         "days": 26,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-112160",
+      "source": "wevity_it",
+      "source_name": "위비티",
+      "title": "[한국체육산업개발(주)] 공공데이터 활용 경진대회",
+      "organizer": "한국체육산업개발(주)",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.12.01 마감",
+      "deadline_date": "2026-12-01",
+      "deadline_time": "23:59",
+      "fields": [
+        "웹/모바일/IT"
+      ],
+      "description": "한국체육산업개발(주) 주최 · 분야: 웹/모바일/IT",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=view&ix=112160",
+      "image": "",
+      "is_active": true,
+      "track": "it",
+      "dday_info": {
+        "text": "D-27",
+        "days": 27,
         "is_urgent": false,
         "is_closed": false
       }
