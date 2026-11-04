@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-04 13:02",
-  "last_updated_display": "2026년 11월 04일 13:02",
+  "last_updated": "2026-11-04 14:02",
+  "last_updated_display": "2026년 11월 04일 14:02",
   "source": "잡알리오(공공기관 채용정보) · 고용24 공채속보 Open API",
-  "total_count": 29,
+  "total_count": 30,
   "failed_sources": [],
   "categories": [
     {
@@ -714,6 +714,39 @@
         "서류전형",
         "역량검사",
         "면접전형"
+      ]
+    },
+    {
+      "id": "alio-306675",
+      "source": "잡알리오",
+      "company": "주택관리공단(주)",
+      "company_type": "공공기관",
+      "category_id": "public",
+      "category_name": "공기업·공공기관",
+      "title": "채용형 인턴 채용공고(주택관리공단 대전충남지사)",
+      "fields": [
+        "건설",
+        "기계",
+        "전기.전자",
+        "환경.에너지.안전"
+      ],
+      "career": "인턴",
+      "is_intern": true,
+      "intern_type": "채용형",
+      "civil_match": "건설 분야 · 공고문 확인",
+      "location": "대전, 충남",
+      "period": "2026.11.04 ~ 2026.11.11",
+      "deadline_date": "2026-11-11",
+      "tags": [
+        "채용형 인턴",
+        "건설 분야 · 공고문 확인",
+        "1명"
+      ],
+      "link": "www.kohom.or.kr",
+      "summary": "○ 응시자격 · 학력, 어학, 성별, 연령 : 제한없음 · 병역 : ?병역법? 제76조에서 정한 병역의무 불이행 사실이 없는 자 * 단, 최종 합격자 발표일까지 전역예정자로서 전형절차에 응시 가능자 지원 가능 · 기타 : 공단 직원채용 결격사유에 해당되지 않는 자",
+      "steps": [
+        "1차 서류전형",
+        "2차 면접전형"
       ]
     },
     {
