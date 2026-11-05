@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-05 13:02",
-  "last_updated_display": "2026년 11월 05일 13:02",
+  "last_updated": "2026-11-05 14:01",
+  "last_updated_display": "2026년 11월 05일 14:01",
   "source": "잡알리오(공공기관 채용정보) · 고용24 공채속보 Open API",
-  "total_count": 27,
+  "total_count": 29,
   "failed_sources": [],
   "categories": [
     {
@@ -300,6 +300,67 @@
         "서류전형",
         "면접전형",
         "개별면접"
+      ]
+    },
+    {
+      "id": "w24-184094",
+      "source": "고용24 공채속보",
+      "company": "코오롱글로벌",
+      "company_type": "",
+      "category_id": "builder",
+      "category_name": "건설·민간기업",
+      "title": "2026년 건설부문(현장 - 토목 공사공무) 정규직 경력사원 채용",
+      "fields": [
+        "토목 공사/공무"
+      ],
+      "career": "경력",
+      "is_intern": false,
+      "intern_type": "",
+      "location": "지역무관",
+      "period": "2026.10.29 ~ 2026.11.08",
+      "deadline_date": "2026-11-08",
+      "tags": [
+        "정규직"
+      ],
+      "link": "https://dream.kolon.com/RECRUIT_KOLON/hr/rec/recruit/jobopen/controller/candidate/JobOpen310WebController/init.hr",
+      "summary": "- 토목 관련 전공 - 도로, 철도, 전력구 등 토목 현장 공사/공무 경력 5년 이상",
+      "steps": [
+        "서류전형",
+        "면접전형",
+        "경력확인/처우제안",
+        "평판확인/채용검진",
+        "입사"
+      ]
+    },
+    {
+      "id": "w24-184092",
+      "source": "고용24 공채속보",
+      "company": "코오롱글로벌",
+      "company_type": "",
+      "category_id": "builder",
+      "category_name": "건설·민간기업",
+      "title": "2026년 건설부문 정규직 경력사원(본사) 채용",
+      "fields": [
+        "원가경쟁력 강화 원가데이터 관리",
+        "건축/토목 예산편성 및 관리"
+      ],
+      "career": "경력",
+      "is_intern": false,
+      "intern_type": "",
+      "location": "경기",
+      "period": "2026.10.29 ~ 2026.11.08",
+      "deadline_date": "2026-11-08",
+      "tags": [
+        "정규직"
+      ],
+      "link": "https://dream.kolon.com/RECRUIT_KOLON/hr/rec/recruit/jobopen/controller/candidate/JobOpen310WebController/init.hr",
+      "summary": "- 건축 또는 토목 관련 전공 - 계약, 설계변경, 정산 업무 수행 경험자 - 설계변경, VE 등에 따른 공사원가 변동 구조에 대한 이해 / - 건축 또는 토목 관련 전공 - 건축/토목 현장 공무 경력자",
+      "steps": [
+        "서류전형",
+        "면접전형",
+        "경력확인/처우제안",
+        "평판확인/채용검진",
+        "입사"
       ]
     },
     {
