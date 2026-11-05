@@ -801,12 +801,14 @@ ARTICLE_HEADERS = {
 
 def _usable_og_image(img: str, page_url: str) -> str:
     """og:image 값 → 기사 사진 URL (로고·기본 이미지 제외, 고화질 원본 복원, http는 https로 열릴 때만)"""
-    if img.startswith("/"):
-        parsed = urllib.parse.urlparse(page_url)
-        img = f"{parsed.scheme}://{parsed.netloc}{img}"
+    # 상대 주소(/img/..)와 프로토콜 생략 주소(//cdn.example.com/..)를 모두 올바르게 절대 주소로 변환
+    img = urllib.parse.urljoin(page_url, img)
 
-    # 규칙 2: logo, snslogo, oglogo, default, noimage가 들어간 URL은 기사 사진이 아니므로 제외
-    if any(bad in img.lower() for bad in ['logo', 'snslogo', 'oglogo', 'default', 'noimage']):
+    # 규칙 2: logo, snslogo, oglogo, default, noimage, 공유용 공통 이미지(go_share.png 등)는 기사 사진이 아니므로 제외
+    low = img.lower()
+    if any(bad in low for bad in ['logo', 'snslogo', 'oglogo', 'default', 'noimage']):
+        return ""
+    if re.search(r'[/_-]share[^/]*\.(png|jpe?g|gif|webp)$', low.split('?')[0]):
         return ""
 
     # CMS 고화질 원본 자동 복원
