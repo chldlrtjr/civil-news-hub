@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-06 17:01:50",
-  "last_updated_display": "11월 06일 17:01",
-  "total_count": 36,
-  "featured_count": 36,
+  "last_updated": "2026-11-06 18:02:03",
+  "last_updated_display": "11월 06일 18:02",
+  "total_count": 34,
+  "featured_count": 34,
   "categories": [
     "ALL",
     "토목",
@@ -10,74 +10,6 @@
     "컴퓨터공학"
   ],
   "contests": [
-    {
-      "id": "campus-217679",
-      "source": "campus",
-      "source_name": "교무처 공지",
-      "title": "2026 JBNU 학생설계전공 공모전",
-      "organizer": "전북대 교무처 교무과",
-      "category": "전북대",
-      "badge_color": "teal",
-      "prize": "총 상금 520만원 · 총장상",
-      "prize_details": [
-        {
-          "rank": "최우수상",
-          "award": "전북대학교 총장상",
-          "prize": "1팀 (상금 70만원)"
-        },
-        {
-          "rank": "우수상",
-          "award": "전북대학교 총장상",
-          "prize": "2팀 (각 50만원)"
-        },
-        {
-          "rank": "장려상",
-          "award": "교무처장상",
-          "prize": "5팀 (각 30만원)"
-        },
-        {
-          "rank": "입선",
-          "award": "교무처장상",
-          "prize": "10팀 (각 20만원)"
-        }
-      ],
-      "benefits": [
-        "수상 학생설계전공 실제 전북대학교 정규 융합 교육과정 개설 추진",
-        "전북대학교 총장 명의 공식 상장 수여 및 포상금 지급",
-        "자기설계전공 신청 시 우선 심의 승인 혜택"
-      ],
-      "target": "전북대 학부 재학생 (2학년 이상)",
-      "target_details": "전북대학교 학부 2~4학년 재학생 (휴학생 제외 / 개인 또는 최대 3인 이내 팀)",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.08.31 ~ 11.06 (18:00 마감)",
-      "deadline_date": "2026-11-06",
-      "deadline_time": "18:00",
-      "fields": [
-        "융합전공 설계",
-        "자기설계전공",
-        "AI·인프라 융복합",
-        "진로 맞춤형 커리큘럼"
-      ],
-      "submission_info": "학생설계전공 교육과정 신청서, 교과목 이수계획서 및 전공 설계 설명서 (온라인 오아시스 접수)",
-      "evaluation_steps": [
-        "1차 서류 적격성 심사",
-        "2차 학생설계전공심의위원회 본선 심사",
-        "최종 결과 발표 및 시상식"
-      ],
-      "contact": "전북대학교 교무처 교무과 (063-270-2092)",
-      "description": "학생 스스로 2개 이상의 학과(부) 전공을 융합하여 새로운 맞춤형 교육과정을 직접 설계하는 전북대학교 자기설계전공 공모전",
-      "link": "https://www.jbnu.ac.kr/web/Board/217679/detailView.do",
-      "is_active": true,
-      "image": "https://www.jbnu.ac.kr/common/file.do?file=aDnf2Nbsc5JCVXjNcuja6hp6EOxg4LFfVvZE2KPyqg/B6wkWztYndrgNSVSNzFTT",
-      "track": "campus",
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
     {
       "id": "devevent-d730ba577b",
       "source": "devevent",
@@ -263,33 +195,6 @@
         "text": "D-2",
         "days": 2,
         "is_urgent": true,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "campus-219057",
-      "source": "campus",
-      "source_name": "교내공지",
-      "title": "2026년도 JST공유대학 공동연구 지원사업 공모",
-      "organizer": "JST공유대학본부",
-      "category": "전북대",
-      "badge_color": "teal",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.10.28 ~ 11.10 (23:59 마감)",
-      "deadline_date": "2026-11-10",
-      "deadline_time": "23:59",
-      "description": "2026년도 JST공유대학 공동연구 지원사업 공모 JST공유대학본부는 전북특별자치도 전략산업의 기술수요와 지역사회 문제 및 현안에 대응하기 위해 대학·연구기관·기업 및 공공기관의 전문역량을 결합하는 공동 연구를 지원하고자 합니다. 수요기반 공동기획, 기관별 실질적 연구수행, 객관적 성능검증·현장실증 및 연구성과의 교육·산업·지역사회 환류를 지원하는 경쟁형 …",
-      "link": "https://www.jbnu.ac.kr/web/Board/219057/detailView.do",
-      "image": "",
-      "is_active": true,
-      "track": "campus",
-      "dday_info": {
-        "text": "D-4",
-        "days": 4,
-        "is_urgent": false,
         "is_closed": false
       }
     },
@@ -857,6 +762,33 @@
       }
     },
     {
+      "id": "campus-219511",
+      "source": "campus",
+      "source_name": "교내공지",
+      "title": "「2026년 충청북도 탄소중립 창작 그림책 공모전」공모 안내 및 홍보 협조 요청",
+      "organizer": "사무국 총무과",
+      "category": "전북대",
+      "badge_color": "teal",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.06 ~ 11.25 (23:59 마감)",
+      "deadline_date": "2026-11-25",
+      "deadline_time": "23:59",
+      "description": "1. 귀 기관의 무궁한 발전을 기원합니다 . 2. 우리 센터는 탄소중립 및 기후변화에 대한 어린이들의 이해도를 높이고 , 창의적인 콘텐츠 발굴을 통한 탄소중립 인식 확산을 위해 「 2026 년 충청북도 탄소중립 창작 그림책 공모전 」 을 아래와 같이 개최합니다 . 3. 이번 공모전에 많은 국민들이 관심을 가지고 참여할 수 있도록 귀 기관의 적극적인 홍보와 …",
+      "link": "https://www.jbnu.ac.kr/web/Board/219511/detailView.do",
+      "image": "https://www.jbnu.ac.kr/common/file.do?file=QBB9vfgKAFIfoObK+NINlcWFvyn7pELTlgVfVinpnpbQVZ634SC3EEEOU7hAoLpS",
+      "is_active": true,
+      "track": "campus",
+      "dday_info": {
+        "text": "D-19",
+        "days": 19,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
       "id": "campus-219461",
       "source": "campus",
       "source_name": "교내공지",
@@ -1057,69 +989,6 @@
         "text": "D-55",
         "days": 55,
         "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "campus-217447",
-      "source": "campus",
-      "source_name": "학생지원과 공지",
-      "title": "제2회 성남시 창의도시계획 공모전 ('성남 물빛정원' 글로벌 랜드마크 개발)",
-      "organizer": "성남시 공공개발정책과",
-      "category": "토목",
-      "badge_color": "emerald",
-      "prize": "총 상금 400만원 · 성남시장상 (대상 200만원)",
-      "prize_details": [
-        {
-          "rank": "대상",
-          "award": "성남시장상",
-          "prize": "1점 (상금 200만원)"
-        },
-        {
-          "rank": "우수상",
-          "award": "성남시장상",
-          "prize": "1점 (상금 100만원)"
-        },
-        {
-          "rank": "장려상",
-          "award": "성남시장상",
-          "prize": "2점 (각 50만원)"
-        }
-      ],
-      "benefits": [
-        "성남시장 공식 표창 수여",
-        "수상작 성남 물빛정원 글로벌 랜드마크 조성 마스터플랜 수립 시 적극 반영",
-        "성남시 공식 도시계획 포럼 초청 발표 기회"
-      ],
-      "target": "전국 대학생 및 대학원생 (4인 이내 팀)",
-      "target_details": "전국 대학생 및 대학원생 (개인 또는 최대 4인 이내 팀 / 팀당 1건 출품)",
-      "status": "접수예정",
-      "status_color": "blue",
-      "period": "2026.11.02 ~ 11.06 (18:00 마감)",
-      "deadline_date": "2026-11-06",
-      "deadline_time": "18:00",
-      "fields": [
-        "성남 물빛정원 랜드마크",
-        "수변공간 도시계획",
-        "스마트 워터프론트",
-        "보행친화 인프라"
-      ],
-      "submission_info": "참가신청서, 작품설명서, 도시계획 패널 (이메일 lgowe@korea.kr 또는 방문 접수)",
-      "evaluation_steps": [
-        "서류 및 작품 접수",
-        "도시계획 전문가 심사",
-        "최종 당선작 발표 및 시상식"
-      ],
-      "contact": "성남시 공공개발정책과 전략개발팀 (031-729-4494)",
-      "description": "성남시 물빛정원을 글로벌 수변 랜드마크로 조성하기 위한 참신한 도시계획 및 공간 인프라 아이디어 전국 대학(원)생 공모전",
-      "link": "https://www.jbnu.ac.kr/web/Board/217447/detailView.do",
-      "is_active": true,
-      "image": "https://www.jbnu.ac.kr/common/file.do?file=4cALo6DfxWUFYlylMujIYMjaKF2GJWIBKn6sJyYGF2UlCjZ8sV+4j56lZgKcZFvm",
-      "track": "civil",
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
         "is_closed": false
       }
     },
