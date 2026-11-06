@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-06 23:02:27",
-  "last_updated_display": "11월 06일 23:02",
-  "total_count": 35,
-  "featured_count": 35,
+  "last_updated": "2026-11-07 00:01:53",
+  "last_updated_display": "11월 07일 00:01",
+  "total_count": 32,
+  "featured_count": 32,
   "categories": [
     "ALL",
     "토목",
@@ -10,103 +10,6 @@
     "컴퓨터공학"
   ],
   "contests": [
-    {
-      "id": "devevent-d730ba577b",
-      "source": "devevent",
-      "source_name": "데브이벤트",
-      "track": "it",
-      "title": "2026 DATA·AI 분석 경진대회",
-      "organizer": "과학기술정보통신부 / 한국과학기술정보연구원(KISTI)",
-      "category": "컴퓨터공학",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.11.06 마감",
-      "deadline_date": "2026-11-06",
-      "deadline_time": "23:59",
-      "fields": [
-        "온라인",
-        "오프라인(대전)",
-        "대회",
-        "AI"
-      ],
-      "description": "과학기술정보통신부 / 한국과학기술정보연구원(KISTI) 주최 · 온라인, 오프라인(대전), 무료, 대회, AI",
-      "link": "https://aida.kisti.re.kr/competition/main/competition/COMP_000000000000050/detail.do",
-      "image": "",
-      "is_active": true,
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "devevent-36cb2f0eb2",
-      "source": "devevent",
-      "source_name": "데브이벤트",
-      "track": "it",
-      "title": "TRILLION AGENT AI HACKATHON 2026",
-      "organizer": "트릴리온랩스(Trillion Labs)",
-      "category": "컴퓨터공학",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.11.06 마감",
-      "deadline_date": "2026-11-06",
-      "deadline_time": "23:59",
-      "fields": [
-        "오프라인(서울 서초구)",
-        "대회",
-        "AI"
-      ],
-      "description": "트릴리온랩스(Trillion Labs) 주최 · 오프라인(서울 서초구), 무료, 대회, AI",
-      "link": "https://hackathon.trillionlabs.co/",
-      "image": "",
-      "is_active": true,
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "devevent-b3987e85d7",
-      "source": "devevent",
-      "source_name": "데브이벤트",
-      "track": "it",
-      "title": "AI 헬스케어 미니 데이터 챌린지",
-      "organizer": "오즈코딩스쿨 · 데이콘",
-      "category": "컴퓨터공학",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.11.06 마감",
-      "deadline_date": "2026-11-06",
-      "deadline_time": "23:59",
-      "fields": [
-        "온라인",
-        "대회",
-        "AI"
-      ],
-      "description": "오즈코딩스쿨 · 데이콘 주최 · 온라인, 무료, 대회, AI",
-      "link": "https://resume-show-project.vercel.app/precourse.html",
-      "image": "",
-      "is_active": true,
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
     {
       "id": "devevent-e7c487a6f8",
       "source": "devevent",
@@ -133,8 +36,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-1",
-        "days": 1,
+        "text": "오늘마감",
+        "days": 0,
         "is_urgent": true,
         "is_closed": false
       }
@@ -160,8 +63,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-2",
-        "days": 2,
+        "text": "D-1",
+        "days": 1,
         "is_urgent": true,
         "is_closed": false
       }
@@ -192,8 +95,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-2",
-        "days": 2,
+        "text": "D-1",
+        "days": 1,
         "is_urgent": true,
         "is_closed": false
       }
@@ -224,8 +127,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-5",
-        "days": 5,
+        "text": "D-4",
+        "days": 4,
         "is_urgent": false,
         "is_closed": false
       }
@@ -251,8 +154,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-6",
-        "days": 6,
+        "text": "D-5",
+        "days": 5,
         "is_urgent": false,
         "is_closed": false
       }
@@ -283,8 +186,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-6",
-        "days": 6,
+        "text": "D-5",
+        "days": 5,
         "is_urgent": false,
         "is_closed": false
       }
@@ -311,8 +214,8 @@
       "deadline_source": "poster",
       "track": "campus",
       "dday_info": {
-        "text": "D-7",
-        "days": 7,
+        "text": "D-6",
+        "days": 6,
         "is_urgent": false,
         "is_closed": false
       }
@@ -343,8 +246,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-7",
-        "days": 7,
+        "text": "D-6",
+        "days": 6,
         "is_urgent": false,
         "is_closed": false
       }
@@ -375,8 +278,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-8",
-        "days": 8,
+        "text": "D-7",
+        "days": 7,
         "is_urgent": false,
         "is_closed": false
       }
@@ -402,8 +305,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-9",
-        "days": 9,
+        "text": "D-8",
+        "days": 8,
         "is_urgent": false,
         "is_closed": false
       }
@@ -429,8 +332,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-9",
-        "days": 9,
+        "text": "D-8",
+        "days": 8,
         "is_urgent": false,
         "is_closed": false
       }
@@ -456,38 +359,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-9",
-        "days": 9,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "wevity-111666",
-      "source": "wevity",
-      "source_name": "위비티",
-      "title": "[한국도로공사] AI 활용 아이디어 공모전",
-      "organizer": "한국도로공사",
-      "category": "토목",
-      "badge_color": "emerald",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.11.15 마감",
-      "deadline_date": "2026-11-15",
-      "deadline_time": "23:59",
-      "fields": [
-        "기획/아이디어"
-      ],
-      "description": "한국도로공사 주최 · 분야: 기획/아이디어",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=111666",
-      "image": "",
-      "is_active": true,
-      "track": "civil",
-      "dday_info": {
-        "text": "D-9",
-        "days": 9,
+        "text": "D-8",
+        "days": 8,
         "is_urgent": false,
         "is_closed": false
       }
@@ -519,6 +392,36 @@
       "image": "",
       "is_active": true,
       "dday_info": {
+        "text": "D-8",
+        "days": 8,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-111666",
+      "source": "wevity",
+      "source_name": "위비티",
+      "title": "[한국도로공사] AI 활용 아이디어 공모전",
+      "organizer": "한국도로공사",
+      "category": "토목",
+      "badge_color": "emerald",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.16 마감",
+      "deadline_date": "2026-11-16",
+      "deadline_time": "23:59",
+      "fields": [
+        "기획/아이디어"
+      ],
+      "description": "한국도로공사 주최 · 분야: 기획/아이디어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=111666",
+      "image": "",
+      "is_active": true,
+      "track": "civil",
+      "dday_info": {
         "text": "D-9",
         "days": 9,
         "is_urgent": false,
@@ -547,8 +450,8 @@
       "deadline_source": "poster",
       "track": "campus",
       "dday_info": {
-        "text": "D-11",
-        "days": 11,
+        "text": "D-10",
+        "days": 10,
         "is_urgent": false,
         "is_closed": false
       }
@@ -574,8 +477,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-12",
-        "days": 12,
+        "text": "D-11",
+        "days": 11,
         "is_urgent": false,
         "is_closed": false
       }
@@ -601,38 +504,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-14",
-        "days": 14,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "wevity-111726",
-      "source": "wevity",
-      "source_name": "위비티",
-      "title": "용산국제업무지구 AI 스마트도시 아이디어 공모",
-      "organizer": "서울특별시",
-      "category": "토목",
-      "badge_color": "emerald",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.11.20 마감",
-      "deadline_date": "2026-11-20",
-      "deadline_time": "23:59",
-      "fields": [
-        "건축/건설/인테리어"
-      ],
-      "description": "서울특별시 주최 · 분야: 건축/건설/인테리어",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=24&gbn=view&ix=111726",
-      "image": "",
-      "is_active": true,
-      "track": "civil",
-      "dday_info": {
-        "text": "D-14",
-        "days": 14,
+        "text": "D-13",
+        "days": 13,
         "is_urgent": false,
         "is_closed": false
       }
@@ -663,8 +536,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-14",
-        "days": 14,
+        "text": "D-13",
+        "days": 13,
         "is_urgent": false,
         "is_closed": false
       }
@@ -695,6 +568,36 @@
       "image": "",
       "is_active": true,
       "dday_info": {
+        "text": "D-13",
+        "days": 13,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-111726",
+      "source": "wevity",
+      "source_name": "위비티",
+      "title": "용산국제업무지구 AI 스마트도시 아이디어 공모",
+      "organizer": "서울특별시",
+      "category": "토목",
+      "badge_color": "emerald",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.21 마감",
+      "deadline_date": "2026-11-21",
+      "deadline_time": "23:59",
+      "fields": [
+        "건축/건설/인테리어"
+      ],
+      "description": "서울특별시 주최 · 분야: 건축/건설/인테리어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=24&gbn=view&ix=111726",
+      "image": "",
+      "is_active": true,
+      "track": "civil",
+      "dday_info": {
         "text": "D-14",
         "days": 14,
         "is_urgent": false,
@@ -713,8 +616,8 @@
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.11.20 마감",
-      "deadline_date": "2026-11-20",
+      "period": "~ 2026.11.21 마감",
+      "deadline_date": "2026-11-21",
       "deadline_time": "23:59",
       "fields": [
         "웹/모바일/IT"
@@ -743,8 +646,8 @@
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.11.20 마감",
-      "deadline_date": "2026-11-20",
+      "period": "~ 2026.11.21 마감",
+      "deadline_date": "2026-11-21",
       "deadline_time": "23:59",
       "fields": [
         "웹/모바일/IT"
@@ -782,8 +685,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-19",
-        "days": 19,
+        "text": "D-18",
+        "days": 18,
         "is_urgent": false,
         "is_closed": false
       }
@@ -809,8 +712,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-19",
-        "days": 19,
+        "text": "D-18",
+        "days": 18,
         "is_urgent": false,
         "is_closed": false
       }
@@ -841,38 +744,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-21",
-        "days": 21,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "wevity-112147",
-      "source": "wevity",
-      "source_name": "위비티",
-      "title": "대전지역 대학생과 함께하는 시민체감 교통 아이디어 공모전",
-      "organizer": "대전교통공사",
-      "category": "토목",
-      "badge_color": "emerald",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.11.29 마감",
-      "deadline_date": "2026-11-29",
-      "deadline_time": "23:59",
-      "fields": [
-        "기획/아이디어"
-      ],
-      "description": "대전교통공사 주최 · 분야: 기획/아이디어",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=112147",
-      "image": "",
-      "is_active": true,
-      "track": "civil",
-      "dday_info": {
-        "text": "D-23",
-        "days": 23,
+        "text": "D-20",
+        "days": 20,
         "is_urgent": false,
         "is_closed": false
       }
@@ -898,38 +771,38 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-24",
-        "days": 24,
+        "text": "D-23",
+        "days": 23,
         "is_urgent": false,
         "is_closed": false
       }
     },
     {
-      "id": "wevity-112160",
-      "source": "wevity_it",
+      "id": "wevity-112147",
+      "source": "wevity",
       "source_name": "위비티",
-      "title": "[한국체육산업개발(주)] 공공데이터 활용 경진대회",
-      "organizer": "한국체육산업개발(주)",
-      "category": "컴퓨터공학",
-      "badge_color": "blue",
+      "title": "대전지역 대학생과 함께하는 시민체감 교통 아이디어 공모전",
+      "organizer": "대전교통공사",
+      "category": "토목",
+      "badge_color": "emerald",
       "prize": "",
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.12.01 마감",
-      "deadline_date": "2026-12-01",
+      "period": "~ 2026.11.30 마감",
+      "deadline_date": "2026-11-30",
       "deadline_time": "23:59",
       "fields": [
-        "웹/모바일/IT"
+        "기획/아이디어"
       ],
-      "description": "한국체육산업개발(주) 주최 · 분야: 웹/모바일/IT",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=view&ix=112160",
+      "description": "대전교통공사 주최 · 분야: 기획/아이디어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=112147",
       "image": "",
       "is_active": true,
-      "track": "it",
+      "track": "civil",
       "dday_info": {
-        "text": "D-25",
-        "days": 25,
+        "text": "D-23",
+        "days": 23,
         "is_urgent": false,
         "is_closed": false
       }
@@ -955,8 +828,38 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-26",
-        "days": 26,
+        "text": "D-25",
+        "days": 25,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-112160",
+      "source": "wevity_it",
+      "source_name": "위비티",
+      "title": "[한국체육산업개발(주)] 공공데이터 활용 경진대회",
+      "organizer": "한국체육산업개발(주)",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.12.02 마감",
+      "deadline_date": "2026-12-02",
+      "deadline_time": "23:59",
+      "fields": [
+        "웹/모바일/IT"
+      ],
+      "description": "한국체육산업개발(주) 주최 · 분야: 웹/모바일/IT",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=view&ix=112160",
+      "image": "",
+      "is_active": true,
+      "track": "it",
+      "dday_info": {
+        "text": "D-25",
+        "days": 25,
         "is_urgent": false,
         "is_closed": false
       }
@@ -988,8 +891,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-45",
-        "days": 45,
+        "text": "D-44",
+        "days": 44,
         "is_urgent": false,
         "is_closed": false
       }
@@ -1016,8 +919,8 @@
       "deadline_source": "poster",
       "track": "campus",
       "dday_info": {
-        "text": "D-55",
-        "days": 55,
+        "text": "D-54",
+        "days": 54,
         "is_urgent": false,
         "is_closed": false
       }
@@ -1073,8 +976,8 @@
       "is_active": true,
       "track": "civil",
       "dday_info": {
-        "text": "D-55",
-        "days": 55,
+        "text": "D-54",
+        "days": 54,
         "is_urgent": false,
         "is_closed": false
       },
