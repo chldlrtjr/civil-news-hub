@@ -1,13 +1,13 @@
 {
-  "last_updated": "2026-11-08 09:01:21",
-  "last_updated_display": "11월 08일 09:01",
-  "total_count": 185,
-  "raw_total_count": 374,
-  "duplicate_count": 189,
+  "last_updated": "2026-11-08 10:01:16",
+  "last_updated_display": "11월 08일 10:01",
+  "total_count": 181,
+  "raw_total_count": 371,
+  "duplicate_count": 190,
   "failed_sources": [],
   "trending_keywords": [
-    "항만공사",
     "고속도로",
+    "항만공사",
     "철도망",
     "지반침하",
     "AI",
@@ -44,75 +44,551 @@
   ],
   "articles": [
     {
-      "id": "38ec3332c88a",
-      "title": "경기도, 야간에도 잘 보이는 '경기도형 차선 도색 시공기준' 확대 적용",
-      "link": "http://www.econonews.co.kr/news/articleView.html?idxno=446872",
-      "publisher": "이코노뉴스",
+      "id": "194abf1b080e",
+      "title": "경기도, 차선 빛 반사성능 기준 2배 강화…야간 도로 시인성 개선",
+      "link": "https://www.shinailbo.co.kr/news/articleView.html?idxno=5080805",
+      "publisher": "신아일보",
       "category_id": "road_rail",
       "category_name": "도로·교량·철도",
       "badge_color": "emerald",
-      "snippet": "경기도는 야간 운전 시 차선이 더욱 선명하게 보이도록 빛 반사성능 기준을 기존보다 약 2배 강화한 '경기도형 차선 도색 시공기준'을 도내 도로공사 현장에 확대 적용한다 (사진=경기도) 경기도는 야간 운전 시 차선이...",
-      "iso_date": "2026-11-08T08:56:00+09:00",
-      "published_at": "2026-11-08 08:56",
-      "relative_date": "4분 전",
+      "snippet": "경기도가 야간 운전자의 차선 식별을 돕기 위해 도로 차선의 빛 반사성능 기준을 기존보다 약 2배 높이고, 개선된 도색 기준을 도내 도로공사 현장에 확대 적용한다. 도는 자체 개발한 '경기도형 차선 도색 시공기준'을...",
+      "iso_date": "2026-11-08T09:54:00+09:00",
+      "published_at": "2026-11-08 09:54",
+      "relative_date": "6분 전",
       "is_opinion": false,
-      "image": "https://cdn.econonews.co.kr/news/thumbnail/202611/446872_376851_3032_v150.jpg",
+      "image": "",
+      "related_articles": []
+    },
+    {
+      "id": "591877db9a10",
+      "title": "양주시, 국지도 98호선 출근길 정체 해소 추진…신호체계 개선·도로망...",
+      "link": "https://www.shinailbo.co.kr/news/articleView.html?idxno=5080810",
+      "publisher": "신아일보",
+      "category_id": "road_rail",
+      "category_name": "도로·교량·철도",
+      "badge_color": "emerald",
+      "snippet": "올해 안에 산북~방성 간 도로공사를 마무리하고, 내년에는 백석~양주역 간 도로 확·포장 공사에 착수할 예정이다. 양주시는 이들 도로사업이 진행되면 국지도 98호선에 집중되는 차량 통행량이 분산돼 출근길 교통혼잡이...",
+      "iso_date": "2026-11-08T09:54:00+09:00",
+      "published_at": "2026-11-08 09:54",
+      "relative_date": "6분 전",
+      "is_opinion": false,
+      "image": "https://cdn.shinailbo.co.kr/news/photo/202611/5080810_2078262_3135.jpg",
+      "related_articles": []
+    },
+    {
+      "id": "97f71345b8c2",
+      "title": "최관호 여수광양항만공사 사장, 지속가능경영품질대상 공기업 부문 수상",
+      "link": "https://www.shinailbo.co.kr/news/articleView.html?idxno=5080819",
+      "publisher": "신아일보",
+      "category_id": "water_port",
+      "category_name": "수자원·하천·항만",
+      "badge_color": "cyan",
+      "snippet": "전남광주 여수광양항만공사가 탄소중립과 안전관리, ESG 경영 등 지속가능한 항만 운영을 위한 성과를 인정받았다. 여수광양항만공사는 최관호 사장이 지난 6일 한국품질경영학회가 주관한 '2026년...",
+      "iso_date": "2026-11-08T09:54:00+09:00",
+      "published_at": "2026-11-08 09:54",
+      "relative_date": "6분 전",
+      "is_opinion": false,
+      "image": "https://cdn.shinailbo.co.kr/news/photo/202611/5080819_2078269_4030.jpg",
       "related_articles": [
+        {
+          "id": "f8bcba7bd7d4",
+          "title": "여수광양항만공사, 지속가능경영대상 수상",
+          "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBZVXlTU0ZhMl9uSjc1cUV5MTAxTVZueXZ0d3liX0dIbzVTV3hMOUxzV1lLel91ek5lN3dlUzNtczlmbXozUTJBZkFSVlh6Y3BSSFJ5OEttcDlpOXpXY0gwaERka09UWWU3QzMw?oc=5",
+          "publisher": "광양경제신문",
+          "relative_date": "어제",
+          "published_at": "2026-11-06 23:12",
+          "iso_date": "2026-11-06T23:12:14+09:00",
+          "image": "https://cdn.genews.co.kr/news/photo/202611/501381_31577_1136.jpg"
+        },
+        {
+          "id": "d7c716ba4e60",
+          "title": "여수광양항만공사, 지속가능한경영품질대상 수상",
+          "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE03ZlNDOWtSYWR2Uzlmc3Z2WjUySGZIX3ppNkw5N0JNVGFoTjdTRkZjakh5bk1XYUswMmpsa0szM2xYR3pRMC1acmdRaE01bkNZSEs0azJBNEs4Z0RoNEl0SlYxQU5PRExFQ2FrRl84d9IBc0FVX3lxTE5RREVBX3p4clgzU014Q2IyQ2RjMDlXQWdydFB2WjNkUnhZRGd3bjBSWUpxMHhQekdDNXB6WGJVbjluRkVyVlk3R21WcnhSMFVzOGp3d183M1dXT1FhdjBMRk9lTUpoZUEwT2xnRUthTkVmaTA?oc=5",
+          "publisher": "해운의소리",
+          "relative_date": "어제",
+          "published_at": "2026-11-06 20:17",
+          "iso_date": "2026-11-06T20:17:20+09:00",
+          "image": "https://cdn.shippingvoice.kr/news/thumbnail/202611/11675_13616_1657_v150.jpg"
+        },
+        {
+          "id": "643120b1d9d9",
+          "title": "여수광양항만공사, 지속가능경영품질대상 수상",
+          "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTFA4MVZPN2hPN3g0dXdpVkE1UjNVb21RVXhfSTBvdjJucUNlVzVudF9jZFhsT1JSVmF6RWR2OEVxbFZITDVDczZRSHZaUmotdUNKOHRSSTRMZHNKUnVIUkNDUl9sRVZFY3dwdUdBX0F30gFuQVVfeXFMUDgxVk83aE83eDR1d2lWQTVSM1VvbVFVeF9JMG92Mm5xQ2VXNW50X2NkWGxPUlJWYXpFZHY4RXFsVkhMNUNzNlFIdlpSai11Q0o4dFJJNExkc0pSdUhSQ0NSX2xFVkVjd3B1R0FfQXc?oc=5",
+          "publisher": "광양시민신문",
+          "relative_date": "어제",
+          "published_at": "2026-11-06 16:21",
+          "iso_date": "2026-11-06T16:21:53+09:00",
+          "image": ""
+        },
+        {
+          "id": "ef29002237c7",
+          "title": "여수광양항만공사, ESG 경영으로 지속가능성 인정받다",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1UM1NTMTR0LWpWX2VqN0dkdWtpUGZXQXZOcmxtZFpzN0JaSFZnMy13RVJHUXcwRjFVanpueTJLa2x6WFE4T3RCVV9CYzFiZkdvdVJHU21LM0xYQQ?oc=5",
+          "publisher": "브릿지경제",
+          "relative_date": "어제",
+          "published_at": "2026-11-06 15:56",
+          "iso_date": "2026-11-06T15:56:00+09:00",
+          "image": "https://stqnq5ux4599.edge.naverncp.com/data2//content/image/2026/11/06/.cache/512/20261106500558.jpg?v=20261108100056"
+        },
+        {
+          "id": "cf5be64d017d",
+          "title": "여수광양항만공사, 2026년 지속가능경영품질대상 수상 > 뉴스",
+          "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE5RYTMtX2xNTV9iUy1jWWdvWDhkVG5ramxJUFRqVlVyWW9EYTNNMktEZ2UxV1NKeDhtV2tBZHE3WmV4MjRWSXdsWS1mSFlOOXdBVXJTQ0tLdWlwX3dsbUZzRU9RZUtaUDcxb2d4TzlrWEpOUQ?oc=5",
+          "publisher": "더코리아",
+          "relative_date": "어제",
+          "published_at": "2026-11-06 14:51",
+          "iso_date": "2026-11-06T14:51:00+09:00",
+          "image": "https://www.thekorea.kr/data/file/news/3731442413_FA5lxUoe_75030729eb681a586f37c4a185a32dc90e76259a.jpg"
+        }
+      ],
+      "latest_iso_date": "2026-11-08T09:54:00+09:00"
+    },
+    {
+      "id": "4c9e396bb39f",
+      "title": "마곡동 도로 온수관 파열…40대 행인 전신 60% 화상 중태",
+      "link": "http://weekly.chosun.com/news/articleView.html?idxno=56946",
+      "publisher": "조선일보",
+      "category_id": "tunnel_geo",
+      "category_name": "터널·지반·안전",
+      "badge_color": "amber",
+      "snippet": "A씨는 도로를 지나던 중 지반 침하로 생긴 구멍에 빠져 전신의 60%에 2~3도 화상을 입었으며, 현재 중환자실에서 치료받고 있다. 7일 소방과 강서구청 등에 따르면 전날(6일) 오후 8시 18분쯤 강서구 마곡동의 한 아파트...",
+      "iso_date": "2026-11-08T09:47:00+09:00",
+      "published_at": "2026-11-08 09:47",
+      "relative_date": "13분 전",
+      "is_opinion": false,
+      "image": "https://cdn.weekly.chosun.com/news/photo/202611/56946_87486_2721.jpg",
+      "related_articles": [
+        {
+          "id": "faf82059bdc6",
+          "title": "서울 마곡동 도로에 파인 '100℃ 열탕'…빠진 40대 행인 중태",
+          "link": "https://www.fnnews.com/news/202611072230398563",
+          "publisher": "파이낸셜뉴스",
+          "relative_date": "11시간 전",
+          "published_at": "2026-11-07 22:39",
+          "iso_date": "2026-11-07T22:39:00+09:00",
+          "image": ""
+        },
+        {
+          "id": "bda40f063d19",
+          "title": "도로 건너다 땅에 '쑥'…마곡동 온수관 구멍 빠진 40대 전신 화상 중태",
+          "link": "https://www.imaeil.com/page/view/2026110717595893184",
+          "publisher": "매일신문",
+          "relative_date": "15시간 전",
+          "published_at": "2026-11-07 18:02",
+          "iso_date": "2026-11-07T18:02:00+09:00",
+          "image": ""
+        },
+        {
+          "id": "e3ebe8ab9e38",
+          "title": "열 수송관 파열…길 가던 시민 싱크홀 빠져 전신 60% 중상",
+          "link": "https://www.ikbc.co.kr/article/view/kbc202611070037",
+          "publisher": "KBC광주방송",
+          "relative_date": "16시간 전",
+          "published_at": "2026-11-07 18:00",
+          "iso_date": "2026-11-07T18:00:00+09:00",
+          "image": ""
+        }
+      ],
+      "latest_iso_date": "2026-11-08T09:47:00+09:00"
+    },
+    {
+      "id": "2cb5bc123800",
+      "title": "경기도, 차선 빛 반사성능 기준 2배 강화 시공",
+      "link": "https://www.sportsseoul.com/news/read/1648004?ref=naver",
+      "publisher": "스포츠서울",
+      "category_id": "road_rail",
+      "category_name": "도로·교량·철도",
+      "badge_color": "emerald",
+      "snippet": "그동안 차선 정비는 주로 도로 재포장공사와 함께 시행돼 차선이 닳거나 흐릿해진 곳을 제때 정비하는 데 한계가 있었다. 경기도는 내년 기준 미달 구간의 정비 우선순위를 정해 재도색을 추진한다. 특히 화물차 통행이...",
+      "iso_date": "2026-11-08T09:40:00+09:00",
+      "published_at": "2026-11-08 09:40",
+      "relative_date": "20분 전",
+      "is_opinion": false,
+      "image": "https://file.sportsseoul.com/news/cms/2026/11/08/news-p.v1.20261108.ff56aff7187e4713825553d3c8e2e9d9_T1.png",
+      "related_articles": [
+        {
+          "id": "38ec3332c88a",
+          "title": "경기도, 야간에도 잘 보이는 '경기도형 차선 도색 시공기준' 확대 적용",
+          "link": "http://www.econonews.co.kr/news/articleView.html?idxno=446872",
+          "publisher": "이코노뉴스",
+          "relative_date": "1시간 전",
+          "published_at": "2026-11-08 08:56",
+          "iso_date": "2026-11-08T08:56:00+09:00",
+          "image": ""
+        },
         {
           "id": "bad2bbd4cea6",
           "title": "경기도, 야간에도 잘보이는 경기도형 차선 도색 시공기준 확산",
           "link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNNEhZM082NEFzdTNXTU1ac3otTnFkT1dKa2FnRkVaNHNEckxZeFJDSGlZeldubWs2QzgyVkRpdFJaZ2JFMXBhNktHR3lFM2FfZk1Cem1lQmZrQjJMN1B3dDNLQUlZc1J5SVA0SGlsdEgyeGFCSmlFYmZTMjY2RDg3NDhzbHE?oc=5",
           "publisher": "경기도뉴스포털",
-          "relative_date": "2시간 전",
+          "relative_date": "3시간 전",
           "published_at": "2026-11-08 06:59",
           "iso_date": "2026-11-08T06:59:23+09:00",
           "image": "https://gnews.gg.go.kr/img/new2024/gg_kakao.jpg"
         }
       ],
-      "latest_iso_date": "2026-11-08T08:56:00+09:00"
+      "latest_iso_date": "2026-11-08T09:40:00+09:00"
     },
     {
-      "id": "0d78c8cd4c43",
-      "title": "박인서 인천항만공사 사장, '안전 현장점검·동반성장' 현장 행보 박차",
-      "link": "https://www.ngonews.kr/news/articleView.html?idxno=242586",
-      "publisher": "한국NGO신문",
+      "id": "5767a3021709",
+      "title": "박인서 인천항만공사 사장, 석탄부두 현장 안전점검",
+      "link": "https://www.businesskorea.co.kr/news/articleView.html?idxno=280735",
+      "publisher": "Businesskorea",
       "category_id": "water_port",
       "category_name": "수자원·하천·항만",
       "badge_color": "cyan",
-      "snippet": "인천항만공사가 안전한 항만 환경 조성과 협력기업과의 상생협력 문화 확산을 위해 현장 중심의 경영 활동을 이어가고 있다. 인천항만공사는 박인서 사장이 인천남항 석탄부두와 E1 부두를 방문해 현장 안전관리 실태와...",
-      "iso_date": "2026-11-08T08:46:00+09:00",
-      "published_at": "2026-11-08 08:46",
-      "relative_date": "14분 전",
+      "snippet": "박인서 인천항만공사 사장이 취임 후 첫 현장 행보로 인천남항 주요 시설을 찾아 안전 관리 체계와 부두 운영 현황을 직접 살폈다. 지난 2일 취임한 박 사장은 6일 석탄부두와 E1 부두를 방문해 현장의 목소리를 듣고 주요...",
+      "iso_date": "2026-11-08T09:40:00+09:00",
+      "published_at": "2026-11-08 09:40",
+      "relative_date": "20분 전",
       "is_opinion": false,
-      "image": "https://cdn.ngonews.kr/news/photo/202611/242586_247835_4417.jpg",
+      "image": "https://www.businesskorea.co.kr/news/thumbnail/202611/280735_288557_3856_v150.jpg",
       "related_articles": [
         {
-          "id": "a30261389044",
-          "title": "박인서 인천항만공사 사장, 남항 석탄부두 안전 실태·이전 준비 점검",
-          "link": "https://www.joongboo.com/news/articleView.html?idxno=363741742",
-          "publisher": "중부일보",
-          "relative_date": "30분 전",
-          "published_at": "2026-11-08 08:30",
-          "iso_date": "2026-11-08T08:30:00+09:00",
+          "id": "0d78c8cd4c43",
+          "title": "박인서 인천항만공사 사장, '안전 현장점검·동반성장' 현장 행보 박차",
+          "link": "https://www.ngonews.kr/news/articleView.html?idxno=242586",
+          "publisher": "한국NGO신문",
+          "relative_date": "1시간 전",
+          "published_at": "2026-11-08 08:46",
+          "iso_date": "2026-11-08T08:46:00+09:00",
           "image": ""
         }
       ],
-      "latest_iso_date": "2026-11-08T08:46:00+09:00"
+      "latest_iso_date": "2026-11-08T09:40:00+09:00"
     },
     {
-      "id": "1452b6f3885c",
-      "title": "인천항만공사, 송도 신항 화물차 주차장 1,281면 이용자 모집",
-      "link": "http://www.incheonin.com/news/articleView.html?idxno=122099",
-      "publisher": "인천in 시민언론의 길을 열어갑니다",
+      "id": "11110f09b8fc",
+      "title": "일요일 고속도로, 서울 방향 오후 5~6시 절정",
+      "link": "https://www.newsis.com/view/NISX20261108_0003859165",
+      "publisher": "뉴시스",
+      "category_id": "road_rail",
+      "category_name": "도로·교량·철도",
+      "badge_color": "emerald",
+      "snippet": "한국도로공사에 따르면 이날 전국 고속도로 교통량은 520만대로 예상된다. 지방에서 수도권으로 진입하는 차량은 42만대, 수도권에서 지방으로 빠져나가는 차량은 46만대다. 서울 방향은 오전 10~11시께 차량...",
+      "iso_date": "2026-11-08T09:38:00+09:00",
+      "published_at": "2026-11-08 09:38",
+      "relative_date": "22분 전",
+      "is_opinion": false,
+      "image": "https://img1.newsis.com/2026/11/08/NISI20261108_0002285876_web.jpg",
+      "related_articles": [
+        {
+          "id": "0c5bd67077f8",
+          "title": "'단풍 절정' 일요일 나들이에 고속도로 혼잡…부산→서울 6시간 10분",
+          "link": "https://www.news1.kr/life-culture/road-traffic/6346620",
+          "publisher": "뉴스1",
+          "relative_date": "29분 전",
+          "published_at": "2026-11-08 09:31",
+          "iso_date": "2026-11-08T09:31:00+09:00",
+          "image": ""
+        }
+      ],
+      "latest_iso_date": "2026-11-08T09:38:00+09:00"
+    },
+    {
+      "id": "aba5240eb3c7",
+      "title": "서울교통공사, 직원 아이디어 43건 현장 적용… 지하철 안전·편의 개선",
+      "link": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE9HOFJFYlVzeXZzSlRpSEFyNTZTUHFiakJQbU9zOThycDZITU1sZm5UaFh1V2djYzE0RUxPWmdicWVGMlJMaFJnSjNvWElteHJz?oc=5",
+      "publisher": "문화일보",
+      "category_id": "road_rail",
+      "category_name": "도로·교량·철도",
+      "badge_color": "emerald",
+      "snippet": "서울교통공사가 직원들이 직접 발굴한 아이디어를 지하철 운영 현장에 적용하며 안전성과 시민 편의 개선에 나서고 있다. 올해 10월까지 접수된 직원 제안은 1700건을 넘어섰으며, 이 가운데 우수제안 43건이 실제 현장에 적용됐다. 8일 서울교통공사에 따르면 올해 10월",
+      "iso_date": "2026-11-08T09:26:23+09:00",
+      "published_at": "2026-11-08 09:26",
+      "relative_date": "33분 전",
+      "is_opinion": false,
+      "image": "https://wimg.munhwa.com/news/cms/2026/11/08/news-p.v1.20261108.bf08c0023faf45ae94971f6d76b9c39b_R.jpg",
+      "related_articles": [
+        {
+          "id": "06c5206d7fa6",
+          "title": "서울교통공사, 직원 제안 43건 현장 적용",
+          "link": "https://www.lawissue.co.kr/view.php?ud=202611080128281763f4ab64559d_12",
+          "publisher": "로이슈",
+          "relative_date": "44분 전",
+          "published_at": "2026-11-08 09:16",
+          "iso_date": "2026-11-08T09:16:00+09:00",
+          "image": ""
+        },
+        {
+          "id": "1c02df6fbfad",
+          "title": "서울교통공사, 직원 아이디어 43건 지하철 현장 적용…안전·편의 개선",
+          "link": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE9wY3dyNlpLRnYwaFQyZ2lMQWFxaURIS3V5VzJGclpOYlloMURPZFZGSE5zVGxLWVdMdzZqZ1V6ZjJqclRDblo0Z3hRMjFub2lEQUMxdDVOMA?oc=5",
+          "publisher": "헤럴드경제",
+          "relative_date": "13시간 전",
+          "published_at": "2026-11-07 20:24",
+          "iso_date": "2026-11-07T20:24:02+09:00",
+          "image": "https://wimg.heraldcorp.com/news/cms/2026/11/07/news-p.v1.20261107.e218c30c1f914ad49e44ffef61b06dd1_P1.jpg"
+        },
+        {
+          "id": "941ab5ff0838",
+          "title": "“직원 손끝에서 바뀐 지하철”…서울교통공사, 현장 맞춤 제안 43건 결실",
+          "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE5pR2Jna053Y1ZnTzl2VS1tZlgxeGxHakJ4TDB0bElUM2pSU2RRWGJ2bWN1bklqRWU5VmNMUHEtZVVicENDdnJyNFZCWnRpXzc0aVdoTjhLbTFWblozTmxYYjY5ZDF6M3J5M2JRQTJ4ZGLSAXRBVV95cUxOU3ljUldtTmNEVjhwWkF3YXdxMWlvS0NQQ29wcWZnVXRUS0hkQU5XeDZfd0txaUFhS2FxRF9hOTZieWJSNnVmb0JieUxmck5jUlVncU4wbW1NNlBXNExlRnhYZXdiSnlQaE9PaEdLbkVMN05LSQ?oc=5",
+          "publisher": "더페어",
+          "relative_date": "18시간 전",
+          "published_at": "2026-11-07 15:41",
+          "iso_date": "2026-11-07T15:41:56+09:00",
+          "image": "https://cdn.thefairnews.co.kr/news/thumbnail/202611/93388_140180_4036_v150.jpg"
+        },
+        {
+          "id": "b0e81dbbadef",
+          "title": "서울교통공사, 직원 우수제안 43건 현장 적용… 안전·편의 개선",
+          "link": "http://www.ikld.kr/news/articleView.html?idxno=343724",
+          "publisher": "국토일보",
+          "relative_date": "18시간 전",
+          "published_at": "2026-11-07 15:10",
+          "iso_date": "2026-11-07T15:10:00+09:00",
+          "image": ""
+        },
+        {
+          "id": "738367fe3f84",
+          "title": "서울교통공사, 직원 아이디어 현장 적용, 지하철 안전·편의 높인다",
+          "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE9CaVItTWZUWXZlYWI0R3hscVVYb0VlT01Mekpkb3dPRGVrbWRrWV9IdGJSMlI5MU1jMFEzV0REeWVXb2xsSlo5VzhELWhvRC15ZlN4UmFrcEtiVGg0cmFsZk9ubkRaQklIVmhrV0hBT0pHT0NS0gF0QVVfeXFMT0JpUi1NZlRZdmVhYjRHeGxxVVhvRWVPTUx6SmRvd09EZWttZGtZX0h0YlIyUjkxTWMwUTNXRER5ZVdvbGxKWjlXOEQtaG9ELXlmU3hSYWtwS2JUaDRyYWxmT25uRFpCSUhWaGtXSEFPSkdPQ1I?oc=5",
+          "publisher": "이뉴스투데이",
+          "relative_date": "21시간 전",
+          "published_at": "2026-11-07 12:47",
+          "iso_date": "2026-11-07T12:47:13+09:00",
+          "image": ""
+        },
+        {
+          "id": "60af33abc3a7",
+          "title": "직원 아이디어 1,700건…서울 지하철, 현장 제안으로 더 안전해진다",
+          "link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE1sOXkxTEs0eEZQbWRuZU1nSnJuTV9hWWRzNkJxVGU4b21iRXRNQWhOT3ZtMXZ2X0wtSkJNT2ZkSVVmNGNPVF9odWQ1Z3BFTFc1LUlZYtIBVEFVX3lxTE1sOXkxTEs0eEZQbWRuZU1nSnJuTV9hWWRzNkJxVGU4b21iRXRNQWhOT3ZtMXZ2X0wtSkJNT2ZkSVVmNGNPVF9odWQ1Z3BFTFc1LUlZYg?oc=5",
+          "publisher": "세계뉴스",
+          "relative_date": "22시간 전",
+          "published_at": "2026-11-07 11:57",
+          "iso_date": "2026-11-07T11:57:18+09:00",
+          "image": ""
+        }
+      ],
+      "latest_iso_date": "2026-11-08T09:26:23+09:00"
+    },
+    {
+      "id": "dca2f3e6bade",
+      "title": "철도 물류 퍼즐 '카고 라인즈', 11월 27일 스팀 출시…체험판 공개",
+      "link": "https://www.gamechosun.co.kr/webzine/article/view.php?no=227324",
+      "publisher": "gamechosun.co.kr",
+      "category_id": "road_rail",
+      "category_name": "도로·교량·철도",
+      "badge_color": "emerald",
+      "snippet": "‘카고 라인즈’는 육각형 타일 위에 철도를 건설하고 역과 역을 연결해 열차를 운행하는 싱글 플레이 물류 퍼즐 게임이다. 플레이어는 선로를 배치하고 열차를 각 역으로 보내면서 새롭게 들어오는 주문과 납기...",
+      "iso_date": "2026-11-08T09:26:00+09:00",
+      "published_at": "2026-11-08 09:26",
+      "relative_date": "34분 전",
+      "is_opinion": false,
+      "image": "",
+      "related_articles": []
+    },
+    {
+      "id": "0997f136bf64",
+      "title": "중구, 겨울철 제설 준비…재해우려지역 45곳 점검·도로 열선 확충 [지금...",
+      "link": "https://www.segye.com/newsView/20261108503164?OutUrl=naver",
+      "publisher": "세계일보",
+      "category_id": "smart_policy",
+      "category_name": "스마트건설·정책",
+      "badge_color": "indigo",
+      "snippet": "이면도로로 좁고 경사가 심해 겨울철 제설에 어려움이 컸던 곳이다. 이달 말에는 회현동주민센터와 일신교회, 어린이집 인근 등 3개소에 열선을 추가 설치할 예정이다. 국토교통부의 ‘회현동 뉴빌리지 사업’과...",
+      "iso_date": "2026-11-08T09:21:00+09:00",
+      "published_at": "2026-11-08 09:21",
+      "relative_date": "39분 전",
+      "is_opinion": false,
+      "image": "https://www.segye.com/content/image/2026/11/08/20261108503163.png",
+      "related_articles": []
+    },
+    {
+      "id": "8909160a50de",
+      "title": "이병선 안산도시공사 사장 \"개발이익 시민에게 돌려주고 편리한 서비스...",
+      "link": "https://www.incheonilbo.com/news/articleView.html?idxno=1336201",
+      "publisher": "인천일보",
+      "category_id": "road_rail",
+      "category_name": "도로·교량·철도",
+      "badge_color": "emerald",
+      "snippet": "그는 에이스건설, 고려개발, 남광토건 등에서 36년간 토지 매입부터 분양까지 핵심 보직을 두루 거쳐 현장... /사진제공=안산도시공사 그는 5개 철도 노선이 모이는 수도권 서남부의 핵심 교통 요충지인 초지역세권...",
+      "iso_date": "2026-11-08T09:16:00+09:00",
+      "published_at": "2026-11-08 09:16",
+      "relative_date": "44분 전",
+      "is_opinion": false,
+      "image": "https://cdn.incheonilbo.com/news/thumbnail/202611/1336201_678626_933_v150.jpg",
+      "related_articles": []
+    },
+    {
+      "id": "becb013c91cf",
+      "title": "김포~파주 고속도로 한강터널 김포방향 굴착 착수…수도권 서북부 교통...",
+      "link": "https://www.viva100.com/article/20261108500125",
+      "publisher": "브릿지경제",
+      "category_id": "road_rail",
+      "category_name": "도로·교량·철도",
+      "badge_color": "emerald",
+      "snippet": "한국도로공사가 추진하는 이 사업은 수도권 제2순환고속도로의 일부 구간으로, 김포시 양촌읍에서 파주시 파주읍까지 총연장 25.4㎞를 왕복 4차로로 연결한다. 총사업비 약 2조1,694억 원이 투입되며 2029년 준공을 목표로...",
+      "iso_date": "2026-11-08T09:08:00+09:00",
+      "published_at": "2026-11-08 09:08",
+      "relative_date": "52분 전",
+      "is_opinion": false,
+      "image": "https://stqnq5ux4599.edge.naverncp.com/data2//content/image/2026/11/08/.cache/512/20261108500122.jpg?v=20261108100107",
+      "related_articles": [
+        {
+          "id": "14c06becf92f",
+          "title": "한강터널 김포방향 굴진 착수…2029년 준공 목표 : 사회",
+          "link": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE82Tm5aU2YwQVotZWJ0a2lDbE96SVJaV01OR3MtYXpOUUhlOU5ESklKZmx2NER6WldaRFBNTEpvWXlYQlA0ZGg4ZUg1WQ?oc=5",
+          "publisher": "재경일보",
+          "relative_date": "7시간 전",
+          "published_at": "2026-11-08 02:55",
+          "iso_date": "2026-11-08T02:55:00+09:00",
+          "image": "https://images.jkn.co.kr/data/images/full/110/73/1107373.jpg?v=1794090597&width=1200&height=630"
+        },
+        {
+          "id": "fb08c861e3e4",
+          "title": "김포~파주 한강터널, 김포 방향도 뚫기 시작했다",
+          "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTFBRRTAtTGFQM0xCb0ZhUEdyNVY1azdLM0FuclFpSVVRWGV6aUc1Tm5IczVxUWFCTV96TER1T3FUTlRWdTBhMG80U2MtaUx0Zk4teVFza2JSSUlZYU83eW9IM1FOWXNKX2w2?oc=5",
+          "publisher": "팩트공감",
+          "relative_date": "18시간 전",
+          "published_at": "2026-11-07 15:42",
+          "iso_date": "2026-11-07T15:42:25+09:00",
+          "image": "https://cdn.facton.co.kr/news/photo/202611/2440_4177_4053.jpg"
+        },
+        {
+          "id": "897125811e07",
+          "title": "김포~파주 고속도로 김포방향 한강터널 본격화…‘TBM 굴진식’ 열려",
+          "link": "https://www.kyeonggi.com/article/20261107580071",
+          "publisher": "경기일보",
+          "relative_date": "20시간 전",
+          "published_at": "2026-11-07 13:12",
+          "iso_date": "2026-11-07T13:12:00+09:00",
+          "image": ""
+        },
+        {
+          "id": "5f718b87669e",
+          "title": "김포~파주 15분시대 열린다… 한강하저 ‘한강터널’ 김포방향 굴진 본격 착수",
+          "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE9YNXFYcm04WWFaYXYtMF93TUN1QnNjZEFzWTc1SmFDNk1ZNmlFLXVGak5DMHBCdEdlYU1OUnJZRHpQdE9Sd3pzeGh4MFgyYnVMUjAzTXJB?oc=5",
+          "publisher": "헤럴드경제",
+          "relative_date": "어제",
+          "published_at": "2026-11-06 17:08",
+          "iso_date": "2026-11-06T17:08:27+09:00",
+          "image": "https://wimg.heraldcorp.com/news/cms/2026/11/06/news-p.v1.20261106.4342db286b8a48f986a951c290ee0e72_P1.jpg"
+        },
+        {
+          "id": "a73ea121dfbb",
+          "title": "한강 아래 뚫리는 김포~파주 고속도로…서북부 교통혁신",
+          "link": "https://news.google.com/rss/articles/CBMiowJBVV95cUxPR05GNmJlSl8tVmJFb0paQjl1NXBQVXJ2UGhURXZSUkQweFpKNUQ0VzRYOHNRMkFNQXIxTkZLTW1uVkhwUHJXaTdCQmc2bHBqYmlNdDFBSWVzSzYtaDNGN1hYMWJTRGM2RFpfS01NQVZPVFM5YlV0RTJ6NGE5YkstRFc1U1JVRU8yLVRLSlcyMy1iazZTRkNKWWJqSU5TVGdZRW1OaFRRMWh3QmdMSkszVW1YTFpFZndOZ1Ftd05oN2pYVEJ6RVdIWkR4cWhaNGdJS1pHbUlkRUdSTnFQTnlXd01OQnlwYmhfaERpS2dsSDZUcGhMMUdIdWllckRER21YRUtuODNFUlY4QXI1M29aRFBSbWxSdHBTVkItVnI1Vkh0S1E?oc=5",
+          "publisher": "데일리안",
+          "relative_date": "어제",
+          "published_at": "2026-11-06 14:45",
+          "iso_date": "2026-11-06T14:45:00+09:00",
+          "image": "https://cdnimage.dailian.co.kr/news/202611/news_1793943880049_1711814_m_1.jpg"
+        },
+        {
+          "id": "68da1d773c91",
+          "title": "이기형 김포시장, ‘김포~파주 한강터널’ 김포방향 본격 굴진 진두지휘… “2029년 개통 목표, 김포 광역교통 대혁신 이끌 것”",
+          "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE1vTHFIcDJuWkxNR1VfNVZwZ1ZTNTRHaEw4dVBpaWpjVG9rcmNTQlltUzlQT0h4X1ZFMi1Pa0RfSzRVSUFCM29ENDk1el9fRFo3TFZiMEhMU2I3d1Q1Vk1LNjZNekxYYzJzUEE?oc=5",
+          "publisher": "새한일보",
+          "relative_date": "어제",
+          "published_at": "2026-11-06 14:38",
+          "iso_date": "2026-11-06T14:38:41+09:00",
+          "image": ""
+        },
+        {
+          "id": "76a532e53066",
+          "title": "김포~파주 고속도로 한강터널 굴착 본격화…개통 땐 59분→15분",
+          "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9vTHprVVFXWEZZa0NocUQxblg2bF9icUV4bFdRcnBBUjUzX0x1bFkyR0NzSDYxaTlHd1JxSHhQdnIzRlFrWDVQZVo3dFBpc252YS1VckZvMDVhX3dUWW1RTw?oc=5",
+          "publisher": "아시아경제",
+          "relative_date": "어제",
+          "published_at": "2026-11-06 13:46",
+          "iso_date": "2026-11-06T13:46:53+09:00",
+          "image": "https://cphoto.asiae.co.kr/listimglink/1/2026110613440789893_1793940248.jpg"
+        },
+        {
+          "id": "0f30afb72589",
+          "title": "김포시, 김포~파주 고속도로 한강터널 굴착 본격화…2029년 개통 목표",
+          "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE9BMlBldnpfOTMzZkdIX0h4X0wweU9qaUxnSnpKZkFIbWJDcG0xN2ZnRTRBbzVURUZZQkhjbm5pQll2T2ctYm5YMU81emE2YXRkZEhSMnZOS0hvVFBTUnJYYlRrcWQtZXgxYmhYVDhn?oc=5",
+          "publisher": "전국매일신문",
+          "relative_date": "어제",
+          "published_at": "2026-11-06 13:42",
+          "iso_date": "2026-11-06T13:42:57+09:00",
+          "image": "https://www.jeonmae.co.kr/news/photo/202611/1309264_1042447_4228.jpg"
+        }
+      ],
+      "latest_iso_date": "2026-11-08T09:08:00+09:00"
+    },
+    {
+      "id": "630ca297543c",
+      "title": "태백 동점~통동 국도대체우회도로 건설 추진…폐광 대체산업 물류망 확...",
+      "link": "https://www.viva100.com/article/20261108500107",
+      "publisher": "브릿지경제",
+      "category_id": "road_rail",
+      "category_name": "도로·교량·철도",
+      "badge_color": "emerald",
+      "snippet": "국도대체우회도로 건설 필요성을 제기하고 나섰다. 태백시는 동점~통동 국도대체우회도로 건설사업이 폐광... 영월~삼척 고속도로 등 광역 교통망 확충사업과의 연계 효과도 기대하고 있다. 태백시는 우회도로가 주변...",
+      "iso_date": "2026-11-08T09:06:00+09:00",
+      "published_at": "2026-11-08 09:06",
+      "relative_date": "54분 전",
+      "is_opinion": false,
+      "image": "https://stqnq5ux4599.edge.naverncp.com/data2//content/image/2026/11/08/.cache/512/20261108500102.jpg?v=20261108100108",
+      "related_articles": [
+        {
+          "id": "e7199db1c2c4",
+          "title": "태백 동점~통동 국도대체우회도로 건설 시급…폐광 대체산업 성장의 핵심 기반시설",
+          "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE55RG5jQ1FJUUUwdlNSNEdjLW9yNmpEeHctbEFsWFIxUnNpczhDaGJpbjVJNmhEdG1rU3hfSHVLdGE4SnFlc25QVVduMmFOSHhodl9lQ3poOEhzRjFmUGtUbURyaGxaUEE2eXFj?oc=5",
+          "publisher": "영서신문",
+          "relative_date": "어제",
+          "published_at": "2026-11-06 10:37",
+          "iso_date": "2026-11-06T10:37:54+09:00",
+          "image": "https://cdn.ysshinmun.com/news/photo/202611/12934_12658_3740.png"
+        },
+        {
+          "id": "90cb69f1c18f",
+          "title": "태백시, 동점~통동 우회도로 건설 시급…폐광 대체산업 물류망 확보 과제",
+          "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9WWUNmUVJ5MjQwYVZ3N2owejM5TDNMR19wYk51NTJaaWZWN2kxdGpJZkIyb01WS0xvQnhGdHVYcDhTLTZlZmdXc2Q1Nl9FTk5rSHFtYlZTemEtSDZ0ckpzMNIBWEFVX3lxTE9ucDhPbU5rUEFVdjNXLXpUcF9IbG85bzNzXzFwTE1TOFcyNzZIRlAtazZzTUxfbFprZ0xMaGNFdWlXTldIa3Vtb0pQRjNwS25DamZDOUdDWGc?oc=5",
+          "publisher": "로컬세계",
+          "relative_date": "2일 전",
+          "published_at": "2026-11-06 08:49",
+          "iso_date": "2026-11-06T08:49:02+09:00",
+          "image": "https://localsegye.co.kr/news/data/2026/11/06/p1065570363152167_642_thum.png"
+        }
+      ],
+      "latest_iso_date": "2026-11-08T09:06:00+09:00"
+    },
+    {
+      "id": "6ec72eea9bc8",
+      "title": "제주, 무더기 적발된 하천·계곡 불법 점용시설 정비 속도",
+      "link": "https://www.headlinejeju.co.kr/news/articleView.html?idxno=601738",
+      "publisher": "헤드라인제주",
       "category_id": "water_port",
       "category_name": "수자원·하천·항만",
       "badge_color": "cyan",
-      "snippet": "인천항만공사는 연수구 송도동 신항배후단지에 조성한 '신항 임시 화물차 주차장' 이용자를 9일부터 19일까지 모집한다. 이번에 모집하는 주차면은 1,281면으로, 트레일러(샤시)를 함께 세울 수 있는 Ⅰ타입(3.5×18.0m...",
-      "iso_date": "2026-11-08T08:32:00+09:00",
-      "published_at": "2026-11-08 08:32",
-      "relative_date": "28분 전",
+      "snippet": "이번 정비는 하천구역에 무단으로 설치된 건축물과 각종 적치물, 불법 경작시설 등을 철거해 하천의 본래 기능을 회복하고 재해 위험요인을 사전에 해소하기 위해 추진된다. 제주시는 올해 3월부터 6월까지 지방하천...",
+      "iso_date": "2026-11-08T09:06:00+09:00",
+      "published_at": "2026-11-08 09:06",
+      "relative_date": "54분 전",
       "is_opinion": false,
-      "image": "https://www.incheonin.com/news/thumbnail/202611/122099_191571_2127_v150.jpg",
+      "image": "https://www.headlinejeju.co.kr/news/photo/202611/601738_498876_0756.jpg",
+      "related_articles": [
+        {
+          "id": "aaafc8f64b50",
+          "title": "\"올해만 수백건 적발\"...제주시, 하천·계곡 불법 점용시설 집중 정비",
+          "link": "https://www.newsjeju.net/news/articleView.html?idxno=428082",
+          "publisher": "뉴스제주",
+          "relative_date": "9시간 전",
+          "published_at": "2026-11-08 00:10",
+          "iso_date": "2026-11-08T00:10:00+09:00",
+          "image": ""
+        }
+      ],
+      "latest_iso_date": "2026-11-08T09:06:00+09:00"
+    },
+    {
+      "id": "65aa26e53b8a",
+      "title": "주택공급은 속도전, 교통망은 후순위…'교통 없는 신도시' 왜 반...",
+      "link": "https://www.m-i.kr/news/articleView.html?idxno=2015474",
+      "publisher": "매일일보",
+      "category_id": "smart_policy",
+      "category_name": "스마트건설·정책",
+      "badge_color": "indigo",
+      "snippet": "정부는 신규 택지를 발표할 때마다 광역철도와 도로망 확충을 약속하지만, 실제 입주 시점에는 교통시설이... 국토교통부가 지난 9월 설명한 자료에 따르면 3기 신도시 광역교통 개선대책 89개 사업 가운데 77개(86.5%)의...",
+      "iso_date": "2026-11-08T09:00:00+09:00",
+      "published_at": "2026-11-08 09:00",
+      "relative_date": "1시간 전",
+      "is_opinion": false,
+      "image": "https://cdn.m-i.kr/news/photo/202611/2015474_2015892_5830.jpg",
       "related_articles": []
     },
     {
@@ -126,7 +602,7 @@
       "snippet": "주택·토목 분야 신규 수주 활동을 일시 중단하고 안전관리 개선에 집중했다. 이후 경영진의 현장 점검과 본사 리스크 관리 절차를 강화했다. 주 대표는 올해를 사업구조 전환의 원년으로 삼고 기존 EPC 역량에 에너지...",
       "iso_date": "2026-11-08T08:02:00+09:00",
       "published_at": "2026-11-08 08:02",
-      "relative_date": "58분 전",
+      "relative_date": "1시간 전",
       "is_opinion": false,
       "image": "https://nimage.g-enews.com/phpwas/restmb_allidxmake.php?idx=5&simg=20261106102810094142aa6f4cdad10625224987.jpg",
       "related_articles": []
@@ -142,7 +618,7 @@
       "snippet": "평가항목은 ▲하천 복원과 휴식공간 제공 ▲수질 개선과 생물 다양성 증가 ▲복원 이후 이용도 증가 ▲자연친화적 정비 방향 ▲다른 하천의 생태하천 복원사업 추진 희망 등 5개다. 항목별로 보면 하천 복원과...",
       "iso_date": "2026-11-08T08:00:00+09:00",
       "published_at": "2026-11-08 08:00",
-      "relative_date": "1시간 전",
+      "relative_date": "2시간 전",
       "is_opinion": false,
       "image": "https://cdn.incheontoday.com/news/photo/202611/326045_332701_1838.jpeg",
       "related_articles": [
@@ -200,7 +676,7 @@
       "snippet": "핵심 도로인 국도 39호선 확장도 2026년에서 2031년으로 미뤄졌다. 당국은 7701번 시내버스를 신설하고 12월... 국토교통부 대도시권광역교통위원회는 지난달 28일 3기 신도시 광역교통대책 전수점검을 발표했다. 29일...",
       "iso_date": "2026-11-08T08:00:00+09:00",
       "published_at": "2026-11-08 08:00",
-      "relative_date": "1시간 전",
+      "relative_date": "2시간 전",
       "is_opinion": false,
       "image": "https://cdn.m-i.kr/news/photo/202611/2015501_2015920_279.jpg",
       "related_articles": []
@@ -216,7 +692,7 @@
       "snippet": "전북특별자치도 진안군이 지역의 청정 수자원과 홍삼·산약초 등 특화자원을 결합한 체류형 수치유 관광 육성... 프로그램 개발 등을 제안했으며 홍삼연구소와 진안의료원 등 유관기관이 참여하는 수질·효능 연구와 건강...",
       "iso_date": "2026-11-08T07:00:00+09:00",
       "published_at": "2026-11-08 07:00",
-      "relative_date": "2시간 전",
+      "relative_date": "3시간 전",
       "is_opinion": false,
       "image": "https://cdn.shinailbo.co.kr/news/photo/202611/5080591_2078047_464.jpg",
       "related_articles": [
@@ -225,7 +701,7 @@
           "title": "서산시의회, 동남아 선진 도시재생·수자원 해법 모색",
           "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE52dG9qcE0zZmx3X3ZSdklKRGJ2OVdDU0RhOVU1ZzIzUWVibU5mQ3ZRRGVuSGdvQThOTi1UTC1WWWRELTFXaUxNSjQzRUNwak16SmhMbVRGZktSMVNmc1BISXU2bE5qWHFPdDdKWVdn0gFuQVVfeXFMTnZ0b2pwTTNmbHdfdlJ2SUpEYnY5V0NTRGE5VTVnMjNRZWJtTmZDdlFEZW5IZ29BOE5OLVRMLVZZZEQtMVdpTE1KNDNFQ3BqTXpKaExtVEZmS1IxU2ZzUEhJdTZsTmpYcU90N0pZV2c?oc=5",
           "publisher": "충청신문",
-          "relative_date": "17시간 전",
+          "relative_date": "18시간 전",
           "published_at": "2026-11-07 15:59",
           "iso_date": "2026-11-07T15:59:40+09:00",
           "image": ""
@@ -244,7 +720,7 @@
       "snippet": "8일 건설·엔지니어링 업계에 따르면 서울시는 종합엔지니어링사 유신를 통해 앞으로 12개월 동안 ‘강북횡단 지하도시고속도로 건설 실행계획’을 수립한다. 이를 위해 지난달 말 유신과 관련 계약을 체결했으며, 지난...",
       "iso_date": "2026-11-08T06:02:00+09:00",
       "published_at": "2026-11-08 06:02",
-      "relative_date": "2시간 전",
+      "relative_date": "3시간 전",
       "is_opinion": false,
       "image": "https://files.mtn.co.kr/article-asset/2026/11/08/012e7675-fa00-4ea6-b5d5-a2243c86cd2f.jpg",
       "related_articles": []
@@ -260,86 +736,10 @@
       "snippet": "철도 교량 건설은 무거운 구조물을 다루고, 다양한 현장 작업이 필요해 공사 기간이 길고 안전 부담이 큽니다. 그런데 국내 연구팀이 교량 구조물을 공장에서 미리 제작한 뒤 현장에서 조립하는 시스템을 개발했습니다....",
       "iso_date": "2026-11-08T05:51:00+09:00",
       "published_at": "2026-11-08 05:51",
-      "relative_date": "3시간 전",
+      "relative_date": "4시간 전",
       "is_opinion": false,
       "image": "https://image.ytn.co.kr/general/jpg/2026/1108/202611080551200333_t.jpg",
       "related_articles": []
-    },
-    {
-      "id": "d14ddfdcd9bc",
-      "title": "중국 선전 도심 누비는 무인택시…울산도 도로 실증 추진",
-      "link": "https://www.iusm.co.kr/news/articleView.html?idxno=1070175",
-      "publisher": "울산매일",
-      "category_id": "smart_policy",
-      "category_name": "스마트건설·정책",
-      "badge_color": "indigo",
-      "snippet": "7일 김상욱 울산시장과 지역기업 관계자, 본지 기자 등 울산 방문단은 중국 선전에서 운전자 없이 일반 도로... 올해 국토교통부 드론실증도시 사업에 3년 연속 선정된 울주군은 2개 배송거점과 16개 배달점을 마련했다....",
-      "iso_date": "2026-11-08T03:22:00+09:00",
-      "published_at": "2026-11-08 03:22",
-      "relative_date": "5시간 전",
-      "is_opinion": false,
-      "image": "https://cdn.iusm.co.kr/news/thumbnail/202611/1070175_631565_2006_v150.jpg",
-      "related_articles": []
-    },
-    {
-      "id": "14c06becf92f",
-      "title": "한강터널 김포방향 굴진 착수…2029년 준공 목표 : 사회",
-      "link": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE82Tm5aU2YwQVotZWJ0a2lDbE96SVJaV01OR3MtYXpOUUhlOU5ESklKZmx2NER6WldaRFBNTEpvWXlYQlA0ZGg4ZUg1WQ?oc=5",
-      "publisher": "재경일보",
-      "category_id": "tunnel_geo",
-      "category_name": "터널·지반·안전",
-      "badge_color": "amber",
-      "snippet": "한강 아래를 지나는 국내 첫 도로터널인 한강터널의 김포방향 굴진이 시작됐다. 한국도로공사는 국내 최대 규모인 14m급 TBM을 투입해 수도권 제2순환고속도로 김포~파주 구간 공사를 이어가며 2029년 준공을 목표로 하고 있다.",
-      "iso_date": "2026-11-08T02:55:00+09:00",
-      "published_at": "2026-11-08 02:55",
-      "relative_date": "6시간 전",
-      "is_opinion": false,
-      "image": "https://images.jkn.co.kr/data/images/full/110/73/1107373.jpg?v=1794090597&width=1200&height=630",
-      "related_articles": []
-    },
-    {
-      "id": "aaafc8f64b50",
-      "title": "\"올해만 수백건 적발\"...제주시, 하천·계곡 불법 점용시설 집중 정비",
-      "link": "https://www.newsjeju.net/news/articleView.html?idxno=428082",
-      "publisher": "뉴스제주",
-      "category_id": "water_port",
-      "category_name": "수자원·하천·항만",
-      "badge_color": "cyan",
-      "snippet": "이번 정비는 하천구역에 무단으로 설치된 건축물과 적치물, 불법 경작시설 등을 정비해 하천 본래의 기능을 회복하고 시민 안전을 확보하기 위해 추진된다. 올해 3월부터 6월까지 지방하천 27개소, 소하천 42개소, 세천...",
-      "iso_date": "2026-11-08T00:10:00+09:00",
-      "published_at": "2026-11-08 00:10",
-      "relative_date": "8시간 전",
-      "is_opinion": false,
-      "image": "https://cdn.newsjeju.net/news/thumbnail/202611/428082_532918_2524_v150.jpg",
-      "related_articles": []
-    },
-    {
-      "id": "faf82059bdc6",
-      "title": "서울 마곡동 도로에 파인 '100℃ 열탕'…빠진 40대 행인 중태",
-      "link": "https://www.fnnews.com/news/202611072230398563",
-      "publisher": "파이낸셜뉴스",
-      "category_id": "tunnel_geo",
-      "category_name": "터널·지반·안전",
-      "badge_color": "amber",
-      "snippet": "이 사고로 지반이 내려앉아 생긴 구멍에 40대 행인이 빠져 중화상을 입고, 인근 약 9000세대의 난방이 끊겨... 이로 인해 주변 지반이 내려앉아 웅덩이가 생기면서 신호등 1개가 쓰러졌고, 도로 곳곳에 뜨거운 수증기가...",
-      "iso_date": "2026-11-07T22:39:00+09:00",
-      "published_at": "2026-11-07 22:39",
-      "relative_date": "10시간 전",
-      "is_opinion": false,
-      "image": "https://image.fnnews.com/resource/media/image/2026/11/07/202611071739047528_e.jpg",
-      "related_articles": [
-        {
-          "id": "bda40f063d19",
-          "title": "도로 건너다 땅에 '쑥'…마곡동 온수관 구멍 빠진 40대 전신 화상 중태",
-          "link": "https://www.imaeil.com/page/view/2026110717595893184",
-          "publisher": "매일신문",
-          "relative_date": "14시간 전",
-          "published_at": "2026-11-07 18:02",
-          "iso_date": "2026-11-07T18:02:00+09:00",
-          "image": ""
-        }
-      ],
-      "latest_iso_date": "2026-11-07T22:39:00+09:00"
     },
     {
       "id": "e2478127f626",
@@ -352,7 +752,7 @@
       "snippet": "회사를 경영하면서 국토교통부 우수녹색물류실천기업 지정심사와 물류 AI 대전환 혁신랩, 한국교통연구원... ISO 14083 제정을 주도한 국제기구 스마트프레이트센터(SFC)로부터 육상·해상·항공·철도·물류거점 전...",
       "iso_date": "2026-11-07T22:32:00+09:00",
       "published_at": "2026-11-07 22:32",
-      "relative_date": "10시간 전",
+      "relative_date": "11시간 전",
       "is_opinion": false,
       "image": "https://img.hankyung.com/photo/202611/AD.46344859.1.jpg",
       "related_articles": []
@@ -368,7 +768,7 @@
       "snippet": "연합뉴스 서울교통공사는 2024년 3월 지하철 7호선 태릉입구역, 같은 해 11월 창동차량기지, 2025년 1월 압구정역에서 발생한 정지신호 위반 준사고를 보고하지 않아 지난해 10월 국토부로부터 시정명령을 받았다....",
       "iso_date": "2026-11-07T22:28:00+09:00",
       "published_at": "2026-11-07 22:28",
-      "relative_date": "10시간 전",
+      "relative_date": "11시간 전",
       "is_opinion": false,
       "image": "https://www.segye.com/content/image/2026/11/06/20261106507602.jpg",
       "related_articles": [
@@ -377,7 +777,7 @@
           "title": "서울교통공사, 철도준사고 보고 누락 시정명령 받고도 또 위반…과징금 2억4000만원",
           "link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE95WkhIWjFrRjNla3B1a2I2STBldGdwMlhjOEp4V05YOGYtZ1dTUHJlbzhra255R3NBZFhDcXpBc2RZTGFfZDJzWWpGNlRKbXUtRElvNTM4ZzLSAVRBVV95cUxNY05VWllvVGRpd2NGQi0xbVpCQXlqVDhVYzhyNmhMcE11Q3lpWmRDbnJKUXJHUkphU0xrUTNWcU12elVXRm82MU5lRTBveGJNR1kyR1A?oc=5",
           "publisher": "세계일보",
-          "relative_date": "10시간 전",
+          "relative_date": "11시간 전",
           "published_at": "2026-11-07 22:27",
           "iso_date": "2026-11-07T22:27:23+09:00",
           "image": "https://www.segye.com/content/image/2026/11/06/20261106507602.jpg"
@@ -387,7 +787,7 @@
           "title": "지하철 준사고 또 보고 누락...서울교통공사에 과징금 2억 4000만 원",
           "link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE9MMlZUdHo1d0czajNHbnVuSzFaQ20yTlVEQTJDZUlKVU9xNnRiU3ByalpvMWRsWWJzUjNRdTdYTVBzakR3U3lCbGM2bVBpTnBmLXJIM0gtZXlxU3NlRWJyMlNrb9IBZ0FVX3lxTFBpZFN1Sk5YbE9pYkE3RjhnMml6THhZT0JhTDhWc1NyMU8wX1RtOFBNbEhCcUJFSGlxMjNwbjNCeFlBRElvQUhXRkUtZjQ3eVh4Q0FkZzlQVUhSQzZNa29ydHB5dm1uM2c?oc=5",
           "publisher": "ABC뉴스",
-          "relative_date": "22시간 전",
+          "relative_date": "23시간 전",
           "published_at": "2026-11-07 10:49",
           "iso_date": "2026-11-07T10:49:07+09:00",
           "image": "https://cdn.abcn.kr/news/thumbnail/202611/94190_53594_4840_v150.jpg"
@@ -536,30 +936,20 @@
       "latest_iso_date": "2026-11-07T22:28:00+09:00"
     },
     {
-      "id": "10d497b22a40",
-      "title": "송형곤 의장, 조정식 국회의장에 고흥 우주선철도 국가계획 반영 건의 > 뉴스",
-      "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE9oOUhrMHBqY2h2MVItNzJfcWtRbVJHdmx3VEh6Y2YxVW13bnVZRlFtd3laTE5Bc2EtSllaOUF0Y0pWT2lwY1NlOVNBWGk3S3R6d01ILVdCSjZpQ3hwYlN4Q3lTMmZjVkdEOW9YdktKQVRYUQ?oc=5",
-      "publisher": "더코리아",
+      "id": "3e77aae02048",
+      "title": "송형곤 통합특별시의장, 통합특별법 개정·20조 지원·고흥 우주철도 건...",
+      "link": "https://www.joongangenews.com/news/articleView.html?idxno=562086",
+      "publisher": "중앙이코노미뉴스",
       "category_id": "road_rail",
       "category_name": "도로·교량·철도",
       "badge_color": "emerald",
-      "snippet": "국회의장-시도의회 의장단 간담회 참석해 철도망 구축 필요성 강조… 문금주 국회의원 별도 면담 추진",
-      "iso_date": "2026-11-07T21:51:00+09:00",
-      "published_at": "2026-11-07 21:51",
-      "relative_date": "11시간 전",
+      "snippet": "송 의장은 나로우주센터와 우주발사체 국가산업단지의 접근성을 개선하고 산업시설 확충에 따른 교통 수요에 대응하기 위해 제5차 국가철도망 구축계획 반영이 필요하다고 강조했다. 특히 고흥에 국가 우주산업...",
+      "iso_date": "2026-11-07T20:54:00+09:00",
+      "published_at": "2026-11-07 20:54",
+      "relative_date": "13시간 전",
       "is_opinion": false,
-      "image": "https://www.thekorea.kr/data/file/news/3731442413_5gFN9VuA_2ebf05f11273f59f6ff02034ebb109bf41ce02d9.jpg",
+      "image": "https://cdn.joongangenews.com/news/photo/202611/562086_369646_5045.jpg",
       "related_articles": [
-        {
-          "id": "3e77aae02048",
-          "title": "송형곤 통합특별시의장, 통합특별법 개정·20조 지원·고흥 우주철도 건...",
-          "link": "https://www.joongangenews.com/news/articleView.html?idxno=562086",
-          "publisher": "중앙이코노미뉴스",
-          "relative_date": "12시간 전",
-          "published_at": "2026-11-07 20:54",
-          "iso_date": "2026-11-07T20:54:00+09:00",
-          "image": ""
-        },
         {
           "id": "aaf1ab9c518c",
           "title": "송형곤 광주전남의장, 고흥 우주선 철도 국가계획 반영 건의",
@@ -569,16 +959,6 @@
           "published_at": "2026-11-06 23:21",
           "iso_date": "2026-11-06T23:21:16+09:00",
           "image": "https://www.ekn.kr/mnt/file/202611/news-p.v1.20261106.aa46ef8cf16a44f1afaf0afc90f6de1e_R.jpg"
-        },
-        {
-          "id": "66ee903e7e1a",
-          "title": "송형곤 의장, '고흥 우주선철도'... 조정식 의장 만나 국가계획 건의",
-          "link": "https://www.newsworker.co.kr/news/articleView.html?idxno=512814",
-          "publisher": "뉴스워커",
-          "relative_date": "어제",
-          "published_at": "2026-11-06 21:20",
-          "iso_date": "2026-11-06T21:20:00+09:00",
-          "image": ""
         },
         {
           "id": "f2e9028bd3b5",
@@ -641,55 +1021,7 @@
           "image": "https://img3.yna.co.kr/etc/inner/KR/2026/11/06/AKR20261106152000054_01_i_P4.jpg"
         }
       ],
-      "latest_iso_date": "2026-11-07T21:51:00+09:00"
-    },
-    {
-      "id": "1c02df6fbfad",
-      "title": "서울교통공사, 직원 아이디어 43건 지하철 현장 적용…안전·편의 개선",
-      "link": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE9wY3dyNlpLRnYwaFQyZ2lMQWFxaURIS3V5VzJGclpOYlloMURPZFZGSE5zVGxLWVdMdzZqZ1V6ZjJqclRDblo0Z3hRMjFub2lEQUMxdDVOMA?oc=5",
-      "publisher": "헤럴드경제",
-      "category_id": "road_rail",
-      "category_name": "도로·교량·철도",
-      "badge_color": "emerald",
-      "snippet": "[헤럴드경제=박종일 선임기자]서울교통공사가 직원들의 현장 아이디어를 지하철 운영에 적극 반영하며 시민 안전과 이용 편의 개선에 나섰다. 서울교통공사(사장 김태균)는",
-      "iso_date": "2026-11-07T20:24:02+09:00",
-      "published_at": "2026-11-07 20:24",
-      "relative_date": "12시간 전",
-      "is_opinion": false,
-      "image": "https://wimg.heraldcorp.com/news/cms/2026/11/07/news-p.v1.20261107.e218c30c1f914ad49e44ffef61b06dd1_P1.jpg",
-      "related_articles": [
-        {
-          "id": "941ab5ff0838",
-          "title": "“직원 손끝에서 바뀐 지하철”…서울교통공사, 현장 맞춤 제안 43건 결실",
-          "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE5pR2Jna053Y1ZnTzl2VS1tZlgxeGxHakJ4TDB0bElUM2pSU2RRWGJ2bWN1bklqRWU5VmNMUHEtZVVicENDdnJyNFZCWnRpXzc0aVdoTjhLbTFWblozTmxYYjY5ZDF6M3J5M2JRQTJ4ZGLSAXRBVV95cUxOU3ljUldtTmNEVjhwWkF3YXdxMWlvS0NQQ29wcWZnVXRUS0hkQU5XeDZfd0txaUFhS2FxRF9hOTZieWJSNnVmb0JieUxmck5jUlVncU4wbW1NNlBXNExlRnhYZXdiSnlQaE9PaEdLbkVMN05LSQ?oc=5",
-          "publisher": "더페어",
-          "relative_date": "17시간 전",
-          "published_at": "2026-11-07 15:41",
-          "iso_date": "2026-11-07T15:41:56+09:00",
-          "image": "https://cdn.thefairnews.co.kr/news/thumbnail/202611/93388_140180_4036_v150.jpg"
-        },
-        {
-          "id": "b0e81dbbadef",
-          "title": "서울교통공사, 직원 우수제안 43건 현장 적용… 안전·편의 개선",
-          "link": "http://www.ikld.kr/news/articleView.html?idxno=343724",
-          "publisher": "국토일보",
-          "relative_date": "17시간 전",
-          "published_at": "2026-11-07 15:10",
-          "iso_date": "2026-11-07T15:10:00+09:00",
-          "image": ""
-        },
-        {
-          "id": "2f5ec2933eb9",
-          "title": "서울교통공사, 직원 아이디어 현장 적용, 지하철 안전·편의 높인다",
-          "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE0tZUo4eUE0ZTJZYXZBTENDSjZONGZDZjdPRmtQdnZlUGxHRG0tMFhPTjBOTmw3TXZ5TmNjWnlCclRqWU96Mmo1ZGdEbVhDdUpwaXJBMnJ5a1Vib1E2MEVQWXpSRWRDY3dPZkc4cXlLMVfSAXRBVV95cUxPQmlSLU1mVFl2ZWFiNEd4bHFVWG9FZU9NTHpKZG93T0Rla21ka1lfSHRiUjJSOTFNYzBRM1dERHllV29sbEpaOVc4RC1ob0QteWZTeFJha3BLYlRoNHJhbGZPbm5EWkJJSFZoa1dIQU9KR09DUg?oc=5",
-          "publisher": "이뉴스투데이",
-          "relative_date": "20시간 전",
-          "published_at": "2026-11-07 12:35",
-          "iso_date": "2026-11-07T12:35:00+09:00",
-          "image": "https://cdn.enewstoday.co.kr/news/thumbnail/202611/2489628_1335865_314_v150.jpg"
-        }
-      ],
-      "latest_iso_date": "2026-11-07T20:24:02+09:00"
+      "latest_iso_date": "2026-11-07T20:54:00+09:00"
     },
     {
       "id": "dcb9dc9d1afa",
@@ -702,7 +1034,7 @@
       "snippet": "앞서 현장을 수습하던 서울에너지공사 직원 한 명도 물웅덩이에 발이 빠져 화상을 입었습니다. 또 인근... [조원철/연세대 토목공학과 명예교수] \"겨울에 주로 언제 일어나냐면 새벽에 많이 일어나요. 땅이 얼면 관도...",
       "iso_date": "2026-11-07T20:18:00+09:00",
       "published_at": "2026-11-07 20:18",
-      "relative_date": "12시간 전",
+      "relative_date": "13시간 전",
       "is_opinion": false,
       "image": "https://image.imnews.imbc.com/replay/2026/nwdesk/article/__icsFiles/afieldfile/2026/11/07/desk_20261107_201755_1_9_Large.jpg",
       "related_articles": []
@@ -718,7 +1050,7 @@
       "snippet": "문화체육관광부에서 운영하는 대한민국 정책을 제공하는 포털사이트로 정책뉴스, 정책포커스, 국민이말하는정책, 정책기고, 문화칼럼, 사실은이렇습니다, 멀티미디어뉴스, 보도자료, 브리핑자료, 연설문, 채용정보 등을 서비스합니다. - 정책브리핑 | 뉴스 | 카드/한컷",
       "iso_date": "2026-11-07T19:33:39+09:00",
       "published_at": "2026-11-07 19:33",
-      "relative_date": "13시간 전",
+      "relative_date": "14시간 전",
       "is_opinion": false,
       "image": "https://www.korea.kr/newsWeb/resources/attaches/2026.11/06/6e9827f098cf162178b482b2fc74a368.jpg",
       "related_articles": [
@@ -746,25 +1078,9 @@
       "snippet": "7일 YTN 보도에 따르면 이날 오전 1시께 서울 마곡동 온수관 파열 복구 현장 인근에서 A씨(44)가 지반 침하로 생긴 구멍에 빠졌다. 사고가 발생한 장소는 전날 오후 8시20분께 온수관이 파열돼 긴급 복구 작업이 진행 중이던...",
       "iso_date": "2026-11-07T19:32:00+09:00",
       "published_at": "2026-11-07 19:32",
-      "relative_date": "13시간 전",
+      "relative_date": "14시간 전",
       "is_opinion": false,
       "image": "https://ypzxxdrj8709.edge.naverncp.com/data2/content/image/2026/11/07/.cache/512/20261107580119.jpg",
-      "related_articles": []
-    },
-    {
-      "id": "f7899f304d6a",
-      "title": "이상일 용인특례시장, 중앙동 650억 도시재생·동천동 교통망 확충·남사...",
-      "link": "https://www.tournews21.com/news/articleView.html?idxno=147768",
-      "publisher": "투어코리아",
-      "category_id": "road_rail",
-      "category_name": "도로·교량·철도",
-      "badge_color": "emerald",
-      "snippet": "이 시장은 지난해 12월 제2차 경기도 도시철도망 구축계획에 반영된 동백~신봉선 건설을 추진해 수지구와 기흥구의 철도 연결망을 강화하겠다고 밝혔다. 동천동 인구 증가에 따른 분동 문제와 노후하고 협소한...",
-      "iso_date": "2026-11-07T19:14:00+09:00",
-      "published_at": "2026-11-07 19:14",
-      "relative_date": "13시간 전",
-      "is_opinion": false,
-      "image": "https://cdn.tournews21.com/news/photo/202611/147768_274744_4759.jpg",
       "related_articles": []
     },
     {
@@ -778,7 +1094,7 @@
       "snippet": "후에시 해안가 주택 다수 벽 균열, 지반 침하 이유. 터널·지반·안전 분야 최신 인프라 동향 및 사업 세부 내용을 확인하세요.",
       "iso_date": "2026-11-07T18:52:40+09:00",
       "published_at": "2026-11-07 18:52",
-      "relative_date": "14시간 전",
+      "relative_date": "15시간 전",
       "is_opinion": false,
       "image": "",
       "related_articles": []
@@ -794,7 +1110,7 @@
       "snippet": "뀌년 - 플레이쿠 고속도로 시공 속도 가속화, 품질을 희생하지 않음. 도로·교량·철도 분야 최신 인프라 동향 및 사업 세부 내용을 확인하세요.",
       "iso_date": "2026-11-07T18:17:30+09:00",
       "published_at": "2026-11-07 18:17",
-      "relative_date": "14시간 전",
+      "relative_date": "15시간 전",
       "is_opinion": false,
       "image": "",
       "related_articles": []
@@ -810,7 +1126,7 @@
       "snippet": "[내외뉴스통신] 이건수 기자한국농어촌공사는 10월 30일 서울에서 한국수자원공사, 한국수력원자력과 ‘새만금 조력발전 사업 공동개발 및 추진을 위한 상호협력 업무협약’을 체결했다.새만금호 수질 개선과 홍수 대응을 위한 수문 증설과 조력발전 도입 방안이 검토되고 있다.공사는 △기후에너지환경부 △한국수자원공사 △한국수력원자력과",
       "iso_date": "2026-11-07T18:03:48+09:00",
       "published_at": "2026-11-07 18:03",
-      "relative_date": "14시간 전",
+      "relative_date": "15시간 전",
       "is_opinion": false,
       "image": "https://cdn.nbnnews.co.kr/news/thumbnail/202611/1068441_1125400_4953_v150.jpg",
       "related_articles": []
@@ -826,7 +1142,7 @@
       "snippet": "한국도로공사는 지난 6일 수도권 제2순환고속도로 김포∼파주 구간에 건설 중인 한강터널의 김포방향 TBM(터널굴착기) 굴진 기념식을 개최했다고 7일 밝혔다. 이날 행사에는 유정훈 도로공사 사장을 비롯해 국회의원과...",
       "iso_date": "2026-11-07T18:01:00+09:00",
       "published_at": "2026-11-07 18:01",
-      "relative_date": "14시간 전",
+      "relative_date": "15시간 전",
       "is_opinion": false,
       "image": "https://img.tvchosun.com/sitedata/image/202611/07/2026110790076_0.jpg",
       "related_articles": [
@@ -835,7 +1151,7 @@
           "title": "한국도로공사, 수도권 제2순환고속도로 한강터널 TBM 굴진 기념식 개최",
           "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTFBUTnYxU0dVVENNY25pVHMxNXc4RFNXQmtHLXNSS3Z5RzUxQ3R5dFRkUEpEbHhEVk44U3lBNGh4bUltdmk0ME5iVzg1Z28zWkRIV3FtQjU4dUpOTzNsaGVCVWVEZmw0VDJOYlhpYWZXaw?oc=5",
           "publisher": "오토투데이",
-          "relative_date": "18시간 전",
+          "relative_date": "19시간 전",
           "published_at": "2026-11-07 14:08",
           "iso_date": "2026-11-07T14:08:24+09:00",
           "image": "https://cdn.auto-today.co.kr/news/photo/202611/16391_19531_819.jpg"
@@ -914,70 +1230,6 @@
       "latest_iso_date": "2026-11-07T18:01:00+09:00"
     },
     {
-      "id": "e3ebe8ab9e38",
-      "title": "열 수송관 파열…길 가던 시민 싱크홀 빠져 전신 60% 중상",
-      "link": "https://www.ikbc.co.kr/article/view/kbc202611070037",
-      "publisher": "KBC광주방송",
-      "category_id": "tunnel_geo",
-      "category_name": "터널·지반·안전",
-      "badge_color": "amber",
-      "snippet": "전날 밤 사고 직후 현장 일대 도로에는 거센 수증기가 피어올랐고, 지반 침하로 신호등 1개가 쓰러지는 등 피해가 잇따랐습니다. 또한 현장을 점검하던 서울에너지공사 직원 1명도 온수가 고인 웅덩이를 밟아 화상을...",
-      "iso_date": "2026-11-07T18:00:00+09:00",
-      "published_at": "2026-11-07 18:00",
-      "relative_date": "15시간 전",
-      "is_opinion": false,
-      "image": "https://www.ikbc.co.kr/data/kbc/image/2026/11/07/kbc202611070058.jpg",
-      "related_articles": []
-    },
-    {
-      "id": "fb08c861e3e4",
-      "title": "김포~파주 한강터널, 김포 방향도 뚫기 시작했다",
-      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTFBRRTAtTGFQM0xCb0ZhUEdyNVY1azdLM0FuclFpSVVRWGV6aUc1Tm5IczVxUWFCTV96TER1T3FUTlRWdTBhMG80U2MtaUx0Zk4teVFza2JSSUlZYU83eW9IM1FOWXNKX2w2?oc=5",
-      "publisher": "팩트공감",
-      "category_id": "tunnel_geo",
-      "category_name": "터널·지반·안전",
-      "badge_color": "amber",
-      "snippet": "김포와 파주를 한강 아래로 연결하는 고속도로 터널에서 김포 방향 굴착이 시작됐다. 지난 4월 파주 방향 터널이 관통된 데 이어 반대 방향 공사도 새로운 단계에 들",
-      "iso_date": "2026-11-07T15:42:25+09:00",
-      "published_at": "2026-11-07 15:42",
-      "relative_date": "17시간 전",
-      "is_opinion": false,
-      "image": "https://cdn.facton.co.kr/news/photo/202611/2440_4177_4053.jpg",
-      "related_articles": [
-        {
-          "id": "84c6ff66d7ce",
-          "title": "한강 밑 대형 터널 뚫기…김포~파주 고속도로 건설 속도 ....이기형 김포시장, 박상·김주영 국회의원 ‘광역교통망 적기 개통’ 위해 원팀 협력 다짐 |",
-          "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE9xZnl4ZHBFemtrTXkzRUNUME14aE1XMGtCU3FtTkMteWM2bWp4V2h0NUdnWkw3QlNCR1lxRXZXS1VIR1hRV09ZTFliMmdqeGxPWWZZaFpaOVJ2ZXVjZkliVUgwLVVIMTRRa1E?oc=5",
-          "publisher": "새한일보",
-          "relative_date": "어제",
-          "published_at": "2026-11-06 15:32",
-          "iso_date": "2026-11-06T15:32:55+09:00",
-          "image": ""
-        },
-        {
-          "id": "68da1d773c91",
-          "title": "이기형 김포시장, ‘김포~파주 한강터널’ 김포방향 본격 굴진 진두지휘… “2029년 개통 목표, 김포 광역교통 대혁신 이끌 것”",
-          "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE1vTHFIcDJuWkxNR1VfNVZwZ1ZTNTRHaEw4dVBpaWpjVG9rcmNTQlltUzlQT0h4X1ZFMi1Pa0RfSzRVSUFCM29ENDk1el9fRFo3TFZiMEhMU2I3d1Q1Vk1LNjZNekxYYzJzUEE?oc=5",
-          "publisher": "새한일보",
-          "relative_date": "어제",
-          "published_at": "2026-11-06 14:38",
-          "iso_date": "2026-11-06T14:38:41+09:00",
-          "image": ""
-        },
-        {
-          "id": "61d58a7cd6d6",
-          "title": "한강 밑 대형 터널 뚫기…김포~파주 고속도로 건설 속도",
-          "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE9nMi1tWjhxSllWZXVoNE5WeENKelV4V0h4VmdjSERrNHVMd2V6WmFaUEswbmx4d3ZaOEJpWjd4WDBWVkFHaXRDOGloNlZhT296SUE?oc=5",
-          "publisher": "노컷뉴스",
-          "relative_date": "어제",
-          "published_at": "2026-11-06 13:34",
-          "iso_date": "2026-11-06T13:34:11+09:00",
-          "image": "https://file2.nocutnews.co.kr/newsroom/image/2026/11/06/202611061328477374_0.jpg"
-        }
-      ],
-      "latest_iso_date": "2026-11-07T15:42:25+09:00"
-    },
-    {
       "id": "0b6f599db3d3",
       "title": "4억 1천만 원 혈세 투입된 남평 망미루, 잇따른 보완 공사가 남긴 과제",
       "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE9LVVBxUTFQeE9WcnJqczhlUFJKckZySExMSDRuRDJ3SDFBX0hUd0UyS1RXWXNjWFFkQjNOZjFLRmkxV041N2dTdVJVQUZQSlhTc2VLUVBsMnI4blZVRHVvUHIwV2VMSm1ZU1NXZEVZRmYyX0k?oc=5",
@@ -988,134 +1240,10 @@
       "snippet": "나주시가 전통 누각의 역사적 의미를 되살리겠다며 추진한 남평읍 ‘망미루’ 조성 사업이 완공 이후 주민들의 다양한 목소리를 낳고 있다. 당초 취지와 달리, 도로변에",
       "iso_date": "2026-11-07T15:07:22+09:00",
       "published_at": "2026-11-07 15:07",
-      "relative_date": "17시간 전",
+      "relative_date": "18시간 전",
       "is_opinion": false,
       "image": "https://cdn.koreapressunion.com/news/photo/202611/19786_20695_5353.jpg",
       "related_articles": []
-    },
-    {
-      "id": "2f41f700b1a2",
-      "title": "\"철도역 음식값도 부담\"…한 번 올릴 때 평균 12.5% '껑충'",
-      "link": "http://www.hansbiz.co.kr/news/articleView.html?idxno=880886",
-      "publisher": "한스경제",
-      "category_id": "smart_policy",
-      "category_name": "스마트건설·정책",
-      "badge_color": "indigo",
-      "snippet": "연합뉴스 제공 | 서울=한스경제 이지영 기자 |  철도역 음식값이 인상 때마다 큰 폭으로 뛰면서 이용객의... 이어 \"국토교통부와 코레일유통은 가격 인상 심사부터 입점 업체의 수수료 부담까지 전반적으로 점검하고...",
-      "iso_date": "2026-11-07T15:06:00+09:00",
-      "published_at": "2026-11-07 15:06",
-      "relative_date": "17시간 전",
-      "is_opinion": false,
-      "image": "https://cdn.hansbiz.co.kr/news/thumbnail/202611/880886_906591_563_v150.jpg",
-      "related_articles": [
-        {
-          "id": "78d660916f97",
-          "title": "철도역 음식값 평균 12.5% 올랐다…10% 이상 인상 79건",
-          "link": "https://www.gukjenews.com/news/articleView.html?idxno=3744991",
-          "publisher": "국제뉴스",
-          "relative_date": "21시간 전",
-          "published_at": "2026-11-07 11:36",
-          "iso_date": "2026-11-07T11:36:00+09:00",
-          "image": ""
-        },
-        {
-          "id": "f95f2bde882f",
-          "title": "철도역 입점 식당 한번 올릴때 평균 12.5% 인상",
-          "link": "https://biz.heraldcorp.com/article/10929146?ref=naver",
-          "publisher": "헤럴드경제",
-          "relative_date": "21시간 전",
-          "published_at": "2026-11-07 11:24",
-          "iso_date": "2026-11-07T11:24:00+09:00",
-          "image": ""
-        },
-        {
-          "id": "77334183fb06",
-          "title": "철도역 입점 음식점, 가격 한 번에 평균 12.5% 인상했다",
-          "link": "http://mbn.mk.co.kr/pages/news/newsView.php?category=mbn00003&news_seq_no=5229537",
-          "publisher": "MBN",
-          "relative_date": "21시간 전",
-          "published_at": "2026-11-07 11:10",
-          "iso_date": "2026-11-07T11:10:00+09:00",
-          "image": ""
-        }
-      ],
-      "latest_iso_date": "2026-11-07T15:06:00+09:00"
-    },
-    {
-      "id": "024117d03f9b",
-      "title": "한·콜롬비아, AI·에너지 인프라 협력 모색…EDCF 사업 발굴",
-      "link": "https://www.edaily.co.kr/News/Read?newsId=02473126645643424&mediaCodeNo=257&utm_source=naver&utm_medium=referral&utm_campaign=news_syndication&utm_content=original_article",
-      "publisher": "이데일리",
-      "category_id": "water_port",
-      "category_name": "수자원·하천·항만",
-      "badge_color": "cyan",
-      "snippet": "한국의 기술·산업 역량과 대외경제협력기금(EDCF)을 연계해 콜롬비아의 개발 수요에 대응하고, 한국... AI 컴퓨팅·데이터 인프라 구축, 중소기업의 AI 도입과 생산성 향상, AI 기반 에너지·수자원 관리, 전문인력...",
-      "iso_date": "2026-11-07T13:30:00+09:00",
-      "published_at": "2026-11-07 13:30",
-      "relative_date": "19시간 전",
-      "is_opinion": false,
-      "image": "https://image.edaily.co.kr/images/Photo/files/NP/S/2026/11/PS26110700541.jpg",
-      "related_articles": [
-        {
-          "id": "d48a02b7e742",
-          "title": "LX공사, AI 활용해 국가기반시설 토지관리 효율화 모색",
-          "link": "https://news.bbsi.co.kr/news/articleView.html?idxno=4116988",
-          "publisher": "불교방송",
-          "relative_date": "2일 전",
-          "published_at": "2026-11-05 17:20",
-          "iso_date": "2026-11-05T17:20:00+09:00",
-          "image": ""
-        }
-      ],
-      "latest_iso_date": "2026-11-07T13:30:00+09:00"
-    },
-    {
-      "id": "897125811e07",
-      "title": "김포~파주 고속도로 김포방향 한강터널 본격화…‘TBM 굴진식’ 열려",
-      "link": "https://www.kyeonggi.com/article/20261107580071",
-      "publisher": "경기일보",
-      "category_id": "road_rail",
-      "category_name": "도로·교량·철도",
-      "badge_color": "emerald",
-      "snippet": "7일 김포시와 한국도로공사 등에 따르면 지난 6일 파주시 송촌동 한강터널 건설현장에서 ‘김포~파주 고속도로 한강터널 TBM 굴진식’이 열렸다. 이날 굴진식에는 김주영·박상혁·윤후덕·박정 국회의원과 이기형...",
-      "iso_date": "2026-11-07T13:12:00+09:00",
-      "published_at": "2026-11-07 13:12",
-      "relative_date": "19시간 전",
-      "is_opinion": false,
-      "image": "https://ypzxxdrj8709.edge.naverncp.com/data2/content/image/2026/11/07/.cache/512/20261107580072.jpg",
-      "related_articles": [
-        {
-          "id": "5f718b87669e",
-          "title": "김포~파주 15분시대 열린다… 한강하저 ‘한강터널’ 김포방향 굴진 본격 착수",
-          "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE9YNXFYcm04WWFaYXYtMF93TUN1QnNjZEFzWTc1SmFDNk1ZNmlFLXVGak5DMHBCdEdlYU1OUnJZRHpQdE9Sd3pzeGh4MFgyYnVMUjAzTXJB?oc=5",
-          "publisher": "헤럴드경제",
-          "relative_date": "어제",
-          "published_at": "2026-11-06 17:08",
-          "iso_date": "2026-11-06T17:08:27+09:00",
-          "image": "https://wimg.heraldcorp.com/news/cms/2026/11/06/news-p.v1.20261106.4342db286b8a48f986a951c290ee0e72_P1.jpg"
-        },
-        {
-          "id": "2a0828442ccb",
-          "title": "이기형 김포시장, 한강터널 TBM 굴진식 참석...광역교통망 확충 적극 협력할 것",
-          "link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTFA1OFpBblk1M3ZmQlFfVWZlQ3NzRkhCMUh5NUR5UlZkYU01bVlGTmdrYUJfM25udHJRcFlZM0pwRWxyUktSTEdjQ3c1N0s2NmpzQTdKZExuLUvSAVhBVV95cUxQNThaQW5ZNTN2ZkJRX1VmZUNzc0ZIQjFIeTVEeVJWZGFNNW1ZRk5na2FCXzNubnRyUXBZWTNKcEVsclJLUkxHY0N3NTdLNjZqc0E3SmRMbi1L?oc=5",
-          "publisher": "아주경제",
-          "relative_date": "어제",
-          "published_at": "2026-11-06 15:53",
-          "iso_date": "2026-11-06T15:53:20+09:00",
-          "image": "https://image.ajunews.com/content/image/2026/11/06/20261106154204891505.jpg"
-        },
-        {
-          "id": "0f30afb72589",
-          "title": "김포시, 김포~파주 고속도로 한강터널 굴착 본격화…2029년 개통 목표",
-          "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE9BMlBldnpfOTMzZkdIX0h4X0wweU9qaUxnSnpKZkFIbWJDcG0xN2ZnRTRBbzVURUZZQkhjbm5pQll2T2ctYm5YMU81emE2YXRkZEhSMnZOS0hvVFBTUnJYYlRrcWQtZXgxYmhYVDhn?oc=5",
-          "publisher": "전국매일신문",
-          "relative_date": "어제",
-          "published_at": "2026-11-06 13:42",
-          "iso_date": "2026-11-06T13:42:57+09:00",
-          "image": "https://www.jeonmae.co.kr/news/photo/202611/1309264_1042447_4228.jpg"
-        }
-      ],
-      "latest_iso_date": "2026-11-07T13:12:00+09:00"
     },
     {
       "id": "9123bdf5ce85",
@@ -1128,7 +1256,7 @@
       "snippet": "국회에 고속도로 3개 프로젝트 투자 제출, 총 자본 약 162조 3,930억 동. 도로·교량·철도 분야 최신 인프라 동향 및 사업 세부 내용을 확인하세요.",
       "iso_date": "2026-11-07T12:40:06+09:00",
       "published_at": "2026-11-07 12:40",
-      "relative_date": "20시간 전",
+      "relative_date": "21시간 전",
       "is_opinion": false,
       "image": "",
       "related_articles": []
@@ -1144,7 +1272,7 @@
       "snippet": "서울교통공사가 현장 직원들의 아이디어를 활용해 시민 안전과 지하철 이용 편의를 개선하고 있다. 대표적인 변화는 AED 위치 안내다. 심정지 환자가 발생하면 신속한 응급처치가 중요한 만큼 가까운 AED를 쉽게 찾을 수...",
       "iso_date": "2026-11-07T11:18:00+09:00",
       "published_at": "2026-11-07 11:18",
-      "relative_date": "21시간 전",
+      "relative_date": "22시간 전",
       "is_opinion": false,
       "image": "https://cdn.e-science.co.kr/news/photo/202611/139187_72136_1526.jpg",
       "related_articles": [
@@ -1153,7 +1281,7 @@
           "title": "서울교통공사, 지하철 AED 찾기 쉽게 바꾼다…교통카드 결제 안내도 개선",
           "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE9qQm1jNlZaTWY3aXBMQTZiNVlGVE14WXQtSnNjdDU3TXBCaUxBb21qTFkyMjdzT1U5dE9UMHNLeks0a3pyV3BHSnd5R09hcjRtRkZYcS1MZHF4VWt0RlpORlg4dGJKbHYtaVcyZW1ydw?oc=5",
           "publisher": "이코노미사이언스",
-          "relative_date": "21시간 전",
+          "relative_date": "22시간 전",
           "published_at": "2026-11-07 11:16",
           "iso_date": "2026-11-07T11:16:32+09:00",
           "image": "https://cdn.e-science.co.kr/news/photo/202611/139187_72136_1526.jpg"
@@ -1172,9 +1300,9 @@
       "snippet": "여수광양항만공사가 탄소중립과 안전관리, 투명한 조직 운영을 아우르는 ESG 경영 성과를 인정받아 지속가능경영 분야에서 수상의 영예를 안았다.여수광양항만공사는 최관호 사장이 지난 6일 한국품질경영학회가 주관한 ‘2026년 지속가능경영품질대상’에서 공기업 부문 수상자로 선정됐다고 전했다.",
       "iso_date": "2026-11-07T10:57:56+09:00",
       "published_at": "2026-11-07 10:57",
-      "relative_date": "22시간 전",
+      "relative_date": "23시간 전",
       "is_opinion": false,
-      "image": "https://cdn.newsfreezone.co.kr/news/photo/202611/718164_767376_4545.jpg",
+      "image": "https://cdn.newsfreezone.co.kr/news/thumbnail/202611/718164_767376_4545_v150.jpg",
       "related_articles": []
     },
     {
@@ -1188,7 +1316,7 @@
       "snippet": "한강 밑 뚫는 김포~파주 고속도로…‘15분 생활권’ 열린다 핵심 요약: 파주 방향 터널 관통에 이어 김포 방향 굴진이 착수되면서 한강 하저 터널 공사가 본격화됐다. 총연장 25.4km, 왕복 4차로 규모로 총사업비 2조...",
       "iso_date": "2026-11-07T10:33:00+09:00",
       "published_at": "2026-11-07 10:33",
-      "relative_date": "22시간 전",
+      "relative_date": "23시간 전",
       "is_opinion": false,
       "image": "https://wimg.sedaily.com/news/cms/2026/11/07/news-p.v1.20260801.27e59cf204694e13a8a3e01a1d8832fb_Z1.png",
       "related_articles": []
@@ -1204,7 +1332,7 @@
       "snippet": "6일 한국도로공사는 토요일 서울에서 부산까지 최대 6시간30분이 걸리는 등 경부선·영동선·서해안선 등... 부산 방향 역시 신갈분기점 부근 3km, 오산~남사 6km, 망향휴게소 부근~옥산분기점 부근 28km, 대전터널...",
       "iso_date": "2026-11-07T10:26:00+09:00",
       "published_at": "2026-11-07 10:26",
-      "relative_date": "22시간 전",
+      "relative_date": "23시간 전",
       "is_opinion": false,
       "image": "https://www.segyebiz.com//content/image/2026/11/07/20261107503655.jpg",
       "related_articles": [
@@ -1213,7 +1341,7 @@
           "title": "단풍 나들이에 고속도로 '북적'… 서울→부산 6시간20분",
           "link": "https://www.edaily.co.kr/News/Read?newsId=02266486645643424&mediaCodeNo=257&utm_source=naver&utm_medium=referral&utm_campaign=news_syndication&utm_content=original_article",
           "publisher": "이데일리",
-          "relative_date": "22시간 전",
+          "relative_date": "23시간 전",
           "published_at": "2026-11-07 10:22",
           "iso_date": "2026-11-07T10:22:00+09:00",
           "image": ""
@@ -1232,7 +1360,7 @@
       "snippet": "두 협회는 이번 상황이 터빈 홀을 비롯한 주요 건물의 엔지니어링과 토목 공사에 현지 기업이 직접 참여를 넓히는 기회가 될 수 있다는 견해도 나타냈다. 고정 가격 계약 틀 속 착공 목표 고수 한수원은 체코통신의 공식...",
       "iso_date": "2026-11-07T09:12:00+09:00",
       "published_at": "2026-11-07 09:12",
-      "relative_date": "23시간 전",
+      "relative_date": "어제",
       "is_opinion": false,
       "image": "https://nimage.g-enews.com/phpwas/restmb_allidxmake.php?idx=5&simg=2026103107270004268fbbec65dfb211234195222.jpg",
       "related_articles": []
@@ -1248,7 +1376,7 @@
       "snippet": "한국가스공사, 최근 3경기 결과] 2026.10.31. vs 울산 현대모비스 (대구체육관) : 94-67 (승) 2026.11.02. vs 안양 정관장 (대구체육관) : 71-77 (패) 2026.11.04. vs 서울 SK (잠실학생체육관) : 82-76 (승) KT는 긴 연패의 터널에서...",
       "iso_date": "2026-11-07T09:05:00+09:00",
       "published_at": "2026-11-07 09:05",
-      "relative_date": "23시간 전",
+      "relative_date": "어제",
       "is_opinion": false,
       "image": "https://basketkorea.com/news/data/20261107/p1065547787213529_260_thum.jpg",
       "related_articles": []
@@ -1362,64 +1490,6 @@
       "related_articles": []
     },
     {
-      "id": "f8bcba7bd7d4",
-      "title": "여수광양항만공사, 지속가능경영대상 수상",
-      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBZVXlTU0ZhMl9uSjc1cUV5MTAxTVZueXZ0d3liX0dIbzVTV3hMOUxzV1lLel91ek5lN3dlUzNtczlmbXozUTJBZkFSVlh6Y3BSSFJ5OEttcDlpOXpXY0gwaERka09UWWU3QzMw?oc=5",
-      "publisher": "광양경제신문",
-      "category_id": "water_port",
-      "category_name": "수자원·하천·항만",
-      "badge_color": "cyan",
-      "snippet": "여수광양항만공사(사장 최관호)가 ESG 경영성과를 인정받아 지속가능경영 분야에서 수상의 영예를 안았다.항만공사는 최관호 사장이 6일 한국품질경영학회가 주관하는 ‘",
-      "iso_date": "2026-11-06T23:12:14+09:00",
-      "published_at": "2026-11-06 23:12",
-      "relative_date": "어제",
-      "is_opinion": false,
-      "image": "https://cdn.genews.co.kr/news/photo/202611/501381_31577_1136.jpg",
-      "related_articles": [
-        {
-          "id": "d7c716ba4e60",
-          "title": "여수광양항만공사, 지속가능한경영품질대상 수상",
-          "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE03ZlNDOWtSYWR2Uzlmc3Z2WjUySGZIX3ppNkw5N0JNVGFoTjdTRkZjakh5bk1XYUswMmpsa0szM2xYR3pRMC1acmdRaE01bkNZSEs0azJBNEs4Z0RoNEl0SlYxQU5PRExFQ2FrRl84d9IBc0FVX3lxTE5RREVBX3p4clgzU014Q2IyQ2RjMDlXQWdydFB2WjNkUnhZRGd3bjBSWUpxMHhQekdDNXB6WGJVbjluRkVyVlk3R21WcnhSMFVzOGp3d183M1dXT1FhdjBMRk9lTUpoZUEwT2xnRUthTkVmaTA?oc=5",
-          "publisher": "해운의소리",
-          "relative_date": "어제",
-          "published_at": "2026-11-06 20:17",
-          "iso_date": "2026-11-06T20:17:20+09:00",
-          "image": "https://cdn.shippingvoice.kr/news/thumbnail/202611/11675_13616_1657_v150.jpg"
-        },
-        {
-          "id": "643120b1d9d9",
-          "title": "여수광양항만공사, 지속가능경영품질대상 수상",
-          "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTFA4MVZPN2hPN3g0dXdpVkE1UjNVb21RVXhfSTBvdjJucUNlVzVudF9jZFhsT1JSVmF6RWR2OEVxbFZITDVDczZRSHZaUmotdUNKOHRSSTRMZHNKUnVIUkNDUl9sRVZFY3dwdUdBX0F30gFuQVVfeXFMUDgxVk83aE83eDR1d2lWQTVSM1VvbVFVeF9JMG92Mm5xQ2VXNW50X2NkWGxPUlJWYXpFZHY4RXFsVkhMNUNzNlFIdlpSai11Q0o4dFJJNExkc0pSdUhSQ0NSX2xFVkVjd3B1R0FfQXc?oc=5",
-          "publisher": "광양시민신문",
-          "relative_date": "어제",
-          "published_at": "2026-11-06 16:21",
-          "iso_date": "2026-11-06T16:21:53+09:00",
-          "image": ""
-        },
-        {
-          "id": "ef29002237c7",
-          "title": "여수광양항만공사, ESG 경영으로 지속가능성 인정받다",
-          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1UM1NTMTR0LWpWX2VqN0dkdWtpUGZXQXZOcmxtZFpzN0JaSFZnMy13RVJHUXcwRjFVanpueTJLa2x6WFE4T3RCVV9CYzFiZkdvdVJHU21LM0xYQQ?oc=5",
-          "publisher": "브릿지경제",
-          "relative_date": "어제",
-          "published_at": "2026-11-06 15:56",
-          "iso_date": "2026-11-06T15:56:00+09:00",
-          "image": "https://stqnq5ux4599.edge.naverncp.com/data2//content/image/2026/11/06/.cache/512/20261106500558.jpg?v=20261108090102"
-        },
-        {
-          "id": "cf5be64d017d",
-          "title": "여수광양항만공사, 2026년 지속가능경영품질대상 수상 > 뉴스",
-          "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE5RYTMtX2xNTV9iUy1jWWdvWDhkVG5ramxJUFRqVlVyWW9EYTNNMktEZ2UxV1NKeDhtV2tBZHE3WmV4MjRWSXdsWS1mSFlOOXdBVXJTQ0tLdWlwX3dsbUZzRU9RZUtaUDcxb2d4TzlrWEpOUQ?oc=5",
-          "publisher": "더코리아",
-          "relative_date": "어제",
-          "published_at": "2026-11-06 14:51",
-          "iso_date": "2026-11-06T14:51:00+09:00",
-          "image": "https://www.thekorea.kr/data/file/news/3731442413_FA5lxUoe_75030729eb681a586f37c4a185a32dc90e76259a.jpg"
-        }
-      ],
-      "latest_iso_date": "2026-11-06T23:12:14+09:00"
-    },
-    {
       "id": "da1e3fef9899",
       "title": "노연수 시의원, \"말 따로 현장 따로\"… 상수도 야간 공사 소음·지반침하...",
       "link": "https://www.dailyt.co.kr/newsView/dlt202611060031",
@@ -1453,25 +1523,19 @@
           "published_at": "2026-11-06 11:47",
           "iso_date": "2026-11-06T11:47:00+09:00",
           "image": ""
+        },
+        {
+          "id": "183b4a7669e0",
+          "title": "노연수 서울시의원, 반복되는 심야 소음… 상수도 공사 현장 안전 및 소음관리 매뉴얼 강력 촉구",
+          "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE56d2JWRVdBUE94SlNWby1EbWp0dUdHS2hna0xOQXN3Uk1yblRrYzJMMVlEYURWSV9sZUVYSTNMWGJfaHU3SWd0bGlRWm9kMzBEb3JCcUlObmRsblV2TDhWdWd6eksyRWk2M0E?oc=5",
+          "publisher": "서울Pn",
+          "relative_date": "어제",
+          "published_at": "2026-11-06 11:44",
+          "iso_date": "2026-11-06T11:44:16+09:00",
+          "image": ""
         }
       ],
       "latest_iso_date": "2026-11-06T22:46:00+09:00"
-    },
-    {
-      "id": "763beb7cb542",
-      "title": "[안양 민선9기 공약 대해부⑤] 최대호, 8개 철도망·18개 역세권 잇는다",
-      "link": "http://www.newstown.co.kr/news/articleView.html?idxno=721084",
-      "publisher": "뉴스타운",
-      "category_id": "road_rail",
-      "category_name": "도로·교량·철도",
-      "badge_color": "emerald",
-      "snippet": "따라서 위례과천선과 서울서부선 안양권 연장은 현재 '노선 확정'이나 '착공' 단계가 아니라 국가철도망 구축계획과 대도시권 광역교통시행계획 반영을 추진하는 단계다. ◇ 경부선 석수역~명학역 7.5㎞ 지하화 구상...",
-      "iso_date": "2026-11-06T22:18:00+09:00",
-      "published_at": "2026-11-06 22:18",
-      "relative_date": "어제",
-      "is_opinion": false,
-      "image": "https://cdn.newstown.co.kr/news/photo/202611/721084_677300_5646.jpg",
-      "related_articles": []
     },
     {
       "id": "16c57103d9df",
@@ -1526,10 +1590,10 @@
       "title": "[의정부 민선 9기 공약 대해부③] GTX-C 4조 9272억 착공…8호선 연장 승...",
       "link": "http://www.newstown.co.kr/news/articleView.html?idxno=721072",
       "publisher": "뉴스타운",
-      "category_id": "road_rail",
-      "category_name": "도로·교량·철도",
-      "badge_color": "emerald",
-      "snippet": "제4차 국가철도망 구축계획에는 별내별가람역에서 의정부경전철 탑석역까지 8.3㎞를 연결하는 노선이 추가검토사업으로 반영됐다. 그러나 민선 9기가 추진하는 노선은 탑석역 종점 구상과 다르다. 별내별가람역에서...",
+      "category_id": "tunnel_geo",
+      "category_name": "터널·지반·안전",
+      "badge_color": "amber",
+      "snippet": "증편, 지하철 8호선과 SRT 의정부 연장, 서울·경기북부 광역버스 확충을 제시했다. 철도와 버스를 함께... 어느 한 시기의 단독 성과로 보기보다 행정의 연속성 속에서 평가하는 것이 맞다. 민선 9기의 과제는 개통...",
       "iso_date": "2026-11-06T21:54:00+09:00",
       "published_at": "2026-11-06 21:54",
       "relative_date": "어제",
@@ -1564,22 +1628,6 @@
         }
       ],
       "latest_iso_date": "2026-11-06T21:31:00+09:00"
-    },
-    {
-      "id": "df1b8dcc414b",
-      "title": "대전 첫 3대 하천 마라톤 풀코스…10일 시범 주행",
-      "link": "https://www.tjb.co.kr/news05/bodo/view/id/105804",
-      "publisher": "tjb.co.kr",
-      "category_id": "water_port",
-      "category_name": "수자원·하천·항만",
-      "badge_color": "cyan",
-      "snippet": "대전시가 갑천과 유등천, 대전천 등 3대 하천을 활용한 42.195km 마라톤 풀코스를 개발해 내년부터... 대전시는 오는 20일까지 시민 참여 플랫폼 '대전시소'에서 마라톤 코스 명칭을 공모하고, 노면 정비와 안내 표지판...",
-      "iso_date": "2026-11-06T20:40:00+09:00",
-      "published_at": "2026-11-06 20:40",
-      "relative_date": "어제",
-      "is_opinion": false,
-      "image": "",
-      "related_articles": []
     },
     {
       "id": "ac264c891919",
@@ -1646,9 +1694,9 @@
       "related_articles": []
     },
     {
-      "id": "af2c799092b9",
+      "id": "17fb03e98585",
       "title": "국토부 장관, 정진혁 국가철도공단 이사장, 김원준 한국공항공사 사장에게 임명장",
-      "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE9OQjY2TmxHaU9NeEpibjRDVUdoR2RsUXlacVZPS0VsSUdTakNGaVY0S2loTWJxWmRld3BwQ0M2dUlGNWhnNFhkaExJZHRmb3RTdUNySzJISGdGWFd6dWhtNjZEb19CRW9HT21XSUJnWkJfXzN6?oc=5",
+      "link": "https://news.google.com/rss/articles/CBMifEFVX3lxTE1CajBwb1pZTnFRYlAxMU5wRUNIZjAxR3hpaGhNclpzSU1Cb0lrVWE4RURMU2RpZjlSSWdLOS1kR3NmR205dzUwdk9QMVZ6YjlPUU9CQ2k3MFJSUjE0WFd3b0poWERSZEhaalM2elgySXQ5c1BIX2VXQmd1T18?oc=5",
       "publisher": "부산일보",
       "category_id": "road_rail",
       "category_name": "도로·교량·철도",
@@ -1991,14 +2039,14 @@
           "image": "https://cdn.gukjenews.com/news/thumbnail/202611/3743961_3924553_5432_v150.jpg"
         },
         {
-          "id": "bdd7ab7d080a",
+          "id": "40dd69c992ae",
           "title": "울산항, 항만 안전 관리 사각지대 해소 나선다…하역안전지수 전국 확대 추진",
-          "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE0xdGJsQTJIMlRCWkZUanJleF8tak1UYW5hcjBVR1hJV3FOaEgxX0x2R1J2cDRuVU1wcVlNWk5TQ282THVlcWJDOWZhaGNrRjFQUzlvb0NoSFZnZjl5aUNaWWdOLTVXN1lwQjVvXzNyVnJXTlVt0gF0QVVfeXFMTTF0YmxBMkgyVEJaRlRqcmV4Xy1qTVRhbmFyMFVHWElXcU5oSDFfTHZHUnZwNG5VTXBxWU1aTlNDbzZMdWVxYkM5ZmFoY2tGMVBTOW9vQ2hIVmdmOXlpQ1pZZ04tNVc3WXBCNW9fM3JWcldOVW0?oc=5",
+          "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1YeUpTdjJYc1ZLU0E1M1JWcHJXUEdiWk5WT1JsVjVtdXpJNFJEdHQxeGJWZ2xhcVY2blRWZ2g2ZHFYQm0yT2RkYVB6ZVU4QmtBS0ZtdGlEbS02emNqRU9iWG9td3ZPTDNqMXNrYVJVZS3SAXRBVV95cUxNMXRibEEySDJUQlpGVGpyZXhfLWpNVGFuYXIwVUdYSVdxTmhIMV9MdkdSdnA0blVNcHFZTVpOU0NvNkx1ZXFiQzlmYWhja0YxUFM5b29DaEhWZ2Y5eWlDWllnTi01VzdZcEI1b18zclZyV05VbQ?oc=5",
           "publisher": "주간한국",
           "relative_date": "2일 전",
-          "published_at": "2026-11-05 16:32",
-          "iso_date": "2026-11-05T16:32:26+09:00",
-          "image": ""
+          "published_at": "2026-11-05 16:14",
+          "iso_date": "2026-11-05T16:14:58+09:00",
+          "image": "https://cdn.weekly.hankooki.com/news/thumbnail/202611/7192432_253662_528_v150.jpg"
         },
         {
           "id": "6ada43e56067",
@@ -2239,7 +2287,7 @@
           "title": "한국도로공사, 보유 특허 AI로 쉽게 풀어 무료 나눔",
           "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE8zTkJkUFYtOXJXX1p3bEF3c2xHTWRHRGNzSy1DbVpfb0Y1TXY0ZkdyYVZIUWFvVkZWbzRHNXFjUnZhZ0wxbGY0SGJnT0V4SjFla2NNYkFSWWNuVkhLTkRkcDB1QVQ?oc=5",
           "publisher": "국토일보",
-          "relative_date": "어제",
+          "relative_date": "2일 전",
           "published_at": "2026-11-06 09:49",
           "iso_date": "2026-11-06T09:49:00+09:00",
           "image": ""
@@ -2410,6 +2458,22 @@
       "related_articles": []
     },
     {
+      "id": "2a0828442ccb",
+      "title": "이기형 김포시장, 한강터널 TBM 굴진식 참석...광역교통망 확충 적극 협력할 것",
+      "link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTFA1OFpBblk1M3ZmQlFfVWZlQ3NzRkhCMUh5NUR5UlZkYU01bVlGTmdrYUJfM25udHJRcFlZM0pwRWxyUktSTEdjQ3c1N0s2NmpzQTdKZExuLUvSAVhBVV95cUxQNThaQW5ZNTN2ZkJRX1VmZUNzc0ZIQjFIeTVEeVJWZGFNNW1ZRk5na2FCXzNubnRyUXBZWTNKcEVsclJLUkxHY0N3NTdLNjZqc0E3SmRMbi1L?oc=5",
+      "publisher": "아주경제",
+      "category_id": "tunnel_geo",
+      "category_name": "터널·지반·안전",
+      "badge_color": "amber",
+      "snippet": "김포시(시장 이기형)가 수도권 제2순환고속도로의 핵심 연결 구간인 김포~파주 고속도로 한강터널의 김포방향 굴착 착수에 맞춰 관계기관과 협력을 강화하고, 김포와 파...",
+      "iso_date": "2026-11-06T15:53:20+09:00",
+      "published_at": "2026-11-06 15:53",
+      "relative_date": "어제",
+      "is_opinion": false,
+      "image": "https://image.ajunews.com/content/image/2026/11/06/20261106154204891505.jpg",
+      "related_articles": []
+    },
+    {
       "id": "3ed3d45aac39",
       "title": "전주비전대 김지성 학과장, 국가공간정보발전 유공 국토부 장관 표창",
       "link": "http://www.domin.co.kr/news/articleView.html?idxno=1574588",
@@ -2455,13 +2519,41 @@
           "title": "히트펌프 생산능력 확대…대성히트에너시스, 오창에 신공장 착공",
           "link": "https://www.energy-news.co.kr/news/articleView.html?idxno=229562",
           "publisher": "에너지신문",
-          "relative_date": "어제",
+          "relative_date": "2일 전",
           "published_at": "2026-11-06 09:30",
           "iso_date": "2026-11-06T09:30:00+09:00",
           "image": ""
         }
       ],
       "latest_iso_date": "2026-11-06T15:40:00+09:00"
+    },
+    {
+      "id": "61d58a7cd6d6",
+      "title": "한강 밑 대형 터널 뚫기…김포~파주 고속도로 건설 속도",
+      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE9nMi1tWjhxSllWZXVoNE5WeENKelV4V0h4VmdjSERrNHVMd2V6WmFaUEswbmx4d3ZaOEJpWjd4WDBWVkFHaXRDOGloNlZhT296SUE?oc=5",
+      "publisher": "노컷뉴스",
+      "category_id": "road_rail",
+      "category_name": "도로·교량·철도",
+      "badge_color": "emerald",
+      "snippet": "한강 밑을 관통하는 김포~파주 고속도로 한강터널의 김포방향 굴착이 본격화되면서 수도권 서북부 광역교통망 구축에 속도가 붙고 있다.",
+      "iso_date": "2026-11-06T13:34:11+09:00",
+      "published_at": "2026-11-06 13:34",
+      "relative_date": "어제",
+      "is_opinion": false,
+      "image": "https://file2.nocutnews.co.kr/newsroom/image/2026/11/06/202611061328477374_0.jpg",
+      "related_articles": [
+        {
+          "id": "84c6ff66d7ce",
+          "title": "한강 밑 대형 터널 뚫기…김포~파주 고속도로 건설 속도 ....이기형 김포시장, 박상·김주영 국회의원 ‘광역교통망 적기 개통’ 위해 원팀 협력 다짐 |",
+          "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE9xZnl4ZHBFemtrTXkzRUNUME14aE1XMGtCU3FtTkMteWM2bWp4V2h0NUdnWkw3QlNCR1lxRXZXS1VIR1hRV09ZTFliMmdqeGxPWWZZaFpaOVJ2ZXVjZkliVUgwLVVIMTRRa1E?oc=5",
+          "publisher": "새한일보",
+          "relative_date": "어제",
+          "published_at": "2026-11-06 15:32",
+          "iso_date": "2026-11-06T15:32:55+09:00",
+          "image": ""
+        }
+      ],
+      "latest_iso_date": "2026-11-06T15:32:55+09:00"
     },
     {
       "id": "78c3c826c954",
@@ -2551,7 +2643,7 @@
           "title": "한국도로공사 SOOP 꺾고 첫 승…김영래 감독 데뷔승 : 스포츠",
           "link": "https://news.google.com/rss/articles/CBMiS0FVX3lxTFBnN3FhNnAzYTlaUkI3X1Y1VGEzLWNoeGdjTGwtajFiTFlraVVqUC1KakVJcnZLcy10bHMtcUNGVWxMVmNFSThCQzZ1VQ?oc=5",
           "publisher": "재경일보",
-          "relative_date": "어제",
+          "relative_date": "2일 전",
           "published_at": "2026-11-06 09:03",
           "iso_date": "2026-11-06T09:03:08+09:00",
           "image": "https://images.jkn.co.kr/data/images/full/110/54/1105401.jpg?v=1793923388&width=1200&height=630"
@@ -2568,34 +2660,6 @@
         }
       ],
       "latest_iso_date": "2026-11-06T14:51:36+09:00"
-    },
-    {
-      "id": "a73ea121dfbb",
-      "title": "한강 아래 뚫리는 김포~파주 고속도로…서북부 교통혁신",
-      "link": "https://news.google.com/rss/articles/CBMiowJBVV95cUxPR05GNmJlSl8tVmJFb0paQjl1NXBQVXJ2UGhURXZSUkQweFpKNUQ0VzRYOHNRMkFNQXIxTkZLTW1uVkhwUHJXaTdCQmc2bHBqYmlNdDFBSWVzSzYtaDNGN1hYMWJTRGM2RFpfS01NQVZPVFM5YlV0RTJ6NGE5YkstRFc1U1JVRU8yLVRLSlcyMy1iazZTRkNKWWJqSU5TVGdZRW1OaFRRMWh3QmdMSkszVW1YTFpFZndOZ1Ftd05oN2pYVEJ6RVdIWkR4cWhaNGdJS1pHbUlkRUdSTnFQTnlXd01OQnlwYmhfaERpS2dsSDZUcGhMMUdIdWllckRER21YRUtuODNFUlY4QXI1M29aRFBSbWxSdHBTVkItVnI1Vkh0S1E?oc=5",
-      "publisher": "데일리안",
-      "category_id": "road_rail",
-      "category_name": "도로·교량·철도",
-      "badge_color": "emerald",
-      "snippet": "김포와 파주를 잇는 고속도로 건설이 본격적인 진전을 보이고 있다. 한강 하부를 통과하는 김포방향 터널 굴착이 시작되면서 수도권 서북부 광역교통망 확충에도 속도가 붙을 전망이다.김포시는 6일 파주시 송촌동 한강터널 건설현장에서 ‘김포~파주 고속도로 한강터널 TBM 굴진식’을 가졌다고 밝혔다.이번 굴진은 지난 4월 파주방향",
-      "iso_date": "2026-11-06T14:45:00+09:00",
-      "published_at": "2026-11-06 14:45",
-      "relative_date": "어제",
-      "is_opinion": false,
-      "image": "https://cdnimage.dailian.co.kr/news/202611/news_1793943880049_1711814_m_1.jpg",
-      "related_articles": [
-        {
-          "id": "76a532e53066",
-          "title": "김포~파주 고속도로 한강터널 굴착 본격화…개통 땐 59분→15분",
-          "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9vTHprVVFXWEZZa0NocUQxblg2bF9icUV4bFdRcnBBUjUzX0x1bFkyR0NzSDYxaTlHd1JxSHhQdnIzRlFrWDVQZVo3dFBpc252YS1VckZvMDVhX3dUWW1RTw?oc=5",
-          "publisher": "아시아경제",
-          "relative_date": "어제",
-          "published_at": "2026-11-06 13:46",
-          "iso_date": "2026-11-06T13:46:53+09:00",
-          "image": "https://cphoto.asiae.co.kr/listimglink/1/2026110613440789893_1793940248.jpg"
-        }
-      ],
-      "latest_iso_date": "2026-11-06T14:45:00+09:00"
     },
     {
       "id": "0a4c58f0bcb2",
@@ -2690,7 +2754,7 @@
           "relative_date": "2일 전",
           "published_at": "2026-11-06 08:36",
           "iso_date": "2026-11-06T08:36:00+09:00",
-          "image": "https://www.dailyculture.kr/data/wawa105sujin_com/mainimages/202611/20261106083618-47892.jpg?ti=1794088859"
+          "image": "https://www.dailyculture.kr/data/wawa105sujin_com/mainimages/202611/20261106083618-47892.jpg?ti=1794099663"
         }
       ],
       "latest_iso_date": "2026-11-06T13:39:00+09:00"
@@ -2743,14 +2807,14 @@
       "image": "https://cdn.todaymild.com/news/thumbnail/202611/40796_47970_157_v150.jpg",
       "related_articles": [
         {
-          "id": "0120dca8e26e",
-          "title": "서울교통공사, ‘전자파 안심 지하철’ 만든다…KCA와 협약",
-          "link": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE5hSkltVnJZaGMzV2Q4LW1XZ3lLRmtGOFBTcDd5Zkt5ZF9rZHVFMHQ4Vm14ek5ma0xSVFJtdVh1akJCczZqUlJvdmUzOFhpejhFYmp0U3hkS0NCUVl2WmpaSFp3?oc=5",
-          "publisher": "미주중앙일보",
+          "id": "e4ac80f28c09",
+          "title": "서울교통공사·전파진흥원, 지하철 전자파 측정 협약",
+          "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTFBUR2pocXBRdDRPYl9mbFlRQ1NPX2l3c25zQjUtbmdpOFNUNDRDMV9xXzE2ME1wYnJ3MkZBTkxNZE1sSlRqQUpHajJjb2tpNllqTlVielVrTHNPdy1Xd01JU21iazhwUl9sS3JZU0R4OUFYQksx?oc=5",
+          "publisher": "글로벌뉴스통신GNA",
           "relative_date": "2일 전",
-          "published_at": "2026-11-05 16:58",
-          "iso_date": "2026-11-05T16:58:00+09:00",
-          "image": "https://www.koreadaily.com/data/photo/thumbnail/2026/11/05/19e5ec18-2943-4145-839b-20dfe4575fb8.jpg"
+          "published_at": "2026-11-05 17:53",
+          "iso_date": "2026-11-05T17:53:34+09:00",
+          "image": "https://cdn.globalnewsagency.kr/news/photo/202611/503173_521620_4557.jpg"
         },
         {
           "id": "f5a45353c4cb",
@@ -2800,27 +2864,7 @@
           "relative_date": "2일 전",
           "published_at": "2026-11-05 10:05",
           "iso_date": "2026-11-05T10:05:38+09:00",
-          "image": "https://img1.newsis.com/2026/11/05/NISI20261105_0002283623_web.jpg"
-        },
-        {
-          "id": "9342ef58be90",
-          "title": "서울교통공사, 지하철 전자파 측정정보 공개 확대",
-          "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE52SDVUMlNCbEI0X2M2cGhzc2tEckwzaGZ5S2U0bThReFlqU19KQk9DS3R5ZElQMUFlZldzZTVwV1VHanpyZ250T19kTmJJZlZGem1xa0dXYTZjN0lrNnVHRWM5TFk?oc=5",
-          "publisher": "국토일보",
-          "relative_date": "2일 전",
-          "published_at": "2026-11-05 09:50",
-          "iso_date": "2026-11-05T09:50:51+09:00",
           "image": ""
-        },
-        {
-          "id": "9344ae0dcd15",
-          "title": "서울지하철 역사 전자파 수준 공개…시민이 직접 확인",
-          "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9peEU0eExQRWdQNFktYlBjdGFVV015ekt4TmZuTnFtUllUSDlJN2VlODZxaTJTa0J6RWxFZ3dCOGsxcTlINjNhMF9JcVNPM016LS10MkFHMGIyZWg1cFFBTlhXVGRERkQybktR?oc=5",
-          "publisher": "BBS불교방송",
-          "relative_date": "2일 전",
-          "published_at": "2026-11-05 09:07",
-          "iso_date": "2026-11-05T09:07:16+09:00",
-          "image": "https://cdn.news.bbsi.co.kr/news/thumbnail/202611/4116793_780602_655_v150.jpg"
         }
       ],
       "latest_iso_date": "2026-11-06T13:12:00+09:00"
@@ -2992,34 +3036,6 @@
       "related_articles": []
     },
     {
-      "id": "e7199db1c2c4",
-      "title": "태백 동점~통동 국도대체우회도로 건설 시급…폐광 대체산업 성장의 핵심 기반시설",
-      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE55RG5jQ1FJUUUwdlNSNEdjLW9yNmpEeHctbEFsWFIxUnNpczhDaGJpbjVJNmhEdG1rU3hfSHVLdGE4SnFlc25QVVduMmFOSHhodl9lQ3poOEhzRjFmUGtUbURyaGxaUEE2eXFj?oc=5",
-      "publisher": "영서신문",
-      "category_id": "road_rail",
-      "category_name": "도로·교량·철도",
-      "badge_color": "emerald",
-      "snippet": "태백시(시장 이상호)는 폐광 대체산업 육성이 본격화됨에 따라 산업 물류 수요에 대응하고 지역경제 회복을 뒷받침하기 위한 동점~통동 국도대체우회도로 건설의 필요성이",
-      "iso_date": "2026-11-06T10:37:54+09:00",
-      "published_at": "2026-11-06 10:37",
-      "relative_date": "어제",
-      "is_opinion": false,
-      "image": "https://cdn.ysshinmun.com/news/photo/202611/12934_12658_3740.png",
-      "related_articles": [
-        {
-          "id": "90cb69f1c18f",
-          "title": "태백시, 동점~통동 우회도로 건설 시급…폐광 대체산업 물류망 확보 과제",
-          "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9WWUNmUVJ5MjQwYVZ3N2owejM5TDNMR19wYk51NTJaaWZWN2kxdGpJZkIyb01WS0xvQnhGdHVYcDhTLTZlZmdXc2Q1Nl9FTk5rSHFtYlZTemEtSDZ0ckpzMNIBWEFVX3lxTE9ucDhPbU5rUEFVdjNXLXpUcF9IbG85bzNzXzFwTE1TOFcyNzZIRlAtazZzTUxfbFprZ0xMaGNFdWlXTldIa3Vtb0pQRjNwS25DamZDOUdDWGc?oc=5",
-          "publisher": "로컬세계",
-          "relative_date": "2일 전",
-          "published_at": "2026-11-06 08:49",
-          "iso_date": "2026-11-06T08:49:02+09:00",
-          "image": "https://localsegye.co.kr/news/data/2026/11/06/p1065570363152167_642_thum.png"
-        }
-      ],
-      "latest_iso_date": "2026-11-06T10:37:54+09:00"
-    },
-    {
       "id": "0ff41f28f621",
       "title": "화순군 검산소하천, 행안부 정비사업 전국 우수사례 선정",
       "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE9YenF6U3ZjVkJiYTJrU1NNdHduVEpOTGZqU0h6YURaYXhyc21TeTBrU0JKaF9sOTJTbTJxTVBLQVlaV0lxUkJnX3VVbV9Ydkk2Y2psbDMzaTBMLWJ3Y0VPWG1LMlI?oc=5",
@@ -3058,7 +3074,7 @@
       "snippet": "[서울=뉴스핌] 정영희 기자 = 국가철도공단이 국내 SOC(사회기반시설) 공공기관 최초로 과학기반 감축목표 이니셔티브(SBTi) 참여를 선언했다.지난 5일 정진혁 국가철도공단 이사장이 대전 본사에서 'SBTi(과학기반 감축목표 이니셔티브) 참여 선언의 의미를",
       "iso_date": "2026-11-06T09:43:00+09:00",
       "published_at": "2026-11-06 09:43",
-      "relative_date": "어제",
+      "relative_date": "2일 전",
       "is_opinion": false,
       "image": "https://img.newspim.com/news/2026/11/06/2611060917490660_737_tc.jpg",
       "related_articles": []
@@ -3074,7 +3090,7 @@
       "snippet": "[일간투데이 박선영 기자] 한국국토정보공사(LX공사)는 지반침하 등 지하 안전사고 예방을 위해 민·관·연 협력 강화에 나섰다고 6일 밝혔다.지하정보 전담기구인 LX공사는 지난 5일 고양 킨텍스에서 민·관·연 관계자 80여명이 참석한 가운데 '2026 지하정보 세미나",
       "iso_date": "2026-11-06T09:39:09+09:00",
       "published_at": "2026-11-06 09:39",
-      "relative_date": "어제",
+      "relative_date": "2일 전",
       "is_opinion": false,
       "image": "https://cdn.dtoday.co.kr/news/thumbnail/202611/801874_674833_392_v150.jpg",
       "related_articles": [
@@ -3109,14 +3125,14 @@
           "image": ""
         },
         {
-          "id": "06797be2bf07",
+          "id": "8074258d69a7",
           "title": "LX공사, 지하 안전사고 예방 위해 민·관·연 협력 강화",
-          "link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE95VTJWUGp1QS1GSjZORTg4bE55N2I0cjRReGdTMmNqTHJrSGJ4aTNaaWY2LXZ6N2I1c1VyeGN6U05KSEROTDFtTkZIYTFaR3NKVlJFNdIBVEFVX3lxTE95VTJWUGp1QS1GSjZORTg4bE55N2I0cjRReGdTMmNqTHJrSGJ4aTNaaWY2LXZ6N2I1c1VyeGN6U05KSEROTDFtTkZIYTFaR3NKVlJFNQ?oc=5",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9NRjdqSFVyRWFsUHJEMGdIZFJhbVRZY196OXBsUFBqQ2NKaXhHem11bkJ4R2Q1bVZ2OFVDay02VGRxbnJ3MG5SZWZObUNEd3NBZEhBSXBNRW9VQdIBVEFVX3lxTE95VTJWUGp1QS1GSjZORTg4bE55N2I0cjRReGdTMmNqTHJrSGJ4aTNaaWY2LXZ6N2I1c1VyeGN6U05KSEROTDFtTkZIYTFaR3NKVlJFNQ?oc=5",
           "publisher": "더팩트",
           "relative_date": "2일 전",
           "published_at": "2026-11-05 17:07",
-          "iso_date": "2026-11-05T17:07:00+09:00",
-          "image": ""
+          "iso_date": "2026-11-05T17:07:18+09:00",
+          "image": "https://img.tf.co.kr/article/home/2026/11/05/202635921793865868.jpeg"
         },
         {
           "id": "8fdd1c16fda8",
@@ -3182,7 +3198,7 @@
       "snippet": "(영암=연합뉴스) 조근영 기자 = 전남광주통합특별시 영암군은 한국철도공사 대전 본사에서 '인구감소지역 철도 및 관광 활성화를 위한 업무협약'을 ...",
       "iso_date": "2026-11-06T09:26:36+09:00",
       "published_at": "2026-11-06 09:26",
-      "relative_date": "어제",
+      "relative_date": "2일 전",
       "is_opinion": false,
       "image": "https://img1.yna.co.kr/etc/inner/KR/2026/11/06/AKR20261106044200054_01_i_P4.jpg",
       "related_articles": []
@@ -3198,7 +3214,7 @@
       "snippet": "| 영암=한스경제 정평국 기자 | 전남광주 영암군이 한국철도공사와 인구감소지역 관광 활성화를 위한 업무협약을 체결했다.5일 대전 한국철도공사 본사에서 열린 협약식에는 윤재광 영암군 부군수와 김태승 한국철도공사 사장이 참석했다.이번 협약은 철도와 지역 관광자원을 결합해 관광객 유입을 늘리고 지역경제에 활력을 불어넣기 위해",
       "iso_date": "2026-11-06T09:12:37+09:00",
       "published_at": "2026-11-06 09:12",
-      "relative_date": "어제",
+      "relative_date": "2일 전",
       "is_opinion": false,
       "image": "https://cdn.hansbiz.co.kr/news/thumbnail/202611/880365_906008_3544_v150.jpg",
       "related_articles": [
@@ -3226,10 +3242,48 @@
       "snippet": "지난해 KTX와 SRT를 탄 사람은 1억 1,870만 명이었다. KTX가 9,300만 명, SRT가 2,600만 명으로, 하루 평균 각각 25만 4,000명과 7만 1,000명이 탄 셈이다. KTX·SRT에 새마을·무궁화까지 더한 간선철도 여객은 1억 9,049만 명으로, 감염병 이전 최고치였던 2019년(1억 6,350",
       "iso_date": "2026-11-06T09:11:58+09:00",
       "published_at": "2026-11-06 09:11",
-      "relative_date": "어제",
+      "relative_date": "2일 전",
       "is_opinion": false,
       "image": "https://cdn.gnjn.co.kr/news/thumbnail/202611/130694_158433_1139_v150.jpg",
       "related_articles": []
+    },
+    {
+      "id": "2a919824fc8a",
+      "title": "울산항만공사, 항만배후단지 관리지침 개정…입주기업 지원 강화",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE40bWROOS05NmZ6WVd4dnNXM21KSmdLLW5hcEFqQ1hJTmZyaWFkQlVpZXh3S0VaRUItVjN3VFR0OW9fdDlZMTB0MUQ0aFNrMnVKOWR6OHR2Mzg2OGxmelpYbGZoSjM0WTdabG1lSktR?oc=5",
+      "publisher": "www.gukjenews.com",
+      "category_id": "water_port",
+      "category_name": "수자원·하천·항만",
+      "badge_color": "cyan",
+      "snippet": "(울산=국제뉴스) 주영곤 기자 = 울산항만공사(UPA, 사장 변재영)가 배후단지 입주기업의 경영환경 개선과 정부정책 이행을 위해 '울산항 1종 항만배후단지 관리지침'의 전면 개정에 나섰다.이번 개정안에는 해양수산부가 올해 2월 24일에 고시한 '1종 항만배후단지 관리지침' 개정 내용이 반영됐다.이번 조치로 입주기업이 분할",
+      "iso_date": "2026-11-06T09:01:21+09:00",
+      "published_at": "2026-11-06 09:01",
+      "relative_date": "2일 전",
+      "is_opinion": false,
+      "image": "https://cdn.gukjenews.com/news/thumbnail/202611/3743947_3924538_4339_v150.jpg",
+      "related_articles": [
+        {
+          "id": "56ec4fd5e9bf",
+          "title": "울산항만공사, 1종 관리지침 개정·시행...울산항 배후단지 입주기업 경영 지원",
+          "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTFBWT0dQMGxIOXBQWGJMT3NvUVhpbGRwdF9WS1hHZV8xVmczY1F6MGxpVUJBdjVxai1Dd0xsZ1gzZzR5a1JfYTZ3aXdLMHBfN0wwaW14U3JkaklTX0FFeEM5SklZdkJ5NmpjclFZczdR?oc=5",
+          "publisher": "울산일보",
+          "relative_date": "2일 전",
+          "published_at": "2026-11-06 00:02",
+          "iso_date": "2026-11-06T00:02:24+09:00",
+          "image": ""
+        },
+        {
+          "id": "cec27084f9f0",
+          "title": "UPA ‘1종 항만배후단지 관리지침’ 개정…입주기업 지원 강화",
+          "link": "https://news.google.com/rss/articles/CBMigwJBVV95cUxQNjBMb3czaXFMTXJOX3dISnpCcVIxWlk5LWVURDRMVF9zcXozbzVoeHdFRFF2eHlLRUljU0tQOTVmZTNxUW1oc2VhZ2NzYTh3THQ2REx2eU83YXAwQV9ZRUVKS2RUYk11QVJ4aDhVOElKZjJMUkJiSmozcmRjZ2RVMFc3M1lTMkdlUEN6R0pnY2cxR0xheVBDSE9kR1dhelE5azVsOGhjVUREaWlYTWZMOTl6NW5fOFl6RkJwcXQ4UUFsUVE1UkJlTzZhREZJMV8yTkhrYUpoVlRZTkpzU1pJY184QmhtNnFWXzNEU1JuQkJsSTJyMHBjd3QyamlTeV9UN2pZ?oc=5",
+          "publisher": "데일리안",
+          "relative_date": "2일 전",
+          "published_at": "2026-11-05 14:29",
+          "iso_date": "2026-11-05T14:29:00+09:00",
+          "image": "https://cdnimage.dailian.co.kr/news/202611/news_1793856578863_1711250_m_1.jpeg"
+        }
+      ],
+      "latest_iso_date": "2026-11-06T09:01:21+09:00"
     },
     {
       "id": "e230d1e61923",
@@ -3293,19 +3347,7 @@
       "relative_date": "2일 전",
       "is_opinion": false,
       "image": "https://wimg.munhwa.com/news/cms/2026/11/06/rcv.NEWSIS.NEWSIS.20260928.NISI20260928_0021462505_R.jpg",
-      "related_articles": [
-        {
-          "id": "2e8e371f7b46",
-          "title": "서울교통공사 노조, 쟁의행위 가결…이달 말 서울 지하철 파업 가능성",
-          "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFBjNGZZX3dodHhzREVPWW9XTUVlcVU3SkNicXB6YXUyUHJ0S0VjeFF1Q1VmNWx6eGhpem1qMWgwS2tPeXc3WkdxRXkzQVRwcjdRalR1Q01odmFiTWJCcEwzSlNIZWpPdw?oc=5",
-          "publisher": "KBS 뉴스",
-          "relative_date": "2일 전",
-          "published_at": "2026-11-05 18:28",
-          "iso_date": "2026-11-05T18:28:00+09:00",
-          "image": "https://news.kbs.co.kr/data/news/2026/11/05/20261105_QwnMN4.jpg"
-        }
-      ],
-      "latest_iso_date": "2026-11-06T07:32:29+09:00"
+      "related_articles": []
     },
     {
       "id": "b6a2b6254914",
@@ -3416,34 +3458,6 @@
       "related_articles": []
     },
     {
-      "id": "cec27084f9f0",
-      "title": "UPA ‘1종 항만배후단지 관리지침’ 개정…입주기업 지원 강화",
-      "link": "https://news.google.com/rss/articles/CBMigwJBVV95cUxQNjBMb3czaXFMTXJOX3dISnpCcVIxWlk5LWVURDRMVF9zcXozbzVoeHdFRFF2eHlLRUljU0tQOTVmZTNxUW1oc2VhZ2NzYTh3THQ2REx2eU83YXAwQV9ZRUVKS2RUYk11QVJ4aDhVOElKZjJMUkJiSmozcmRjZ2RVMFc3M1lTMkdlUEN6R0pnY2cxR0xheVBDSE9kR1dhelE5azVsOGhjVUREaWlYTWZMOTl6NW5fOFl6RkJwcXQ4UUFsUVE1UkJlTzZhREZJMV8yTkhrYUpoVlRZTkpzU1pJY184QmhtNnFWXzNEU1JuQkJsSTJyMHBjd3QyamlTeV9UN2pZ?oc=5",
-      "publisher": "데일리안",
-      "category_id": "water_port",
-      "category_name": "수자원·하천·항만",
-      "badge_color": "cyan",
-      "snippet": "울산항만공사(사장 변재영, UPA)가 항만배후단지 입주기업 경영 활동을 돕고 정부 정책을 반영하기 위해 제도 정비에 나섰다.UPA는 5일 ‘울산항 1종 항만배후단지 관리지침’을 전부 개정해 시행한다고 밝혔다.이번 전부개정은 입주기업 법인 분할과 합병에 대한 승인 절차를 새롭게 만들고, 해양수산부의 ‘1종 항만배후단지 관리",
-      "iso_date": "2026-11-05T14:29:00+09:00",
-      "published_at": "2026-11-05 14:29",
-      "relative_date": "2일 전",
-      "is_opinion": false,
-      "image": "https://cdnimage.dailian.co.kr/news/202611/news_1793856578863_1711250_m_1.jpeg",
-      "related_articles": [
-        {
-          "id": "56ec4fd5e9bf",
-          "title": "울산항만공사, 1종 관리지침 개정·시행...울산항 배후단지 입주기업 경영 지원",
-          "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTFBWT0dQMGxIOXBQWGJMT3NvUVhpbGRwdF9WS1hHZV8xVmczY1F6MGxpVUJBdjVxai1Dd0xsZ1gzZzR5a1JfYTZ3aXdLMHBfN0wwaW14U3JkaklTX0FFeEM5SklZdkJ5NmpjclFZczdR?oc=5",
-          "publisher": "울산일보",
-          "relative_date": "2일 전",
-          "published_at": "2026-11-06 00:02",
-          "iso_date": "2026-11-06T00:02:24+09:00",
-          "image": ""
-        }
-      ],
-      "latest_iso_date": "2026-11-06T00:02:24+09:00"
-    },
-    {
       "id": "8254e5ac1c52",
       "title": "‘허수봉 26득점’ 현대캐피탈, 삼성화재 꺾고 마수걸이 승 …한국도로공사도 김영래 감독 첫 승리",
       "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE9aSnB0X0ZwNEdQNTJtbllXc1VLSWZTUk44UTNBUVlsTGdHempDTVRCVGJxdmdkdTItaXpReWUxaFl0aWhwMHVCc3hfTC14LWJiLXpyQUQ0X3lIT0ZCbUHSAWNBVV95cUxOc0FtekdiQW00WEZfdlNEOVVOWVNFSFVDb0FQMmpVc3BsRjNVTW9xWGVrSm45T1o1TjUtaEZncW8zYVNPMGF4OE1NMVRyTEpQTHNHdjJWRmNNOUMya2d3dGFYcU0?oc=5",
@@ -3491,6 +3505,16 @@
       "image": "https://www.cstimes.com/news/photo/202611/726830_648340_2744.jpg",
       "related_articles": [
         {
+          "id": "89355ad510ce",
+          "title": "인천교통공사, 운연차량기지 고소작업 현장 노ㆍ사ㆍ전 합동점검",
+          "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE42TlBHWUV3WW9FUHZmaG5RVkN6R0lTcjFaTFhtSWtZZjdna2l3ZFVpeExINWxSZEtzcThSMnBDelJKV1JrbHcxS2RrbXlZYWE3aGVPX1p5MWhkdTY2SktqalBNZ3AwVDVBbkE?oc=5",
+          "publisher": "경기도민일보 미디어",
+          "relative_date": "2일 전",
+          "published_at": "2026-11-05 13:35",
+          "iso_date": "2026-11-05T13:35:46+09:00",
+          "image": ""
+        },
+        {
           "id": "07cba8720d4f",
           "title": "인천교통공사, 운연차량기지 등 현장서 중대재해 예방 안전점검 실시... 인천대공원역~운연역 사면 보강공사 준공 임박",
           "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBLX3l4S3kwNGJhbGs1N0tUNEdlT3N4Q3FGNmJneWxYVkRYeGRRVjVwRlhXSUtnLWxGQXE0LVJ1WWlGWlZRYS1wdExDc0JyTlVqdEhDS1hQdjJ2TE1wc1B4Q3NuQWxqVknSAWtBVV95cUxQQS1kaF8tTjhUcS1zTXczdE5HMTNqUHJLZ04yR0FYMkVIYTNScXBYb0JhRmNjel9EX1hsUVpvRXJncmJoZEtHSXZNdXVBRl9aSFA2REhIdWRGZWkxcEdicG50N2dMbHZDRmxZUQ?oc=5",
@@ -3519,6 +3543,16 @@
           "published_at": "2026-11-05 10:54",
           "iso_date": "2026-11-05T10:54:43+09:00",
           "image": "https://cdn.m-i.kr/news/photo/202611/2014800_2015201_5354.png"
+        },
+        {
+          "id": "bde06323499c",
+          "title": "인천교통공사, 노사전 합동 안전점검 및 사면 보강공사 현장 점검",
+          "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE5tdExQenpHRnlwWVNaMkN2OGE3WEhTSWpJbzJFdWNvRTZhYXRBajVRWDZBb09NS2VFSHVycFJiN3dNSjh6SUlMU2x3YUhsWktPcDFRQjBnaDM1dkxEbHdVOS1vYU1hZ1FYTmdaeWFIaHFXUQ?oc=5",
+          "publisher": "웹이코노미",
+          "relative_date": "2일 전",
+          "published_at": "2026-11-05 10:01",
+          "iso_date": "2026-11-05T10:01:14+09:00",
+          "image": "https://cdn.webeconomy.co.kr/news/photo/202611/2362254_1172766_18.jpg"
         }
       ],
       "latest_iso_date": "2026-11-05T21:33:51+09:00"
@@ -3778,16 +3812,16 @@
       "related_articles": []
     },
     {
-      "id": "148bd91f65fe",
+      "id": "49ec53efe4c8",
       "title": "수협은행, 광명도시공사와 탄도항 해안 정화 활동 나서",
-      "link": "https://www.s-journal.co.kr/news/articleView.html?idxno=45102",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE9ZVXdHR0VWTTBpNzRzU3NibG82b0p4RndVN2lSZ18yOF9ZTVVpS0o3QUZ0RTVkdlk1bkxFSGdOX0Z2SXlFYjBpMTN3SXBUUlBPcWo4OEdnNnRrVUN2eE9SNUxTeHJYU2U5R2FsM0tB?oc=5",
       "publisher": "S저널",
       "category_id": "water_port",
       "category_name": "수자원·하천·항만",
       "badge_color": "cyan",
-      "snippet": "이번 활동에는 수협은행 가산금융본부와 광명도시공사 임직원 32명이 참여했다. 참가자들은 탄도항 해변과 주변 방파제 일대에 버려진 해양 쓰레기와 폐플라스틱, 스티로폼 부표 등 각종 폐기물을 수거하며 해양 환경...",
-      "iso_date": "2026-11-05T20:20:00+09:00",
-      "published_at": "2026-11-05 20:20",
+      "snippet": "Sh수협은행(은행장 신학기)이 광명도시공사 임직원들과 함께 해양 환경 보호를 위한 봉사활동을 진행했다.수협은행은 광명도시공사(사장 서일동)와 경기도 안산시 대부도",
+      "iso_date": "2026-11-05T20:18:26+09:00",
+      "published_at": "2026-11-05 20:18",
       "relative_date": "2일 전",
       "is_opinion": false,
       "image": "https://cdn.s-journal.co.kr/news/photo/202611/45102_56336_265.jpeg",
@@ -3839,7 +3873,19 @@
       "relative_date": "2일 전",
       "is_opinion": false,
       "image": "https://wimg.dt.co.kr/news/cms/2026/11/05/news-p.v1.20261105.22dfad1304014ac8a6d5c5df97da908e_R.png",
-      "related_articles": []
+      "related_articles": [
+        {
+          "id": "2e8e371f7b46",
+          "title": "서울교통공사 노조, 쟁의행위 가결…이달 말 서울 지하철 파업 가능성",
+          "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFBjNGZZX3dodHhzREVPWW9XTUVlcVU3SkNicXB6YXUyUHJ0S0VjeFF1Q1VmNWx6eGhpem1qMWgwS2tPeXc3WkdxRXkzQVRwcjdRalR1Q01odmFiTWJCcEwzSlNIZWpPdw?oc=5",
+          "publisher": "KBS 뉴스",
+          "relative_date": "2일 전",
+          "published_at": "2026-11-05 18:28",
+          "iso_date": "2026-11-05T18:28:00+09:00",
+          "image": "https://news.kbs.co.kr/data/news/2026/11/05/20261105_QwnMN4.jpg"
+        }
+      ],
+      "latest_iso_date": "2026-11-05T19:14:45+09:00"
     },
     {
       "id": "176d7b14925c",
@@ -3907,6 +3953,16 @@
           "image": "https://cdn.newscj.com/news/thumbnail/202611/3446293_3571123_2138_v150.jpg"
         },
         {
+          "id": "d48a02b7e742",
+          "title": "LX공사, AI 활용해 국가기반시설 토지관리 효율화 모색",
+          "link": "https://news.bbsi.co.kr/news/articleView.html?idxno=4116988",
+          "publisher": "불교방송",
+          "relative_date": "2일 전",
+          "published_at": "2026-11-05 17:20",
+          "iso_date": "2026-11-05T17:20:00+09:00",
+          "image": ""
+        },
+        {
           "id": "0681ee8adef1",
           "title": "한국국토정보공사, 디지털 SOC사업 활성화 국토 콘퍼런스 개최",
           "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1pZFJ1UVctbE5OcURORDFOcG51R3JaUW41cm1iRmFtVjFYMmg1cERPNUZqTVl6TXJvQXVQbkt1RFlnYjJlTUZTeFBoeTNxUDlFZ29JTXMwbUdITnR1ODgxRHFDSjRORUFBS1FtZw?oc=5",
@@ -3928,22 +3984,6 @@
         }
       ],
       "latest_iso_date": "2026-11-05T18:50:00+09:00"
-    },
-    {
-      "id": "7ac15451f9b4",
-      "title": "이현명 통합특별시의원, “도시철도 2호선 비상계단 없는 출입구…시민 안전은?”",
-      "link": "https://news.google.com/rss/articles/CBMiTEFVX3lxTE5kVm1xZThUdEJEQlBab3l1a0I2QV9fSjF0N2ZXM0x2ckpINDZRLWxsMDdvWUt5WWhxMjEweS14UmNYWGlEZVZTVUxLdDk?oc=5",
-      "publisher": "시사일보",
-      "category_id": "road_rail",
-      "category_name": "도로·교량·철도",
-      "badge_color": "emerald",
-      "snippet": "이현명 의원(더불어민주당ㆍ진도)  [시사일보=노평우 대기자] 전남광주통합특별시의회 이현명 의원(더불어민주당ㆍ진도)은 5일 열린 광주교통공사 소관",
-      "iso_date": "2026-11-05T18:23:00+09:00",
-      "published_at": "2026-11-05 18:23",
-      "relative_date": "2일 전",
-      "is_opinion": false,
-      "image": "https://www.koreasisailbo.com/data/koreasisailbo_com/mainimages/202611/20261105182304-74753.jpg",
-      "related_articles": []
     },
     {
       "id": "2d2e331781a1",
@@ -4013,35 +4053,9 @@
           "published_at": "2026-11-05 10:26",
           "iso_date": "2026-11-05T10:26:00+09:00",
           "image": "https://img.newspim.com/news/2026/11/05/2611050858496990_214_tc.jpg"
-        },
-        {
-          "id": "b2d48b8909e6",
-          "title": "철도연·GS건설, 피지컬 AI·친환경 철도건설 기술 현장 적용 추진",
-          "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE9kTzRJLWZLYlZRU1Nza29oSkJjRE1xYmRUX2VtRmkydHdncHkyT3VpV201MU0zcnBDcFlBYWd4cEh1c3JsN1NKekcyQVFwWWhNdURiQnFCcXp6QkJibVdzQVhQcDM?oc=5",
-          "publisher": "국토일보",
-          "relative_date": "2일 전",
-          "published_at": "2026-11-05 09:14",
-          "iso_date": "2026-11-05T09:14:48+09:00",
-          "image": ""
         }
       ],
       "latest_iso_date": "2026-11-05T17:51:00+09:00"
-    },
-    {
-      "id": "48fa9a1f7ddb",
-      "title": "LX공사, 민·관·연 머리 맞댄 ‘지하 안전망’ 구축",
-      "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE1CYVpyTE01b19ybDZNUko0SVBrZEUweVQ0WDI5MExmTGVVTDBIVXNmSW9Sbm5vRGdzREpNdWpEVnhISGd4WW1aQmlxUlU0OUlwdDVtcXJaVHJEWUtRQnlSdWFud1NQTExHa1NkcGdrbnA2d9IBckFVX3lxTE1CYVpyTE01b19ybDZNUko0SVBrZEUweVQ0WDI5MExmTGVVTDBIVXNmSW9Sbm5vRGdzREpNdWpEVnhISGd4WW1aQmlxUlU0OUlwdDVtcXJaVHJEWUtRQnlSdWFud1NQTExHa1NkcGdrbnA2dw?oc=5",
-      "publisher": "팝콘뉴스",
-      "category_id": "tunnel_geo",
-      "category_name": "터널·지반·안전",
-      "badge_color": "amber",
-      "snippet": "LX공사, 민·관·연 머리 맞댄 ‘지하 안전망’ 구축. 터널·지반·안전 분야 최신 인프라 동향 및 사업 세부 내용을 확인하세요.",
-      "iso_date": "2026-11-05T17:50:29+09:00",
-      "published_at": "2026-11-05 17:50",
-      "relative_date": "2일 전",
-      "is_opinion": false,
-      "image": "",
-      "related_articles": []
     },
     {
       "id": "408f70d345d1",
@@ -4057,6 +4071,22 @@
       "relative_date": "2일 전",
       "is_opinion": false,
       "image": "",
+      "related_articles": []
+    },
+    {
+      "id": "d3c4446d3609",
+      "title": "LX공사, 민·관·연 머리 맞댄 ‘지하 안전망’ 구축",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE5RN0FpSTZxcW53NWhIU2JqTnFGS1dTSmN3X09JMEtQRXppSHVJMkdsWk13SXFGbFpXbWJ0WDdVemM2eGE4V0duU3dORjJ6V2s5OFRHRW0yemZzUUF5bENuM3pFQm5acVhMcVE5VE5B0gFyQVVfeXFMTUJhWnJMTTVvX3JsNk1SSjRJUGtkRTB5VDRYMjkwTGZMZVVMMEhVc2ZJb1Jubm9EZ3NESk11akRWeEhIZ3hZbVpCaXFSVTQ5SXB0NW1xclpUckRZS1FCeVJ1YW53U1BMTEdrU2RwZ2tucDZ3?oc=5",
+      "publisher": "팝콘뉴스",
+      "category_id": "tunnel_geo",
+      "category_name": "터널·지반·안전",
+      "badge_color": "amber",
+      "snippet": "(팝콘뉴스=김은교 기자) 도심지 땅꺼짐(싱크홀)에 대한 사회적 불안이 이어지는 가운데, 지하 안전사고를 선제적으로 차단하기 위한 민·관·연 기술·정책 교류의 장이 마련됐다. 5일 경기 고양시 킨텍스에서 열린 ‘2026 지하정보 세미나’에는 서울시와 국토안전관리원, 한국건설기술연구원 등 지하 안전 관계자 80여 명이 참석해",
+      "iso_date": "2026-11-05T17:43:45+09:00",
+      "published_at": "2026-11-05 17:43",
+      "relative_date": "2일 전",
+      "is_opinion": false,
+      "image": "https://cdn.popcornnews.net/news/thumbnail/202611/138914_165446_4341_v150.jpg",
       "related_articles": []
     },
     {
@@ -4114,6 +4144,22 @@
         }
       ],
       "latest_iso_date": "2026-11-05T17:33:32+09:00"
+    },
+    {
+      "id": "57683977c347",
+      "title": "송도세브란스병원 건립 지연에 주민 반발…“이달 중순 착공 못 하면 2028년 개원 어려워”",
+      "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE9Nb1FXTW9sazgyNHVjUVhLbVlCWWtyN2NyMlN1RWs2TVVzcnIwTlpXcmNFUTAzbjlqdlVUX3dqX2p6Zjdmck8tN2RLVU43QzdRejZLWk5QekRZRDlWMzNOaFRmVXdrSUNuODlVQ0F2VQ?oc=5",
+      "publisher": "기호일보",
+      "category_id": "general",
+      "category_name": "토목 종합",
+      "badge_color": "blue",
+      "snippet": "인천 송도세브란스병원 지상부 공사가 시공사 본계약 지연으로 차질을 빚자 주민단체들이 공사 정상화와 구체적인 개원 일정 공개를 촉구했다. 지하부 시공사 관계자는 이",
+      "iso_date": "2026-11-05T17:28:00+09:00",
+      "published_at": "2026-11-05 17:28",
+      "relative_date": "2일 전",
+      "is_opinion": false,
+      "image": "https://cdn.kihoilbo.co.kr/news/photo/202611/3040052_584738_2817.jpg",
+      "related_articles": []
     },
     {
       "id": "16068c6ce30e",
@@ -4256,6 +4302,22 @@
       "latest_iso_date": "2026-11-05T16:00:00+09:00"
     },
     {
+      "id": "23e54ba38941",
+      "title": "영동양수발전소 주기기 제작·시공 설명회",
+      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5xb0dHQmlvRm9TcW1lR0F1Q2pRbHVOeVRlWUMtQ0tVWDlzZHNDbU1INnQ3X1R5MGpGZDhvZlRFVkllUmlYWXZHRFZnYTNUOTBNZ2JNSG9EcUdSV2ZMNTdZSGJUNTlZZFFK?oc=5",
+      "publisher": "충청타임즈",
+      "category_id": "general",
+      "category_name": "토목 종합",
+      "badge_color": "blue",
+      "snippet": "[충청타임즈] 충북 영동군에 양수발전소를 건설 중인 한국수력원자력(주) 영동양수건설소는 지난 3일 대회의실에서 영동양수 1·2호기 주기기 제작·시공계획 설명회를 개최했다.3D BIM(Building Information Modeling) 기반의 지하발전소 설계 성과를 공유하고 설계·시공 최적화 방안을 논의하기 위해 마련한",
+      "iso_date": "2026-11-05T15:50:00+09:00",
+      "published_at": "2026-11-05 15:50",
+      "relative_date": "2일 전",
+      "is_opinion": false,
+      "image": "https://www.cctimes.kr/news/photo/202611/935827_418797_5044.jpg",
+      "related_articles": []
+    },
+    {
       "id": "6b67262158b9",
       "title": "부산항만공사, 모로코 총회서 AI기반 혁신·디지털전환 논의",
       "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFBWZXFZajloNTE0d1pZV1lPVXVwUFF5MjhHaW1lS0RmYjBZbEoxUnhScV9MUUlQRTV4NTdMUzlWdkhPSXNmSzlPWUs3X0pUcnZvUjA3cGRlUFlhdDRMTnRCMA?oc=5",
@@ -4337,16 +4399,6 @@
           "published_at": "2026-11-05 12:35",
           "iso_date": "2026-11-05T12:35:00+09:00",
           "image": "https://kten.kr/data/news/2611/360x231/628f548aeb723a6bd13d93f9f38b87ce_digGIXMWiJ.jpg"
-        },
-        {
-          "id": "0f8041d90df2",
-          "title": "광주도시철도 2호선 1단계 ‘안전 개통’ 협력 강화 '도시철도건설본부-교통공사, 공동실무협의체 출범'",
-          "link": "https://news.google.com/rss/articles/CBMie0FVX3lxTE0yOFBleUZFWDlEUFI5YUlrNFZUY3FBTHNVZzFBYm05VkptNExJN2pVYWZoY01ibnc2c3N3ZVFWZUdITDJKRzVYekhOMGVCVHdJc0dHV2R4VHNWRFRyTkhUMXJHQVl2N0U2eU14dG5rLVVpRzYwa3dMbUlZMNIBf0FVX3lxTE9HT2p5ajZ3ZWhvTTZKV1BUNmFUX2dHLV85eUc0NWtMSF9hNEh0OFZqQ0ZNTTJCWE9STDJNX1Jzd204Y2duQy1CT2VJYTc0N2tQOWMtOHpKUXNfbXYwYy1DeUxoN29HR19wU2xQQVRtTnFIcXJqU1BjQ0RfZHJfMzQ?oc=5",
-          "publisher": "데일리스포츠한국",
-          "relative_date": "2일 전",
-          "published_at": "2026-11-05 11:23",
-          "iso_date": "2026-11-05T11:23:12+09:00",
-          "image": "https://cdn.dailysportshankook.co.kr/news/photo/202611/435187_451546_2126.jpg"
         },
         {
           "id": "3f49f3d80a3e",
@@ -4462,19 +4514,19 @@
       "related_articles": []
     },
     {
-      "id": "a4f4e75a7669",
-      "title": "대전 트램 공사에 퇴근길 통행속도 최대 44%↓… 교통대책 실효성 논란",
-      "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE1wM2xTSHg2RHpmeWZNUEsyVm96aGdYNE1zenl5SmpZUm14MkN2TDdLMGpEVDB1WEE4eWxOZUpaZ1J3OEtIaThJQXI4ZUhZWXZEenBySG9ucC16QlZpbjJ6ZW0yQ3hKeF81UW5Oc3lrXzNzZw?oc=5",
-      "publisher": "충남일보",
+      "id": "2c2c66d3c616",
+      "title": "“트램 공사로 대전 대덕대교·한밭대교 퇴근길 속도 40% 느려져”",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE8tcEdOR2FsdDZleEczSDdHbmJWek1qNjlna2xtOHo0cDhLd01uN3FIc3FyQzNwZkdlVi1Udk5YazlseTdtbFJRT29HYkJxX3MwZ05FaGNINHRNVFN1T3VzQVVHMkZhZHJGdUFUbw?oc=5",
+      "publisher": "에이티엔뉴스",
       "category_id": "road_rail",
       "category_name": "도로·교량·철도",
       "badge_color": "emerald",
-      "snippet": "[충남일보 손지유 기자] 대전 도시철도 2호선(트램) 공사가 본격화하면서 주요 도로의 교통 혼잡이 심화하고 있지만, 대전시의 교통대책이 실제 도로 상황을 충분히 반영하지 못하고 있다는 지적이 나왔다.통행속도에 따라 단계별 대책을 시행하겠다는 계획과 달리 속도 산정은 ‘24시간 평균’을 기준으로 삼고, 대중교통 이용을 유도",
-      "iso_date": "2026-11-05T11:57:13+09:00",
-      "published_at": "2026-11-05 11:57",
+      "snippet": "(대전=에이티엔뉴스) 라안일 기자 = 도시철도 2호선(트램) 공사로 대전 대덕대교와 한밭대교 퇴근길 차량속도가 40%가량 느려졌다는 지적이다.대전참여자치시민연대가",
+      "iso_date": "2026-11-05T11:04:24+09:00",
+      "published_at": "2026-11-05 11:04",
       "relative_date": "2일 전",
       "is_opinion": false,
-      "image": "https://cdn.chungnamilbo.co.kr/news/thumbnail/202611/919010_497002_5021_v150.jpg",
+      "image": "https://cdn.atnnews.co.kr/news/photo/202611/111900_219842_316.jpg",
       "related_articles": [
         {
           "id": "520a13fc90ea",
@@ -4485,35 +4537,9 @@
           "published_at": "2026-11-05 13:34",
           "iso_date": "2026-11-05T13:34:00+09:00",
           "image": ""
-        },
-        {
-          "id": "2c2c66d3c616",
-          "title": "“트램 공사로 대전 대덕대교·한밭대교 퇴근길 속도 40% 느려져”",
-          "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE8tcEdOR2FsdDZleEczSDdHbmJWek1qNjlna2xtOHo0cDhLd01uN3FIc3FyQzNwZkdlVi1Udk5YazlseTdtbFJRT29HYkJxX3MwZ05FaGNINHRNVFN1T3VzQVVHMkZhZHJGdUFUbw?oc=5",
-          "publisher": "에이티엔뉴스",
-          "relative_date": "2일 전",
-          "published_at": "2026-11-05 11:04",
-          "iso_date": "2026-11-05T11:04:24+09:00",
-          "image": "https://cdn.atnnews.co.kr/news/photo/202611/111900_219842_316.jpg"
         }
       ],
       "latest_iso_date": "2026-11-05T13:34:00+09:00"
-    },
-    {
-      "id": "3f4acc50d4ba",
-      "title": "서울지하철 역사에 '전자파 신호등' 켠다…\"안전 우려 해소\"",
-      "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9MMG1SOVVmS3EycGpmSGgwS2NsamY4THRRaTFBQXdHN1FVdzFIMG9jeGx1X3hKMDdsNGpYSE82MG5IeFZYUDFwYkhtUHloZkRreGpMNEE3cW9hWkk?oc=5",
-      "publisher": "연합뉴스",
-      "category_id": "road_rail",
-      "category_name": "도로·교량·철도",
-      "badge_color": "emerald",
-      "snippet": "(서울=연합뉴스) 김동규 기자 = 서울 지하철을 이용하는 승객들이 역사 내 전자파 수준을 직접 확인할 수 있게 된다.",
-      "iso_date": "2026-11-05T13:15:46+09:00",
-      "published_at": "2026-11-05 13:15",
-      "relative_date": "2일 전",
-      "is_opinion": false,
-      "image": "https://img3.yna.co.kr/etc/inner/KR/2026/11/05/AKR20261105097300004_01_i_P4.jpg",
-      "related_articles": []
     },
     {
       "id": "62300a8e8d85",
@@ -4560,7 +4586,23 @@
       "published_at": "2026-11-05 12:33",
       "relative_date": "2일 전",
       "is_opinion": false,
-      "image": "https://stqnq5ux4599.edge.naverncp.com/data2//content/image/2026/11/05/.cache/512/20261105500565.png?v=20261108090053",
+      "image": "https://stqnq5ux4599.edge.naverncp.com/data2//content/image/2026/11/05/.cache/512/20261105500565.png?v=20261108100048",
+      "related_articles": []
+    },
+    {
+      "id": "d3643bcc7c42",
+      "title": "도시철도건설본부·광주교통공사, 2호선 1단계 ‘안전 개통’ 위한 공동실무협의체 출범",
+      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE9lYTNKangzdnFlQWdtMlpmbXBxWDJLWG45QzdfaEdzSW9tVTduMVgyOUhlSkpOYzZRY0RCXzNwUEY1dmpjRGRsd3hvOGNvY0VNYUVjX2FnSXFWYkFKWW8zQzk3dHd1WDRj?oc=5",
+      "publisher": "목포타임즈",
+      "category_id": "road_rail",
+      "category_name": "도로·교량·철도",
+      "badge_color": "emerald",
+      "snippet": "2028년 12월 개통 목표…건설·운영기관 간 실무협력 강화매월 분야별 정기회의·합동점검으로 원활한 인계인수 추진 전남광주통합특별시 도시철도건설본부와 광주교통공사는 광주도시철도 2호선 1단계의 2028년 12월 안전한 개통과 원활한 운영 준비를 위해 지난 4일 ‘개통준비 공동실무협의체’ 첫 회의를 개최했다.‘개통준비 공동",
+      "iso_date": "2026-11-05T12:24:42+09:00",
+      "published_at": "2026-11-05 12:24",
+      "relative_date": "2일 전",
+      "is_opinion": false,
+      "image": "https://www.mokpotimes.com/news/photo/202611/177242_125804_2640.jpg",
       "related_articles": [
         {
           "id": "4104bdf61bdb",
@@ -4573,7 +4615,7 @@
           "image": "https://cdn.jnilbo.com/news/photo/202611/90000079924_610510_3152.jpg"
         }
       ],
-      "latest_iso_date": "2026-11-05T12:33:00+09:00"
+      "latest_iso_date": "2026-11-05T12:24:42+09:00"
     },
     {
       "id": "cc8f958d5b63",
@@ -4589,6 +4631,22 @@
       "relative_date": "2일 전",
       "is_opinion": false,
       "image": "https://cdn.alphabiz.co.kr/news/photo/202611/196393_158712_638.png",
+      "related_articles": []
+    },
+    {
+      "id": "bd4ff7fcaced",
+      "title": "민경선 고양시장, “UAM 인프라 네 박자 고양에 맞아떨어져…기업 오게 만들어야”",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE5vdmw0SF9XZHdOUnhLU3hQbVJMcl9IWVB5djZTNGZGd3NtSGJFUG5Zcl83SE9ncGxpV1RHTU5IRlRpek55WnNJM0VXaEhFWjFiRUIxNlJ4WHlfdkhCUF90cm9LNmF1UzZ4bXlDdVVR?oc=5",
+      "publisher": "세정포커스",
+      "category_id": "smart_policy",
+      "category_name": "스마트건설·정책",
+      "badge_color": "indigo",
+      "snippet": "고양특례시(시장 민경선)는 4일 고양시청 대회의실에서 ‘대한민국 건설기술 브레인, 고양의 미래를 설계하다’를 주제로 생중계 시정회의를 열고 한국건설기술연구원(이하",
+      "iso_date": "2026-11-05T11:39:27+09:00",
+      "published_at": "2026-11-05 11:39",
+      "relative_date": "2일 전",
+      "is_opinion": false,
+      "image": "https://cdn.sejungfocus.com/news/photo/202611/20656_20206_384.jpg",
       "related_articles": []
     },
     {
@@ -4621,29 +4679,7 @@
       "relative_date": "2일 전",
       "is_opinion": false,
       "image": "https://cdn.discoverynews.kr/news/thumbnail/202611/1105869_1150445_1021_v150.jpg",
-      "related_articles": [
-        {
-          "id": "bde06323499c",
-          "title": "인천교통공사, 노사전 합동 안전점검 및 사면 보강공사 현장 점검",
-          "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE5tdExQenpHRnlwWVNaMkN2OGE3WEhTSWpJbzJFdWNvRTZhYXRBajVRWDZBb09NS2VFSHVycFJiN3dNSjh6SUlMU2x3YUhsWktPcDFRQjBnaDM1dkxEbHdVOS1vYU1hZ1FYTmdaeWFIaHFXUQ?oc=5",
-          "publisher": "웹이코노미",
-          "relative_date": "2일 전",
-          "published_at": "2026-11-05 10:01",
-          "iso_date": "2026-11-05T10:01:14+09:00",
-          "image": "https://cdn.webeconomy.co.kr/news/photo/202611/2362254_1172766_18.jpg"
-        },
-        {
-          "id": "e9a0cc5be247",
-          "title": "인천교통공사, 고소작업·선로변 사면 안전관리 집중 점검",
-          "link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTFBfZmp0U083V2pQY0VIYTJmWktjOWpIenhKZGMzNU1qWjRSNW5aZDUtSk9PeG43OU9fb2MwMkFSYTVvM3FBMmV3UGhmcG5fVE5aTERVN0dFb3VoU3RseUw3dVZPcw?oc=5",
-          "publisher": "국토일보",
-          "relative_date": "2일 전",
-          "published_at": "2026-11-05 09:40",
-          "iso_date": "2026-11-05T09:40:41+09:00",
-          "image": ""
-        }
-      ],
-      "latest_iso_date": "2026-11-05T11:10:31+09:00"
+      "related_articles": []
     },
     {
       "id": "99555261fbd2",
@@ -4675,19 +4711,7 @@
       "relative_date": "2일 전",
       "is_opinion": false,
       "image": "https://cdn.dtnews24.com/news/thumbnail/202611/816846_443028_1933_v150.jpg",
-      "related_articles": [
-        {
-          "id": "de83577dc609",
-          "title": "대전참여연대 \"트램 공사로 교통 체증 증가…대책 마련하라\"",
-          "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFAwTE9ZYUxEbXZ0TF9FZjNVZVYybnZvY2FwUWNxTHpZbjAxc3lZdVkzQ19sRk9LWmE3US1Kbkhjc0VkN1M3eUtlcjBkNkp4VXdaN3FVYV9GSWVESVZDYUllRg?oc=5",
-          "publisher": "뉴스1",
-          "relative_date": "2일 전",
-          "published_at": "2026-11-05 09:57",
-          "iso_date": "2026-11-05T09:57:43+09:00",
-          "image": "https://i3n.news1.kr/system/photos/2026/11/5/8198254/high.jpg"
-        }
-      ],
-      "latest_iso_date": "2026-11-05T11:00:58+09:00"
+      "related_articles": []
     },
     {
       "id": "0fb80a55dd78",
@@ -4719,19 +4743,7 @@
       "relative_date": "2일 전",
       "is_opinion": false,
       "image": "https://cdn.gukjenews.com/news/thumbnail/202611/3742935_3923347_2555_v150.jpg",
-      "related_articles": [
-        {
-          "id": "9263a874f53a",
-          "title": "울산항만공사, 울산대 학생들과 현안 해결책 찾는다",
-          "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTFB3VFU5R1J1TTMybkEyeDc5RHdFZ2x4UlFQUnhDem1hX3FSOHk4OFIzaVdFNnptdTlCNTB0NFYwVXF0SmxfdkF0SUJybEl5THNQZmI0MVhRQXBneHhCdlNXTzFaUm4xSG5Sd3dr?oc=5",
-          "publisher": "물류신문",
-          "relative_date": "2일 전",
-          "published_at": "2026-11-05 09:56",
-          "iso_date": "2026-11-05T09:56:04+09:00",
-          "image": "https://cdn.klnews.co.kr/news/thumbnail/202611/323385_66993_5219_v150.jpg"
-        }
-      ],
-      "latest_iso_date": "2026-11-05T10:28:03+09:00"
+      "related_articles": []
     },
     {
       "id": "0ebfaabd5a9c",
@@ -4763,82 +4775,6 @@
       "relative_date": "2일 전",
       "is_opinion": false,
       "image": "https://cdn.gukjenews.com/news/thumbnail/202611/3742916_3923333_167_v150.jpg",
-      "related_articles": [
-        {
-          "id": "e2ae88265ae6",
-          "title": "울산항만공사, 신임 김태환 운영본부장 취임식 개최",
-          "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE91b0VpSEhISGJveU8xWThiUzI2X3Z1bUJ2Um1KU3BiNm9lTmNtQ1ZVY3pwU2lqNlYyXzFpR1hqbnU3U3Z5NHB5Q1ZjVFN6Wl95d0tsMXpDcXVVaklqemtDNU1OcDYxc1NmQm1V?oc=5",
-          "publisher": "물류신문",
-          "relative_date": "2일 전",
-          "published_at": "2026-11-05 09:56",
-          "iso_date": "2026-11-05T09:56:04+09:00",
-          "image": "https://cdn.klnews.co.kr/news/thumbnail/202611/323378_66984_3742_v150.jpg"
-        }
-      ],
-      "latest_iso_date": "2026-11-05T10:18:36+09:00"
-    },
-    {
-      "id": "9ae924f3349a",
-      "title": "최정은 서울시의원, “지반침하 사고 주변시설 안전점검 자료조차 없어... 시민 안전관리 사각지대 지적”",
-      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE9fdGRfQTZhX0dUTWpLVDIzQ2haZW5DRktjazlwR0hSMXNVc1RMWWoxQXVjN1gyWVIxanBaMVdmQTVUS1BqeDNDMDB2WW4zcTRvRXh6LW1hYnQzTHBmNmpwU0luX2ZWTDdkVHc?oc=5",
-      "publisher": "청년투데이",
-      "category_id": "tunnel_geo",
-      "category_name": "터널·지반·안전",
-      "badge_color": "amber",
-      "snippet": "[청년투데이=장효남] 서울특별시의회 도시안전건설위원회 최정은 의원(더불어민주당, 비례)은 지난 3일 열린 제340회 정례회 재난안전실 행정사무감사에서 지반침하 사고 주변시설에 대한 안전점검 관리 실태를 지적하며, 사고 지점뿐만 아니라 인근 시설의 안전까지 확인할 수 있는 관리체계 마련을 촉구했다.최 의원은 “지반침하 발생",
-      "iso_date": "2026-11-05T09:54:44+09:00",
-      "published_at": "2026-11-05 09:54",
-      "relative_date": "2일 전",
-      "is_opinion": false,
-      "image": "https://cdn.fnnews21.com/news/thumbnail/202611/58817_61062_3024_v150.jpg",
-      "related_articles": []
-    },
-    {
-      "id": "1ddea168826a",
-      "title": "청도군, 광역철도 연장·국도 확장사업 등 3개 핵심 현안 정부에 지원 요청",
-      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE9PanBYdHU1SXFMN1lEZTRQdHFMbDZYem95TzBITlQ5RDRsbXVXTmRKZF9ZbGhUbFVHZllwRVdWaWlBX3phRTUzNFpTaHhjYWdHWFVhUkdCS19BUFdQbVUzcGFYWERudUo1S1pUYw?oc=5",
-      "publisher": "아시아투데이",
-      "category_id": "smart_policy",
-      "category_name": "스마트건설·정책",
-      "badge_color": "indigo",
-      "snippet": "경북 청도군이 지역 교통망 확충과 주민 이동 편의 증진을 위해 중앙정부를 상대로 주요 교통사업의 국가계획 반영과 국비 확보에 나섰다.청도군은 4일 박권현 군수가 국토교통부 정의경 제2차관과 면담을 갖고 대구권 광역철도(대경선) 경산-청도 연장사업과 국도20호선 병목구..",
-      "iso_date": "2026-11-05T09:52:55+09:00",
-      "published_at": "2026-11-05 09:52",
-      "relative_date": "2일 전",
-      "is_opinion": false,
-      "image": "https://img.asiatoday.co.kr/file/2026y/11m/05d/2026110501000351400018411.jpg",
-      "related_articles": []
-    },
-    {
-      "id": "325a8d74aca0",
-      "title": "“항만공사, 통합보다 권한 재정의가 우선”",
-      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTFBqcFdJSmlQM0VJUDQyMS1jdXQtUExIalFhbVpVdzc5eDlxeTJfU3B2UkJYTWJQRlRYV1M3dWFyeVpUZzhLWmtqWVJ3YVV4U3lNOExSX1ZBaUpWQ3lENlljWFh0RUpUQ3hxTHMwRDZzbVhLNXc?oc=5",
-      "publisher": "한국해운신문",
-      "category_id": "water_port",
-      "category_name": "수자원·하천·항만",
-      "badge_color": "cyan",
-      "snippet": "現 통합안, 구체적 청사진·정책 검증·절차 미흡“권한 및 자율성 확대로 글로벌 경쟁력 갖춰야”정부가 공공기관 기능 개혁의 일환으로 부산·인천·여수광양·울산 등 4대 항만공사(PA) 통합을 추진하고 있는 가운데, 항만업계와 전문가들 사이에서 통합의 실효성과 추진 방식에 대한 우려가 커지고 있다. 규모의 경제를 통한 운영 효",
-      "iso_date": "2026-11-05T09:12:12+09:00",
-      "published_at": "2026-11-05 09:12",
-      "relative_date": "2일 전",
-      "is_opinion": false,
-      "image": "https://cdn.maritimepress.co.kr/news/thumbnail/202611/333800_78115_4925_v150.jpg",
-      "related_articles": []
-    },
-    {
-      "id": "b7f98c9c6f84",
-      "title": "서울 지하철 부정승차 3만건 넘어…서울교통공사, 근절 총력",
-      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE9qOWlnb21LYTNlUXljR2lqaU9YNndaeTF4N0hvdzRTNjFVdTJZNjlWSE1naEdqbjAxWkV5eWwyWFlqYXhicmdnejdrYnltaGNneDgySFh0ZWhRMnE5QmRHTE5lTUY?oc=5",
-      "publisher": "국토일보",
-      "category_id": "road_rail",
-      "category_name": "도로·교량·철도",
-      "badge_color": "emerald",
-      "snippet": "서울 지하철 부정승차 3만건 넘어…서울교통공사, 근절 총력. 도로·교량·철도 분야 최신 인프라 동향 및 사업 세부 내용을 확인하세요.",
-      "iso_date": "2026-11-05T09:00:25+09:00",
-      "published_at": "2026-11-05 09:00",
-      "relative_date": "2일 전",
-      "is_opinion": false,
-      "image": "",
       "related_articles": []
     },
     {
@@ -4962,7 +4898,7 @@
       "published_at": "2026-11-03 13:27",
       "relative_date": "4일 전",
       "is_opinion": false,
-      "image": "https://i3n.news1.kr/system/photos/2026/11/3/8194138/high.jpg",
+      "image": "",
       "related_articles": []
     },
     {
@@ -5008,7 +4944,7 @@
       "snippet": "이를 위해 국토교통부는 도로·모빌리티와 건설·항공·철도 등 각 분야의 특성을 반영해 전문적인... 도로·모빌리티 분야는 한국지능형교통체계협회가 전담하는 '디지털도로 AI 신기술 지원사업'에서 지원하고, 주택...",
       "iso_date": "2026-11-02T09:44:00+09:00",
       "published_at": "2026-11-02 09:44",
-      "relative_date": "5일 전",
+      "relative_date": "6일 전",
       "is_opinion": false,
       "image": "",
       "related_articles": []
