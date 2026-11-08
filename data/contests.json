@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-08 23:01:42",
-  "last_updated_display": "11월 08일 23:01",
-  "total_count": 30,
-  "featured_count": 30,
+  "last_updated": "2026-11-09 00:01:36",
+  "last_updated_display": "11월 09일 00:01",
+  "total_count": 28,
+  "featured_count": 28,
   "categories": [
     "ALL",
     "토목",
@@ -10,65 +10,6 @@
     "컴퓨터공학"
   ],
   "contests": [
-    {
-      "id": "campus-219458",
-      "source": "campus",
-      "source_name": "교내공지",
-      "title": "[창업지원단] Global Inbound Start-up Idea Camp 참여자 추가모집(~11.08. 일)",
-      "organizer": "창업지원단",
-      "category": "전북대",
-      "badge_color": "teal",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.11.05 ~ 11.08 (23:59 마감)",
-      "deadline_date": "2026-11-08",
-      "deadline_time": "23:59",
-      "description": "전북대학교 창업지원단에서는 전북권역 내 유학생들의 창업역량 강화를 위해 \"Global Inbound Start-up Idea Camp\" 참여자를 아래와 같이 모집합니다. Jeonbuk National University's Start-up Support Group recruits participants in the \"Global Inbound Start-u…",
-      "link": "https://www.jbnu.ac.kr/web/Board/219458/detailView.do",
-      "image": "https://www.jbnu.ac.kr/common/file.do?file=DYUavZ7hZfw2hkT3QpwikRRXEMT0sAEkGltxf4+Mgdro09LD7Pdw77u1PlwaY6JZ",
-      "is_active": true,
-      "track": "campus",
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "devevent-9e616a6bb6",
-      "source": "devevent",
-      "source_name": "데브이벤트",
-      "track": "it",
-      "title": "AX인재전쟁 ONLINE - 삼일PwC",
-      "organizer": "조코딩AX파트너스 (출제 삼일PwC)",
-      "category": "컴퓨터공학",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.11.08 마감",
-      "deadline_date": "2026-11-08",
-      "deadline_time": "23:59",
-      "fields": [
-        "온라인",
-        "대회",
-        "AI"
-      ],
-      "description": "조코딩AX파트너스 (출제 삼일PwC) 주최 · 온라인, 무료, 대회, AI",
-      "link": "https://axacademy.ai/axwar/samilpwc-1",
-      "image": "",
-      "is_active": true,
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
     {
       "id": "devevent-9a8581bdca",
       "source": "devevent",
@@ -95,8 +36,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-3",
-        "days": 3,
+        "text": "D-2",
+        "days": 2,
         "is_urgent": true,
         "is_closed": false
       }
@@ -122,9 +63,9 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-4",
-        "days": 4,
-        "is_urgent": false,
+        "text": "D-3",
+        "days": 3,
+        "is_urgent": true,
         "is_closed": false
       }
     },
@@ -154,9 +95,9 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-4",
-        "days": 4,
-        "is_urgent": false,
+        "text": "D-3",
+        "days": 3,
+        "is_urgent": true,
         "is_closed": false
       }
     },
@@ -182,8 +123,8 @@
       "deadline_source": "poster",
       "track": "campus",
       "dday_info": {
-        "text": "D-5",
-        "days": 5,
+        "text": "D-4",
+        "days": 4,
         "is_urgent": false,
         "is_closed": false
       }
@@ -214,8 +155,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-5",
-        "days": 5,
+        "text": "D-4",
+        "days": 4,
         "is_urgent": false,
         "is_closed": false
       }
@@ -246,8 +187,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-6",
-        "days": 6,
+        "text": "D-5",
+        "days": 5,
         "is_urgent": false,
         "is_closed": false
       }
@@ -273,8 +214,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-7",
-        "days": 7,
+        "text": "D-6",
+        "days": 6,
         "is_urgent": false,
         "is_closed": false
       }
@@ -300,8 +241,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-7",
-        "days": 7,
+        "text": "D-6",
+        "days": 6,
         "is_urgent": false,
         "is_closed": false
       }
@@ -327,8 +268,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-7",
-        "days": 7,
+        "text": "D-6",
+        "days": 6,
         "is_urgent": false,
         "is_closed": false
       }
@@ -360,8 +301,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-7",
-        "days": 7,
+        "text": "D-6",
+        "days": 6,
         "is_urgent": false,
         "is_closed": false
       }
@@ -388,8 +329,8 @@
       "deadline_source": "poster",
       "track": "campus",
       "dday_info": {
-        "text": "D-9",
-        "days": 9,
+        "text": "D-8",
+        "days": 8,
         "is_urgent": false,
         "is_closed": false
       }
@@ -415,8 +356,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-10",
-        "days": 10,
+        "text": "D-9",
+        "days": 9,
         "is_urgent": false,
         "is_closed": false
       }
@@ -442,38 +383,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-12",
-        "days": 12,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "wevity-111726",
-      "source": "wevity",
-      "source_name": "위비티",
-      "title": "용산국제업무지구 AI 스마트도시 아이디어 공모",
-      "organizer": "서울특별시",
-      "category": "토목",
-      "badge_color": "emerald",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.11.20 마감",
-      "deadline_date": "2026-11-20",
-      "deadline_time": "23:59",
-      "fields": [
-        "건축/건설/인테리어"
-      ],
-      "description": "서울특별시 주최 · 분야: 건축/건설/인테리어",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=24&gbn=view&ix=111726",
-      "image": "",
-      "is_active": true,
-      "track": "civil",
-      "dday_info": {
-        "text": "D-12",
-        "days": 12,
+        "text": "D-11",
+        "days": 11,
         "is_urgent": false,
         "is_closed": false
       }
@@ -504,8 +415,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-12",
-        "days": 12,
+        "text": "D-11",
+        "days": 11,
         "is_urgent": false,
         "is_closed": false
       }
@@ -536,6 +447,36 @@
       "image": "",
       "is_active": true,
       "dday_info": {
+        "text": "D-11",
+        "days": 11,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-111726",
+      "source": "wevity",
+      "source_name": "위비티",
+      "title": "용산국제업무지구 AI 스마트도시 아이디어 공모",
+      "organizer": "서울특별시",
+      "category": "토목",
+      "badge_color": "emerald",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.21 마감",
+      "deadline_date": "2026-11-21",
+      "deadline_time": "23:59",
+      "fields": [
+        "건축/건설/인테리어"
+      ],
+      "description": "서울특별시 주최 · 분야: 건축/건설/인테리어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=24&gbn=view&ix=111726",
+      "image": "",
+      "is_active": true,
+      "track": "civil",
+      "dday_info": {
         "text": "D-12",
         "days": 12,
         "is_urgent": false,
@@ -554,8 +495,8 @@
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.11.20 마감",
-      "deadline_date": "2026-11-20",
+      "period": "~ 2026.11.21 마감",
+      "deadline_date": "2026-11-21",
       "deadline_time": "23:59",
       "fields": [
         "웹/모바일/IT"
@@ -584,8 +525,8 @@
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.11.20 마감",
-      "deadline_date": "2026-11-20",
+      "period": "~ 2026.11.21 마감",
+      "deadline_date": "2026-11-21",
       "deadline_time": "23:59",
       "fields": [
         "웹/모바일/IT"
@@ -623,8 +564,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-17",
-        "days": 17,
+        "text": "D-16",
+        "days": 16,
         "is_urgent": false,
         "is_closed": false
       }
@@ -650,8 +591,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-17",
-        "days": 17,
+        "text": "D-16",
+        "days": 16,
         "is_urgent": false,
         "is_closed": false
       }
@@ -682,38 +623,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-19",
-        "days": 19,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "wevity-112147",
-      "source": "wevity",
-      "source_name": "위비티",
-      "title": "대전지역 대학생과 함께하는 시민체감 교통 아이디어 공모전",
-      "organizer": "대전교통공사",
-      "category": "토목",
-      "badge_color": "emerald",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.11.29 마감",
-      "deadline_date": "2026-11-29",
-      "deadline_time": "23:59",
-      "fields": [
-        "기획/아이디어"
-      ],
-      "description": "대전교통공사 주최 · 분야: 기획/아이디어",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=112147",
-      "image": "",
-      "is_active": true,
-      "track": "civil",
-      "dday_info": {
-        "text": "D-21",
-        "days": 21,
+        "text": "D-18",
+        "days": 18,
         "is_urgent": false,
         "is_closed": false
       }
@@ -739,38 +650,38 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-22",
-        "days": 22,
+        "text": "D-21",
+        "days": 21,
         "is_urgent": false,
         "is_closed": false
       }
     },
     {
-      "id": "wevity-112160",
-      "source": "wevity_it",
+      "id": "wevity-112147",
+      "source": "wevity",
       "source_name": "위비티",
-      "title": "[한국체육산업개발(주)] 공공데이터 활용 경진대회",
-      "organizer": "한국체육산업개발(주)",
-      "category": "컴퓨터공학",
-      "badge_color": "blue",
+      "title": "대전지역 대학생과 함께하는 시민체감 교통 아이디어 공모전",
+      "organizer": "대전교통공사",
+      "category": "토목",
+      "badge_color": "emerald",
       "prize": "",
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.12.01 마감",
-      "deadline_date": "2026-12-01",
+      "period": "~ 2026.11.30 마감",
+      "deadline_date": "2026-11-30",
       "deadline_time": "23:59",
       "fields": [
-        "웹/모바일/IT"
+        "기획/아이디어"
       ],
-      "description": "한국체육산업개발(주) 주최 · 분야: 웹/모바일/IT",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=view&ix=112160",
+      "description": "대전교통공사 주최 · 분야: 기획/아이디어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=112147",
       "image": "",
       "is_active": true,
-      "track": "it",
+      "track": "civil",
       "dday_info": {
-        "text": "D-23",
-        "days": 23,
+        "text": "D-21",
+        "days": 21,
         "is_urgent": false,
         "is_closed": false
       }
@@ -796,8 +707,38 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-24",
-        "days": 24,
+        "text": "D-23",
+        "days": 23,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-112160",
+      "source": "wevity_it",
+      "source_name": "위비티",
+      "title": "[한국체육산업개발(주)] 공공데이터 활용 경진대회",
+      "organizer": "한국체육산업개발(주)",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.12.02 마감",
+      "deadline_date": "2026-12-02",
+      "deadline_time": "23:59",
+      "fields": [
+        "웹/모바일/IT"
+      ],
+      "description": "한국체육산업개발(주) 주최 · 분야: 웹/모바일/IT",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=view&ix=112160",
+      "image": "",
+      "is_active": true,
+      "track": "it",
+      "dday_info": {
+        "text": "D-23",
+        "days": 23,
         "is_urgent": false,
         "is_closed": false
       }
@@ -829,8 +770,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-43",
-        "days": 43,
+        "text": "D-42",
+        "days": 42,
         "is_urgent": false,
         "is_closed": false
       }
@@ -857,8 +798,8 @@
       "deadline_source": "poster",
       "track": "campus",
       "dday_info": {
-        "text": "D-53",
-        "days": 53,
+        "text": "D-52",
+        "days": 52,
         "is_urgent": false,
         "is_closed": false
       }
@@ -914,8 +855,8 @@
       "is_active": true,
       "track": "civil",
       "dday_info": {
-        "text": "D-53",
-        "days": 53,
+        "text": "D-52",
+        "days": 52,
         "is_urgent": false,
         "is_closed": false
       },
