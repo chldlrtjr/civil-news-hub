@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-09 08:01:29",
-  "last_updated_display": "11월 09일 08:01",
-  "total_count": 28,
-  "featured_count": 28,
+  "last_updated": "2026-11-09 09:02:09",
+  "last_updated_display": "11월 09일 09:02",
+  "total_count": 29,
+  "featured_count": 29,
   "categories": [
     "ALL",
     "토목",
@@ -449,6 +449,33 @@
       "dday_info": {
         "text": "D-11",
         "days": 11,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "campus-219516",
+      "source": "campus",
+      "source_name": "교내공지",
+      "title": "[언어교육부] 11월 21일(토) 모의토익 실시 안내(내일 접수 마감)",
+      "organizer": "언어교육부",
+      "category": "전북대",
+      "badge_color": "teal",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.06 ~ 11.21 (10:00 마감)",
+      "deadline_date": "2026-11-21",
+      "deadline_time": "10:00",
+      "description": "언어교육부에서 아래와 같이 모의토익을 실시하오니, 많은 관심 부탁드립니다. 1. 실시 일시: 11. 21.(토) 10:00 2. 실시 장소: JBNU인터내셔널센터 5층 강의실(1층 출입문에 고사실 안내) 3. 응시료: 17,000원 4. 접수 기간: 10. 19.(월) ~ 11. 7.(토) 5. 신청 방법 가. 언어교육부 수강신청 사이트 로그인( https…",
+      "link": "https://www.jbnu.ac.kr/web/Board/219516/detailView.do",
+      "image": "",
+      "is_active": true,
+      "track": "campus",
+      "dday_info": {
+        "text": "D-12",
+        "days": 12,
         "is_urgent": false,
         "is_closed": false
       }
