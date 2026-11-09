@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-09 09:02:09",
-  "last_updated_display": "11월 09일 09:02",
-  "total_count": 29,
-  "featured_count": 29,
+  "last_updated": "2026-11-09 10:01:41",
+  "last_updated_display": "11월 09일 10:01",
+  "total_count": 30,
+  "featured_count": 30,
   "categories": [
     "ALL",
     "토목",
@@ -601,7 +601,7 @@
       "id": "campus-219461",
       "source": "campus",
       "source_name": "교내공지",
-      "title": "전북대학교(JBNU)와 한국과학기술원(KIST)이 지역 산학연 융합연구사업 공모 안내",
+      "title": "전북대학교(JBNU)와 한국과학기술연구원(KIST)이 지역 산학연 융합연구사업 공모 안내",
       "organizer": "전북대학교학연협력플랫폼UNI-CORE사업단",
       "category": "전북대",
       "badge_color": "teal",
@@ -709,6 +709,36 @@
       "dday_info": {
         "text": "D-21",
         "days": 21,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-112236",
+      "source": "wevity_it",
+      "source_name": "위비티",
+      "title": "2026 대구 로컬AI그라운드 - 지역문제 해결형 AI활용 경진대회",
+      "organizer": "대구광역시,대구창조경제혁신센터",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.12.01 마감",
+      "deadline_date": "2026-12-01",
+      "deadline_time": "23:59",
+      "fields": [
+        "웹/모바일/IT"
+      ],
+      "description": "대구광역시,대구창조경제혁신센터 주최 · 분야: 웹/모바일/IT",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=view&ix=112236",
+      "image": "",
+      "is_active": true,
+      "track": "it",
+      "dday_info": {
+        "text": "D-22",
+        "days": 22,
         "is_urgent": false,
         "is_closed": false
       }
