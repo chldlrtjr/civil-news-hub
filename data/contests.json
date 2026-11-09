@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-09 18:01:40",
-  "last_updated_display": "11월 09일 18:01",
-  "total_count": 31,
-  "featured_count": 31,
+  "last_updated": "2026-11-09 19:02:30",
+  "last_updated_display": "11월 09일 19:02",
+  "total_count": 35,
+  "featured_count": 35,
   "categories": [
     "ALL",
     "토목",
@@ -363,6 +363,38 @@
       }
     },
     {
+      "id": "devevent-005948b5cd",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "Korea Local Marketing Hackathon 2026",
+      "organizer": "HACK:ON",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.16 마감",
+      "deadline_date": "2026-11-16",
+      "deadline_time": "23:59",
+      "fields": [
+        "오프라인(서울 마포구)",
+        "대회",
+        "AI"
+      ],
+      "description": "HACK:ON 주최 · 오프라인(서울 마포구), 무료, 대회, AI",
+      "link": "https://hackon.kr/e/002e1704",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-7",
+        "days": 7,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
       "id": "campus-218184",
       "source": "campus",
       "source_name": "학생공지",
@@ -626,6 +658,38 @@
       }
     },
     {
+      "id": "devevent-77359d5131",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "[2회차] 디노티시아 NIPA 오픈소스 해커톤",
+      "organizer": "모두의연구소 커뮤니티 · 디노티시아",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.21 행사 시작 전 신청",
+      "deadline_date": "2026-11-21",
+      "deadline_time": "13:00",
+      "fields": [
+        "오프라인(서울 강남구)",
+        "대회",
+        "AI"
+      ],
+      "description": "모두의연구소 커뮤니티 · 디노티시아 주최 · 오프라인(서울 강남구), 무료, 대회, AI",
+      "link": "https://luma.com/z8hzosog",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-12",
+        "days": 12,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
       "id": "campus-219511",
       "source": "campus",
       "source_name": "교내공지",
@@ -851,6 +915,70 @@
       "dday_info": {
         "text": "D-23",
         "days": 23,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-c89c941e1b",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "eat.pl 잇플 수익화 챌린지 (K-SKILL × EAT.PL)",
+      "organizer": "BC카드",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.12.03 마감",
+      "deadline_date": "2026-12-03",
+      "deadline_time": "23:59",
+      "fields": [
+        "온라인",
+        "대회",
+        "AI"
+      ],
+      "description": "BC카드 주최 · 온라인, 무료, 대회, AI",
+      "link": "https://edu.bccard.ai/contest",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-24",
+        "days": 24,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-4b36d59629",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "Hack the Audience 2026: Creator-to-CEO Hackathon",
+      "organizer": "Extriver Partners",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.12.05 마감",
+      "deadline_date": "2026-12-05",
+      "deadline_time": "23:59",
+      "fields": [
+        "온라인",
+        "대회",
+        "기술일반"
+      ],
+      "description": "Extriver Partners 주최 · 온라인, 무료, 대회, 기술일반",
+      "link": "https://extriver.com/event1",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-26",
+        "days": 26,
         "is_urgent": false,
         "is_closed": false
       }
