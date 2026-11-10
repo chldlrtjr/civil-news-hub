@@ -360,7 +360,11 @@ def render_cards(items, target_date):
 # 5. 텔레그램 발송
 # ---------------------------------------------------------------------------
 def telegram_call(method, token, **kwargs):
-    resp = requests.post(TELEGRAM_API.format(token=token, method=method), timeout=60, **kwargs)
+    try:
+        resp = requests.post(TELEGRAM_API.format(token=token, method=method), timeout=60, **kwargs)
+    except requests.RequestException as e:
+        # 예외 메시지에 봇 토큰이 포함된 URL이 들어가므로 로그에 남지 않게 가림
+        raise RuntimeError(f"텔레그램 {method} 연결 실패: {str(e).replace(token, '<TOKEN>')}") from None
     data = resp.json() if resp.headers.get("content-type", "").startswith("application/json") else {}
     if not data.get("ok"):
         raise RuntimeError(f"텔레그램 {method} 실패: {resp.status_code} {resp.text[:300]}")
