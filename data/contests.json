@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-10 20:02:25",
-  "last_updated_display": "11월 10일 20:02",
-  "total_count": 35,
-  "featured_count": 35,
+  "last_updated": "2026-11-10 21:02:26",
+  "last_updated_display": "11월 10일 21:02",
+  "total_count": 36,
+  "featured_count": 36,
   "categories": [
     "ALL",
     "토목",
@@ -1012,6 +1012,33 @@
       "dday_info": {
         "text": "D-41",
         "days": 41,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "campus-219676",
+      "source": "campus",
+      "source_name": "학생공지",
+      "title": "(국립대학육성사업) 제7회 국립대학육성사업 영상 콘텐츠 공모전 개최 안내(11.2~12.27)",
+      "organizer": "기획처 대학혁신지원과",
+      "category": "전북대",
+      "badge_color": "teal",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.10 ~ 12.27 (23:59 마감)",
+      "deadline_date": "2026-12-27",
+      "deadline_time": "23:59",
+      "description": "국립대학육성사업 발전협의회에서는 ‘ 제 7 회 국립대학육성사업 영상 콘텐츠 공모전 ’ 을 다음과 같이 개최하오니 국립대학 재학생들의 많은 관심과 참여 바랍니다 . □ 공모전명 : 제 7 회 국립대학육성사업 영상 콘텐츠 공모전 □ 주최 · 주관 : 국립대학육성사업 발전협의회 □ 공모기간 : 2026 년 11 월 2 일 ( 월 ) ~ 12 월 27 일 ( 일 …",
+      "link": "https://www.jbnu.ac.kr/web/Board/219676/detailView.do",
+      "image": "https://www.jbnu.ac.kr/common/file.do?file=RwA8nBAUwGeborDiMgYrwRbA73cf1/UORVTHL6+zfC1qEteHBIHaWPr8G0LNzEBZ",
+      "is_active": true,
+      "track": "campus",
+      "dday_info": {
+        "text": "D-47",
+        "days": 47,
         "is_urgent": false,
         "is_closed": false
       }
