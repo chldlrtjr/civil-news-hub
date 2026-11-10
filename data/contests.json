@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-11 01:02:07",
-  "last_updated_display": "11월 11일 01:02",
-  "total_count": 36,
-  "featured_count": 36,
+  "last_updated": "2026-11-11 02:01:59",
+  "last_updated_display": "11월 11일 02:01",
+  "total_count": 37,
+  "featured_count": 37,
   "categories": [
     "ALL",
     "토목",
@@ -915,6 +915,38 @@
       "dday_info": {
         "text": "D-21",
         "days": 21,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-110885",
+      "source": "wevity",
+      "source_name": "위비티",
+      "title": "2026 대한건축사협회 대학(원)생 모듈러건축 공모전",
+      "organizer": "대한건축사협회",
+      "category": "토목",
+      "badge_color": "emerald",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.12.03 마감",
+      "deadline_date": "2026-12-03",
+      "deadline_time": "23:59",
+      "fields": [
+        "건축/건설/인테리어",
+        "예체능/미술/음악",
+        "기타"
+      ],
+      "description": "대한건축사협회 주최 · 분야: 건축/건설/인테리어, 예체능/미술/음악, 기타",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=24&gbn=view&ix=110885",
+      "image": "",
+      "is_active": true,
+      "track": "civil",
+      "dday_info": {
+        "text": "D-22",
+        "days": 22,
         "is_urgent": false,
         "is_closed": false
       }
