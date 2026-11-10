@@ -116,6 +116,30 @@ class WevityParseTest(unittest.TestCase):
         self.assertFalse(civil("2026 제43회 골든스케일디자인어워드", "사단법인 한국실내건축가협회"))
         self.assertFalse(civil("초량천~산복도로 스토리텔링 공모전", "부산 동구"))
 
+    def test_civil_filter_construction_tech(self):
+        """토목 취업에 도움되는 건설기술·안전·플랜트 공모전은 포함"""
+        def civil(title, organizer=""):
+            return wevity.is_civil({"title": title, "organizer": organizer})
+
+        self.assertTrue(civil("2026 대한건축사협회 대학(원)생 모듈러건축 공모전", "대한건축사협회"))
+        self.assertTrue(civil("SK에코플랜트 2026 콘테크 미트업 데이 공모전", "SK에코플랜트"))
+        self.assertTrue(civil("디지털 트윈 기반 시설물 관리 아이디어 공모전", "OO시"))
+        self.assertTrue(civil("추락사고 예방 콘텐츠 공모전", "고용노동부"))
+        self.assertTrue(civil("플랜트 엔지니어링 아이디어 경진대회", "OO협회"))
+        self.assertTrue(civil("공간정보 활용 경진대회", "한국국토정보공사"))
+        self.assertTrue(civil("대학생 아이디어 공모전", "포스코이앤씨"))
+
+    def test_civil_filter_excludes_pure_design(self):
+        """건축/건설 분야라도 순수 건축·공간 디자인 공모전은 제외"""
+        def civil(title, organizer=""):
+            return wevity.is_civil({"title": title, "organizer": organizer})
+
+        self.assertFalse(civil("제14회 한옥디자인 국제 공모전", "사단법인 한옥건축학회"))
+        self.assertFalse(civil("양천구 건축공간디자인상 공모", "양천구"))
+        self.assertFalse(civil("제21회 2026년 한국공간디자인 전국공모전", "한국공간디자인협회"))
+        self.assertFalse(civil("2026 에어-비트 시티 건축디자인 공모전", "에어-비트 시티 미래전략위원회"))
+        self.assertFalse(civil("제1회 스마트시티 디자인어워드", "OO시"))  # 디자인 어워드는 토목 키워드가 있어도 제외
+
     def test_missing_list_means_layout_changed(self):
         self.assertIsNone(wevity.parse_list_page("<html><body>점검중</body></html>", datetime.now(KST), 24))
 
