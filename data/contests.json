@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-11 16:02:14",
-  "last_updated_display": "11월 11일 16:02",
-  "total_count": 37,
-  "featured_count": 37,
+  "last_updated": "2026-11-11 17:02:15",
+  "last_updated_display": "11월 11일 17:02",
+  "total_count": 35,
+  "featured_count": 35,
   "categories": [
     "ALL",
     "토목",
@@ -10,65 +10,6 @@
     "컴퓨터공학"
   ],
   "contests": [
-    {
-      "id": "campus-219599",
-      "source": "campus",
-      "source_name": "교내공지",
-      "title": "[창업교육센터] 2026년 전북권 지역문제해결 아이디어 경진대회 안내",
-      "organizer": "창업교육센터",
-      "category": "전북대",
-      "badge_color": "teal",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.11.09 ~ 11.11 (17:00 마감)",
-      "deadline_date": "2026-11-11",
-      "deadline_time": "17:00",
-      "description": "신청마감 : 11. 11. (수) 17:00 까지 (연장)",
-      "link": "https://www.jbnu.ac.kr/web/Board/219599/detailView.do",
-      "image": "https://www.jbnu.ac.kr/common/file.do?file=SOzyKJVVb1uY5Esnd73KGqiInlTvS47d36jBbGHgprQlNO72x71+JOthFJQyyFfT",
-      "is_active": true,
-      "track": "campus",
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "devevent-9a8581bdca",
-      "source": "devevent",
-      "source_name": "데브이벤트",
-      "track": "it",
-      "title": "2026 AI 활용 전국 대학생 창업 해커톤",
-      "organizer": "한국교육학술정보원(KERIS) · 한림대학교",
-      "category": "컴퓨터공학",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.11.11 마감",
-      "deadline_date": "2026-11-11",
-      "deadline_time": "17:00",
-      "fields": [
-        "오프라인(강원 춘천)",
-        "대회",
-        "AI"
-      ],
-      "description": "한국교육학술정보원(KERIS) · 한림대학교 주최 · 오프라인(강원 춘천), 무료, 대회, AI",
-      "link": "https://event-us.kr/tug/event/139112",
-      "image": "",
-      "is_active": true,
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
     {
       "id": "campus-219468",
       "source": "campus",
