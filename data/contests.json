@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-11 09:01:59",
-  "last_updated_display": "11월 11일 09:01",
+  "last_updated": "2026-11-11 10:02:12",
+  "last_updated_display": "11월 11일 10:02",
   "total_count": 36,
   "featured_count": 36,
   "categories": [
@@ -293,33 +293,6 @@
       "description": "1. 귀 기관 ( 교 ) 의 무궁한 발전을 기원합니다 . 2. 국립청주해양과학관에서는 내륙지역 최초 해양과학관의 정체성과 비전을 아우르고 , 국민과의 공감대 형성 및 기관 인지도 제고를 위해 「 국립청주해양과학관 개관 기념 대국민 슬로건 공모전 」 을 개최합니다 . 3. 이에 다음과 같이 슬로건 공모전을 안내하오니 , 귀 기관 ( 교 ) 의 누리집 ( 홈페…",
       "link": "https://www.jbnu.ac.kr/web/Board/219334/detailView.do",
       "image": "",
-      "is_active": true,
-      "track": "campus",
-      "dday_info": {
-        "text": "D-4",
-        "days": 4,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "campus-219333",
-      "source": "campus",
-      "source_name": "교내공지",
-      "title": "「이런(e-Learn) 한 컷, 영상 공모전」 개최에 따른 홍보 및 참여 협조 요청",
-      "organizer": "사무국 총무과",
-      "category": "전북대",
-      "badge_color": "teal",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.11.02 ~ 11.15 (23:59 마감)",
-      "deadline_date": "2026-11-15",
-      "deadline_time": "23:59",
-      "description": "1. 귀 기관의 무궁한 발전을 기원합니다 . 2. 한국보건복지인재원은 보건복지부 산하 공공기관으로 , 보건 · 복지 관련 종사자 및 대국민 대상 전문성 강화를 위해 다양한 교육프로그램을 운영하고 있는 교육 전문 기관입니다 . 3. 우리 원에서는 kohi 이러닝 학습을 통한 변화와 성과를 발굴하고 , 창의적인 디지털 콘텐츠 확산을 위해 「 이런 (e-lear…",
-      "link": "https://www.jbnu.ac.kr/web/Board/219333/detailView.do",
-      "image": "https://www.jbnu.ac.kr/common/file.do?file=I/N+qtMg3hBWgnCi3HclHzgBCbCn9mlmfjI2RISUwlHvytS+IZpcldnFK0wewJhb",
       "is_active": true,
       "track": "campus",
       "dday_info": {
@@ -1039,6 +1012,37 @@
       "dday_info": {
         "text": "D-46",
         "days": 46,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-4e28da74e8",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "코드트리 양떼 목장 (4주 코테 습관 만들기)",
+      "organizer": "코드트리",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.12.31 마감",
+      "deadline_date": "2026-12-31",
+      "deadline_time": "23:59",
+      "fields": [
+        "온라인",
+        "대회"
+      ],
+      "description": "코드트리 주최 · 온라인, 무료, 대회",
+      "link": "https://www.codetree.ai/ko/sheep-sheep-sheep",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-50",
+        "days": 50,
         "is_urgent": false,
         "is_closed": false
       }
