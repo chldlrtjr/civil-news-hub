@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-11 22:02:19",
-  "last_updated_display": "11월 11일 22:02",
-  "total_count": 35,
-  "featured_count": 35,
+  "last_updated": "2026-11-11 23:02:27",
+  "last_updated_display": "11월 11일 23:02",
+  "total_count": 36,
+  "featured_count": 36,
   "categories": [
     "ALL",
     "토목",
@@ -650,6 +650,36 @@
       "image": "",
       "is_active": true,
       "track": "campus",
+      "dday_info": {
+        "text": "D-14",
+        "days": 14,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-112316",
+      "source": "wevity_it",
+      "source_name": "위비티",
+      "title": "포항시 지역사회 문제 해결을 위한 AI 솔루션 아이디어 경진대회",
+      "organizer": "포항시",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.25 마감",
+      "deadline_date": "2026-11-25",
+      "deadline_time": "23:59",
+      "fields": [
+        "기획/아이디어"
+      ],
+      "description": "포항시 주최 · 분야: 기획/아이디어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=112316",
+      "image": "",
+      "is_active": true,
+      "track": "it",
       "dday_info": {
         "text": "D-14",
         "days": 14,
