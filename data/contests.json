@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-12 14:02:13",
-  "last_updated_display": "11월 12일 14:02",
-  "total_count": 35,
-  "featured_count": 35,
+  "last_updated": "2026-11-12 15:02:12",
+  "last_updated_display": "11월 12일 15:02",
+  "total_count": 36,
+  "featured_count": 36,
   "categories": [
     "ALL",
     "토목",
@@ -421,6 +421,38 @@
       }
     },
     {
+      "id": "devevent-28342ffdf6",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "2026 대구광역시 기후·환경·탄소중립 공공데이터 AI 활용대회",
+      "organizer": "대구광역시 탄소중립지원센터",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.20 마감",
+      "deadline_date": "2026-11-20",
+      "deadline_time": "17:00",
+      "fields": [
+        "온라인",
+        "대회",
+        "AI"
+      ],
+      "description": "대구광역시 탄소중립지원센터 주최 · 온라인, 무료, 대회, AI",
+      "link": "https://www.dcnc.or.kr/bbs/board.php?bo_table=notice&wr_id=193",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-8",
+        "days": 8,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
       "id": "devevent-0198686a19",
       "source": "devevent",
       "source_name": "데브이벤트",
@@ -483,36 +515,6 @@
       }
     },
     {
-      "id": "wevity-111567",
-      "source": "wevity_it",
-      "source_name": "위비티",
-      "title": "2026 대구광역시 기후·환경·탄소중립 공공 데이터 AI 활용대회",
-      "organizer": "대구광역시 탄소중립지원센",
-      "category": "컴퓨터공학",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.11.20 마감",
-      "deadline_date": "2026-11-20",
-      "deadline_time": "23:59",
-      "fields": [
-        "웹/모바일/IT"
-      ],
-      "description": "대구광역시 탄소중립지원센 주최 · 분야: 웹/모바일/IT",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=view&ix=111567",
-      "image": "",
-      "is_active": true,
-      "track": "it",
-      "dday_info": {
-        "text": "D-8",
-        "days": 8,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
       "id": "campus-219516",
       "source": "campus",
       "source_name": "교내공지",
@@ -562,6 +564,38 @@
       ],
       "description": "모두의연구소 커뮤니티 · 디노티시아 주최 · 오프라인(서울 강남구), 무료, 대회, AI",
       "link": "https://luma.com/z8hzosog",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-9",
+        "days": 9,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-a37465af54",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "Notion AI Hackathon Seoul",
+      "organizer": "Team.HUMAN (Notion Korea 지원)",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.21 행사 시작 전 신청",
+      "deadline_date": "2026-11-21",
+      "deadline_time": "10:00",
+      "fields": [
+        "오프라인(서울 서초구)",
+        "대회",
+        "AI"
+      ],
+      "description": "Team.HUMAN (Notion Korea 지원) 주최 · 오프라인(서울 서초구), 무료, 대회, AI",
+      "link": "https://luma.com/vc6rmvaz",
       "image": "",
       "is_active": true,
       "dday_info": {
