@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-12 09:02:17",
-  "last_updated_display": "11월 12일 09:02",
-  "total_count": 36,
-  "featured_count": 36,
+  "last_updated": "2026-11-12 10:02:10",
+  "last_updated_display": "11월 12일 10:02",
+  "total_count": 35,
+  "featured_count": 35,
   "categories": [
     "ALL",
     "토목",
@@ -30,38 +30,6 @@
       "image": "https://www.jbnu.ac.kr/common/file.do?file=F5HfdDxu4BKut1FmMlMm4HXBcUpKb/2uWZfM+2e/MNfB8b+KFOoWIgu/N1eg5YBU",
       "is_active": true,
       "track": "campus",
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "devevent-663b5b5c59",
-      "source": "devevent",
-      "source_name": "데브이벤트",
-      "track": "it",
-      "title": "국부펀드 KIC, AI 에이전트 공모전",
-      "organizer": "한국투자공사(KIC)",
-      "category": "컴퓨터공학",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.11.12 마감",
-      "deadline_date": "2026-11-12",
-      "deadline_time": "10:00",
-      "fields": [
-        "온라인",
-        "대회",
-        "AI"
-      ],
-      "description": "한국투자공사(KIC) 주최 · 온라인, 무료, 대회, AI",
-      "link": "https://daker.ai/public/hackathons/kic-ai-agent-competition",
-      "image": "",
-      "is_active": true,
       "dday_info": {
         "text": "오늘마감",
         "days": 0,
