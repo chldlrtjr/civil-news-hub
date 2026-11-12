@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-12 21:02:07",
-  "last_updated_display": "11월 12일 21:02",
-  "total_count": 36,
-  "featured_count": 36,
+  "last_updated": "2026-11-12 22:02:27",
+  "last_updated_display": "11월 12일 22:02",
+  "total_count": 37,
+  "featured_count": 37,
   "categories": [
     "ALL",
     "토목",
@@ -925,6 +925,36 @@
       "dday_info": {
         "text": "D-23",
         "days": 23,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-112277",
+      "source": "wevity_it",
+      "source_name": "위비티",
+      "title": "2026 saaskr 게임 어워드 - AI로 만든 웹게임 연말 시상",
+      "organizer": "saaskr",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.12.20 마감",
+      "deadline_date": "2026-12-20",
+      "deadline_time": "23:59",
+      "fields": [
+        "게임/소프트웨어"
+      ],
+      "description": "saaskr 주최 · 분야: 게임/소프트웨어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=21&gbn=view&ix=112277",
+      "image": "",
+      "is_active": true,
+      "track": "it",
+      "dday_info": {
+        "text": "D-38",
+        "days": 38,
         "is_urgent": false,
         "is_closed": false
       }
