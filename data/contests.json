@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-13 10:02:09",
-  "last_updated_display": "11월 13일 10:02",
+  "last_updated": "2026-11-13 11:02:06",
+  "last_updated_display": "11월 13일 11:02",
   "total_count": 34,
   "featured_count": 34,
   "categories": [
@@ -635,33 +635,6 @@
       }
     },
     {
-      "id": "campus-219352",
-      "source": "campus",
-      "source_name": "교내공지",
-      "title": "서울미래인재재단 대표 캐릭터 공모전 홍보 협조 요청",
-      "organizer": "사무국 총무과",
-      "category": "전북대",
-      "badge_color": "teal",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.11.02 ~ 11.30 (23:59 마감)",
-      "deadline_date": "2026-11-30",
-      "deadline_time": "23:59",
-      "description": "1. 귀 기관의 무궁한 발전을 기원합니다 . 2. 서울미래인재재단은 재단의 대표 캐릭터 개발을 위한 창의적인 아이디어를 발굴하고자 캐릭터 공모전 「 서울의 미래 , 새로운 얼굴 」 을 개최합니다 . 3. 공모전에 관심 있는 분들의 적극적인 참여를 위해 홍보에 협조하여 주시기 바랍니다 . 서울미래인재재단 대표 캐릭터 공모전 개요 □ 공모전명 : 서울의 미래 …",
-      "link": "https://www.jbnu.ac.kr/web/Board/219352/detailView.do",
-      "image": "https://www.jbnu.ac.kr/common/file.do?file=OStBhNzdjXPlYeNQa1G8ex3qiMewyiaiqJxx27lG20IwwX4SA7I/OBRvqOunRao7",
-      "is_active": true,
-      "track": "campus",
-      "dday_info": {
-        "text": "D-17",
-        "days": 17,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
       "id": "wevity-112147",
       "source": "wevity",
       "source_name": "위비티",
@@ -901,6 +874,33 @@
       "dday_info": {
         "text": "D-38",
         "days": 38,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "campus-219799",
+      "source": "campus",
+      "source_name": "교내공지",
+      "title": "2026 JBNU 학생설계전공 공모전 기간연장(마이크로디그리 분야) 안내(~12.22)",
+      "organizer": "교무처 교무과",
+      "category": "전북대",
+      "badge_color": "teal",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.13 ~ 12.22 (17:00 마감)",
+      "deadline_date": "2026-12-22",
+      "deadline_time": "17:00",
+      "description": "2026 JBNU 학생설계전공 공모전 기간연장 ( 마이크로디그리 분야 ) 안내 (~12.22) 내가 설계하는 나만의 전문 분야 , 새로운 가능성을 펼쳐보세요 ! 학생설계전공 · 학생설계마이크로디그리 신규 아이디어와 우수 사례를 발굴하기 위한 공모전을 진행하고 있습니다 . 현재 학생설계전공 분야는 접수가 마감되었으며 , 학생설계마이크로디그리 분야에 한해 접수…",
+      "link": "https://www.jbnu.ac.kr/web/Board/219799/detailView.do",
+      "image": "https://www.jbnu.ac.kr/common/file.do?file=hlV94A2RbmAIO5hwEa3/p0KwnhdC0Xca3PT2QKiElpejJsWd+h4pWjxMTBxsXUQM",
+      "is_active": true,
+      "track": "campus",
+      "dday_info": {
+        "text": "D-39",
+        "days": 39,
         "is_urgent": false,
         "is_closed": false
       }
