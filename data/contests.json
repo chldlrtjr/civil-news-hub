@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-13 23:02:16",
-  "last_updated_display": "11월 13일 23:02",
-  "total_count": 32,
-  "featured_count": 32,
+  "last_updated": "2026-11-14 00:02:06",
+  "last_updated_display": "11월 14일 00:02",
+  "total_count": 30,
+  "featured_count": 30,
   "categories": [
     "ALL",
     "토목",
@@ -10,70 +10,6 @@
     "컴퓨터공학"
   ],
   "contests": [
-    {
-      "id": "devevent-beb8940624",
-      "source": "devevent",
-      "source_name": "데브이벤트",
-      "track": "it",
-      "title": "2026 동남 버그바운티 대회",
-      "organizer": "과학기술정보통신부 / 부산광역시 / 한국인터넷진흥원 / 부산정보산업진흥원 외",
-      "category": "컴퓨터공학",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.11.13 마감",
-      "deadline_date": "2026-11-13",
-      "deadline_time": "23:59",
-      "fields": [
-        "온라인",
-        "대회",
-        "기술일반"
-      ],
-      "description": "과학기술정보통신부 / 부산광역시 / 한국인터넷진흥원 / 부산정보산업진흥원 외 주최 · 온라인, 무료, 대회, 기술일반",
-      "link": "https://linkareer.com/activity/352004",
-      "image": "",
-      "is_active": true,
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "devevent-5ac401b71d",
-      "source": "devevent",
-      "source_name": "데브이벤트",
-      "track": "it",
-      "title": "2026 NASA International Space Apps Challenge Seoul",
-      "organizer": "NASA Space Apps Seoul",
-      "category": "컴퓨터공학",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.11.14 행사 시작 전 신청",
-      "deadline_date": "2026-11-14",
-      "deadline_time": "00:00",
-      "fields": [
-        "온라인",
-        "대회",
-        "기술일반"
-      ],
-      "description": "NASA Space Apps Seoul 주최 · 온라인, 무료, 대회, 기술일반",
-      "link": "https://www.spaceappschallenge.org/2026/local-events/seoul/",
-      "image": "",
-      "is_active": true,
-      "dday_info": {
-        "text": "D-1",
-        "days": 1,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
     {
       "id": "campus-219738",
       "source": "campus",
@@ -95,8 +31,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-2",
-        "days": 2,
+        "text": "D-1",
+        "days": 1,
         "is_urgent": true,
         "is_closed": false
       }
@@ -122,8 +58,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-2",
-        "days": 2,
+        "text": "D-1",
+        "days": 1,
         "is_urgent": true,
         "is_closed": false
       }
@@ -150,8 +86,8 @@
       "deadline_source": "poster",
       "track": "campus",
       "dday_info": {
-        "text": "D-2",
-        "days": 2,
+        "text": "D-1",
+        "days": 1,
         "is_urgent": true,
         "is_closed": false
       }
@@ -183,8 +119,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-2",
-        "days": 2,
+        "text": "D-1",
+        "days": 1,
         "is_urgent": true,
         "is_closed": false
       }
@@ -215,8 +151,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-3",
-        "days": 3,
+        "text": "D-2",
+        "days": 2,
         "is_urgent": true,
         "is_closed": false
       }
@@ -243,9 +179,9 @@
       "deadline_source": "poster",
       "track": "campus",
       "dday_info": {
-        "text": "D-4",
-        "days": 4,
-        "is_urgent": false,
+        "text": "D-3",
+        "days": 3,
+        "is_urgent": true,
         "is_closed": false
       }
     },
@@ -270,8 +206,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-5",
-        "days": 5,
+        "text": "D-4",
+        "days": 4,
         "is_urgent": false,
         "is_closed": false
       }
@@ -297,8 +233,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-7",
-        "days": 7,
+        "text": "D-6",
+        "days": 6,
         "is_urgent": false,
         "is_closed": false
       }
@@ -329,8 +265,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-7",
-        "days": 7,
+        "text": "D-6",
+        "days": 6,
         "is_urgent": false,
         "is_closed": false
       }
@@ -361,8 +297,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-7",
-        "days": 7,
+        "text": "D-6",
+        "days": 6,
         "is_urgent": false,
         "is_closed": false
       }
@@ -393,8 +329,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-7",
-        "days": 7,
+        "text": "D-6",
+        "days": 6,
         "is_urgent": false,
         "is_closed": false
       }
@@ -425,8 +361,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-8",
-        "days": 8,
+        "text": "D-7",
+        "days": 7,
         "is_urgent": false,
         "is_closed": false
       }
@@ -457,8 +393,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-8",
-        "days": 8,
+        "text": "D-7",
+        "days": 7,
         "is_urgent": false,
         "is_closed": false
       }
@@ -484,8 +420,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-12",
-        "days": 12,
+        "text": "D-11",
+        "days": 11,
         "is_urgent": false,
         "is_closed": false
       }
@@ -511,8 +447,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-12",
-        "days": 12,
+        "text": "D-11",
+        "days": 11,
         "is_urgent": false,
         "is_closed": false
       }
@@ -529,8 +465,8 @@
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.11.25 마감",
-      "deadline_date": "2026-11-25",
+      "period": "~ 2026.11.26 마감",
+      "deadline_date": "2026-11-26",
       "deadline_time": "23:59",
       "fields": [
         "기획/아이디어"
@@ -573,8 +509,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-14",
-        "days": 14,
+        "text": "D-13",
+        "days": 13,
         "is_urgent": false,
         "is_closed": false
       }
@@ -591,8 +527,8 @@
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.11.29 마감",
-      "deadline_date": "2026-11-29",
+      "period": "~ 2026.11.30 마감",
+      "deadline_date": "2026-11-30",
       "deadline_time": "23:59",
       "fields": [
         "기획/아이디어"
@@ -621,8 +557,8 @@
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.11.30 마감",
-      "deadline_date": "2026-11-30",
+      "period": "~ 2026.12.01 마감",
+      "deadline_date": "2026-12-01",
       "deadline_time": "23:59",
       "fields": [
         "웹/모바일/IT"
@@ -635,36 +571,6 @@
       "dday_info": {
         "text": "D-17",
         "days": 17,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "wevity-112160",
-      "source": "wevity_it",
-      "source_name": "위비티",
-      "title": "[한국체육산업개발(주)] 공공데이터 활용 경진대회",
-      "organizer": "한국체육산업개발(주)",
-      "category": "컴퓨터공학",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.12.01 마감",
-      "deadline_date": "2026-12-01",
-      "deadline_time": "23:59",
-      "fields": [
-        "웹/모바일/IT"
-      ],
-      "description": "한국체육산업개발(주) 주최 · 분야: 웹/모바일/IT",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=view&ix=112160",
-      "image": "",
-      "is_active": true,
-      "track": "it",
-      "dday_info": {
-        "text": "D-18",
-        "days": 18,
         "is_urgent": false,
         "is_closed": false
       }
@@ -690,8 +596,38 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-19",
-        "days": 19,
+        "text": "D-18",
+        "days": 18,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-112160",
+      "source": "wevity_it",
+      "source_name": "위비티",
+      "title": "[한국체육산업개발(주)] 공공데이터 활용 경진대회",
+      "organizer": "한국체육산업개발(주)",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.12.02 마감",
+      "deadline_date": "2026-12-02",
+      "deadline_time": "23:59",
+      "fields": [
+        "웹/모바일/IT"
+      ],
+      "description": "한국체육산업개발(주) 주최 · 분야: 웹/모바일/IT",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=view&ix=112160",
+      "image": "",
+      "is_active": true,
+      "track": "it",
+      "dday_info": {
+        "text": "D-18",
+        "days": 18,
         "is_urgent": false,
         "is_closed": false
       }
@@ -722,8 +658,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-20",
-        "days": 20,
+        "text": "D-19",
+        "days": 19,
         "is_urgent": false,
         "is_closed": false
       }
@@ -754,38 +690,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-22",
-        "days": 22,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "wevity-112277",
-      "source": "wevity_it",
-      "source_name": "위비티",
-      "title": "2026 saaskr 게임 어워드 - AI로 만든 웹게임 연말 시상",
-      "organizer": "saaskr",
-      "category": "컴퓨터공학",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.12.20 마감",
-      "deadline_date": "2026-12-20",
-      "deadline_time": "23:59",
-      "fields": [
-        "게임/소프트웨어"
-      ],
-      "description": "saaskr 주최 · 분야: 게임/소프트웨어",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=21&gbn=view&ix=112277",
-      "image": "",
-      "is_active": true,
-      "track": "it",
-      "dday_info": {
-        "text": "D-37",
-        "days": 37,
+        "text": "D-21",
+        "days": 21,
         "is_urgent": false,
         "is_closed": false
       }
@@ -817,8 +723,38 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-38",
-        "days": 38,
+        "text": "D-37",
+        "days": 37,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-112277",
+      "source": "wevity_it",
+      "source_name": "위비티",
+      "title": "2026 saaskr 게임 어워드 - AI로 만든 웹게임 연말 시상",
+      "organizer": "saaskr",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.12.21 마감",
+      "deadline_date": "2026-12-21",
+      "deadline_time": "23:59",
+      "fields": [
+        "게임/소프트웨어"
+      ],
+      "description": "saaskr 주최 · 분야: 게임/소프트웨어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=21&gbn=view&ix=112277",
+      "image": "",
+      "is_active": true,
+      "track": "it",
+      "dday_info": {
+        "text": "D-37",
+        "days": 37,
         "is_urgent": false,
         "is_closed": false
       }
@@ -844,8 +780,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-39",
-        "days": 39,
+        "text": "D-38",
+        "days": 38,
         "is_urgent": false,
         "is_closed": false
       }
@@ -871,8 +807,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-44",
-        "days": 44,
+        "text": "D-43",
+        "days": 43,
         "is_urgent": false,
         "is_closed": false
       }
@@ -902,8 +838,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-48",
-        "days": 48,
+        "text": "D-47",
+        "days": 47,
         "is_urgent": false,
         "is_closed": false
       }
@@ -930,8 +866,8 @@
       "deadline_source": "poster",
       "track": "campus",
       "dday_info": {
-        "text": "D-54",
-        "days": 54,
+        "text": "D-53",
+        "days": 53,
         "is_urgent": false,
         "is_closed": false
       }
@@ -987,8 +923,8 @@
       "is_active": true,
       "track": "civil",
       "dday_info": {
-        "text": "D-48",
-        "days": 48,
+        "text": "D-47",
+        "days": 47,
         "is_urgent": false,
         "is_closed": false
       },

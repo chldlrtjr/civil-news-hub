@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-13 23:02",
-  "last_updated_display": "2026년 11월 13일 23:02",
+  "last_updated": "2026-11-14 00:02",
+  "last_updated_display": "2026년 11월 14일 00:02",
   "source": "잡알리오(공공기관 채용정보) · 고용24 공채속보 Open API",
-  "total_count": 8,
+  "total_count": 7,
   "failed_sources": [],
   "categories": [
     {
@@ -23,38 +23,6 @@
     }
   ],
   "jobs": [
-    {
-      "id": "w24-183688",
-      "source": "고용24 공채속보",
-      "company": "제주국제자유도시개발센터",
-      "company_type": "공기업",
-      "category_id": "public",
-      "category_name": "공기업·공공기관",
-      "title": "2026년 정규직 직원 등 모집",
-      "fields": [
-        "[6급] 자격_일반행정(전국) 外"
-      ],
-      "career": "신입·경력",
-      "is_intern": false,
-      "intern_type": "채용형",
-      "location": "제주",
-      "period": "2026.10.29 ~ 2026.11.13",
-      "deadline_date": "2026-11-13",
-      "tags": [
-        "정규직",
-        "정규직전환형",
-        "기간제",
-        "공기업"
-      ],
-      "link": "https://jdc.recruit-zone.co.kr/recruits/6ae05ba67f84c0978ae99019",
-      "summary": "[6급] - 자격 · 일반행정(전국, 제주) / 회계(전국) / 전산(전국) / 전기(전국) / 토목(전국) / 인공지능(전국) - 자격(보훈) · 일반행정(전국) [7급] - 자격(고졸) · 일반행정(제주) [공무직] - 자격 · 차량관리(전국) ※ 모집분야별 상세 내용은 채용 홈페이지 및 채용 홈페이지 내 직무기술서 첨부파일을 참조하시기 바랍니다.",
-      "steps": [
-        "1차 전형",
-        "인성검사 및 증빙제출",
-        "2차 전형",
-        "검증"
-      ]
-    },
     {
       "id": "alio-306643",
       "source": "잡알리오",
