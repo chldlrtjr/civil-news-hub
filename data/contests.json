@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-14 11:02:21",
-  "last_updated_display": "11월 14일 11:02",
+  "last_updated": "2026-11-14 12:02:08",
+  "last_updated_display": "11월 14일 12:02",
   "total_count": 30,
   "featured_count": 30,
   "categories": [
@@ -465,8 +465,8 @@
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.11.26 마감",
-      "deadline_date": "2026-11-26",
+      "period": "~ 2026.11.25 마감",
+      "deadline_date": "2026-11-25",
       "deadline_time": "23:59",
       "fields": [
         "기획/아이디어"
@@ -477,8 +477,8 @@
       "is_active": true,
       "track": "it",
       "dday_info": {
-        "text": "D-12",
-        "days": 12,
+        "text": "D-11",
+        "days": 11,
         "is_urgent": false,
         "is_closed": false
       }
@@ -527,8 +527,8 @@
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.11.30 마감",
-      "deadline_date": "2026-11-30",
+      "period": "~ 2026.11.29 마감",
+      "deadline_date": "2026-11-29",
       "deadline_time": "23:59",
       "fields": [
         "기획/아이디어"
@@ -539,8 +539,8 @@
       "is_active": true,
       "track": "civil",
       "dday_info": {
-        "text": "D-16",
-        "days": 16,
+        "text": "D-15",
+        "days": 15,
         "is_urgent": false,
         "is_closed": false
       }
@@ -557,14 +557,44 @@
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.12.01 마감",
-      "deadline_date": "2026-12-01",
+      "period": "~ 2026.11.30 마감",
+      "deadline_date": "2026-11-30",
       "deadline_time": "23:59",
       "fields": [
         "웹/모바일/IT"
       ],
       "description": "대구광역시,대구창조경제혁신센터 주최 · 분야: 웹/모바일/IT",
       "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=view&ix=112236",
+      "image": "",
+      "is_active": true,
+      "track": "it",
+      "dday_info": {
+        "text": "D-16",
+        "days": 16,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-112160",
+      "source": "wevity_it",
+      "source_name": "위비티",
+      "title": "[한국체육산업개발(주)] 공공데이터 활용 경진대회",
+      "organizer": "한국체육산업개발(주)",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.12.01 마감",
+      "deadline_date": "2026-12-01",
+      "deadline_time": "23:59",
+      "fields": [
+        "웹/모바일/IT"
+      ],
+      "description": "한국체육산업개발(주) 주최 · 분야: 웹/모바일/IT",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=view&ix=112160",
       "image": "",
       "is_active": true,
       "track": "it",
@@ -595,36 +625,6 @@
       "image": "",
       "is_active": true,
       "track": "campus",
-      "dday_info": {
-        "text": "D-18",
-        "days": 18,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "wevity-112160",
-      "source": "wevity_it",
-      "source_name": "위비티",
-      "title": "[한국체육산업개발(주)] 공공데이터 활용 경진대회",
-      "organizer": "한국체육산업개발(주)",
-      "category": "컴퓨터공학",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.12.02 마감",
-      "deadline_date": "2026-12-02",
-      "deadline_time": "23:59",
-      "fields": [
-        "웹/모바일/IT"
-      ],
-      "description": "한국체육산업개발(주) 주최 · 분야: 웹/모바일/IT",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=view&ix=112160",
-      "image": "",
-      "is_active": true,
-      "track": "it",
       "dday_info": {
         "text": "D-18",
         "days": 18,
@@ -697,6 +697,36 @@
       }
     },
     {
+      "id": "wevity-112277",
+      "source": "wevity_it",
+      "source_name": "위비티",
+      "title": "2026 saaskr 게임 어워드 - AI로 만든 웹게임 연말 시상",
+      "organizer": "saaskr",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.12.20 마감",
+      "deadline_date": "2026-12-20",
+      "deadline_time": "23:59",
+      "fields": [
+        "게임/소프트웨어"
+      ],
+      "description": "saaskr 주최 · 분야: 게임/소프트웨어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=21&gbn=view&ix=112277",
+      "image": "",
+      "is_active": true,
+      "track": "it",
+      "dday_info": {
+        "text": "D-36",
+        "days": 36,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
       "id": "devevent-7d0263024d",
       "source": "devevent",
       "source_name": "데브이벤트",
@@ -722,36 +752,6 @@
       "link": "https://daker.ai/public/hackathons/2026-hai-hecto-ai-challenge",
       "image": "",
       "is_active": true,
-      "dday_info": {
-        "text": "D-37",
-        "days": 37,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "wevity-112277",
-      "source": "wevity_it",
-      "source_name": "위비티",
-      "title": "2026 saaskr 게임 어워드 - AI로 만든 웹게임 연말 시상",
-      "organizer": "saaskr",
-      "category": "컴퓨터공학",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.12.21 마감",
-      "deadline_date": "2026-12-21",
-      "deadline_time": "23:59",
-      "fields": [
-        "게임/소프트웨어"
-      ],
-      "description": "saaskr 주최 · 분야: 게임/소프트웨어",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=21&gbn=view&ix=112277",
-      "image": "",
-      "is_active": true,
-      "track": "it",
       "dday_info": {
         "text": "D-37",
         "days": 37,
