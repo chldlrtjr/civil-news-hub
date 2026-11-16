@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-16 18:01:47",
-  "last_updated_display": "11월 16일 18:01",
-  "total_count": 26,
-  "featured_count": 26,
+  "last_updated": "2026-11-16 19:01:51",
+  "last_updated_display": "11월 16일 19:01",
+  "total_count": 27,
+  "featured_count": 27,
   "categories": [
     "ALL",
     "토목",
@@ -577,6 +577,36 @@
       "dday_info": {
         "text": "D-19",
         "days": 19,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-112299",
+      "source": "wevity",
+      "source_name": "위비티",
+      "title": "2026 국가시범도시 AI 아이디어 · 기술 공모전",
+      "organizer": "국토교통부",
+      "category": "토목",
+      "badge_color": "emerald",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.12.14 마감",
+      "deadline_date": "2026-12-14",
+      "deadline_time": "23:59",
+      "fields": [
+        "과학/공학"
+      ],
+      "description": "국토교통부 주최 · 분야: 과학/공학",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=22&gbn=view&ix=112299",
+      "image": "",
+      "is_active": true,
+      "track": "civil",
+      "dday_info": {
+        "text": "D-28",
+        "days": 28,
         "is_urgent": false,
         "is_closed": false
       }
