@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-17 10:01:56",
-  "last_updated_display": "11월 17일 10:01",
-  "total_count": 25,
-  "featured_count": 25,
+  "last_updated": "2026-11-17 11:02:04",
+  "last_updated_display": "11월 17일 11:02",
+  "total_count": 28,
+  "featured_count": 28,
   "categories": [
     "ALL",
     "토목",
@@ -342,6 +342,38 @@
       }
     },
     {
+      "id": "devevent-3e382a594c",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "2026 서울관광 프롬프톤 (Seoul Tourism Prompt-thon)",
+      "organizer": "서울관광재단",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.29 마감",
+      "deadline_date": "2026-11-29",
+      "deadline_time": "23:59",
+      "fields": [
+        "오프라인(서울 종로구)",
+        "대회",
+        "AI"
+      ],
+      "description": "서울관광재단 주최 · 오프라인(서울 종로구), 무료, 대회, AI",
+      "link": "https://prompt2026.sto.or.kr/",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-12",
+        "days": 12,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
       "id": "wevity-112147",
       "source": "wevity",
       "source_name": "위비티",
@@ -491,6 +523,38 @@
       }
     },
     {
+      "id": "devevent-9ce5b8b163",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "2027 MOBIS Robotics Challenge",
+      "organizer": "현대모비스",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.12.04 마감",
+      "deadline_date": "2026-12-04",
+      "deadline_time": "17:00",
+      "fields": [
+        "오프라인(서울 관악구)",
+        "대회",
+        "기술일반"
+      ],
+      "description": "현대모비스 주최 · 오프라인(서울 관악구), 무료, 대회, 기술일반",
+      "link": "https://mobis-robotics-challenge.com/",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-17",
+        "days": 17,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
       "id": "devevent-4b36d59629",
       "source": "devevent",
       "source_name": "데브이벤트",
@@ -518,6 +582,38 @@
       "dday_info": {
         "text": "D-18",
         "days": 18,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-959977e9d7",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "Capture, Explain, Defend — AI Cybersecurity Hackathon",
+      "organizer": "AI Builders · GMI Cloud · F5 · NVIDIA",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.12.11 행사 시작 전 신청",
+      "deadline_date": "2026-12-11",
+      "deadline_time": "13:30",
+      "fields": [
+        "오프라인(서울)",
+        "대회",
+        "AI"
+      ],
+      "description": "AI Builders · GMI Cloud · F5 · NVIDIA 주최 · 오프라인(서울), 무료, 대회, AI",
+      "link": "https://luma.com/aisecurityseoul",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-24",
+        "days": 24,
         "is_urgent": false,
         "is_closed": false
       }
