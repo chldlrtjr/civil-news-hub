@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-17 13:02",
-  "last_updated_display": "2026년 11월 17일 13:02",
+  "last_updated": "2026-11-17 14:02",
+  "last_updated_display": "2026년 11월 17일 14:02",
   "source": "잡알리오(공공기관 채용정보) · 고용24 공채속보 Open API",
-  "total_count": 8,
+  "total_count": 9,
   "failed_sources": [],
   "categories": [
     {
@@ -188,6 +188,37 @@
       "steps": [
         "서류전형",
         "면접전형"
+      ]
+    },
+    {
+      "id": "w24-185452",
+      "source": "고용24 공채속보",
+      "company": "에스티인터내셔널코퍼레이션",
+      "company_type": "중견기업",
+      "category_id": "builder",
+      "category_name": "건설·민간기업",
+      "title": "2027년 상반기 채용연계형 인턴 채용",
+      "fields": [
+        "엔지니어링"
+      ],
+      "career": "인턴",
+      "is_intern": true,
+      "intern_type": "채용형",
+      "location": "서울",
+      "period": "2026.11.11 ~ 2026.11.30",
+      "deadline_date": "2026-11-30",
+      "tags": [
+        "채용형 인턴",
+        "기간제",
+        "중견기업"
+      ],
+      "link": "https://sticorp.recruiter.co.kr/career/jobs/133984",
+      "summary": "- 토목·기계·전기·화공 등 공학계열 전공자 - 영문 기술문서 독해 및 의사소통 가능자",
+      "steps": [
+        "서류전형",
+        "인성검사&실무면접",
+        "건강검진",
+        "인턴십(&apos;27년 1월~)"
       ]
     },
     {
