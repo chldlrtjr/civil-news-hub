@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-17 17:01:42",
-  "last_updated_display": "11월 17일 17:01",
-  "total_count": 28,
-  "featured_count": 28,
+  "last_updated": "2026-11-17 18:02:01",
+  "last_updated_display": "11월 17일 18:02",
+  "total_count": 29,
+  "featured_count": 29,
   "categories": [
     "ALL",
     "토목",
@@ -39,6 +39,33 @@
       }
     },
     {
+      "id": "campus-219970",
+      "source": "campus",
+      "source_name": "교내공지",
+      "title": "2026 공학페스티벌 '청년뉴턴(NEW:TURN)' 개최 및 관련 행사 안내 (포스터 인증 이벤트 11월 18일(수)까지 연장)",
+      "organizer": "공학교육혁신센터",
+      "category": "전북대",
+      "badge_color": "teal",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.17 ~ 11.18 (23:59 마감)",
+      "deadline_date": "2026-11-18",
+      "deadline_time": "23:59",
+      "description": "2026 공학페스티벌 '청년뉴턴(NEW:TURN)2026' 관련하여 아래와 같이 학생 프로그램을 안내드리오니 공과대학 학생 및 관계자 여러분들의 많은 관심과 참여 바랍니다. 1. 행사 개요 1) 행사명: 2026 공학페스티벌 '청년뉴턴(NEW:TURN)2026' 2) 일시: 2026. 11. 19.(목) 10:30~16:00 3) 장소: SETEC 제3전시…",
+      "link": "https://www.jbnu.ac.kr/web/Board/219970/detailView.do",
+      "image": "https://www.jbnu.ac.kr/common/file.do?file=EFQKCIYFCrVNAN2+h/tOvF+vOrGvEqaWwRJedJ3sAywkB2/nNrfhvV+upKI6z/GR",
+      "is_active": true,
+      "track": "campus",
+      "dday_info": {
+        "text": "D-1",
+        "days": 1,
+        "is_urgent": true,
+        "is_closed": false
+      }
+    },
+    {
       "id": "campus-218972",
       "source": "campus",
       "source_name": "교내공지",
@@ -61,33 +88,6 @@
       "dday_info": {
         "text": "D-1",
         "days": 1,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "campus-218771",
-      "source": "campus",
-      "source_name": "교내공지",
-      "title": "「2026 사회보장 데이터를 활용한 AI 혁신 아이디어 경진대회」 홍보 협조 요청",
-      "organizer": "사무국 총무과",
-      "category": "전북대",
-      "badge_color": "teal",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.10.23 ~ 11.20 (23:59 마감)",
-      "deadline_date": "2026-11-20",
-      "deadline_time": "23:59",
-      "description": "1. 귀 대학의 무궁한 발전을 기원합니다 . 2. 한국사회보장정보원에서는 사회보장 데이터와 ai 기술을 활용하여 공공성을 추구하는 아이디어 발굴을 위해 「 2026 사회보장 데이터를 활용한 ai 혁신 아이디어 경진대회 」 를 아래와 같이 개최하고자 합니다 . 3. 이에 , 귀 대학의 우수한 인재들이 적극 참여할 수 있도록 홍보 등에 협조하여 주시기 바랍니다…",
-      "link": "https://www.jbnu.ac.kr/web/Board/218771/detailView.do",
-      "image": "https://www.jbnu.ac.kr/common/file.do?file=DUFwt0w451rl0U6E6rgq192UbQExsCwqrXI+u2WTKjCo39EGVIpGQvMU9GBo+ijJ",
-      "is_active": true,
-      "track": "campus",
-      "dday_info": {
-        "text": "D-3",
-        "days": 3,
         "is_urgent": true,
         "is_closed": false
       }
@@ -179,6 +179,38 @@
       ],
       "description": "성평등가족부 주최 · 온라인, 무료, 대회, AI",
       "link": "https://www.mogefdatacontest.co.kr/",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-3",
+        "days": 3,
+        "is_urgent": true,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-cb0d6e0eda",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "2026 사회보장 데이터를 활용한 AI 혁신 아이디어 경진대회",
+      "organizer": "대구가톨릭대학교 · 한국사회보장정보원",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.20 마감",
+      "deadline_date": "2026-11-20",
+      "deadline_time": "23:59",
+      "fields": [
+        "온라인",
+        "대회",
+        "AI"
+      ],
+      "description": "대구가톨릭대학교 · 한국사회보장정보원 주최 · 온라인, 무료, 대회, AI",
+      "link": "https://wma.co.kr/ax",
       "image": "",
       "is_active": true,
       "dday_info": {
