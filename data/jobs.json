@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-18 17:02",
-  "last_updated_display": "2026년 11월 18일 17:02",
+  "last_updated": "2026-11-18 18:02",
+  "last_updated_display": "2026년 11월 18일 18:02",
   "source": "잡알리오(공공기관 채용정보) · 고용24 공채속보 Open API",
-  "total_count": 10,
+  "total_count": 11,
   "failed_sources": [],
   "categories": [
     {
@@ -297,6 +297,43 @@
       "location": "경북",
       "period": "2026.11.17 ~ 2026.12.01",
       "deadline_date": "2026-12-01",
+      "tags": [
+        "건설 분야 · 공고문 확인",
+        "비정규직",
+        "1명"
+      ],
+      "link": "https://k-water.recruiter.co.kr/",
+      "summary": "□ 연령, 성별, 학력 제한 없음 □ 남자의 경우 병역필 또는 면제자(병역특례 근무중인 자 제외) □ 우리 공사 인사규정에 의한 결격사유가 없는 자 □ 채용예정일부터 현업 전일근무가 가능한 자",
+      "steps": [
+        "1차 전형",
+        "인성검사",
+        "2차 전형",
+        "인성면접",
+        "실무면접"
+      ]
+    },
+    {
+      "id": "alio-307211",
+      "source": "잡알리오",
+      "company": "한국수자원공사",
+      "company_type": "공공기관",
+      "category_id": "public",
+      "category_name": "공기업·공공기관",
+      "title": "[한국수자원공사] 보령권지사 장항물재생센터 특수직(수탁운영_하수도 시설운영) 채용 공고",
+      "fields": [
+        "건설",
+        "기계",
+        "전기.전자",
+        "정보통신",
+        "환경.에너지.안전"
+      ],
+      "career": "신입·경력",
+      "is_intern": false,
+      "intern_type": "",
+      "civil_match": "건설 분야 · 공고문 확인",
+      "location": "충남",
+      "period": "2026.11.18 ~ 2026.12.02",
+      "deadline_date": "2026-12-02",
       "tags": [
         "건설 분야 · 공고문 확인",
         "비정규직",
