@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-18 23:02:19",
-  "last_updated_display": "11월 18일 23:02",
-  "total_count": 27,
-  "featured_count": 27,
+  "last_updated": "2026-11-19 00:02:30",
+  "last_updated_display": "11월 19일 00:02",
+  "total_count": 25,
+  "featured_count": 25,
   "categories": [
     "ALL",
     "토목",
@@ -10,60 +10,6 @@
     "컴퓨터공학"
   ],
   "contests": [
-    {
-      "id": "campus-219970",
-      "source": "campus",
-      "source_name": "교내공지",
-      "title": "2026 공학페스티벌 '청년뉴턴(NEW:TURN)' 개최 및 관련 행사 안내 (포스터 인증 이벤트 11월 18일(수)까지 연장)",
-      "organizer": "공학교육혁신센터",
-      "category": "전북대",
-      "badge_color": "teal",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.11.17 ~ 11.18 (23:59 마감)",
-      "deadline_date": "2026-11-18",
-      "deadline_time": "23:59",
-      "description": "2026 공학페스티벌 '청년뉴턴(NEW:TURN)2026' 관련하여 아래와 같이 학생 프로그램을 안내드리오니 공과대학 학생 및 관계자 여러분들의 많은 관심과 참여 바랍니다. 1. 행사 개요 1) 행사명: 2026 공학페스티벌 '청년뉴턴(NEW:TURN)2026' 2) 일시: 2026. 11. 19.(목) 10:30~16:00 3) 장소: SETEC 제3전시…",
-      "link": "https://www.jbnu.ac.kr/web/Board/219970/detailView.do",
-      "image": "https://www.jbnu.ac.kr/common/file.do?file=EFQKCIYFCrVNAN2+h/tOvF+vOrGvEqaWwRJedJ3sAywkB2/nNrfhvV+upKI6z/GR",
-      "is_active": true,
-      "track": "campus",
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "campus-218972",
-      "source": "campus",
-      "source_name": "교내공지",
-      "title": "2026년 전남광주통합특별시 중국언어문화경진대회 안내 및 참가 협조",
-      "organizer": "사무국 총무과",
-      "category": "전북대",
-      "badge_color": "teal",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.10.27 ~ 11.18 (23:59 마감)",
-      "deadline_date": "2026-11-18",
-      "deadline_time": "23:59",
-      "description": "1. 귀 교의 무궁한 발전을 기원합니다 . 2. 한 · 중 양국의 우호 증진과 양국 문화 · 예술에 대한 올바른 이해를 위하여 2026 년 전남 광주통합특별시 중국언어문화경진대회를 다음과 같이 개최하오니 많은 참여 바랍니다 . 가 . 대회개요 1) 대 회 명 : 2026 년 전남광주통합특별시 중국언어문화경진대회 2) 모집기간 : 2026. 10. 19.( …",
-      "link": "https://www.jbnu.ac.kr/web/Board/218972/detailView.do",
-      "image": "https://www.jbnu.ac.kr/common/file.do?file=6xx0iZo7X0AEBG0FCLFvgOncDWwQuaIIjDY2sTSzU8zTY1ehDat3r34f5tD+RSlI",
-      "is_active": true,
-      "track": "campus",
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
     {
       "id": "devevent-1e1f66f18d",
       "source": "devevent",
@@ -90,8 +36,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-2",
-        "days": 2,
+        "text": "D-1",
+        "days": 1,
         "is_urgent": true,
         "is_closed": false
       }
@@ -122,8 +68,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-2",
-        "days": 2,
+        "text": "D-1",
+        "days": 1,
         "is_urgent": true,
         "is_closed": false
       }
@@ -154,8 +100,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-2",
-        "days": 2,
+        "text": "D-1",
+        "days": 1,
         "is_urgent": true,
         "is_closed": false
       }
@@ -186,8 +132,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-2",
-        "days": 2,
+        "text": "D-1",
+        "days": 1,
         "is_urgent": true,
         "is_closed": false
       }
@@ -218,8 +164,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-3",
-        "days": 3,
+        "text": "D-2",
+        "days": 2,
         "is_urgent": true,
         "is_closed": false
       }
@@ -250,8 +196,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-3",
-        "days": 3,
+        "text": "D-2",
+        "days": 2,
         "is_urgent": true,
         "is_closed": false
       }
@@ -277,8 +223,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-7",
-        "days": 7,
+        "text": "D-6",
+        "days": 6,
         "is_urgent": false,
         "is_closed": false
       }
@@ -309,38 +255,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-9",
-        "days": 9,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "wevity-112147",
-      "source": "wevity",
-      "source_name": "위비티",
-      "title": "대전지역 대학생과 함께하는 시민체감 교통 아이디어 공모전",
-      "organizer": "대전교통공사",
-      "category": "토목",
-      "badge_color": "emerald",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.11.29 마감",
-      "deadline_date": "2026-11-29",
-      "deadline_time": "23:59",
-      "fields": [
-        "기획/아이디어"
-      ],
-      "description": "대전교통공사 주최 · 분야: 기획/아이디어",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=112147",
-      "image": "",
-      "is_active": true,
-      "track": "civil",
-      "dday_info": {
-        "text": "D-11",
-        "days": 11,
+        "text": "D-8",
+        "days": 8,
         "is_urgent": false,
         "is_closed": false
       }
@@ -371,6 +287,36 @@
       "image": "",
       "is_active": true,
       "dday_info": {
+        "text": "D-10",
+        "days": 10,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-112147",
+      "source": "wevity",
+      "source_name": "위비티",
+      "title": "대전지역 대학생과 함께하는 시민체감 교통 아이디어 공모전",
+      "organizer": "대전교통공사",
+      "category": "토목",
+      "badge_color": "emerald",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.30 마감",
+      "deadline_date": "2026-11-30",
+      "deadline_time": "23:59",
+      "fields": [
+        "기획/아이디어"
+      ],
+      "description": "대전교통공사 주최 · 분야: 기획/아이디어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=112147",
+      "image": "",
+      "is_active": true,
+      "track": "civil",
+      "dday_info": {
         "text": "D-11",
         "days": 11,
         "is_urgent": false,
@@ -389,8 +335,8 @@
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.11.30 마감",
-      "deadline_date": "2026-11-30",
+      "period": "~ 2026.12.01 마감",
+      "deadline_date": "2026-12-01",
       "deadline_time": "23:59",
       "fields": [
         "웹/모바일/IT"
@@ -403,36 +349,6 @@
       "dday_info": {
         "text": "D-12",
         "days": 12,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "wevity-112160",
-      "source": "wevity_it",
-      "source_name": "위비티",
-      "title": "[한국체육산업개발(주)] 공공데이터 활용 경진대회",
-      "organizer": "한국체육산업개발(주)",
-      "category": "컴퓨터공학",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.12.01 마감",
-      "deadline_date": "2026-12-01",
-      "deadline_time": "23:59",
-      "fields": [
-        "웹/모바일/IT"
-      ],
-      "description": "한국체육산업개발(주) 주최 · 분야: 웹/모바일/IT",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=view&ix=112160",
-      "image": "",
-      "is_active": true,
-      "track": "it",
-      "dday_info": {
-        "text": "D-13",
-        "days": 13,
         "is_urgent": false,
         "is_closed": false
       }
@@ -458,8 +374,38 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-14",
-        "days": 14,
+        "text": "D-13",
+        "days": 13,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-112160",
+      "source": "wevity_it",
+      "source_name": "위비티",
+      "title": "[한국체육산업개발(주)] 공공데이터 활용 경진대회",
+      "organizer": "한국체육산업개발(주)",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.12.02 마감",
+      "deadline_date": "2026-12-02",
+      "deadline_time": "23:59",
+      "fields": [
+        "웹/모바일/IT"
+      ],
+      "description": "한국체육산업개발(주) 주최 · 분야: 웹/모바일/IT",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=view&ix=112160",
+      "image": "",
+      "is_active": true,
+      "track": "it",
+      "dday_info": {
+        "text": "D-13",
+        "days": 13,
         "is_urgent": false,
         "is_closed": false
       }
@@ -490,8 +436,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-15",
-        "days": 15,
+        "text": "D-14",
+        "days": 14,
         "is_urgent": false,
         "is_closed": false
       }
@@ -522,8 +468,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-16",
-        "days": 16,
+        "text": "D-15",
+        "days": 15,
         "is_urgent": false,
         "is_closed": false
       }
@@ -554,8 +500,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-17",
-        "days": 17,
+        "text": "D-16",
+        "days": 16,
         "is_urgent": false,
         "is_closed": false
       }
@@ -586,8 +532,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-23",
-        "days": 23,
+        "text": "D-22",
+        "days": 22,
         "is_urgent": false,
         "is_closed": false
       }
@@ -604,8 +550,8 @@
       "target": "",
       "status": "접수중",
       "status_color": "emerald",
-      "period": "~ 2026.12.14 마감",
-      "deadline_date": "2026-12-14",
+      "period": "~ 2026.12.15 마감",
+      "deadline_date": "2026-12-15",
       "deadline_time": "23:59",
       "fields": [
         "과학/공학"
@@ -618,36 +564,6 @@
       "dday_info": {
         "text": "D-26",
         "days": 26,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "wevity-112277",
-      "source": "wevity_it",
-      "source_name": "위비티",
-      "title": "2026 saaskr 게임 어워드 - AI로 만든 웹게임 연말 시상",
-      "organizer": "saaskr",
-      "category": "컴퓨터공학",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "~ 2026.12.20 마감",
-      "deadline_date": "2026-12-20",
-      "deadline_time": "23:59",
-      "fields": [
-        "게임/소프트웨어"
-      ],
-      "description": "saaskr 주최 · 분야: 게임/소프트웨어",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=21&gbn=view&ix=112277",
-      "image": "",
-      "is_active": true,
-      "track": "it",
-      "dday_info": {
-        "text": "D-32",
-        "days": 32,
         "is_urgent": false,
         "is_closed": false
       }
@@ -679,8 +595,38 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-33",
-        "days": 33,
+        "text": "D-32",
+        "days": 32,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-112277",
+      "source": "wevity_it",
+      "source_name": "위비티",
+      "title": "2026 saaskr 게임 어워드 - AI로 만든 웹게임 연말 시상",
+      "organizer": "saaskr",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.12.21 마감",
+      "deadline_date": "2026-12-21",
+      "deadline_time": "23:59",
+      "fields": [
+        "게임/소프트웨어"
+      ],
+      "description": "saaskr 주최 · 분야: 게임/소프트웨어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=21&gbn=view&ix=112277",
+      "image": "",
+      "is_active": true,
+      "track": "it",
+      "dday_info": {
+        "text": "D-32",
+        "days": 32,
         "is_urgent": false,
         "is_closed": false
       }
@@ -706,8 +652,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-34",
-        "days": 34,
+        "text": "D-33",
+        "days": 33,
         "is_urgent": false,
         "is_closed": false
       }
@@ -733,8 +679,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-39",
-        "days": 39,
+        "text": "D-38",
+        "days": 38,
         "is_urgent": false,
         "is_closed": false
       }
@@ -764,8 +710,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-43",
-        "days": 43,
+        "text": "D-42",
+        "days": 42,
         "is_urgent": false,
         "is_closed": false
       }
@@ -792,8 +738,8 @@
       "deadline_source": "poster",
       "track": "campus",
       "dday_info": {
-        "text": "D-49",
-        "days": 49,
+        "text": "D-48",
+        "days": 48,
         "is_urgent": false,
         "is_closed": false
       }
@@ -849,8 +795,8 @@
       "is_active": true,
       "track": "civil",
       "dday_info": {
-        "text": "D-43",
-        "days": 43,
+        "text": "D-42",
+        "days": 42,
         "is_urgent": false,
         "is_closed": false
       },
