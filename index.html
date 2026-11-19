@@ -27,6 +27,7 @@ try { localStorage.removeItem('cnh-live-cache-v1'); } catch(e){}
 <script src="./static/cnh_data_bundle.js?v=20261103_2325"></script>
 <script src="./static/data_adapter.js?v=20261103_2325"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="./static/tracker_core.js?v=20261119"></script>
 <style>
 /* Layout: plain solid ground, sticky header + tab nav, dashboard = main column + deadline rail; phones get a bottom tab bar and bottom-sheet drawer */
 :root{
@@ -906,13 +907,32 @@ const savedListeners = [];
 try { JSON.parse(localStorage.getItem('cnh-saved') || '[]').forEach(id => saved.add(id)); } catch(e){}
 let savedUid = null, savedWriteT = null, savedWriting = false, savedAgain = false;
 function storeSavedLocal(){ try { localStorage.setItem('cnh-saved', JSON.stringify([...saved])); } catch(e){} }
+/* 마이페이지 진행 카드: 북마크와 같은 경로로 저장 (이 브라우저 + 로그인 시 Supabase 같은 행의 tracked 칸) */
+let tracked = [];
+try { const t = JSON.parse(localStorage.getItem('cnh-tracked') || '[]'); if (Array.isArray(t)) tracked = t; } catch(e){}
+function storeTrackedLocal(){ try { localStorage.setItem('cnh-tracked', JSON.stringify(tracked)); } catch(e){} }
+function persistTracked(){
+  storeTrackedLocal(); notifySaved();
+  clearTimeout(savedWriteT); savedWriteT = setTimeout(writeSavedRemote, 300);
+}
+const kstToday = () => new Date(Date.now() + 9 * 3600000).toISOString().slice(0, 10);
+function trackUpdate(id, patch){ tracked = tracked.map(c => c.id === id ? { ...c, ...patch } : c); persistTracked(); }
+function trackAdd(kind, item){
+  if (tracked.some(c => c.id === item.id)) return;
+  tracked = [...tracked, CNHTracker.makeCard(kind, item, kstToday())]; persistTracked();
+}
+const trackSubmit = id => trackUpdate(id, { submittedAt: kstToday() });
+const trackUnsubmit = id => trackUpdate(id, { submittedAt: null });
+const trackResult = (id, r) => trackUpdate(id, { result: r, resultAt: kstToday() });
+const trackUndoResult = id => trackUpdate(id, { result: null, resultAt: null });
+function trackRemove(id){ tracked = tracked.filter(c => c.id !== id); persistTracked(); }
 function notifySaved(){ savedListeners.forEach(f => { try { f(); } catch(e){} }); }
 async function writeSavedRemote(){
   if (!savedUid) return;
   if (savedWriting){ savedAgain = true; return; }
   savedWriting = true;
   try {
-    const { error } = await SB.from('user_saved').upsert({ user_id: savedUid, ids: [...saved], updated_at: new Date().toISOString() });
+    const { error } = await SB.from('user_saved').upsert({ user_id: savedUid, ids: [...saved], tracked, updated_at: new Date().toISOString() });
     if (error) console.warn('북마크 동기화 실패:', error.message);
   } catch(e){ console.warn('북마크 동기화 실패:', e); }
   savedWriting = false;
@@ -932,14 +952,19 @@ const SB = window.supabase ? window.supabase.createClient(
 let authUser = null;
 async function pullSavedRemote(){
   if (!savedUid) return;
-  const { data, error } = await SB.from('user_saved').select('ids').eq('user_id', savedUid).maybeSingle();
+  const { data, error } = await SB.from('user_saved').select('ids, tracked').eq('user_id', savedUid).maybeSingle();
   if (error){ console.warn('북마크 불러오기 실패:', error.message); return; }
   const remote = data && Array.isArray(data.ids) ? data.ids : [];
   // 이 브라우저에 있던 북마크와 합쳐서, 계정에 없던 게 있으면 다시 올려요
   const before = saved.size;
   remote.forEach(id => saved.add(id));
   if (saved.size !== before) storeSavedLocal();
-  if (saved.size !== remote.length) writeSavedRemote();
+  // 진행 카드도 합쳐요: 같은 공고면 더 진행된 쪽을 남겨요
+  const remoteTracked = data && Array.isArray(data.tracked) ? data.tracked : [];
+  const mergedTracked = CNHTracker.mergeTracked(tracked, remoteTracked);
+  const trackedChanged = JSON.stringify(mergedTracked) !== JSON.stringify(remoteTracked);
+  if (JSON.stringify(mergedTracked) !== JSON.stringify(tracked)){ tracked = mergedTracked; storeTrackedLocal(); }
+  if (saved.size !== remote.length || trackedChanged) writeSavedRemote();
   notifySaved();
 }
 if (SB){
