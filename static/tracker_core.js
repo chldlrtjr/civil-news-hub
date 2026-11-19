@@ -27,7 +27,7 @@
 
   function makeCard(kind, item, today) {
     return {
-      id: item.id, kind,
+      id: String(item.id), kind,
       title: kind === 'job' ? (item.role || item.title || '') : (item.title || ''),
       org: kind === 'job' ? (item.co || item.org || '') : (item.org || ''),
       link: item.link || '#',

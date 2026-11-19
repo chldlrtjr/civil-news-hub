@@ -57,3 +57,6 @@ test('sortActive: 확인 필요 → 진행 중 → missed, result 제외 / sortR
   assert.deepEqual(sortActive(list, T).map(x=>x.id), ['u','n','m']);
   assert.deepEqual(sortRecords([c({id:'a', submittedAt:T, result:'win', resultAt:'2026-11-01'}), c({id:'b', submittedAt:T, result:'lose', resultAt:'2026-11-10'})]).map(x=>x.id), ['b','a']);
 });
+test('makeCard: id는 항상 문자열 (data-id 비교용)', () => {
+  assert.equal(makeCard('job', {id: 7, co:'a', role:'b'}, T).id, '7');
+});

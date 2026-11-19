@@ -263,6 +263,67 @@ h1,h2,h3{text-wrap:balance;margin:0}
 .cnh-auth{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);font-size:var(--t-small);color:var(--ink)}
 #m .cnh-auth{margin:12px 16px}
 .cnh-auth button{flex:none;min-height:40px;padding:0 14px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font-weight:600}
+/* 마이페이지 · 진행 추적 (PC·모바일 공용, 이모지 금지) */
+.trk{display:flex;flex-direction:column;gap:4px}
+#m .trk{padding:0 16px}
+.trk-page{font-size:var(--t-h2);margin:8px 0 4px}
+.trk-h{display:flex;align-items:baseline;gap:8px;font-size:var(--t-h3);margin:24px 0 10px}
+.trk-h span{font-size:var(--t-small);font-weight:500;color:var(--muted)}
+#m .trk-h{margin:28px 0 10px}
+#m .trk-h.trk-m{padding:0 16px}
+#m .trk .cnh-auth{margin:12px 0}
+.trk-setting{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);font-size:var(--t-small)}
+.trk-btn{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit;font-size:var(--t-small);font-weight:600;cursor:pointer}
+.trk-btn svg{width:16px;height:16px}
+.trk-btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.trk-btn.danger{background:#C92A2A;border-color:#C92A2A;color:#fff}
+.trk-btn[disabled]{opacity:.55;cursor:default}
+.trk-btn:focus-visible,.trk-del:focus-visible,.trk-add:focus-visible,.trk-tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.trk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.trk-card{display:flex;flex-direction:column;gap:6px;padding:14px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow);min-width:0}
+.trk-card.off{opacity:.65;box-shadow:none}
+.trk-top{display:flex;align-items:center;gap:8px}
+.trk-kind{font-size:var(--t-label);font-weight:700;color:var(--muted)}
+.trk-badge{font-size:var(--t-label);font-weight:700;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.trk-badge.off,.trk-card.off .trk-badge{background:var(--surface-2);color:var(--muted)}
+.trk-del{margin-left:auto;flex:none;width:40px;height:40px;display:grid;place-items:center;border:0;border-radius:8px;background:none;color:var(--muted);cursor:pointer}
+.trk-del svg{width:18px;height:18px}
+.trk-del:hover{color:#C92A2A}
+.trk-title{font-weight:700;line-height:1.4;color:var(--ink);text-decoration:none;overflow-wrap:anywhere}
+.trk-title:hover{text-decoration:underline}
+.trk-org{font-size:var(--t-small);color:var(--muted)}
+.trk-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;list-style:none;margin:4px 0 0;padding:0}
+.trk-bar li{padding-top:6px;border-top:4px solid var(--surface-2);font-size:11px;color:var(--muted);text-align:center;white-space:nowrap}
+.trk-bar li.on{border-top-color:var(--accent);color:var(--ink);font-weight:600}
+.trk-sub{margin:2px 0 0;font-size:var(--t-small);color:var(--muted);display:flex;flex-direction:column;gap:2px}
+.trk-late{color:var(--warn)}
+.trk-steps{font-size:var(--t-label)}
+.trk-btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:6px}
+.trk-add{min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:2px dashed var(--line);border-radius:var(--r);background:none;color:var(--muted);font:inherit;font-weight:600;cursor:pointer}
+.trk-add svg{width:36px;height:36px}
+.trk-add:hover{border-color:var(--accent);color:var(--accent)}
+.trk-recs{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.trk-rec{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.trk-res{flex:none;font-size:var(--t-label);font-weight:700;padding:3px 8px;border-radius:999px;background:var(--surface-2);color:var(--muted)}
+.trk-res.win{background:var(--accent-soft);color:var(--accent)}
+.trk-rec-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.trk-rec-main a{font-weight:600;color:var(--ink);text-decoration:none;overflow-wrap:anywhere}
+.trk-rec-main span{font-size:var(--t-label);color:var(--muted)}
+.trk-empty{margin:0;color:var(--muted);font-size:var(--t-small)}
+.trk-modal{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:16px;background:rgba(10,21,33,.5)}
+.trk-modal[hidden]{display:none}
+.trk-box{width:min(560px,100%);max-height:min(80vh,720px);display:flex;flex-direction:column;gap:12px;padding:18px;border-radius:14px;background:var(--surface);color:var(--ink);box-shadow:var(--shadow);overflow:hidden}
+.trk-box.small{width:min(360px,100%)}
+.trk-box h2{margin:0;font-size:var(--t-h3)}
+.trk-mh{display:flex;align-items:center}
+.trk-tabs{display:flex;gap:6px}
+.trk-tabs button{min-height:40px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--muted);font:inherit;font-weight:600;cursor:pointer}
+.trk-tabs button[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+.trk-pick{list-style:none;margin:0;padding:0;overflow-y:auto;border-top:1px solid var(--line)}
+.trk-pick li{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.trk-pick li>div{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.trk-pick b{font-weight:600;overflow-wrap:anywhere}
+.trk-pick span{font-size:var(--t-label);color:var(--muted)}
 #ca .saved-empty{margin:0;color:var(--muted);font-size:var(--t-small)}
 #ca .back{align-self:flex-start;background:none;border:0;padding:4px 0;color:var(--muted);font-size:var(--t-small);font-weight:600}
 #ca .back:hover{color:var(--ink)}
@@ -747,7 +808,7 @@ h1,h2,h3{line-height:1.3;letter-spacing:-.01em}
     <label class="search"><button type="button" class="q-clear" id="q-clear" aria-label="검색어 지우고 전체 보기" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 6l12 12M18 6 6 18"/></svg></button><svg class="q-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" placeholder="뉴스·공모전·채용 검색" aria-label="통합 검색"></label>
     <button class="icon-btn m-only" id="search-btn" aria-label="검색 열기" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
     <button class="icon-btn saved-btn" id="saved-btn" data-saved aria-label="저장한 항목 보기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"/></svg><span class="count" id="saved-count" hidden></span></button>
-    <button class="icon-btn" id="theme" aria-label="테마 전환"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+    <button class="icon-btn" id="my-btn" data-go="my" aria-label="마이페이지"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>
   </div>
   <div class="wrap ticker">
     <div class="ticker-label"><i></i>실시간 트렌딩</div>
@@ -825,6 +886,7 @@ h1,h2,h3{line-height:1.3;letter-spacing:-.01em}
     <div id="career-pages"></div>
   </section>
 
+  <section class="view" id="v-my" hidden></section>
   <section class="view" id="v-jbnu" hidden>
     <div class="jb-hero">
       <div><span class="eyebrow">전북대학교 전용</span><h2>캠퍼스 알바</h2><p>예상 월 수입은 주휴수당을 포함해 월 4.345주 기준으로 계산했어요.</p></div>
@@ -875,7 +937,7 @@ h1,h2,h3{line-height:1.3;letter-spacing:-.01em}
   <button data-go="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11 12 4l9 7v9H3z"/></svg>홈</button>
   <button data-go="saved"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"/></svg>저장</button>
   <button class="dot" id="m-dot-search" aria-label="검색"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span></button>
-  <button id="m-theme" aria-label="화면 테마 바꾸기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>테마</button>
+  <button data-go="my" aria-label="마이페이지"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>마이</button>
   <button id="m-top" aria-label="맨 위로"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V5M5 11l7-7 7 7"/></svg>맨 위</button>
 </nav>
 
@@ -918,7 +980,7 @@ function persistTracked(){
 const kstToday = () => new Date(Date.now() + 9 * 3600000).toISOString().slice(0, 10);
 function trackUpdate(id, patch){ tracked = tracked.map(c => c.id === id ? { ...c, ...patch } : c); persistTracked(); }
 function trackAdd(kind, item){
-  if (tracked.some(c => c.id === item.id)) return;
+  if (tracked.some(c => c.id === String(item.id))) return;
   tracked = [...tracked, CNHTracker.makeCard(kind, item, kstToday())]; persistTracked();
 }
 const trackSubmit = id => trackUpdate(id, { submittedAt: kstToday() });
@@ -996,6 +1058,135 @@ document.addEventListener('click', async e => {
     alert('이 앱 안의 브라우저에서는 구글 로그인이 안 돼요. 메뉴에서 "다른 브라우저로 열기"를 눌러 주세요.'); return;
   }
   await SB.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname } });
+});
+
+/* ---------- 마이페이지 (PC #v-my · 모바일 my 탭 공용): 진행 중인 도전, 내 기록, 테마. 이모지 금지 ---------- */
+const TRK_SVG = {
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>',
+  trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>',
+  close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+  theme: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>'
+};
+function toggleTheme(){
+  const r = document.documentElement;
+  const dark = r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  r.dataset.theme = dark ? 'light' : 'dark';
+  try { localStorage.setItem('cnh-theme', r.dataset.theme); } catch(e){}
+}
+const $id = id => document.getElementById(id);
+let trkLists = { contests: [], jobs: [] };
+const mmdd = iso => iso ? `${+iso.slice(5, 7)}/${+iso.slice(8, 10)}` : '';
+// 공고가 아직 목록에 있으면 마감 연장·발표일을 카드에 반영 (그리기 전에 한 번)
+function trkRefresh(){
+  const src = new Map([...trkLists.contests, ...trkLists.jobs].map(x => [x.id, x]));
+  let changed = false;
+  tracked = tracked.map(c => { const r = CNHTracker.refreshFromSource(c, src.get(c.id)); if (r !== c) changed = true; return r; });
+  if (changed){ storeTrackedLocal(); clearTimeout(savedWriteT); savedWriteT = setTimeout(writeSavedRemote, 300); }
+}
+const trkBtn = (act, id, label, cls = '') => `<button type="button" class="trk-btn ${cls}" data-trk="${act}" data-id="${esc(id)}">${label}</button>`;
+function trkCardHtml(c, today){
+  const T = CNHTracker, s = T.stageOf(c, today), i = T.STAGES.indexOf(s);
+  const resultBtns = trkBtn('win', c.id, '수상·합격', 'pri') + trkBtn('lose', c.id, '미선정');
+  let sub = '', btns = '';
+  if (s === 'todo'){
+    const d = c.deadline ? T.daysBetween(today, c.deadline) : null;
+    sub = d == null ? '상시 모집' : d === 0 ? '오늘 마감' : `마감까지 ${d}일`;
+    btns = trkBtn('submit', c.id, '제출했어요', 'pri');
+  }
+  if (s === 'missed'){ sub = `${mmdd(c.deadline)} 마감, 제출 기록 없음`; btns = trkBtn('submit', c.id, '제출했어요'); }
+  if (s === 'submitted'){
+    sub = `${mmdd(c.submittedAt)} 제출` + (c.deadline ? ` · ${mmdd(c.deadline)} 마감` : '');
+    btns = (c.deadline ? '' : resultBtns) + trkBtn('unsubmit', c.id, '되돌리기');  // 마감일 모르면 결과를 바로 기록
+  }
+  if (s === 'review'){
+    sub = `심사 ${Math.max(0, T.daysBetween(c.deadline, today))}일째` + (c.resultDate ? ` · 발표 예정 ${mmdd(c.resultDate)}` : '');
+    if (c.resultDate && today > c.resultDate) sub += `<b class="trk-late">결과 나왔을 거예요. 확인해 보세요</b>`;
+    if (c.kind === 'job' && c.steps.length) sub += `<span class="trk-steps">${c.steps.map(esc).join(' → ')}</span>`;
+    btns = resultBtns + trkBtn('unsubmit', c.id, '되돌리기');
+  }
+  const bar = s === 'missed'
+    ? `<span class="trk-badge off">${T.LABEL.missed}</span>`
+    : `<ol class="trk-bar" aria-label="진행 단계: ${T.LABEL[s]}">${['todo', 'submitted', 'review', 'result'].map((k, j) => `<li class="${j <= i ? 'on' : ''}">${T.LABEL[k]}</li>`).join('')}</ol>`;
+  return `<article class="trk-card${s === 'missed' ? ' off' : ''}">
+    <div class="trk-top"><span class="trk-kind">${c.kind === 'job' ? '채용' : '공모전'}</span><span class="trk-badge">${T.LABEL[s]}</span>
+      <button type="button" class="trk-del" data-trk="del" data-id="${esc(c.id)}" aria-label="삭제">${TRK_SVG.trash}</button></div>
+    <a class="trk-title" href="${esc(c.link)}" target="_blank" rel="noopener noreferrer">${esc(c.title)}</a>
+    <div class="trk-org">${esc(c.org)}</div>${bar}
+    <p class="trk-sub">${sub}</p><div class="trk-btns">${btns}</div></article>`;
+}
+function trkRecordHtml(c){
+  return `<li class="trk-rec"><span class="trk-res ${c.result}">${c.result === 'win' ? '수상·합격' : '미선정'}</span>
+    <div class="trk-rec-main"><a href="${esc(c.link)}" target="_blank" rel="noopener noreferrer">${esc(c.title)}</a>
+    <span>${c.kind === 'job' ? '채용' : '공모전'} · ${esc(c.org)} · ${c.submittedAt ? mmdd(c.submittedAt) + ' 제출 · ' : ''}${mmdd(c.resultAt)} 결과</span></div>
+    ${trkBtn('undo', c.id, '되돌리기')}
+    <button type="button" class="trk-del" data-trk="del" data-id="${esc(c.id)}" aria-label="삭제">${TRK_SVG.trash}</button></li>`;
+}
+// 진행 중인 도전 + 내 기록. 북마크 목록은 각 화면이 자기 모양으로 뒤에 붙여요
+function myPageHtml(contests, jobs){
+  trkLists = { contests: contests || [], jobs: jobs || [] };
+  trkRefresh();
+  const today = kstToday(), active = CNHTracker.sortActive(tracked, today), recs = CNHTracker.sortRecords(tracked);
+  const wins = recs.filter(c => c.result === 'win').length;
+  return `<div class="trk">
+    ${authBoxHtml()}
+    <div class="trk-setting"><span>화면 테마</span><button type="button" class="trk-btn" data-theme-toggle>${TRK_SVG.theme}라이트 / 다크 바꾸기</button></div>
+    <h2 class="trk-h">진행 중인 도전 <span>${active.length}</span></h2>
+    <div class="trk-grid">${active.map(c => trkCardHtml(c, today)).join('')}
+      <button type="button" class="trk-add" data-trk="add">${TRK_SVG.plus}<span>도전 추가</span></button></div>
+    <h2 class="trk-h">내 기록 <span>수상·합격 ${wins} · 미선정 ${recs.length - wins}</span></h2>
+    ${recs.length ? `<ul class="trk-recs">${recs.map(trkRecordHtml).join('')}</ul>` : '<p class="trk-empty">결과가 나온 도전이 여기에 모여요.</p>'}
+  </div>`;
+}
+let trkTab = 'contest', trkLastFocus = null;
+function trkModalOpen(el){ if (el.hidden) trkLastFocus = document.activeElement; el.hidden = false; const f = el.querySelector('button:not([disabled])'); if (f) f.focus(); }
+function trkModalClose(el){ el.hidden = true; if (trkLastFocus && trkLastFocus.focus) trkLastFocus.focus(); }
+function renderPicker(){
+  const ids = new Set(tracked.map(c => c.id));
+  const open = x => x.end == null || x.end >= 0;
+  const both = [...trkLists.contests.map(x => ({ ...x, _k: 'contest' })), ...trkLists.jobs.map(x => ({ ...x, _k: 'job' }))];
+  const src = trkTab === 'contest' ? both.filter(x => x._k === 'contest' && open(x))
+    : trkTab === 'job' ? both.filter(x => x._k === 'job' && open(x))
+    : both.filter(x => saved.has(x.id));
+  const rows = CNHTracker.sortPicker(src).map(x => {
+    const d = x.deadline ? CNHTracker.daysBetween(kstToday(), x.deadline) : null;
+    const t = x._k === 'job' ? `${x.co} ${x.role}` : x.title;
+    return `<li><div><b>${esc(t)}</b><span>${x._k === 'job' ? '채용' : '공모전'} · ${d == null ? '상시' : d < 0 ? '마감' : 'D-' + d}</span></div>
+      ${ids.has(x.id) ? '<button type="button" class="trk-btn" disabled>추가됨</button>' : `<button type="button" class="trk-btn pri" data-trk="pick" data-kind="${x._k}" data-id="${esc(x.id)}">추가</button>`}</li>`;
+  }).join('');
+  $id('trk-modal').querySelector('.trk-box').innerHTML = `<div class="trk-mh"><h2 id="trk-modal-t">도전 추가</h2><button type="button" class="trk-del" data-trk-close aria-label="닫기">${TRK_SVG.close}</button></div>
+    <div class="trk-tabs" role="tablist">${[['contest', '공모전'], ['job', '채용'], ['saved', '북마크']].map(([k, n]) => `<button type="button" role="tab" aria-selected="${trkTab === k}" data-trk-tab="${k}">${n}</button>`).join('')}</div>
+    ${rows ? `<ul class="trk-pick">${rows}</ul>` : `<p class="trk-empty">${trkTab === 'saved' ? '북마크한 공모전·채용이 없어요' : '지금 모집 중인 공고가 없어요'}</p>`}`;
+}
+function askDelete(id){
+  const el = $id('trk-confirm');
+  el.querySelector('.trk-box').innerHTML = `<h2 id="trk-confirm-t">정말 삭제할까요?</h2><p class="trk-empty">삭제한 기록은 되돌릴 수 없어요.</p>
+    <div class="trk-btns"><button type="button" class="trk-btn" data-trk-close>취소</button>${trkBtn('del-yes', id, '삭제', 'danger')}</div>`;
+  trkModalOpen(el);
+}
+document.addEventListener('click', e => {
+  if (e.target.closest('[data-theme-toggle]')){ toggleTheme(); return; }
+  const modal = e.target.closest('.trk-modal');
+  if (modal && (e.target === modal || e.target.closest('[data-trk-close]'))){ trkModalClose(modal); return; }
+  const tb = e.target.closest('[data-trk-tab]');
+  if (tb){ trkTab = tb.dataset.trkTab; renderPicker(); const f = $id('trk-modal').querySelector(`[data-trk-tab="${trkTab}"]`); if (f) f.focus(); return; }
+  const b = e.target.closest('[data-trk]'); if (!b) return;
+  const id = b.dataset.id, act = b.dataset.trk;
+  if (act === 'add'){ renderPicker(); trkModalOpen($id('trk-modal')); return; }
+  if (act === 'pick'){
+    const list = b.dataset.kind === 'job' ? trkLists.jobs : trkLists.contests;
+    const item = list.find(x => String(x.id) === id);
+    if (item) trackAdd(b.dataset.kind, item);
+    renderPicker(); return;  // 팝업은 열어 둔 채 여러 개 추가
+  }
+  if (act === 'submit') trackSubmit(id);
+  if (act === 'unsubmit') trackUnsubmit(id);
+  if (act === 'win' || act === 'lose') trackResult(id, act);
+  if (act === 'undo') trackUndoResult(id);
+  if (act === 'del'){ askDelete(id); return; }
+  if (act === 'del-yes'){ trkModalClose($id('trk-confirm')); trackRemove(id); }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.trk-modal:not([hidden])').forEach(trkModalClose);
 });
 </script>
 <script>
@@ -1083,6 +1274,7 @@ function toggleSave(id, btn){
   toast(saved.has(id) ? '저장했어요. 오른쪽 위 북마크 버튼에서 모아 볼 수 있어요.' : '저장을 취소했어요.');
   updateSavedCount();
   if (drawerMode === 'saved') openSaved();
+  if (!$('#v-my').hidden) renderMy();
 }
 function updateSavedCount(){
   const n = savedItems().length, el = $('#saved-count');
@@ -1354,10 +1546,17 @@ function openSaved(){
   const items = savedItems();
   drawerMode = 'saved';
   $('#dr-kind').textContent = '북마크';
-  $('#dr-body').innerHTML = `<h2 id="dr-title">저장한 항목 <span class="mono">${items.length}</span></h2>` + authBoxHtml() + (items.length
-    ? `<ul class="saved-list">${items.map(x=>`<li style="--k:${x.k}"><button class="saved-row" ${x.open?`data-open="${x.open}" data-from-saved`:`data-go="${x.go}" data-focus="${x.id}"`}><span class="saved-kind">${x.kind}</span><span class="saved-t">${x.t}</span><span class="saved-sub">${x.sub}</span></button>${x.end==null?'':ddayBadge(x.end)}${bmBtn(x.id)}</li>`).join('')}</ul>`
-    : '<p class="saved-empty">아직 저장한 항목이 없어요. 뉴스·공모전·채용·전북대 카드의 북마크 아이콘을 누르면 여기에 모여요.</p>');
+  $('#dr-body').innerHTML = `<h2 id="dr-title">저장한 항목 <span class="mono">${items.length}</span></h2>` + authBoxHtml() + savedListHtml(items);
   showDrawer();
+}
+function savedListHtml(items){
+  return items.length
+    ? `<ul class="saved-list">${items.map(x=>`<li style="--k:${x.k}"><button class="saved-row" ${x.open?`data-open="${x.open}" data-from-saved`:`data-go="${x.go}" data-focus="${x.id}"`}><span class="saved-kind">${x.kind}</span><span class="saved-t">${x.t}</span><span class="saved-sub">${x.sub}</span></button>${x.end==null?'':ddayBadge(x.end)}${bmBtn(x.id)}</li>`).join('')}</ul>`
+    : '<p class="saved-empty">아직 저장한 항목이 없어요. 뉴스·공모전·채용·전북대 카드의 북마크 아이콘을 누르면 여기에 모여요.</p>';
+}
+function renderMy(){
+  const items = savedItems();
+  $('#v-my').innerHTML = `<h1 class="trk-page">마이페이지</h1>` + myPageHtml(CONTESTS, JOBS) + `<h2 class="trk-h">북마크 <span>${items.length}</span></h2>` + savedListHtml(items);
 }
 function openDrawer(key, fromSaved){
   drawerMode = 'item';
@@ -1442,7 +1641,7 @@ function closeDrawer(){
 
 /* ---------- 라우팅 & 이벤트 ---------- */
 const OTHER_SRC = ['연합뉴스', '뉴시스', '뉴스1', '매일경제', '한국경제', '아시아경제', '머니투데이', '파이낸셜뉴스'];
-const VIEWS = ['home','news','contest','jobs','jbnu'];
+const VIEWS = ['home','news','contest','jobs','jbnu','my'];
 function go(v){
   if (v === 'contests') v = 'contest';
   if (v === 'recruit') v = 'jobs';
@@ -1456,6 +1655,7 @@ function go(v){
   if (v==='news' || v==='home') {
     requestAnimationFrame(() => { fitNewsLines(); requestAnimationFrame(fitNewsLines); });
   }
+  if (v==='my') renderMy();
   window.scrollTo({top:0});
 }
 window.addEventListener('hashchange', () => go(location.hash.slice(1) || 'home'));
@@ -1508,12 +1708,6 @@ $('#q').addEventListener('input', ()=>{ const v = VIEWS.find(x=>!$('#v-'+x).hidd
 
 $('#trend').innerHTML = TRENDS.map(([t,up],i)=>`<button class="tag" data-trend="${t}" aria-pressed="false"><span class="rk">${i+1}</span>#${t}${up?'<span class="up">▲</span>':''}</button>`).join('');
 
-$('#theme').onclick = ()=>{
-  const r = document.documentElement;
-  const dark = r.dataset.theme ? r.dataset.theme==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
-  r.dataset.theme = dark ? 'light' : 'dark';
-  try { localStorage.setItem('cnh-theme', r.dataset.theme); } catch(e){}
-};
 try { const th = localStorage.getItem('cnh-theme'); if (th) document.documentElement.dataset.theme = th; } catch(e){}
 
 const phone = matchMedia('(max-width:760px)');
@@ -1545,6 +1739,7 @@ savedListeners.push(()=>{
   updateSavedCount();
   renderDeadlines();
   if (drawerMode === 'saved') openSaved();
+  if (!$('#v-my').hidden) renderMy();
 });
 if (_initData && _initData.meta) {
   const notEl = $('#live-notice');
@@ -1710,7 +1905,7 @@ const head = (t, p) => `<div class="page-head"><h1 class="sr">${t}</h1>${p?`<p>$
 
 /* ---------- 화면 ---------- */
 let tab = 'home', newsCat = 'all', target = '전체', sortBy = 'dday', jobGrp = 'all', lvl = '전체';
-const TITLES = {home:'오늘', news:'뉴스', contest:'공모전', jobs:'채용', jbnu:'전북대', saved:'저장'};
+const TITLES = {home:'오늘', news:'뉴스', contest:'공모전', jobs:'채용', jbnu:'전북대', saved:'저장', my:'마이페이지'};
 
 const savedRowsHtml = () => [
   ...CONTESTS.filter(c=>saved.has(c.id)).map(contestRow), ...JOBS.filter(j=>saved.has(j.id)).map(jobRow),
@@ -1720,6 +1915,10 @@ const savedRowsHtml = () => [
 const SAVED_EMPTY = '<p class="empty">뉴스·공모전·채용을 열고 저장을 누르거나, 전북대 항목의 북마크 아이콘을 누르면 여기에 모여요.</p>';
 
 const VIEWS = {
+  my(){
+    const rows = savedRowsHtml();
+    return head('마이페이지', '진행 중인 도전과 내 기록') + myPageHtml(CONTESTS, JOBS) + `<h2 class="trk-h trk-m">북마크 <span>${saved.size}</span></h2>` + (rows ? list(rows) : SAVED_EMPTY);
+  },
   saved(){
     const rows = savedRowsHtml();
     return head('저장', `저장한 항목 ${saved.size}개`) + authBoxHtml() + (rows ? list(rows) : SAVED_EMPTY);
@@ -2010,18 +2209,12 @@ $('#m-dot-search').onclick = () => openSearch();
 $('#m-top').onclick = () => window.scrollTo({top:0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
 addEventListener('scroll', onScroll, {passive:true});
 
-$('#m-theme').onclick = ()=>{
-  const r = document.documentElement;
-  const dark = r.dataset.theme ? r.dataset.theme==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
-  r.dataset.theme = dark ? 'light' : 'dark';
-  try { localStorage.setItem('cnh-theme', r.dataset.theme); } catch(e){}
-};
 try { const th = localStorage.getItem('cnh-theme'); if (th) document.documentElement.dataset.theme = th; } catch(e){}
 
 // 다른 화면이나 다른 기기에서 북마크가 바뀌면 저장 버튼과 오늘 탭을 다시 그려요
 savedListeners.push(()=>{
   document.querySelectorAll('#m [data-save]').forEach(b=>{ const on = saved.has(b.dataset.save); b.setAttribute('aria-pressed', on); if (!b.classList.contains('save-i')) b.textContent = on ? '저장됨' : '저장'; });
-  if ((tab === 'home' || tab === 'saved') && !document.getElementById('m').hidden) rerender();
+  if ((tab === 'home' || tab === 'saved' || tab === 'my') && !document.getElementById('m').hidden) rerender();
 });
 go(location.hash.slice(1) || 'home');
 
@@ -2098,4 +2291,6 @@ syncMobileLiveData();
 })();
 
 </script>
+<div class="trk-modal" id="trk-modal" hidden role="dialog" aria-modal="true" aria-labelledby="trk-modal-t"><div class="trk-box"></div></div>
+<div class="trk-modal" id="trk-confirm" hidden role="dialog" aria-modal="true" aria-labelledby="trk-confirm-t"><div class="trk-box small"></div></div>
 </body></html>
