@@ -1,0 +1,27 @@
+name: 아침 9시 토목 뉴스 다이제스트 (텔레그램)
+
+# jcloud는 학교 DNS가 api.telegram.org를 막아서 발송을 Actions에서 해요.
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 09:00 KST (Actions 예약은 10~30분 늦을 수 있음)
+  workflow_dispatch:
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: 한글 폰트와 패키지 설치
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q fonts-nanum
+          pip install -q requests pillow python-dotenv
+      - name: 다이제스트 발송
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
+        run: python daily_digest.py

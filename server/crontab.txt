@@ -1,0 +1,2 @@
+0 * * * * /home/ubuntu/workspace/cron_scrape.sh
+30 4 * * * /home/ubuntu/workspace/backup_server.sh

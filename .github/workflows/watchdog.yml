@@ -1,0 +1,28 @@
+name: jcloud 수집 감시
+
+# jcloud가 매시 커밋하는 번들이 3시간 넘게 멈추면 텔레그램으로 알려요.
+on:
+  schedule:
+    - cron: '30 * * * *'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 마지막 데이터 갱신 확인
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          last=$(gh api "repos/$GITHUB_REPOSITORY/commits?path=static/cnh_data_bundle.js&per_page=1" --jq '.[0].commit.committer.date')
+          age=$(( ($(date +%s) - $(date -d "$last" +%s)) / 3600 ))
+          echo "마지막 데이터 갱신: $last (${age}시간 전)"
+          # shortcut: 3시간째·이후 12시간마다 한 번만 알림(시간 단위 버림 기준), 예약이 밀리면 한 번 빠질 수 있음
+          if [ "$age" -ge 3 ] && [ $((age % 12)) -eq 3 ]; then
+            curl -sS -m 20 "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
+              --data-urlencode "chat_id=$TELEGRAM_CHAT_ID" \
+              --data-urlencode "text=⚠️ [Civil News Hub] jcloud 수집이 ${age}시간째 멈춰 있어요 (마지막: $last)" > /dev/null
+            echo "알림 발송"
+          fi
