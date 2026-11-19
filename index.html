@@ -26,6 +26,7 @@ try { localStorage.removeItem('cnh-live-cache-v1'); } catch(e){}
 </script>
 <script src="./static/cnh_data_bundle.js?v=20261103_2325"></script>
 <script src="./static/data_adapter.js?v=20261103_2325"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
 /* Layout: plain solid ground, sticky header + tab nav, dashboard = main column + deadline rail; phones get a bottom tab bar and bottom-sheet drawer */
 :root{
@@ -258,6 +259,9 @@ h1,h2,h3{text-wrap:balance;margin:0}
 #ca .saved-t{font-weight:600;line-height:1.4}
 #ca .saved-sub{font-size:var(--t-small);color:var(--muted)}
 #ca .saved-row:hover .saved-t{text-decoration:underline}
+.cnh-auth{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);font-size:var(--t-small);color:var(--ink)}
+#m .cnh-auth{margin:12px 16px}
+.cnh-auth button{flex:none;min-height:40px;padding:0 14px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font-weight:600}
 #ca .saved-empty{margin:0;color:var(--muted);font-size:var(--t-small)}
 #ca .back{align-self:flex-start;background:none;border:0;padding:4px 0;color:var(--muted);font-size:var(--t-small);font-weight:600}
 #ca .back:hover{color:var(--ink)}
@@ -900,15 +904,17 @@ h1,h2,h3{line-height:1.3;letter-spacing:-.01em}
 const saved = new Set();
 const savedListeners = [];
 try { JSON.parse(localStorage.getItem('cnh-saved') || '[]').forEach(id => saved.add(id)); } catch(e){}
-let savedRef = null, savedWriteT = null, savedWriting = false, savedAgain = false;
+let savedUid = null, savedWriteT = null, savedWriting = false, savedAgain = false;
 function storeSavedLocal(){ try { localStorage.setItem('cnh-saved', JSON.stringify([...saved])); } catch(e){} }
 function notifySaved(){ savedListeners.forEach(f => { try { f(); } catch(e){} }); }
 async function writeSavedRemote(){
-  if (!savedRef) return;
+  if (!savedUid) return;
   if (savedWriting){ savedAgain = true; return; }
   savedWriting = true;
-  try { await savedRef.set({ids: [...saved]}); }
-  catch(e){ if (!e || e.code !== 'unavailable') savedRef = null; }
+  try {
+    const { error } = await SB.from('user_saved').upsert({ user_id: savedUid, ids: [...saved], updated_at: new Date().toISOString() });
+    if (error) console.warn('북마크 동기화 실패:', error.message);
+  } catch(e){ console.warn('북마크 동기화 실패:', e); }
   savedWriting = false;
   if (savedAgain){ savedAgain = false; writeSavedRemote(); }
 }
@@ -916,33 +922,54 @@ function persistSaved(){
   storeSavedLocal(); notifySaved();
   clearTimeout(savedWriteT); savedWriteT = setTimeout(writeSavedRemote, 300);
 }
-(async () => {
-  if (!window.claude || typeof window.claude.use !== 'function') return;
-  const [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
-  if (!db || !user) return;
-  const uid = await user.id();
-  if (!uid) return;
-  const ref = db.doc('data/users/' + uid + '/saved');
-  let first = true;
-  ref.onSnapshot(snap => {
-    const body = snap.exists ? snap.data() : null;
-    const remote = body && Array.isArray(body.ids) ? body.ids : [];
-    if (first){
-      // 처음 연결할 때는 이 브라우저에 있던 북마크와 합쳐요
-      first = false; savedRef = ref;
-      const before = saved.size;
-      remote.forEach(id => saved.add(id));
-      const needsWrite = saved.size !== remote.length;
-      if (saved.size !== before){ storeSavedLocal(); notifySaved(); }
-      if (needsWrite) writeSavedRemote();
-      return;
-    }
-    if (snap.metadata.hasPendingWrites) return;
-    if (remote.length === saved.size && remote.every(id => saved.has(id))) return;
-    saved.clear(); remote.forEach(id => saved.add(id));
-    storeSavedLocal(); notifySaved();
-  }, () => { savedRef = null; });
-})();
+/* 구글 로그인(Supabase): 로그인하면 북마크가 계정에 저장돼 다른 기기에서도 보여요. 비로그인은 이 브라우저에만 저장 */
+const SB = window.supabase ? window.supabase.createClient(
+  'https://eazksxmhtypedxaycrcg.supabase.co',
+  'sb_publishable_UJokd3NMOFJcfWjNjNSXPg_urs5q3kN'   // 공개용 키: 실제 보안은 DB의 RLS(본인 행만 접근)가 맡아요
+) : null;
+let authUser = null;
+async function pullSavedRemote(){
+  if (!savedUid) return;
+  const { data, error } = await SB.from('user_saved').select('ids').eq('user_id', savedUid).maybeSingle();
+  if (error){ console.warn('북마크 불러오기 실패:', error.message); return; }
+  const remote = data && Array.isArray(data.ids) ? data.ids : [];
+  // 이 브라우저에 있던 북마크와 합쳐서, 계정에 없던 게 있으면 다시 올려요
+  const before = saved.size;
+  remote.forEach(id => saved.add(id));
+  if (saved.size !== before) storeSavedLocal();
+  if (saved.size !== remote.length) writeSavedRemote();
+  notifySaved();
+}
+if (SB){
+  SB.auth.onAuthStateChange((event, session) => {
+    const u = session ? session.user : null;
+    const changed = (u && u.id) !== (authUser && authUser.id);
+    authUser = u; savedUid = u ? u.id : null;
+    if (changed){ notifySaved(); if (u) setTimeout(pullSavedRemote, 0); }  // 콜백 안에서 바로 DB 호출하면 막힐 수 있어 다음 틱으로
+  });
+  // 다른 기기에서 바꾼 북마크는 이 탭으로 돌아올 때 가져와요
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) pullSavedRemote(); });
+}
+const esc = t => String(t || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function authBoxHtml(){
+  if (!SB) return '';
+  if (authUser){
+    const m = authUser.user_metadata || {};
+    return `<div class="cnh-auth"><span>✅ <b>${esc(m.full_name || m.name || authUser.email)}</b> 계정에 저장 중이에요</span><button type="button" data-auth="logout">로그아웃</button></div>`;
+  }
+  return `<div class="cnh-auth"><span>구글로 로그인하면 다른 기기에서도 북마크가 보여요</span><button type="button" data-auth="login">구글 로그인</button></div>`;
+}
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-auth]');
+  if (!b || !SB) return;
+  if (b.dataset.auth === 'logout'){ await SB.auth.signOut(); return; }
+  // 카카오톡 등 인앱 브라우저는 구글이 로그인을 막아요 → 외부 브라우저로 열기
+  if (/KAKAOTALK/i.test(navigator.userAgent)){ location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(location.href); return; }
+  if (/; wv\)|FBAN|FBAV|Instagram|NAVER\(inapp|Line\//i.test(navigator.userAgent)){
+    alert('이 앱 안의 브라우저에서는 구글 로그인이 안 돼요. 메뉴에서 "다른 브라우저로 열기"를 눌러 주세요.'); return;
+  }
+  await SB.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname } });
+});
 </script>
 <script>
 const $ = s => document.querySelector(s);
@@ -1300,7 +1327,7 @@ function openSaved(){
   const items = savedItems();
   drawerMode = 'saved';
   $('#dr-kind').textContent = '북마크';
-  $('#dr-body').innerHTML = `<h2 id="dr-title">저장한 항목 <span class="mono">${items.length}</span></h2>` + (items.length
+  $('#dr-body').innerHTML = `<h2 id="dr-title">저장한 항목 <span class="mono">${items.length}</span></h2>` + authBoxHtml() + (items.length
     ? `<ul class="saved-list">${items.map(x=>`<li style="--k:${x.k}"><button class="saved-row" ${x.open?`data-open="${x.open}" data-from-saved`:`data-go="${x.go}" data-focus="${x.id}"`}><span class="saved-kind">${x.kind}</span><span class="saved-t">${x.t}</span><span class="saved-sub">${x.sub}</span></button>${x.end==null?'':ddayBadge(x.end)}${bmBtn(x.id)}</li>`).join('')}</ul>`
     : '<p class="saved-empty">아직 저장한 항목이 없어요. 뉴스·공모전·채용·전북대 카드의 북마크 아이콘을 누르면 여기에 모여요.</p>');
   showDrawer();
@@ -1668,7 +1695,7 @@ const SAVED_EMPTY = '<p class="empty">뉴스·공모전·채용을 열고 저장
 const VIEWS = {
   saved(){
     const rows = savedRowsHtml();
-    return head('저장', `저장한 항목 ${saved.size}개`) + (rows ? list(rows) : SAVED_EMPTY);
+    return head('저장', `저장한 항목 ${saved.size}개`) + authBoxHtml() + (rows ? list(rows) : SAVED_EMPTY);
   },
   home(){
     // 마감 임박: 북마크한 항목 중 마감이 지나지 않은 것만 보여 줘요
