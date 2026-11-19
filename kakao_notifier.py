@@ -19,7 +19,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 TOKEN_FILE = os.path.join(BASE_DIR, "kakao_token.json")
-SITE_URL = "https://chldlrtjr.github.io/civil-news-hub/"
+SITE_URL = "https://civil-news-hub.vercel.app/"
 LAST_URL_FILE = os.path.join(BASE_DIR, "data", "last_tunnel_url.txt")
 TUNNEL_LOG_FILE = os.environ.get("TUNNEL_LOG_PATH", "/var/log/civil-tunnel.log")
 

@@ -1,11 +1,9 @@
 import os
-import re
 import json
 import socket
 import webbrowser
 import subprocess
 import threading
-import requests
 from flask import Flask, request, jsonify, send_from_directory, send_file, Response, redirect
 from dotenv import load_dotenv
 
@@ -25,7 +23,6 @@ JBNU_JSON_PATH = os.path.join(DATA_DIR, "jbnu_albas.json")
 SWUNIV_JSON_PATH = os.path.join(DATA_DIR, "swuniv_programs.json")
 
 PORT = int(os.environ.get("PORT", 8000))
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.6-flash")
 
 
 app = Flask(__name__, static_folder=None)
@@ -41,19 +38,12 @@ def get_local_ip():
     except Exception:
         return "127.0.0.1"
 
-def get_gemini_api_key(custom_key=None):
-    """우선순위: 요청에서 전달된 커스텀 키 > 서버 환경변수 GEMINI_API_KEY"""
-    if custom_key and custom_key.strip():
-        return custom_key.strip()
-    return (os.environ.get("GEMINI_API_KEY") or "").strip()
-
-
 # --- CORS 및 전역 헤더 처리 ---
 @app.after_request
 def add_cors_headers(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Gemini-Key"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
     # HTML 및 JSON, JS에 대한 브라우저 캐시 방지 강제 (항상 최신 로컬 및 크롤링 팩트 데이터 즉시 반영)
     if response.mimetype in ["text/html", "application/json", "application/javascript"]:
         response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
@@ -167,39 +157,6 @@ def get_swuniv_programs():
     resp.headers["Expires"] = "0"
     return resp
 
-def get_live_tunnel_url():
-    """Cloudflare Tunnel 로그에서 현재 활성화된 라이브 터널 URL 조회"""
-    log_file = "/var/log/civil-tunnel.log"
-    if os.path.exists(log_file):
-        try:
-            with open(log_file, "r", encoding="utf-8") as f:
-                lines = f.readlines()
-            for line in reversed(lines):
-                m = re.search(r"https://[a-zA-Z0-9-]+\.trycloudflare\.com", line)
-                if m:
-                    return m.group(0)
-        except Exception:
-            pass
-    return "https://chldlrtjr.github.io/civil-news-hub"
-
-@app.route("/api/network-info")
-def network_info():
-    tunnel_url = get_live_tunnel_url()
-    local_ip = get_local_ip()
-    host = request.host
-    scheme = request.headers.get("X-Forwarded-Proto", "http")
-    return jsonify({
-        "local_ip": local_ip,
-        "port": PORT,
-        "server_url": f"{scheme}://{host}/#news",
-        "local_url": f"http://localhost:{PORT}/#news",
-        "mobile_url": f"{tunnel_url}/#news",
-        "tunnel_url": f"{tunnel_url}/#news",
-        "mobile_simulator_url": f"{tunnel_url}/mobile#news",
-        "github_pages_url": "https://chldlrtjr.github.io/civil-news-hub/#news"
-    })
-
-
 @app.route("/api/refresh", methods=["POST"])
 def refresh_data():
     try:
@@ -214,198 +171,6 @@ def refresh_data():
             "success": False,
             "error": str(e)
         }), 500
-
-# --- Gemini 챗봇 프록시 (GEMINI_MODEL 우선, 404면 대체 모델로 시도하고 이전 대화 history를 지원해요) ---
-def build_gemini_contents(prompt_text, history):
-    """최근 대화(최대 8개, 각 1000자)를 이전 턴으로 넣고, 마지막에 이번 프롬프트를 붙여요."""
-    contents = []
-    if isinstance(history, list):
-        for item in history[-8:]:
-            if not isinstance(item, dict) or item.get("local"):
-                continue  # 로컬 요약은 모델 답이 아니라서 빼요
-            text = str(item.get("text") or "").strip()[:1000]
-            if not text:
-                continue
-            role = "user" if item.get("role") == "user" else "model"
-            if not contents and role != "user":
-                continue  # 첫 턴은 항상 user
-            if contents and contents[-1]["role"] == role:
-                # 같은 역할이 이어지면 한 턴으로 합쳐요(1000자 제한)
-                merged = contents[-1]["parts"][0]["text"] + "\n\n" + text
-                contents[-1]["parts"][0]["text"] = merged[:1000]
-                continue
-            contents.append({"role": role, "parts": [{"text": text}]})
-    contents.append({"role": "user", "parts": [{"text": prompt_text}]})
-    return contents
-
-
-@app.route("/api/chat/status", methods=["GET"])
-def chat_status():
-    server_key = get_gemini_api_key()
-    return jsonify({
-        "success": True,
-        "has_server_key": bool(server_key),
-        "model": GEMINI_MODEL
-    })
-
-@app.route("/api/chat", methods=["POST", "OPTIONS"])
-@app.route("/api/gemini/chat", methods=["POST", "OPTIONS"])
-def gemini_chat():
-    if request.method == "OPTIONS":
-        return ("", 204)
-
-    data = request.get_json(silent=True) or {}
-    query = data.get("query", "").strip()
-    custom_key = data.get("customApiKey", "").strip()
-
-    # Header Authorization: Bearer <key> 또는 X-Gemini-Key 지원
-    auth_header = request.headers.get("Authorization", "")
-    if auth_header.startswith("Bearer "):
-        token = auth_header[7:].strip()
-        if token:
-            custom_key = token
-    header_key = request.headers.get("X-Gemini-Key", "").strip()
-    if header_key:
-        custom_key = header_key
-
-    api_key = get_gemini_api_key(custom_key)
-    if not api_key:
-        return jsonify({
-            "success": False,
-            "error": "KEY_MISSING",
-            "message": "서버에 등록된 GEMINI_API_KEY가 없습니다. 서버의 .env 설정 파일에 키를 입력하거나, 챗봇 상단 🔑 설정 버튼을 눌러 개인 API 키를 입력해 주세요."
-        }), 400
-
-    if not query:
-        return jsonify({
-            "success": False,
-            "error": "EMPTY_QUERY",
-            "message": "질문 내용을 입력해 주세요."
-        }), 400
-
-    relevant_articles = data.get("relevantArticles", [])
-    custom_prompt = data.get("prompt", "")
-
-    if custom_prompt:
-        prompt_text = custom_prompt
-    else:
-        if relevant_articles:
-            art_snippets = []
-            for idx, art in enumerate(relevant_articles[:4]):
-                summary_raw = art.get("summary", "")
-                if isinstance(summary_raw, list):
-                    sum_text = "\n• ".join(summary_raw)
-                else:
-                    sum_text = str(summary_raw)
-                art_snippets.append(
-                    f"[기사 {idx + 1}]\n"
-                    f"- 제목: {art.get('title', '')}\n"
-                    f"- 매체/일시: {art.get('media', '언론사')} ({art.get('published_at') or art.get('date') or ''})\n"
-                    f"- 주요 내용:\n• {sum_text}"
-                )
-            context_text = "\n\n".join(art_snippets)
-        else:
-            context_text = '직접 관련된 최신 기사를 찾지 못했습니다. 일반 토목·인프라 공학 및 건설 지식을 바탕으로 설명하되, "제공된 기사 데이터베이스에는 직접 언급되지 않았습니다"라는 점을 먼저 명시하세요.'
-
-        system_prompt = (
-            "당신은 대한민국 토목·인프라 및 건설 엔지니어링 분야 전문 AI 연구원입니다.\n"
-            "사용자의 질문에 대해 아래 제공된 [참고 기사 데이터]를 바탕으로 팩트에 입각하여 친절하고 전문적으로 답변하세요.\n\n"
-            "답변 지침:\n"
-            "1. 기사에 나온 구체적인 수치(사업비, 공사비, 노선 길이, 완공/착공 연도 등)가 있다면 명확히 밝히세요.\n"
-            "2. 읽기 편하게 불릿 기호(•)와 굵은 글씨(**)를 사용하여 핵심 위주로 일목요연하게 작성하세요.\n"
-            "3. 기사에 없는 내용은 허구로 꾸며내지 말고 솔직하게 밝히세요.\n"
-            "4. 한국어로 정중하고 격식 있는 어조(~합니다, ~입니다)로 답변하세요.\n"
-            "5. 기사 요약을 요청받으면 3줄 이내 불릿(•)으로 핵심만 정리하세요.\n"
-            "6. 단어나 용어의 뜻을 물으면 기사 속 맥락을 살려 쉬운 말로 1~2문장으로 설명하고, 예를 하나 드세요.\n"
-            "7. 이전 대화가 있으면 이어지는 질문으로 이해하고, \"그 기사\", \"그 단어\"가 무엇을 가리키는지 이전 대화에서 찾으세요."
-        )
-
-        prompt_text = f"{system_prompt}\n\n[참고 기사 데이터]\n{context_text}\n\n[사용자 질문]\n{query}"
-
-    contents = build_gemini_contents(prompt_text, data.get("history"))
-    model_candidates = [GEMINI_MODEL, "gemini-3.6-flash", "gemini-flash-latest"]
-    seen = set()
-    model_list = [m for m in model_candidates if m and not (m in seen or seen.add(m))]
-
-    last_resp = None
-    for current_model in model_list:
-        endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{current_model}:generateContent?key={api_key}"
-        try:
-            resp = requests.post(
-                endpoint,
-                headers={"Content-Type": "application/json"},
-                json={
-                    "contents": contents,
-                    "generationConfig": {
-                        "temperature": 0.2,
-                        "maxOutputTokens": 1200
-                    }
-                },
-                timeout=30
-            )
-            last_resp = resp
-
-            if resp.ok:
-                res_json = resp.json()
-                candidates = res_json.get("candidates", [])
-                if candidates:
-                    answer_text = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
-                    if answer_text:
-                        return jsonify({
-                            "success": True,
-                            "answer": answer_text,
-                            "model": current_model
-                        })
-            elif resp.status_code == 404:
-                # 모델명 변경/단종 시 다음 후보로 자동 전환
-                continue
-            else:
-                break
-        except requests.exceptions.Timeout:
-            return jsonify({
-                "success": False,
-                "error": "TIMEOUT",
-                "message": "Gemini API 응답 시간이 초과되었습니다(30초). 잠시 후 다시 시도해 주세요."
-            }), 504
-        except Exception as e:
-            return jsonify({
-                "success": False,
-                "error": "SERVER_ERROR",
-                "message": f"서버 내부 오류: {str(e)}"
-            }), 500
-
-    # 모든 모델 후보 호출 실패 시 오류 처리
-    if last_resp is not None:
-        try:
-            err_data = last_resp.json()
-            err_msg = err_data.get("error", {}).get("message", last_resp.text)
-        except Exception:
-            err_msg = f"HTTP {last_resp.status_code}"
-
-        if last_resp.status_code in (400, 403):
-            return jsonify({
-                "success": False,
-                "error": "INVALID_API_KEY",
-                "message": f"Gemini API 키 인증 실패 ({err_msg}). 올바른 키인지 확인해 주세요."
-            }), 400
-        elif last_resp.status_code == 429:
-            return jsonify({
-                "success": False,
-                "error": "RATE_LIMIT_EXCEEDED",
-                "message": "Gemini API 무료 호출 한도를 초과했습니다. 잠시 후 다시 시도해 주세요."
-            }), 429
-        return jsonify({
-            "success": False,
-            "error": f"API_ERROR_{last_resp.status_code}",
-            "message": f"Gemini API 호출 실패: {err_msg}"
-        }), last_resp.status_code
-
-    return jsonify({
-        "success": False,
-        "error": "NO_CANDIDATE",
-        "message": "AI 응답을 생성하지 못했습니다."
-    }), 500
-
 
 # --- 정적 자산 라우트 ---
 @app.route("/static/<path:filename>")
@@ -485,7 +250,6 @@ def start_server():
     print(f"🏗️  [Civil News Hub Flask 웹 서버가 정상 실행되었습니다!]")
     print(f"🌐  PC 브라우저 접속:       {local_url}")
     print(f"📱  스마트폰(모바일) 접속:   {mobile_url}")
-    print(f"🤖  Gemini AI 프록시:      활성화 ({GEMINI_MODEL})")
     print(f"📌  종료하려면 터미널에서 Ctrl + C 를 누르세요.")
     print("=" * 65 + "\n")
     

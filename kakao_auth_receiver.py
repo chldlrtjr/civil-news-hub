@@ -53,8 +53,8 @@ class OAuthHandler(http.server.SimpleHTTPRequestHandler):
                         "object_type": "text",
                         "text": "🎉 [Civil News Hub] 카카오톡 서버 알림 연동이 성공했습니다!\n\n새로운 REST API 키 및 보안 코드가 성공적으로 적용되었습니다.",
                         "link": {
-                            "web_url": "https://chldlrtjr.github.io/civil-news-hub/",
-                            "mobile_web_url": "https://chldlrtjr.github.io/civil-news-hub/"
+                            "web_url": "https://civil-news-hub.vercel.app/",
+                            "mobile_web_url": "https://civil-news-hub.vercel.app/"
                         },
                         "button_title": "허브 바로가기"
                     }, ensure_ascii=False)

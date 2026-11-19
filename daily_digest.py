@@ -37,7 +37,7 @@ load_dotenv(os.path.join(BASE_DIR, ".env"))
 NEWS_FILE = os.path.join(BASE_DIR, "data", "news.json")
 OUT_DIR = os.path.join(BASE_DIR, "data", "digest_out")
 SENT_STATE_FILE = os.path.join(BASE_DIR, "data", ".digest_last_sent")
-SITE_URL = "https://chldlrtjr.github.io/civil-news-hub/"
+SITE_URL = "https://civil-news-hub.vercel.app/"
 
 KST = timezone(timedelta(hours=9))
 TOP_N = 5
