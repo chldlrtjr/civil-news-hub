@@ -20,20 +20,28 @@ TARGETS=(
   "$SCRIPT_DIR/kakao_token.json"
   "$SCRIPT_DIR/data"
   "$CRONTAB_DUMP"
-  /etc/nginx/sites-available/civil-news-hub
-  /etc/systemd/system/civil-*.service
 )
 EXISTING=()
 for t in "${TARGETS[@]}"; do [ -e "$t" ] && EXISTING+=("$t"); done
 
 ARCHIVE="$BACKUP_DIR/civil-backup-$STAMP.tar.gz"
-if tar -czf "$ARCHIVE" --absolute-names "${EXISTING[@]}" 2>>"$LOG_FILE"; then
-  echo "[$(date '+%F %T')] ✅ 백업 완료: $ARCHIVE ($(du -h "$ARCHIVE" | cut -f1))" >> "$LOG_FILE"
-else
-  echo "[$(date '+%F %T')] ❌ 백업 실패" >> "$LOG_FILE"
-  "$SCRIPT_DIR/venv/bin/python3" "$SCRIPT_DIR/kakao_notifier.py" --message "⚠️ [Civil News Hub] 서버 일일 백업 실패 ($(date '+%m-%d %H:%M'))
+REMOTE="gdrive:civil-news-hub-backup"  # rclone(drive.file 범위): 이 폴더만 보임
+alert() {
+  echo "[$(date '+%F %T')] ❌ $1" >> "$LOG_FILE"
+  "$SCRIPT_DIR/venv/bin/python3" "$SCRIPT_DIR/kakao_notifier.py" --message "⚠️ [Civil News Hub] $1 ($(date '+%m-%d %H:%M'))
 
 로그: ~/workspace/backup.log" >> "$LOG_FILE" 2>&1
+}
+if tar -czf "$ARCHIVE" --absolute-names "${EXISTING[@]}" 2>>"$LOG_FILE"; then
+  echo "[$(date '+%F %T')] ✅ 백업 완료: $ARCHIVE ($(du -h "$ARCHIVE" | cut -f1))" >> "$LOG_FILE"
+  if rclone copy "$ARCHIVE" "$REMOTE" 2>>"$LOG_FILE"; then
+    echo "[$(date '+%F %T')] ✅ 구글 드라이브 업로드 완료" >> "$LOG_FILE"
+    rclone delete "$REMOTE" --min-age "${KEEP_DAYS}d" 2>>"$LOG_FILE"
+  else
+    alert "백업 구글 드라이브 업로드 실패"
+  fi
+else
+  alert "서버 일일 백업 실패"
 fi
 rm -f "$CRONTAB_DUMP"
 
