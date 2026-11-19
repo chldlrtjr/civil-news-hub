@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-19 20:02:01",
-  "last_updated_display": "11월 19일 20:02",
-  "total_count": 27,
-  "featured_count": 27,
+  "last_updated": "2026-11-19 21:02:14",
+  "last_updated_display": "11월 19일 21:02",
+  "total_count": 29,
+  "featured_count": 29,
   "categories": [
     "ALL",
     "토목",
@@ -324,6 +324,38 @@
       }
     },
     {
+      "id": "devevent-655a3e0f77",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "civil",
+      "title": "2026 SVC Seoul AI 해커톤 | 현대건설과 함께하는 주거생활 AI 아이디어",
+      "organizer": "창업진흥원 · 현대건설 · SVC Seoul",
+      "category": "토목",
+      "badge_color": "emerald",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.29 마감",
+      "deadline_date": "2026-11-29",
+      "deadline_time": "23:59",
+      "fields": [
+        "오프라인(서울 마포구)",
+        "대회",
+        "AI"
+      ],
+      "description": "창업진흥원 · 현대건설 · SVC Seoul 주최 · 오프라인(서울 마포구), 무료, 대회, AI",
+      "link": "https://onoffmix.com/event/353176",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-10",
+        "days": 10,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
       "id": "wevity-112474",
       "source": "wevity_it",
       "source_name": "위비티",
@@ -349,6 +381,38 @@
       "dday_info": {
         "text": "D-10",
         "days": 10,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-a976c10408",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "2026 창업도시 프로젝트 지역문제 해결형 AI활용 경진대회 (대구 로컬 AI 그라운드)",
+      "organizer": "대구정책연구원 · 대구광역시 창의도시재생지원센터",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.11.30 마감",
+      "deadline_date": "2026-11-30",
+      "deadline_time": "18:00",
+      "fields": [
+        "오프라인(대구)",
+        "대회",
+        "AI"
+      ],
+      "description": "대구정책연구원 · 대구광역시 창의도시재생지원센터 주최 · 오프라인(대구), 무료, 대회, AI",
+      "link": "https://www.dgucenter.or.kr/bbs/board.php?bo_table=notice&wr_id=744",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-11",
+        "days": 11,
         "is_urgent": false,
         "is_closed": false
       }
