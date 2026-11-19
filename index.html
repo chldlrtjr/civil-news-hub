@@ -925,7 +925,9 @@ function persistSaved(){
 /* 구글 로그인(Supabase): 로그인하면 북마크가 계정에 저장돼 다른 기기에서도 보여요. 비로그인은 이 브라우저에만 저장 */
 const SB = window.supabase ? window.supabase.createClient(
   'https://eazksxmhtypedxaycrcg.supabase.co',
-  'sb_publishable_UJokd3NMOFJcfWjNjNSXPg_urs5q3kN'   // 공개용 키: 실제 보안은 DB의 RLS(본인 행만 접근)가 맡아요
+  'sb_publishable_UJokd3NMOFJcfWjNjNSXPg_urs5q3kN',  // 공개용 키: 실제 보안은 DB의 RLS(본인 행만 접근)가 맡아요
+  // pkce: 로그인 결과를 ?code= 로 받아요. 기본값(#access_token)은 #탭 라우터가 먼저 지워 버려요
+  { auth: { flowType: 'pkce' } }
 ) : null;
 let authUser = null;
 async function pullSavedRemote(){
