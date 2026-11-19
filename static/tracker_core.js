@@ -25,6 +25,12 @@
     return false;
   }
 
+  // '2026.11.02 ~ 12.02' 처럼 '시작 ~ 끝'일 때만 시작일. '~ 2026.11.20 마감'(위비티·데브이벤트)은 시작일 없음
+  function startFromPeriod(period) {
+    const m = /^\s*(\d{4})[.\-](\d{1,2})[.\-](\d{1,2})\s*~/.exec(period || '');
+    return m ? `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}` : '';
+  }
+
   const safeLink = (u) => (/^https?:\/\//i.test(u || '') ? u : '#');
 
   function makeCard(kind, item, today, now = new Date().toISOString()) {
@@ -33,6 +39,7 @@
       title: kind === 'job' ? (item.role || item.title || '') : (item.title || ''),
       org: kind === 'job' ? (item.co || item.org || '') : (item.org || ''),
       link: safeLink(item.link),
+      startDate: item.startDate || startFromPeriod(item.period),
       deadline: item.deadline || '',
       resultDate: item.resultDate || '',
       steps: Array.isArray(item.steps) ? item.steps.slice() : [],
@@ -44,7 +51,9 @@
   function refreshFromSource(card, item) {
     if (!item || card.deleted) return card;
     const deadline = item.deadline || card.deadline, resultDate = item.resultDate || card.resultDate;
-    return deadline === card.deadline && resultDate === card.resultDate ? card : { ...card, deadline, resultDate };
+    const startDate = item.startDate || startFromPeriod(item.period) || card.startDate || '';
+    return deadline === card.deadline && resultDate === card.resultDate && startDate === (card.startDate || '')
+      ? card : { ...card, deadline, resultDate, startDate };
   }
 
   const rank = (c) => (c.result ? RANK.result : c.submittedAt ? RANK.submitted : RANK.todo);
@@ -86,7 +95,7 @@
     return items.slice().sort((x, y) => (!x.deadline) - (!y.deadline) || (x.deadline < y.deadline ? 1 : x.deadline > y.deadline ? -1 : 0));
   }
 
-  const API = { STAGES, LABEL, stageOf, needsAttention, makeCard, refreshFromSource, mergeTracked, visible, sameTracked, sortActive, sortRecords, sortPicker, daysBetween };
+  const API = { STAGES, LABEL, startFromPeriod, stageOf, needsAttention, makeCard, refreshFromSource, mergeTracked, visible, sameTracked, sortActive, sortRecords, sortPicker, daysBetween };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   else window.CNHTracker = API;
 })();

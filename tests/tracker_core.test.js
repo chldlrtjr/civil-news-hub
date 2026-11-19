@@ -96,3 +96,18 @@ test('makeCard: updatedAt 기록, javascript: 링크는 # 로', () => {
   assert.equal(k.updatedAt, '2026-11-19T05:00:00Z');
   assert.equal(makeCard('contest', {id:'1', link:'https://ok.kr/a'}, T).link, 'https://ok.kr/a');
 });
+
+// ---- 진행 단계 그림: 접수 시작일 ----
+const { startFromPeriod } = require('../static/tracker_core.js');
+test('startFromPeriod: "시작 ~ 끝" 형식에서만 시작일을 읽음', () => {
+  assert.equal(startFromPeriod('2026.11.02 ~ 12.02 (14:00 마감)'), '2026-11-02');
+  assert.equal(startFromPeriod('2026.11.09 ~ 2026.11.23'), '2026-11-09');
+  assert.equal(startFromPeriod('~ 2026.11.20 마감'), '');
+  assert.equal(startFromPeriod('2026.11.21 행사 시작 전 신청'), '');
+  assert.equal(startFromPeriod(''), '');
+});
+test('makeCard·refreshFromSource: startDate 복사·갱신', () => {
+  const k = makeCard('contest', {id:'1', title:'t', period:'2026.11.02 ~ 12.02'}, T);
+  assert.equal(k.startDate, '2026-11-02');
+  assert.equal(refreshFromSource({...k, startDate:''}, {id:'1', period:'2026.11.05 ~ 12.02'}).startDate, '2026-11-05');
+});
