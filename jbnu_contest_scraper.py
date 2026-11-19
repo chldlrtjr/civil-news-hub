@@ -15,6 +15,7 @@ Civil News Hub - 전북대학교 공지사항 공모전 수집기 (jbnu_contest_
 5. 머리말만 다른 재공지(같은 공모전)는 최신 글 하나만 남긴다.
 """
 
+import calendar
 import re
 import urllib.request
 import urllib.parse
@@ -501,17 +502,54 @@ _RESULT_KEY = re.compile(r"(결과|수상자?|수상작|당선자?|당선작|합
 _RESULT_STOP = re.compile(r"[○●■□◆◇※▶\n/]|마감|시상|접수|제출|활동|교육|행사")
 
 
-def find_result_date(text: str, posted: date) -> str:
-    """'최종 수상자 발표 : 2026. 12. 7.' → '2026-12-07'. 발표 문구 뒤(구분 기호 전, 최대 40자)의 날짜 중 가장 늦은 것, 없으면 ''"""
-    dates = []
+# '11월 말' '12월 중순' '1월 초'처럼 날짜 없이 시기만 적힌 경우 (앞에 연도 '2026.'·''26.'이 붙기도 함)
+_FUZZY_MONTH = re.compile(r"(?:(20\d{2})\s*[년.]\s*|'\d{2}\s*[.]\s*)?(\d{1,2})\s*월\s*(초순|초|중순|중|하순|말|경)")
+_FUZZY_DAY = {"초": 10, "초순": 10, "중": 20, "중순": 20}  # 말·하순·경은 그 달 말일
+
+
+def _fuzzy_month(segment: str, posted: date):
+    """segment 첫 '12월 중' → (대략 날짜, '12월 중') 또는 None. 연도가 없으면 게시일 기준으로 보정"""
+    m = _FUZZY_MONTH.search(segment)
+    if not m:
+        return None
+    month, word = int(m.group(2)), m.group(3)
+    if not 1 <= month <= 12:
+        return None
+    year = int(m.group(1)) if m.group(1) else posted.year
+    if not m.group(1) and date(year, month, 28) < posted - timedelta(days=30):
+        year += 1
+    day = _FUZZY_DAY.get(word) or calendar.monthrange(year, month)[1]
+    return date(year, month, day), f"{month}월 {word}"
+
+
+def find_result_info(text: str, posted: date) -> tuple:
+    """결과 발표 시기 → ('YYYY-MM-DD', 표시 글자). 정확한 날짜면 글자는 '', '12월 중'처럼 시기만 있으면 대략 날짜 + '12월 중'.
+    발표 문구 뒤(구분 기호 전, 최대 40자)를 읽고, 여러 개면 가장 늦은 것. 없으면 ('', '')"""
+    found = []
     for m in _RESULT_KEY.finditer(text or ""):
         window = text[m.end():m.end() + 40]
         if window.startswith("회"):  # '입상자 발표회'는 결과가 아니라 행사
             continue
         window = window.lstrip(" \t\n:：.-")  # 포스터는 '결과 발표\n2027. 1. 15.'처럼 다음 줄에 날짜
+        window = re.sub(r"^(?:[/·]|및)\s*시상식?\s*[:：]?\s*", "", window).lstrip(" \t\n:：.-")  # '결과 발표 / 시상 : 11월 말'
         stop = _RESULT_STOP.search(window)
-        dates += [d for d, _ in _find_dates(window[:stop.start()] if stop else window, posted)[:1]]
-    return max(dates).isoformat() if dates else ""
+        seg = window[:stop.start()] if stop else window
+        exact = _find_dates(seg, posted)[:1]
+        if exact:
+            found.append((exact[0][0], ""))
+            continue
+        fuzzy = _fuzzy_month(seg, posted)
+        if fuzzy:
+            found.append(fuzzy)
+    if not found:
+        return "", ""
+    d, label = max(found, key=lambda x: x[0])
+    return d.isoformat(), label
+
+
+def find_result_date(text: str, posted: date) -> str:
+    """find_result_info의 날짜만 (시기만 적힌 경우는 대략 날짜)"""
+    return find_result_info(text, posted)[0]
 
 
 def _time_after(segment: str, pos: int):
@@ -608,7 +646,9 @@ def make_card(item: dict, body_text: str, poster: str, deadline: date, deadline_
     m = re.match(r"^\s*\[([^\]]+)\]", item["title"])
     organizer = m.group(1) if m and m.group(1) != "공모전" else (item.get("writer") or "전북대학교")
     desc = body_text[:200] + ("…" if len(body_text) > 200 else "")
-    result_date = find_result_date(body_text, posted)  # 포스터 경로는 판독문이 body_text로 들어옴
+    result_date, result_label = find_result_info(body_text, posted)  # 포스터 경로는 판독문이 body_text로 들어옴
+    if result_date <= deadline.isoformat():
+        result_date, result_label = "", ""  # 마감 전 날짜는 발표일일 수 없음
 
     return {
         "id": f"campus-{item['pst_id']}",
@@ -625,7 +665,8 @@ def make_card(item: dict, body_text: str, poster: str, deadline: date, deadline_
         "period": f"{posted.strftime('%Y.%m.%d')} ~ {deadline.strftime('%m.%d')} ({deadline_time} 마감)",
         "deadline_date": deadline.strftime("%Y-%m-%d"),
         "deadline_time": deadline_time,
-        "result_date": result_date if result_date > deadline.isoformat() else "",  # 마감 전 날짜는 발표일일 수 없음
+        "result_date": result_date,
+        "result_label": result_label,
         "description": desc or item["title"],
         "link": f"https://www.jbnu.ac.kr/web/Board/{item['pst_id']}/detailView.do",
         "image": poster,

@@ -111,3 +111,9 @@ test('makeCard·refreshFromSource: startDate 복사·갱신', () => {
   assert.equal(k.startDate, '2026-11-02');
   assert.equal(refreshFromSource({...k, startDate:''}, {id:'1', period:'2026.11.05 ~ 12.02'}).startDate, '2026-11-05');
 });
+
+test('resultLabel: 대략 시기 글자 복사·갱신', () => {
+  const k = makeCard('contest', {id:'1', title:'t', resultDate:'2026-12-20', resultLabel:'12월 중'}, T);
+  assert.equal(k.resultLabel, '12월 중');
+  assert.equal(refreshFromSource({...k, resultLabel:''}, {id:'1', resultDate:'2026-12-20', resultLabel:'12월 중'}).resultLabel, '12월 중');
+});

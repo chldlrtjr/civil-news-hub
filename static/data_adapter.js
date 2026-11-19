@@ -137,6 +137,7 @@ window.CivilData = (() => {
           startDate: c.start_date || '',
           deadline: c.deadline_date || '',
           resultDate: c.result_date || '',
+          resultLabel: c.result_label || '',
           track: c.track === 'it' ? 'it' : 'civil',
           description: c.description || c.target_details || c.submission_info || ''
         };

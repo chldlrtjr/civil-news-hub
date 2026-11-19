@@ -125,7 +125,7 @@ def is_duplicate_title(ntitle: str, seen_titles: set) -> bool:
     return any(min(len(ntitle), len(t)) >= 12 and (ntitle in t or t in ntitle) for t in seen_titles)
 
 
-FILL_FIELDS = ("start_date", "target", "prize", "prize_total", "prize_first", "homepage", "result_date", "image")
+FILL_FIELDS = ("start_date", "target", "prize", "prize_total", "prize_first", "homepage", "result_date", "result_label", "image")
 
 
 def _find_same(c: dict, kept: list):

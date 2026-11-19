@@ -1118,7 +1118,7 @@ function trkCardHtml(c, today){
     btns = (c.deadline ? '' : resultBtns) + trkBtn('unsubmit', c.id, '되돌리기');  // 마감일 모르면 결과를 바로 기록
   }
   if (s === 'review'){
-    sub = `심사 ${Math.max(0, T.daysBetween(c.deadline, today))}일째` + (c.resultDate ? ` · 발표 예정 ${mmdd(c.resultDate)}` : '');
+    sub = `심사 ${Math.max(0, T.daysBetween(c.deadline, today))}일째` + (c.resultDate ? ` · 발표 예정 ${esc(c.resultLabel || mmdd(c.resultDate))}` : '');
     if (c.resultDate && today > c.resultDate) sub += `<b class="trk-late">결과 나왔을 거예요. 확인해 보세요</b>`;
     if (c.kind === 'job' && c.steps.length) sub += `<span class="trk-steps">${c.steps.map(esc).join(' → ')}</span>`;
     btns = resultBtns + trkBtn('unsubmit', c.id, '되돌리기');
@@ -1136,13 +1136,14 @@ function trkStepHtml(c, s){
   const T = CNHTracker, steps = ['todo', 'submitted', 'review', 'result'];
   const at = s === 'missed' ? 0 : steps.indexOf(s);  // 마감(미제출)은 첫 칸에 멈춘 채 회색
   const segs = [c.startDate, c.deadline, c.resultDate];
+  const when = (d, j) => j === 2 && c.resultLabel ? c.resultLabel : d ? mmdd(d) : '미정';  // 발표는 '12월 중'처럼 시기 글자 우선
   const cells = steps.map((k, j) => {
     const dot = `<span class="trk-dot${j < at ? ' done' : j === at ? ' now' : ''}"><b>${T.LABEL[k]}</b></span>`;
     if (j === steps.length - 1) return dot;
     const d = segs[j];
-    return dot + `<span class="trk-seg${j < at ? ' done' : ''}"><em>${d ? mmdd(d) : '미정'}</em></span>`;
+    return dot + `<span class="trk-seg${j < at ? ' done' : ''}"><em>${esc(when(d, j))}</em></span>`;
   }).join('');
-  return `<div class="trk-step${s === 'missed' ? ' off' : ''}" role="img" aria-label="진행 단계 ${T.LABEL[s]}. 접수 시작 ${c.startDate ? mmdd(c.startDate) : '미정'}, 접수 마감 ${c.deadline ? mmdd(c.deadline) : '미정'}, 결과 발표 ${c.resultDate ? mmdd(c.resultDate) : '미정'}">${cells}</div>`;
+  return `<div class="trk-step${s === 'missed' ? ' off' : ''}" role="img" aria-label="진행 단계 ${T.LABEL[s]}. 접수 시작 ${c.startDate ? mmdd(c.startDate) : '미정'}, 접수 마감 ${c.deadline ? mmdd(c.deadline) : '미정'}, 결과 발표 ${esc(when(c.resultDate, 2))}">${cells}</div>`;
 }
 function trkRecordHtml(c){
   return `<li class="trk-rec"><span class="trk-res ${c.result}">${c.result === 'win' ? '수상·합격' : '미선정'}</span>

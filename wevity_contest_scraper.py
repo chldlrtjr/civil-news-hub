@@ -17,7 +17,7 @@ from datetime import date, datetime, timezone, timedelta
 import requests
 from bs4 import BeautifulSoup
 
-from jbnu_contest_scraper import find_result_date
+from jbnu_contest_scraper import find_result_info
 
 BASE_URL = "https://www.wevity.com/"
 HEADERS = {
@@ -165,6 +165,7 @@ def parse_detail(html: str, today: date):
         info[key] = a.get("href", "") if key == "홈페이지" and a else li.get_text(" ", strip=True)
     m = re.search(r"(\d{4}-\d{2}-\d{2})\s*~\s*(\d{4}-\d{2}-\d{2})", info.get("접수기간", ""))
     body = soup.select_one("#viewContents")
+    result_date, result_label = find_result_info(body.get_text("\n", strip=True), today) if body else ("", "")
     return {
         "start_date": m.group(1) if m else "",
         "end_date": m.group(2) if m else "",
@@ -172,7 +173,8 @@ def parse_detail(html: str, today: date):
         "prize_total": info.get("총 상금", ""),
         "prize_first": info.get("1등 상금", ""),
         "homepage": info.get("홈페이지", "") if info.get("홈페이지", "").startswith("http") else "",
-        "result_date": find_result_date(body.get_text("\n", strip=True), today) if body else "",
+        "result_date": result_date,
+        "result_label": result_label,
     }
 
 
@@ -189,7 +191,7 @@ def apply_detail(item: dict, detail: dict) -> str:
     item["start_date"] = start
     if start and item.get("deadline_date"):
         item["period"] = f"{start.replace('-', '.')} ~ {item['deadline_date'][5:].replace('-', '.')} 마감"
-    for key in ("target", "prize_total", "prize_first", "homepage", "result_date"):
+    for key in ("target", "prize_total", "prize_first", "homepage", "result_date", "result_label"):
         if detail.get(key):
             item[key] = detail[key]
     return note

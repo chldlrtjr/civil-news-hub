@@ -42,6 +42,7 @@
       startDate: item.startDate || startFromPeriod(item.period),
       deadline: item.deadline || '',
       resultDate: item.resultDate || '',
+      resultLabel: item.resultLabel || '',  // '12월 중'처럼 시기만 알 때 표시할 글자
       steps: Array.isArray(item.steps) ? item.steps.slice() : [],
       addedAt: today, submittedAt: null, result: null, resultAt: null, updatedAt: now,
     };
@@ -52,8 +53,9 @@
     if (!item || card.deleted) return card;
     const deadline = item.deadline || card.deadline, resultDate = item.resultDate || card.resultDate;
     const startDate = item.startDate || startFromPeriod(item.period) || card.startDate || '';
-    return deadline === card.deadline && resultDate === card.resultDate && startDate === (card.startDate || '')
-      ? card : { ...card, deadline, resultDate, startDate };
+    const resultLabel = item.resultDate ? (item.resultLabel || '') : (card.resultLabel || '');
+    return deadline === card.deadline && resultDate === card.resultDate && startDate === (card.startDate || '') && resultLabel === (card.resultLabel || '')
+      ? card : { ...card, deadline, resultDate, startDate, resultLabel };
   }
 
   const rank = (c) => (c.result ? RANK.result : c.submittedAt ? RANK.submitted : RANK.todo);

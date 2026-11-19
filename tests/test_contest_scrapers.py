@@ -343,3 +343,25 @@ class MoreSourceInfoTest(unittest.TestCase):
         self.assertIn("2026-12-03", notes[0])
         same = dict(dev, deadline_date="2026-12-02")
         self.assertEqual(contest_scraper.merge_duplicates([same, wev])[1], [])
+
+
+class FuzzyResultDateTest(unittest.TestCase):
+    """'11월 말' '12월 중'처럼 날짜 없이 적힌 발표 시기도 글자 그대로 남김 (계산용 대략 날짜 + 표시용 글자)"""
+
+    def test_fuzzy_month_phrases_from_real_posters(self):
+        p = date(2026, 11, 1)
+        self.assertEqual(jbnu.find_result_info("결과 발표 / 시상 : 11월 말\n시상 내역", p), ("2026-11-30", "11월 말"))
+        self.assertEqual(jbnu.find_result_info("결과발표. 2026. 12월 중 * 수상 결과 발표 일정은 변경", p), ("2026-12-20", "12월 중"))
+        self.assertEqual(jbnu.find_result_info("수상발표 및 시상\n'26. 11월 말 / 12월 중\n(일정 추후 확정)", p), ("2026-11-30", "11월 말"))
+        self.assertEqual(jbnu.find_result_info("합격자 발표: 1월 초", date(2026, 11, 25)), ("2027-01-10", "1월 초"))
+        self.assertEqual(jbnu.find_result_info("최종 결과 안내: 12월 하순", p), ("2026-12-31", "12월 하순"))
+
+    def test_exact_date_has_no_label_and_none_is_empty(self):
+        p = date(2026, 11, 1)
+        self.assertEqual(jbnu.find_result_info("최종 수상자 발표 : 2026. 12. 7.(월)", p), ("2026-12-07", ""))
+        self.assertEqual(jbnu.find_result_info("결과 발표: 개별 통보", p), ("", ""))
+
+    def test_make_card_carries_result_label(self):
+        item = {"pst_id": "1", "title": "공모전", "date": "2026-11-01", "menu": 2377}
+        card = jbnu.make_card(item, "결과 발표: 12월 중", "", date(2026, 11, 20), "18:00")
+        self.assertEqual((card["result_date"], card["result_label"]), ("2026-12-20", "12월 중"))
