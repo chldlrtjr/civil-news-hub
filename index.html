@@ -1146,7 +1146,7 @@ function trkStepHtml(c, s){
   return `<div class="trk-step${s === 'missed' ? ' off' : ''}" role="img" aria-label="진행 단계 ${T.LABEL[s]}. 접수 시작 ${c.startDate ? mmdd(c.startDate) : '미정'}, 접수 마감 ${c.deadline ? mmdd(c.deadline) : '미정'}, 결과 발표 ${esc(when(c.resultDate, 2))}">${cells}</div>`;
 }
 function trkRecordHtml(c){
-  return `<li class="trk-rec"><span class="trk-res ${c.result}">${c.result === 'win' ? '수상·합격' : '미선정'}</span>
+  return `<li class="trk-rec"><span class="trk-res ${esc(c.result)}">${c.result === 'win' ? '수상·합격' : '미선정'}</span>
     <div class="trk-rec-main"><a href="${esc(c.link)}" target="_blank" rel="noopener noreferrer">${esc(c.title)}</a>
     <span>${c.kind === 'job' ? '채용' : '공모전'} · ${esc(c.org)} · ${c.submittedAt ? mmdd(c.submittedAt) + ' 제출 · ' : ''}${mmdd(c.resultAt)} 결과</span></div>
     ${trkBtn('undo', c.id, '되돌리기')}
@@ -1180,7 +1180,7 @@ function trkModalClose(el){
 }
 function renderPicker(){
   const ids = new Set(CNHTracker.visible(tracked).map(c => c.id));
-  const open = x => x.end == null || x.end >= 0;
+  const t0 = kstToday(), open = x => x.deadline ? x.deadline >= t0 : x.end == null || x.end >= 0;  // 단계 표시와 같은 KST 기준
   const both = [...trkLists.contests.map(x => ({ ...x, _k: 'contest' })), ...trkLists.jobs.map(x => ({ ...x, _k: 'job' }))];
   const src = trkTab === 'contest' ? both.filter(x => x._k === 'contest' && open(x))
     : trkTab === 'job' ? both.filter(x => x._k === 'job' && open(x))
