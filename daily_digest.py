@@ -24,6 +24,7 @@ import io
 import re
 import sys
 import json
+import time
 import argparse
 from datetime import datetime, timedelta, timezone
 
@@ -85,14 +86,31 @@ def clean_text(text):
     return re.sub(r"\.{2,}$|…$", "", text).strip()
 
 
+BRACKET_BYLINE_RE = re.compile(r"^\s*[\[(【][^\])】]*(?:=|기자)[^\])】]*[\])】]\s*")  # [전국뉴스=오명진 기자] / (서울=연합뉴스)
+NAME_BYLINE_RE = re.compile(r"^\s*[가-힣]{2,4}\s*(?:기자|특파원)\s*=\s*")  # 홍길동 기자 =
+
+
+def strip_byline(text):
+    return NAME_BYLINE_RE.sub("", BRACKET_BYLINE_RE.sub("", text))
+
+
+def short_title(title, limit=40):
+    """글자 수 제한을 넘으면 단어 경계에서 자르고 … 붙임"""
+    if len(title) <= limit:
+        return title
+    cut = title[:limit]
+    space = cut.rfind(" ")
+    return (cut[:space] if space >= limit // 2 else cut).rstrip(" ·…,") + "…"
+
+
 def fallback_summary(article):
     """완결된 문장('~다.' / '~요.')만 최대 2개 사용 — 스니펫 끝의 잘린 문장은 버림"""
-    snippet = clean_text(article.get("snippet"))
+    snippet = strip_byline(clean_text(article.get("snippet")))
     complete = re.findall(r"[^.]*?[다요]\.", snippet)
     body = " ".join(s.strip() for s in complete[:2]).strip()
     if not body and snippet:
         body = snippet[:110] + "…"
-    return {"headline": clean_text(article.get("title"))[:40], "summary": body or clean_text(article.get("title"))}
+    return {"headline": short_title(clean_text(article.get("title"))), "summary": body or clean_text(article.get("title"))}
 
 
 def build_prompt(articles):
@@ -115,13 +133,19 @@ def build_prompt(articles):
     )
 
 
+GEMINI_RETRYABLE = {429, 500, 502, 503, 504}
+GEMINI_TRIES = 3
+GEMINI_RETRY_WAIT = 15  # 초, 시도마다 15→30초로 늘림
+
+
 def summarize_with_gemini(articles):
     api_key = (os.environ.get("GEMINI_API_KEY") or "").strip()
     if not api_key:
         print("[*] GEMINI_API_KEY 없음 → 스니펫 요약으로 대체")
         return None
 
-    models = [os.environ.get("GEMINI_MODEL", "").strip(), "gemini-3.6-flash", "gemini-flash-latest"]
+    # 쿼터가 모델별이라 flash-lite까지 두면 한 모델이 붐벼도 다른 모델로 넘어갈 수 있음
+    models = [os.environ.get("GEMINI_MODEL", "").strip(), "gemini-3.6-flash", "gemini-3.5-flash-lite", "gemini-flash-latest"]
     seen = set()
     models = [m for m in models if m and not (m in seen or seen.add(m))]
     body = {
@@ -130,11 +154,20 @@ def summarize_with_gemini(articles):
     }
     for model in models:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-        try:
-            resp = requests.post(url, params={"key": api_key}, json=body, timeout=60)
-        except requests.RequestException as e:
-            print(f"[-] Gemini 요청 실패({model}): {e}")
-            continue
+        for attempt in range(GEMINI_TRIES):
+            try:
+                resp = requests.post(url, params={"key": api_key}, json=body, timeout=60)
+            except requests.RequestException as e:
+                print(f"[-] Gemini 요청 실패({model}): {e}")
+                resp = None
+            if resp is not None and resp.status_code not in GEMINI_RETRYABLE:
+                break
+            if resp is not None:
+                print(f"[-] Gemini 일시 오류({model}): {resp.status_code} → 재시도 {attempt + 1}/{GEMINI_TRIES}")
+            if attempt < GEMINI_TRIES - 1:
+                time.sleep(GEMINI_RETRY_WAIT * (attempt + 1))
+        if resp is None or resp.status_code in GEMINI_RETRYABLE:
+            continue  # 이 모델은 계속 붐빔/쿼터 소진 → 다음 모델
         if resp.status_code == 404:
             continue
         if not resp.ok:

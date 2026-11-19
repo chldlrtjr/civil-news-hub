@@ -54,3 +54,43 @@ def test_render_cards_count():
     items = dd.build_items([art(i, 5) for i in range(5)], use_ai=False)
     images = dd.render_cards(items, date(2026, 11, 5))
     assert len(images) == 6 and all(img[:2] == b"\xff\xd8" for img in images)
+
+
+def test_gemini_busy_retries_then_next_model(monkeypatch):
+    import json as _json
+
+    class R:
+        def __init__(self, code, items=None):
+            self.status_code, self.ok, self.text = code, code == 200, ""
+            self._items = items
+
+        def json(self):
+            return {"candidates": [{"content": {"parts": [{"text": _json.dumps(self._items)}]}}]}
+
+    arts = [art(1, 5), art(2, 5)]
+    good = [{"headline": "h", "summary": "s"}] * 2
+    calls = []
+
+    def fake_post(url, **kw):
+        calls.append(url.split("/models/")[1].split(":")[0])
+        return R(503) if calls[-1] == "busy-model" else R(200, good)
+
+    monkeypatch.setenv("GEMINI_API_KEY", "k")
+    monkeypatch.setenv("GEMINI_MODEL", "busy-model")
+    monkeypatch.setattr(dd.requests, "post", fake_post)
+    monkeypatch.setattr(dd.time, "sleep", lambda s: None)
+    assert dd.summarize_with_gemini(arts) == good
+    assert calls == ["busy-model"] * dd.GEMINI_TRIES + ["gemini-3.6-flash"]
+
+
+def test_fallback_strips_byline_and_cuts_title_at_word():
+    a = art(1, 5)
+    a["title"] = "태영건설 시공 고속도로 현장서 20대 하청 근로자 끼임 사망…중대재해 수사 착수"
+    a["snippet"] = "[전국뉴스=오명진 기자] 겨울철 제설이 시작됐다. 장비를 늘렸다."
+    fb = dd.fallback_summary(a)
+    assert fb["summary"] == "겨울철 제설이 시작됐다. 장비를 늘렸다."
+    assert fb["headline"].endswith("…") and len(fb["headline"]) <= 41
+    assert "중대재해 수…" not in fb["headline"]
+    for s in ["(서울=연합뉴스) 홍길동 기자 = 본문이다.", "홍길동 기자 = 본문이다."]:
+        assert dd.strip_byline(s) == "본문이다."
+    assert dd.strip_byline("[선제적 제설]한국도로공사") == "[선제적 제설]한국도로공사"  # 기사 말머리는 유지
