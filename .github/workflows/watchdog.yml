@@ -26,3 +26,13 @@ jobs:
               --data-urlencode "text=⚠️ [Civil News Hub] jcloud 수집이 ${age}시간째 멈춰 있어요 (마지막: $last)" > /dev/null
             echo "알림 발송"
           fi
+
+      # Supabase 무료 프로젝트는 7일간 활동이 없으면 일시정지돼요 → 매시 DB에 질의 1번
+      - name: Supabase 깨워 두기
+        run: |
+          # 공개용(publishable) 키라 여기 적어도 돼요. 비로그인은 RLS로 막혀 401이지만 DB까지는 질의가 가요
+          code=$(curl -sS -m 20 -o /dev/null -w '%{http_code}' \
+            "https://eazksxmhtypedxaycrcg.supabase.co/rest/v1/user_saved?select=user_id&limit=1" \
+            -H "apikey: sb_publishable_UJokd3NMOFJcfWjNjNSXPg_urs5q3kN")
+          echo "Supabase 응답: $code"
+          [ "$code" = 200 ] || [ "$code" = 401 ]
