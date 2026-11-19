@@ -14,3 +14,6 @@ create policy "본인 북마크만" on public.user_saved
   for all to authenticated
   using ((select auth.uid()) = user_id)
   with check ((select auth.uid()) = user_id);
+
+-- 2026-11-19 마이페이지 진행 카드 (한 번 실행)
+alter table public.user_saved add column if not exists tracked jsonb not null default '[]'::jsonb;

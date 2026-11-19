@@ -134,6 +134,8 @@ window.CivilData = (() => {
           added: idx,
           link: c.link || '#',
           period: c.period || '',
+          deadline: c.deadline_date || '',
+          resultDate: c.result_date || '',
           track: c.track === 'it' ? 'it' : 'civil',
           description: c.description || c.target_details || c.submission_info || ''
         };
@@ -158,6 +160,7 @@ window.CivilData = (() => {
           exp: '',
           steps: (j.steps && j.steps.length) ? j.steps : ['공고 원문 참조'],
           end: daysLeft,
+          deadline: j.deadline_date || '',
           loc: j.location || '공고 원문 참조',
           welfare: j.tags || [],
           link: j.link || '#',
