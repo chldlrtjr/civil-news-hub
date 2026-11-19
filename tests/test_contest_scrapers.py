@@ -276,3 +276,70 @@ class ResultDateTest(unittest.TestCase):
         self.assertEqual(jbnu.find_result_date("운영 일정\n결과 발표\n2027. 1. 15.(금) 예정\n세부 내용", posted), "2027-01-15")
         self.assertEqual(jbnu.find_result_date("입상자 발표회: 2026. 11. 5.(목) 16:00", posted), "")
         self.assertEqual(jbnu.find_result_date("최종 발표\n및 심사\n11/27", posted), "")
+
+
+WEVITY_DETAIL = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "fixtures", "wevity_detail.html"), encoding="utf-8").read()
+
+
+class MoreSourceInfoTest(unittest.TestCase):
+    """위비티 상세·데브이벤트 접수 시작일 수집 + 출처 간 교차 검증"""
+
+    def test_devevent_keeps_apply_start_date(self):
+        hai = it.parse_devevent_readme(DEVEVENT_MD)[0]
+        self.assertEqual(hai["start_date"], "2026-10-26")
+        self.assertEqual(hai["period"], "2026.10.26 ~ 01.05 마감")
+        hackon = it.parse_devevent_readme(DEVEVENT_MD)[1]
+        self.assertEqual(hackon["start_date"], "")  # 접수 기간 없이 행사 일시만
+
+    def test_parse_wevity_detail(self):
+        d = wevity.parse_detail(WEVITY_DETAIL, date(2026, 11, 19))
+        self.assertEqual((d["start_date"], d["end_date"]), ("2026-11-02", "2026-11-29"))
+        self.assertEqual(d["target"], "기타")
+        self.assertEqual((d["prize_total"], d["prize_first"]), ("1천만원이하", "50만원"))
+        self.assertTrue(d["homepage"].startswith("https://www.djtc.kr/"))
+        self.assertEqual(d["result_date"], "")  # '발표평가 및 시상'은 결과 발표가 아님
+        self.assertIsNone(wevity.parse_detail("<html>점검중</html>", date(2026, 11, 19)))
+
+    def test_apply_detail_cross_checks_list_deadline(self):
+        item = {"id": "wevity-1", "title": "t", "deadline_date": "2026-11-28", "period": "~ 2026.11.28 마감", "target": ""}
+        detail = {"start_date": "2026-11-02", "end_date": "2026-11-29", "target": "대학생", "prize_total": "1천만원이하",
+                  "prize_first": "50만원", "homepage": "https://x.kr", "result_date": ""}
+        msg = wevity.apply_detail(item, detail)
+        self.assertIn("2026-11-28", msg)
+        self.assertEqual((item["deadline_date"], item["start_date"]), ("2026-11-29", "2026-11-02"))
+        self.assertEqual(item["period"], "2026.11.02 ~ 11.29 마감")
+        self.assertEqual((item["target"], item["prize_first"], item["deadline_source"]), ("대학생", "50만원", "wevity_detail"))
+        same = {"id": "wevity-2", "title": "t", "deadline_date": "2026-11-29", "period": "", "target": ""}
+        self.assertEqual(wevity.apply_detail(same, detail), "")
+
+    def test_enrich_uses_cache_and_caps_fetches(self):
+        today = date(2026, 11, 19)
+        items = [{"id": f"wevity-{i}", "title": "t", "deadline_date": "2026-11-29", "period": "", "target": "",
+                  "link": f"https://www.wevity.com/?ix={i}"} for i in range(4)]
+        cache = {"wevity-0": {"fetched": "2026-11-19", "detail": {"start_date": "2026-11-01", "end_date": "2026-11-29",
+                 "target": "", "prize_total": "", "prize_first": "", "homepage": "", "result_date": ""}}}
+        fetched = []
+        def fake_get(url):
+            fetched.append(url)
+            return WEVITY_DETAIL
+        wevity.enrich_with_details(items, cache, today, get_html=fake_get, max_fetch=2)
+        self.assertEqual(len(fetched), 2)                      # 캐시 1건은 다시 안 받고, 새 3건 중 2건까지만
+        self.assertEqual(items[0]["start_date"], "2026-11-01")  # 캐시 사용
+        self.assertEqual(items[1]["start_date"], "2026-11-02")  # 새로 받은 상세
+        self.assertNotIn("start_date", items[3])               # 이번 회차 한도 초과 → 다음 회차에
+        self.assertIn("wevity-1", cache)
+
+    def test_merge_duplicates_cross_checks_sources(self):
+        dev = {"id": "wevity-9", "source": "devevent", "title": "항만 AI 기술 공모전", "deadline_date": "2026-12-03",
+               "start_date": "2026-09-30", "period": "2026.09.30 ~ 12.03 마감", "target": ""}
+        wev = {"id": "wevity-9", "source": "wevity", "title": "항만 AI 기술 공모전", "deadline_date": "2026-12-02",
+               "deadline_source": "wevity_detail", "start_date": "", "period": "~ 2026.12.02 마감", "target": "대학생"}
+        kept, notes = contest_scraper.merge_duplicates([dev, wev])
+        self.assertEqual(len(kept), 1)
+        self.assertEqual(kept[0]["deadline_date"], "2026-12-02")   # 상세 페이지로 확인한 마감일 우선
+        self.assertEqual(kept[0]["start_date"], "2026-09-30")      # 빈 칸은 다른 출처로 채움
+        self.assertEqual(kept[0]["target"], "대학생")
+        self.assertEqual(len(notes), 1)
+        self.assertIn("2026-12-03", notes[0])
+        same = dict(dev, deadline_date="2026-12-02")
+        self.assertEqual(contest_scraper.merge_duplicates([same, wev])[1], [])

@@ -6,13 +6,18 @@ Civil News Hub - 위비티(wevity.com) 토목 분야 공모전 수집기 (wevity
 - 위비티 '건축/건설/인테리어', '과학/공학', '기획/아이디어' 분야의 접수중 목록에서 토목 관련 공모전만 수집한다.
   (도로·철도 같은 토목 키워드에 더해 모듈러·콘테크·건설안전·플랜트 등 토목 취업에 도움되는 건설기술 분야 포함, 순수 건축·공간 디자인은 제외)
 - 마감일은 위비티 목록에 표시된 D-day(위비티가 공고 원문 기준으로 계산한 값)로부터 날짜를 환산한다.
-- 상세 페이지 본문은 봇 요청에 내용을 주지 않아서 상금·참가대상은 수집하지 않는다 (카드에 '위비티에서 모집'으로 표시).
+- 상세 페이지(접수기간·응모대상·상금·홈페이지·본문)는 하루 한 번만 읽어 data/wevity_detail_cache.json에 저장하고,
+  목록 D-day로 계산한 마감일과 상세 접수기간을 교차 검증한다 (다르면 상세 우선, 로그에 남김).
 """
 
+import json
+import os
 import re
-from datetime import datetime, timezone, timedelta
+from datetime import date, datetime, timezone, timedelta
 import requests
 from bs4 import BeautifulSoup
+
+from jbnu_contest_scraper import find_result_date
 
 BASE_URL = "https://www.wevity.com/"
 HEADERS = {
@@ -136,6 +141,107 @@ def parse_list_page(html: str, today: datetime, cidx: int) -> list:
     return items
 
 
+DETAIL_CACHE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "wevity_detail_cache.json")
+MAX_DETAIL_FETCH = 15  # 한 회차에 새로 여는 상세 페이지 수 (나머지는 다음 정시 수집에)
+
+
+def parse_detail(html: str, today: date):
+    """상세 HTML → {start_date, end_date, target, prize_total, prize_first, homepage, result_date}. 정보 영역이 없으면 None"""
+    soup = BeautifulSoup(html, "html.parser")
+    ul = soup.select_one("ul.cd-info-list")
+    if ul is None:
+        return None
+    info = {}
+    for li in ul.find_all("li", recursive=False):
+        tit = li.select_one("span.tit")
+        if not tit:
+            continue
+        key = tit.get_text(strip=True)
+        tit.extract()
+        dday = li.select_one(".cil-dday")
+        if dday:
+            dday.extract()
+        a = li.find("a")
+        info[key] = a.get("href", "") if key == "홈페이지" and a else li.get_text(" ", strip=True)
+    m = re.search(r"(\d{4}-\d{2}-\d{2})\s*~\s*(\d{4}-\d{2}-\d{2})", info.get("접수기간", ""))
+    body = soup.select_one("#viewContents")
+    return {
+        "start_date": m.group(1) if m else "",
+        "end_date": m.group(2) if m else "",
+        "target": info.get("응모대상", ""),
+        "prize_total": info.get("총 상금", ""),
+        "prize_first": info.get("1등 상금", ""),
+        "homepage": info.get("홈페이지", "") if info.get("홈페이지", "").startswith("http") else "",
+        "result_date": find_result_date(body.get_text("\n", strip=True), today) if body else "",
+    }
+
+
+def apply_detail(item: dict, detail: dict) -> str:
+    """상세 정보를 카드에 반영. 목록 D-day 마감일과 상세 접수 마감일이 다르면 상세를 쓰고 그 내용을 돌려준다 (같으면 '')"""
+    note = ""
+    end = detail.get("end_date")
+    if end and end != item.get("deadline_date"):
+        note = f"위비티 교차 검증: {item.get('title')} 목록 마감 {item.get('deadline_date')} ≠ 상세 {end} → 상세 사용"
+        item["deadline_date"] = end
+    if end:
+        item["deadline_source"] = "wevity_detail"
+    start = detail.get("start_date", "")
+    item["start_date"] = start
+    if start and item.get("deadline_date"):
+        item["period"] = f"{start.replace('-', '.')} ~ {item['deadline_date'][5:].replace('-', '.')} 마감"
+    for key in ("target", "prize_total", "prize_first", "homepage", "result_date"):
+        if detail.get(key):
+            item[key] = detail[key]
+    return note
+
+
+def load_detail_cache() -> dict:
+    try:
+        with open(DETAIL_CACHE, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def save_detail_cache(cache: dict) -> None:
+    tmp = DETAIL_CACHE + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(cache, f, ensure_ascii=False, indent=1)
+    os.replace(tmp, DETAIL_CACHE)
+
+
+def _get_html(url: str) -> str:
+    r = requests.get(url, headers=HEADERS, timeout=10)
+    r.raise_for_status()
+    r.encoding = "utf-8"
+    return r.text
+
+
+def enrich_with_details(items: list, cache: dict, today: date, get_html=_get_html, max_fetch: int = MAX_DETAIL_FETCH) -> list:
+    """오늘 읽은 상세는 캐시를 쓰고, 아니면 새로 연다(한 회차 max_fetch건까지). 반환: 교차 검증 불일치 메시지 목록"""
+    notes, fetched = [], 0
+    for c in items:
+        hit = cache.get(c["id"])
+        if not (hit and hit.get("fetched") == today.isoformat()):
+            if fetched >= max_fetch:
+                if not hit:
+                    continue
+            else:
+                fetched += 1
+                try:
+                    detail = parse_detail(get_html(c["link"]), today)
+                except Exception as e:
+                    print(f"  ⚠️ [Wevity] 상세 읽기 실패 {c['id']}: {e}")
+                    detail = None
+                if detail:
+                    hit = cache[c["id"]] = {"fetched": today.isoformat(), "detail": detail}
+        if hit:
+            note = apply_detail(c, hit["detail"])
+            if note:
+                notes.append(note)
+    return notes
+
+
 def fetch_wevity(categories, keep, label: str, source: str = "wevity") -> list:
     """위비티 접수중 공모전 중 keep(contest)을 통과한 것만 수집. 모든 요청이 실패하면 WevityFetchError"""
     print("\n" + "-" * 60)
@@ -183,7 +289,14 @@ def fetch_wevity(categories, keep, label: str, source: str = "wevity") -> list:
     if ok_pages == 0:
         raise WevityFetchError("; ".join(errors) or "목록 페이지를 하나도 읽지 못함")
 
-    print(f"🎯 [Wevity] {label} 접수중 공모전 총 {len(results)}건 수집")
+    cache = load_detail_cache()
+    for note in enrich_with_details(results, cache, today.date()):
+        print(f"  ⚠️ {note}")
+    try:
+        save_detail_cache(cache)
+    except OSError as e:
+        print(f"  ⚠️ [Wevity] 상세 캐시 저장 실패: {e}")
+    print(f"🎯 [Wevity] {label} 접수중 공모전 총 {len(results)}건 수집 (상세 확인 {sum(1 for c in results if c.get('deadline_source') == 'wevity_detail')}건)")
     return results
 
 

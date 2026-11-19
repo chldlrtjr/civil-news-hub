@@ -99,6 +99,18 @@ def devevent_deadline(apply_line: str, event_line: str, sec_year: int, sec_month
     return deadline, (t.zfill(5) if t else default_time)
 
 
+def devevent_start(apply_line: str, sec_year: int, sec_month: int) -> str:
+    """'접수: 10. 26(월) 10:00 ~ 01. 05(화)'의 시작일 → 'YYYY-MM-DD' (접수 기간이 없으면 '')"""
+    matches = DATE_RE.findall(apply_line or "")
+    if len(matches) < 2:
+        return ""
+    month, day = int(matches[0][0]), int(matches[0][1])
+    try:
+        return date(resolve_year(month, sec_year, sec_month), month, day).isoformat()
+    except ValueError:
+        return ""
+
+
 def devevent_item(title, link, tags, organizer, apply_line, event_line, sec_year, sec_month):
     if not ("대회" in tags or re.search(r"해커톤|hackathon", title, re.I)):
         return None
@@ -113,8 +125,13 @@ def devevent_item(title, link, tags, organizer, apply_line, event_line, sec_year
     wevity_ix = re.search(r"wevity\.com/.*[?&]ix=(\d+)", link)
     cid = f"wevity-{wevity_ix.group(1)}" if wevity_ix else "devevent-" + hashlib.md5(link.encode("utf-8")).hexdigest()[:10]
     fields = [t for t in tags if t not in ("무료", "유료")]
-    period = (f"~ {deadline.strftime('%Y.%m.%d')} 마감" if apply_line
-              else f"{deadline.strftime('%Y.%m.%d')} 행사 시작 전 신청")
+    start = devevent_start(apply_line, sec_year, sec_month)
+    if start:
+        period = f"{start.replace('-', '.')} ~ {deadline.strftime('%m.%d')} 마감"
+    elif apply_line:
+        period = f"~ {deadline.strftime('%Y.%m.%d')} 마감"
+    else:
+        period = f"{deadline.strftime('%Y.%m.%d')} 행사 시작 전 신청"
     return {
         "id": cid,
         "source": "devevent",
@@ -129,6 +146,7 @@ def devevent_item(title, link, tags, organizer, apply_line, event_line, sec_year
         "status": "접수중",
         "status_color": "emerald",
         "period": period,
+        "start_date": start,
         "deadline_date": deadline.strftime("%Y-%m-%d"),
         "deadline_time": deadline_time,
         "fields": fields,

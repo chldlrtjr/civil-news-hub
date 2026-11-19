@@ -134,6 +134,7 @@ window.CivilData = (() => {
           added: idx,
           link: c.link || '#',
           period: c.period || '',
+          startDate: c.start_date || '',
           deadline: c.deadline_date || '',
           resultDate: c.result_date || '',
           track: c.track === 'it' ? 'it' : 'civil',

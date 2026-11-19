@@ -23,3 +23,5 @@ data/poster_ocr_cache.json.tmp
 # 아침 Top 5 다이제스트 산출물/발송 상태
 data/digest_out/
 data/.digest_last_sent
+data/wevity_detail_cache.json
+data/wevity_detail_cache.json.tmp

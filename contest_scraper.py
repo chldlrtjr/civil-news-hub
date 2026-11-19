@@ -125,6 +125,50 @@ def is_duplicate_title(ntitle: str, seen_titles: set) -> bool:
     return any(min(len(ntitle), len(t)) >= 12 and (ntitle in t or t in ntitle) for t in seen_titles)
 
 
+FILL_FIELDS = ("start_date", "target", "prize", "prize_total", "prize_first", "homepage", "result_date", "image")
+
+
+def _find_same(c: dict, kept: list):
+    """id가 같거나 제목이 같은(포함 관계 포함) 이미 받은 공모전"""
+    nt = normalize_title(c.get("title", ""))
+    for k in kept:
+        if c.get("id") and c.get("id") == k.get("id"):
+            return k
+        if nt and is_duplicate_title(nt, {normalize_title(k.get("title", ""))}):
+            return k
+    return None
+
+
+def merge_duplicates(collected: list) -> tuple:
+    """
+    같은 공모전이 여러 출처에 있으면 하나로 합치며 교차 검증한다.
+    - 마감일이 다르면 위비티 상세 페이지로 확인한 쪽을 쓰고 불일치를 기록
+    - 한쪽에만 있는 정보(시작일·대상·상금 등)는 채워 넣음
+    반환: (합친 목록, 불일치 메시지 목록)
+    """
+    kept, notes = [], []
+    for c in collected:
+        same = _find_same(c, kept)
+        if same is None:
+            kept.append(c)
+            continue
+        if c.get("deadline_date") and c.get("deadline_date") != same.get("deadline_date"):
+            trusted = c if c.get("deadline_source") == "wevity_detail" and same.get("deadline_source") != "wevity_detail" else same
+            other = same if trusted is c else c
+            notes.append(f"교차 검증: {same.get('title')} 마감일 {other.get('source')} {other.get('deadline_date')} ≠ "
+                         f"{trusted.get('source')} {trusted.get('deadline_date')} → {trusted.get('source')} 사용")
+            if trusted is c:
+                for key in ("deadline_date", "deadline_time", "deadline_source"):
+                    if c.get(key):
+                        same[key] = c[key]
+        for key in FILL_FIELDS:
+            if not same.get(key) and c.get(key):
+                same[key] = c[key]
+        if same.get("start_date") and same.get("deadline_date"):
+            same["period"] = f"{same['start_date'].replace('-', '.')} ~ {same['deadline_date'][5:].replace('-', '.')} 마감"
+    return kept, notes
+
+
 def load_previous_contests() -> list:
     try:
         with open(CONTESTS_JSON_PATH, "r", encoding="utf-8") as f:
@@ -170,19 +214,9 @@ def scrape_civil_contests():
 
     # 1. 수집 + 중복 제거 (id 또는 정규화 제목이 같으면 먼저 들어온 수집원 우선)
     collected, failed_sources = collect_raw_contests()
-    raw_contests = []
-    seen_ids = set()
-    seen_titles = set()
-    for c in collected:
-        cid = c.get("id")
-        ntitle = normalize_title(c.get("title", ""))
-        if (cid and cid in seen_ids) or (ntitle and is_duplicate_title(ntitle, seen_titles)):
-            continue
-        if cid:
-            seen_ids.add(cid)
-        if ntitle:
-            seen_titles.add(ntitle)
-        raw_contests.append(c)
+    raw_contests, cross_notes = merge_duplicates(collected)
+    for note in cross_notes:
+        print(f"⚠️ [{note}]")
 
     # 2. 유효 공모전 검증 (Rule 1-①, 1-⑤, 1-⑦: 무결성 검증 게이트)
     active_contests = []
