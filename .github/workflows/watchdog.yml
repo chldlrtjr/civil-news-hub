@@ -1,10 +1,14 @@
 name: jcloud 수집 감시
 
-# jcloud가 매시 커밋하는 번들이 3시간 넘게 멈추면 텔레그램으로 알려요.
+# jcloud가 매시 커밋하는 번들이 3시간 넘게 멈추면 텔레그램으로 알리고 Actions 비상 수집을 돌려요.
 on:
   schedule:
     - cron: '30 * * * *'
   workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write  # 비상 수집 워크플로 실행용
 
 jobs:
   check:
@@ -23,8 +27,12 @@ jobs:
           if [ "$age" -ge 3 ] && [ $((age % 12)) -eq 3 ]; then
             curl -sS -m 20 "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
               --data-urlencode "chat_id=$TELEGRAM_CHAT_ID" \
-              --data-urlencode "text=⚠️ [Civil News Hub] jcloud 수집이 ${age}시간째 멈춰 있어요 (마지막: $last)" > /dev/null
+              --data-urlencode "text=⚠️ [Civil News Hub] jcloud 수집이 ${age}시간째 멈춰 있어요 (마지막: $last). Actions 비상 수집을 돌릴게요" > /dev/null
             echo "알림 발송"
+          fi
+          # 비상 수집이 성공하면 번들이 갱신돼 age가 0으로 돌아가므로, jcloud가 죽어 있는 동안 약 3시간마다 한 번 돌아요
+          if [ "$age" -ge 3 ]; then
+            gh workflow run daily_crawl.yml --repo "$GITHUB_REPOSITORY" && echo "비상 수집 실행"
           fi
 
       # Supabase 무료 프로젝트는 7일간 활동이 없으면 일시정지돼요 → 매시 DB에 질의 1번

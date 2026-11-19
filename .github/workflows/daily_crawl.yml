@@ -1,44 +1,58 @@
-name: 토목 뉴스, 공모전, 채용, 알바 및 SW사업단 정기 자동 수집 및 배포 (매시간 정각)
+name: 비상 수집 (jcloud가 멈췄을 때만)
 
+# 평소 수집은 jcloud cron이 매시 해요. 예약 없이, 수집 감시(watchdog.yml)가
+# 번들이 3시간 넘게 안 바뀐 걸 보면 이 워크플로를 실행해요. 손으로 실행해도 돼요.
 on:
-  schedule:
-    # 매시간 정각 자동 실행 (UTC 매시간 정각 = KST 매시간 정각)
-    - cron: '0 * * * *'
-  workflow_dispatch: # GitHub 웹에서 수동 실행 가능
+  workflow_dispatch:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
+
+concurrency:
+  group: emergency-crawl
+  cancel-in-progress: false
 
 jobs:
-  crawl-and-deploy:
+  crawl:
     runs-on: ubuntu-latest
     steps:
-      - name: 저장소 체크아웃
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Python 3.12 설정
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: pip
 
-      - name: 전체 데이터 크롤링, 번들 빌드 및 무결성 검증 실행
+      - run: pip install -q -r requirements.txt
+
+      # 포스터 OCR·위비티 상세 캐시는 git에 없어서 실행 사이에 Actions 캐시로 이어 써요 (없으면 Gemini 한도를 다시 씀)
+      - uses: actions/cache@v4
+        with:
+          path: |
+            data/poster_ocr_cache.json
+            data/wevity_detail_cache.json
+          key: crawl-cache-${{ github.run_id }}
+          restore-keys: crawl-cache-
+
+      - name: 수집 (한 수집기가 실패해도 나머지는 계속) + 무결성 검증
         env:
           WORK24_API_KEY: ${{ secrets.WORK24_API_KEY }}
           JOBALIO_API_KEY: ${{ secrets.JOBALIO_API_KEY }}
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          python scraper.py
-          python contest_scraper.py
-          python job_scraper.py
-          python jbnu_scraper.py
-          python swuniv_scraper.py
-          python build_data_bundle.py
-          python test_contests_integrity.py
+          for s in scraper.py contest_scraper.py job_scraper.py jbnu_scraper.py swuniv_scraper.py build_data_bundle.py; do
+            python "$s" || echo "::warning::$s 실패"
+          done
+          python test_contests_integrity.py  # 실패하면 여기서 멈춰서 잘못된 데이터를 올리지 않아요
 
-      - name: 업데이트된 데이터 커밋 및 푸시
+      - name: 커밋·푸시
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/news.json data/contests.json data/jobs.json data/work24_cache.json data/jbnu_albas.json data/swuniv_programs.json static/cnh_data_bundle.js
-          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: [자동 수집] $(date '+%Y-%m-%d %H:%M') 토목 뉴스, 공모전, 채용, 알바 및 번들 데이터 업데이트" && git push)
+          git diff --staged --quiet && { echo "변경 없음"; exit 0; }
+          git commit -q -m "chore: [비상 수집] $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M') jcloud 대신 Actions에서 수집"
+          git pull -q --rebase origin main  # 그 사이 jcloud가 살아나 푸시했으면 충돌로 멈춤(데이터 손상 없음)
+          git push -q origin main
