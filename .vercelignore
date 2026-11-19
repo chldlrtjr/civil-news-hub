@@ -1,0 +1,12 @@
+# Vercel에는 웹사이트 파일만 올려요 (파이썬 수집기·Flask는 jcloud 담당이라 제외 → Flask 자동 감지도 막음)
+/*
+!index.html
+!contests.html
+!jobs.html
+!mobile.html
+!favicon.svg
+!manifest.json
+!sw.js
+!static
+!data
+!vercel.json
