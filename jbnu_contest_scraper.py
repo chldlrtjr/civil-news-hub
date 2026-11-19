@@ -494,6 +494,15 @@ def _find_dates(segment: str, posted: date) -> list:
     return [(d, end) for _, d, end in found]
 
 
+_RESULT_KEY = re.compile(r"(결과|수상자?|수상작|당선자?|당선작|합격자?|입상자?|최종|선정)\s*(발표|공고|안내|통보|공지)")
+
+
+def find_result_date(text: str, posted: date) -> str:
+    """'최종 수상자 발표 : 2026. 12. 7.' → '2026-12-07'. 발표 문구 뒤 40자 안의 날짜 중 가장 늦은 것, 없으면 ''"""
+    dates = [d for m in _RESULT_KEY.finditer(text or "") for d, _ in _find_dates(text[m.end():m.end() + 40], posted)[:1]]
+    return max(dates).isoformat() if dates else ""
+
+
 def _time_after(segment: str, pos: int):
     """날짜 바로 뒤의 '18:00' / '오후 6시' → 'HH:MM'"""
     m = _TIME.match(segment[pos:pos + 25])
@@ -604,6 +613,7 @@ def make_card(item: dict, body_text: str, poster: str, deadline: date, deadline_
         "period": f"{posted.strftime('%Y.%m.%d')} ~ {deadline.strftime('%m.%d')} ({deadline_time} 마감)",
         "deadline_date": deadline.strftime("%Y-%m-%d"),
         "deadline_time": deadline_time,
+        "result_date": find_result_date(body_text, posted),  # 포스터 경로는 판독문이 body_text로 들어옴
         "description": desc or item["title"],
         "link": f"https://www.jbnu.ac.kr/web/Board/{item['pst_id']}/detailView.do",
         "image": poster,

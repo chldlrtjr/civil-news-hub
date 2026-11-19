@@ -238,3 +238,24 @@ class SourceFallbackTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ResultDateTest(unittest.TestCase):
+    def test_find_result_date_picks_latest_announcement(self):
+        posted = date(2026, 11, 1)
+        text = "접수: 11. 20.(금)까지 ○ 1차 결과 발표 : 2026. 12. 1. ○ 최종 수상자 발표 : 2026. 12. 7.(월) 18:00 ○ 시상식 12. 20."
+        self.assertEqual(jbnu.find_result_date(text, posted), "2026-12-07")
+
+    def test_find_result_date_ignores_deadline_and_ceremony(self):
+        posted = date(2026, 11, 1)
+        self.assertEqual(jbnu.find_result_date("접수 마감 11. 20. / 시상식 12. 20.", posted), "")
+        self.assertEqual(jbnu.find_result_date("", posted), "")
+
+    def test_find_result_date_short_dates_roll_year(self):
+        posted = date(2026, 11, 25)
+        self.assertEqual(jbnu.find_result_date("합격자 발표: 1월 5일", posted), "2027-01-05")
+
+    def test_make_card_carries_result_date(self):
+        item = {"pst_id": "1", "title": "공모전", "date": "2026-11-01", "menu": 2377}
+        card = jbnu.make_card(item, "결과 발표: 2026. 12. 7.", "", date(2026, 11, 20), "18:00")
+        self.assertEqual(card["result_date"], "2026-12-07")

@@ -957,7 +957,7 @@ function authBoxHtml(){
   if (!SB) return '';
   if (authUser){
     const m = authUser.user_metadata || {};
-    return `<div class="cnh-auth"><span>✅ <b>${esc(m.full_name || m.name || authUser.email)}</b> 계정에 저장 중이에요</span><button type="button" data-auth="logout">로그아웃</button></div>`;
+    return `<div class="cnh-auth"><span><b>${esc(m.full_name || m.name || authUser.email)}</b> 계정에 저장 중이에요</span><button type="button" data-auth="logout">로그아웃</button></div>`;
   }
   return `<div class="cnh-auth"><span>구글로 로그인하면 다른 기기에서도 북마크가 보여요</span><button type="button" data-auth="login">구글 로그인</button></div>`;
 }
@@ -1524,7 +1524,7 @@ savedListeners.push(()=>{
 if (_initData && _initData.meta) {
   const notEl = $('#live-notice');
   if (notEl) {
-    notEl.innerHTML = `🟢 <b>실시간 자동 수집 데이터 연동 완료</b> (토목 뉴스 <strong>${_initData.meta.newsCount}</strong>건, 채용 <strong>${_initData.meta.jobsCount}</strong>건, 공모전 <strong>${_initData.meta.contestsCount}</strong>건, 전북대 알바 <strong>${_initData.meta.albaCount}</strong>건 · 업데이트: ${_initData.meta.lastUpdated})`;
+    notEl.innerHTML = `<b>실시간 자동 수집 데이터 연동 완료</b> (토목 뉴스 <strong>${_initData.meta.newsCount}</strong>건, 채용 <strong>${_initData.meta.jobsCount}</strong>건, 공모전 <strong>${_initData.meta.contestsCount}</strong>건, 전북대 알바 <strong>${_initData.meta.albaCount}</strong>건 · 업데이트: ${_initData.meta.lastUpdated})`;
   }
 }
 updateSavedCount();
@@ -1559,7 +1559,7 @@ async function syncDesktopLiveData(){
 
       const notEl = $('#live-notice');
       if (notEl && live.meta) {
-        notEl.innerHTML = `🟢 <b>실시간 자동 수집 데이터 연동 완료</b> (토목 뉴스 <strong>${live.meta.newsCount}</strong>건, 채용 <strong>${live.meta.jobsCount}</strong>건, 공모전 <strong>${live.meta.contestsCount}</strong>건, 전북대 알바 <strong>${live.meta.albaCount}</strong>건 · 업데이트: ${live.meta.lastUpdated})`;
+        notEl.innerHTML = `<b>실시간 자동 수집 데이터 연동 완료</b> (토목 뉴스 <strong>${live.meta.newsCount}</strong>건, 채용 <strong>${live.meta.jobsCount}</strong>건, 공모전 <strong>${live.meta.contestsCount}</strong>건, 전북대 알바 <strong>${live.meta.albaCount}</strong>건 · 업데이트: ${live.meta.lastUpdated})`;
       }
     }
   } catch(e) {
@@ -2019,7 +2019,7 @@ async function syncMobileLiveData(){
 
       const mNotEl = $('#m-live-notice');
       if (mNotEl && live.meta) {
-        mNotEl.innerHTML = `🟢 <b>실시간 크롤링 데이터</b> (뉴스 ${live.meta.newsCount}건, 채용 ${live.meta.jobsCount}건, 공모전 ${live.meta.contestsCount}건, 알바 ${live.meta.albaCount}건 · 업데이트: ${live.meta.lastUpdated})`;
+        mNotEl.innerHTML = `<b>실시간 크롤링 데이터</b> (뉴스 ${live.meta.newsCount}건, 채용 ${live.meta.jobsCount}건, 공모전 ${live.meta.contestsCount}건, 알바 ${live.meta.albaCount}건 · 업데이트: ${live.meta.lastUpdated})`;
       }
     }
   } catch(e) {
