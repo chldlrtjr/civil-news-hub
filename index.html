@@ -292,7 +292,7 @@ h1,h2,h3{text-wrap:balance;margin:0}
 .trk-title{font-weight:700;line-height:1.4;color:var(--ink);text-decoration:none;overflow-wrap:anywhere}
 .trk-title:hover{text-decoration:underline}
 .trk-org{font-size:var(--t-small);color:var(--muted)}
-.trk-step{display:flex;align-items:center;margin:30px 4px 26px}
+.trk-step{display:flex;align-items:center;margin:20px 4px 26px}
 .trk-dot{position:relative;flex:none;width:16px;height:16px;border-radius:50%;border:2px solid var(--line);background:var(--surface)}
 .trk-dot.done{border-color:var(--accent);background:var(--accent)}
 .trk-dot.now{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
@@ -302,9 +302,7 @@ h1,h2,h3{text-wrap:balance;margin:0}
 .trk-step .trk-dot:last-child b{left:auto;right:0;transform:none}
 .trk-seg{position:relative;flex:1;min-width:44px;margin:0 4px;border-top:2px dashed var(--line)}
 .trk-seg.done{border-top-style:solid;border-top-color:var(--accent)}
-.trk-seg i,.trk-seg em{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;font-style:normal;line-height:1}
-.trk-seg i{bottom:16px;font-size:10px;color:var(--muted)}
-.trk-seg em{bottom:4px;font-size:11px;font-weight:700;color:var(--ink)}
+.trk-seg em{position:absolute;left:50%;bottom:5px;transform:translateX(-50%);white-space:nowrap;font-style:normal;line-height:1;font-size:11px;font-weight:700;color:var(--ink)}
 .trk-step.off .trk-dot.now{border-color:var(--muted);box-shadow:none}
 .trk-sub{margin:2px 0 0;font-size:var(--t-small);color:var(--muted);display:flex;flex-direction:column;gap:2px}
 .trk-late{color:var(--warn)}
@@ -1133,16 +1131,16 @@ function trkCardHtml(c, today){
     <div class="trk-org">${esc(c.org)}</div>${bar}
     <p class="trk-sub">${sub}</p><div class="trk-btns">${btns}</div></article>`;
 }
-// 진행 단계 그림: 동그라미 4개(아래 단계 이름) + 사이 점선(위에 접수 시작 · 접수 마감 · 결과 발표 날짜)
+// 진행 단계 그림: 동그라미 4개(아래 단계 이름) + 사이 점선(위에 날짜만: 접수 시작 · 접수 마감 · 결과 발표 순)
 function trkStepHtml(c, s){
   const T = CNHTracker, steps = ['todo', 'submitted', 'review', 'result'];
   const at = s === 'missed' ? 0 : steps.indexOf(s);  // 마감(미제출)은 첫 칸에 멈춘 채 회색
-  const segs = [['접수 시작', c.startDate], ['접수 마감', c.deadline], ['결과 발표', c.resultDate]];
+  const segs = [c.startDate, c.deadline, c.resultDate];
   const cells = steps.map((k, j) => {
     const dot = `<span class="trk-dot${j < at ? ' done' : j === at ? ' now' : ''}"><b>${T.LABEL[k]}</b></span>`;
     if (j === steps.length - 1) return dot;
-    const [cap, d] = segs[j];
-    return dot + `<span class="trk-seg${j < at ? ' done' : ''}"><i>${cap}</i><em>${d ? mmdd(d) : '미정'}</em></span>`;
+    const d = segs[j];
+    return dot + `<span class="trk-seg${j < at ? ' done' : ''}"><em>${d ? mmdd(d) : '미정'}</em></span>`;
   }).join('');
   return `<div class="trk-step${s === 'missed' ? ' off' : ''}" role="img" aria-label="진행 단계 ${T.LABEL[s]}. 접수 시작 ${c.startDate ? mmdd(c.startDate) : '미정'}, 접수 마감 ${c.deadline ? mmdd(c.deadline) : '미정'}, 결과 발표 ${c.resultDate ? mmdd(c.resultDate) : '미정'}">${cells}</div>`;
 }
