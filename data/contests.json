@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-19 17:02:07",
-  "last_updated_display": "11월 19일 17:02",
-  "total_count": 25,
-  "featured_count": 25,
+  "last_updated": "2026-11-19 18:02:09",
+  "last_updated_display": "11월 19일 18:02",
+  "total_count": 26,
+  "featured_count": 26,
   "categories": [
     "ALL",
     "토목",
@@ -531,6 +531,36 @@
       "link": "https://luma.com/aisecurityseoul",
       "image": "",
       "is_active": true,
+      "dday_info": {
+        "text": "D-22",
+        "days": 22,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-112438",
+      "source": "wevity_it",
+      "source_name": "위비티",
+      "title": "2026년 서울교육 AI 활용 공모전",
+      "organizer": "서울특별시동부교육지원청",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "~ 2026.12.11 마감",
+      "deadline_date": "2026-12-11",
+      "deadline_time": "23:59",
+      "fields": [
+        "웹/모바일/IT"
+      ],
+      "description": "서울특별시동부교육지원청 주최 · 분야: 웹/모바일/IT",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=view&ix=112438",
+      "image": "",
+      "is_active": true,
+      "track": "it",
       "dday_info": {
         "text": "D-22",
         "days": 22,
