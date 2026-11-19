@@ -968,39 +968,46 @@ const saved = new Set();
 const savedListeners = [];
 try { JSON.parse(localStorage.getItem('cnh-saved') || '[]').forEach(id => saved.add(id)); } catch(e){}
 let savedUid = null, savedWriteT = null, savedWriting = false, savedAgain = false;
+// savedPulled: 로그인 후 첫 불러오기 전엔 저장 금지(다른 기기 기록 보호) / savedDirty: 올릴 변경이 남아 있음
+let savedPulled = false, savedDirty = false;
 function storeSavedLocal(){ try { localStorage.setItem('cnh-saved', JSON.stringify([...saved])); } catch(e){} }
 /* 마이페이지 진행 카드: 북마크와 같은 경로로 저장 (이 브라우저 + 로그인 시 Supabase 같은 행의 tracked 칸) */
 let tracked = [];
 try { const t = JSON.parse(localStorage.getItem('cnh-tracked') || '[]'); if (Array.isArray(t)) tracked = t; } catch(e){}
 function storeTrackedLocal(){ try { localStorage.setItem('cnh-tracked', JSON.stringify(tracked)); } catch(e){} }
 function persistTracked(){
+  savedDirty = true;
   storeTrackedLocal(); notifySaved();
   clearTimeout(savedWriteT); savedWriteT = setTimeout(writeSavedRemote, 300);
 }
 const kstToday = () => new Date(Date.now() + 9 * 3600000).toISOString().slice(0, 10);
-function trackUpdate(id, patch){ tracked = tracked.map(c => c.id === id ? { ...c, ...patch } : c); persistTracked(); }
+function trackUpdate(id, patch){ const now = new Date().toISOString(); tracked = tracked.map(c => c.id === id ? { ...c, ...patch, updatedAt: now } : c); persistTracked(); }
 function trackAdd(kind, item){
-  if (tracked.some(c => c.id === String(item.id))) return;
-  tracked = [...tracked, CNHTracker.makeCard(kind, item, kstToday())]; persistTracked();
+  const id = String(item.id);
+  if (tracked.some(c => c.id === id && !c.deleted)) return;
+  tracked = [...tracked.filter(c => c.id !== id), CNHTracker.makeCard(kind, item, kstToday())]; persistTracked();
 }
 const trackSubmit = id => trackUpdate(id, { submittedAt: kstToday() });
 const trackUnsubmit = id => trackUpdate(id, { submittedAt: null });
 const trackResult = (id, r) => trackUpdate(id, { result: r, resultAt: kstToday() });
 const trackUndoResult = id => trackUpdate(id, { result: null, resultAt: null });
-function trackRemove(id){ tracked = tracked.filter(c => c.id !== id); persistTracked(); }
+// 삭제는 표시로 남겨요: 다른 기기의 옛 사본이 합쳐질 때 되살아나지 않게
+function trackRemove(id){ const now = new Date().toISOString(); tracked = tracked.map(c => c.id === id ? { id, deleted: true, updatedAt: now } : c); persistTracked(); }
 function notifySaved(){ savedListeners.forEach(f => { try { f(); } catch(e){} }); }
 async function writeSavedRemote(){
-  if (!savedUid) return;
+  if (!savedUid || !savedPulled) return;
   if (savedWriting){ savedAgain = true; return; }
   savedWriting = true;
   try {
     const { error } = await SB.from('user_saved').upsert({ user_id: savedUid, ids: [...saved], tracked, updated_at: new Date().toISOString() });
     if (error) console.warn('북마크 동기화 실패:', error.message);
+    else if (!savedAgain) savedDirty = false;
   } catch(e){ console.warn('북마크 동기화 실패:', e); }
   savedWriting = false;
   if (savedAgain){ savedAgain = false; writeSavedRemote(); }
 }
 function persistSaved(){
+  savedDirty = true;
   storeSavedLocal(); notifySaved();
   clearTimeout(savedWriteT); savedWriteT = setTimeout(writeSavedRemote, 300);
 }
@@ -1014,18 +1021,20 @@ const SB = window.supabase ? window.supabase.createClient(
 let authUser = null;
 async function pullSavedRemote(){
   if (!savedUid) return;
+  if (savedPulled && (savedWriting || savedDirty)) return;  // 올릴 변경이 먼저: 옛 사본으로 덮지 않게
   const { data, error } = await SB.from('user_saved').select('ids, tracked').eq('user_id', savedUid).maybeSingle();
   if (error){ console.warn('북마크 불러오기 실패:', error.message); return; }
+  savedPulled = true;
   const remote = data && Array.isArray(data.ids) ? data.ids : [];
   // 이 브라우저에 있던 북마크와 합쳐서, 계정에 없던 게 있으면 다시 올려요
   const before = saved.size;
   remote.forEach(id => saved.add(id));
   if (saved.size !== before) storeSavedLocal();
-  // 진행 카드도 합쳐요: 같은 공고면 더 진행된 쪽을 남겨요
+  // 진행 카드도 합쳐요: 같은 공고면 더 나중에 바꾼 쪽(같으면 더 진행된 쪽)을 남겨요
   const remoteTracked = data && Array.isArray(data.tracked) ? data.tracked : [];
   const mergedTracked = CNHTracker.mergeTracked(tracked, remoteTracked);
-  const trackedChanged = JSON.stringify(mergedTracked) !== JSON.stringify(remoteTracked);
-  if (JSON.stringify(mergedTracked) !== JSON.stringify(tracked)){ tracked = mergedTracked; storeTrackedLocal(); }
+  const trackedChanged = !CNHTracker.sameTracked(mergedTracked, remoteTracked);
+  if (!CNHTracker.sameTracked(mergedTracked, tracked)){ tracked = mergedTracked; storeTrackedLocal(); }
   if (saved.size !== remote.length || trackedChanged) writeSavedRemote();
   notifySaved();
 }
@@ -1034,6 +1043,7 @@ if (SB){
     const u = session ? session.user : null;
     const changed = (u && u.id) !== (authUser && authUser.id);
     authUser = u; savedUid = u ? u.id : null;
+    if (changed) savedPulled = false;
     if (changed){ notifySaved(); if (u) setTimeout(pullSavedRemote, 0); }  // 콜백 안에서 바로 DB 호출하면 막힐 수 있어 다음 틱으로
   });
   // 다른 기기에서 바꾼 북마크는 이 탭으로 돌아올 때 가져와요
@@ -1139,9 +1149,16 @@ function myPageHtml(contests, jobs){
 }
 let trkTab = 'contest', trkLastFocus = null;
 function trkModalOpen(el){ if (el.hidden) trkLastFocus = document.activeElement; el.hidden = false; const f = el.querySelector('button:not([disabled])'); if (f) f.focus(); }
-function trkModalClose(el){ el.hidden = true; if (trkLastFocus && trkLastFocus.focus) trkLastFocus.focus(); }
+// 다시 그리면서 원래 버튼이 사라졌으면 보이는 '도전 추가' 칸으로 포커스를 돌려요
+function trkModalClose(el){
+  el.hidden = true;
+  const ok = trkLastFocus && trkLastFocus.isConnected && trkLastFocus !== document.body && !trkLastFocus.closest('.trk-modal');
+  const back = ok ? trkLastFocus
+    : [...document.querySelectorAll('[data-trk="add"]')].find(b => b.offsetParent !== null);
+  if (back && back.focus) back.focus();
+}
 function renderPicker(){
-  const ids = new Set(tracked.map(c => c.id));
+  const ids = new Set(CNHTracker.visible(tracked).map(c => c.id));
   const open = x => x.end == null || x.end >= 0;
   const both = [...trkLists.contests.map(x => ({ ...x, _k: 'contest' })), ...trkLists.jobs.map(x => ({ ...x, _k: 'job' }))];
   const src = trkTab === 'contest' ? both.filter(x => x._k === 'contest' && open(x))
@@ -1176,17 +1193,29 @@ document.addEventListener('click', e => {
     const list = b.dataset.kind === 'job' ? trkLists.jobs : trkLists.contests;
     const item = list.find(x => String(x.id) === id);
     if (item) trackAdd(b.dataset.kind, item);
-    renderPicker(); return;  // 팝업은 열어 둔 채 여러 개 추가
+    renderPicker();  // 팝업은 열어 둔 채 여러 개 추가, 포커스는 다음 '추가' 버튼(없으면 닫기)으로
+    const next = $id('trk-modal').querySelector('[data-trk="pick"]') || $id('trk-modal').querySelector('[data-trk-close]');
+    if (next) next.focus();
+    return;
   }
   if (act === 'submit') trackSubmit(id);
   if (act === 'unsubmit') trackUnsubmit(id);
   if (act === 'win' || act === 'lose') trackResult(id, act);
   if (act === 'undo') trackUndoResult(id);
   if (act === 'del'){ askDelete(id); return; }
-  if (act === 'del-yes'){ trkModalClose($id('trk-confirm')); trackRemove(id); }
+  if (act === 'del-yes'){ trackRemove(id); trkModalClose($id('trk-confirm')); }  // 다시 그린 뒤 닫아야 포커스가 새 버튼으로 가요
 });
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') document.querySelectorAll('.trk-modal:not([hidden])').forEach(trkModalClose);
+  const open = document.querySelector('.trk-modal:not([hidden])');
+  if (!open) return;
+  if (e.key === 'Escape'){ trkModalClose(open); return; }
+  if (e.key !== 'Tab') return;
+  // Tab이 팝업 밖(뒤 페이지)으로 나가지 않게
+  const f = [...open.querySelectorAll('button:not([disabled]), a[href]')];
+  if (!f.length) return;
+  const i = f.indexOf(document.activeElement);
+  if (e.shiftKey && i <= 0){ e.preventDefault(); f[f.length - 1].focus(); }
+  else if (!e.shiftKey && i === f.length - 1){ e.preventDefault(); f[0].focus(); }
 });
 </script>
 <script>
@@ -1685,7 +1714,7 @@ document.addEventListener('click', e=>{
   }
 });
 document.addEventListener('keydown', e=>{
-  if (e.key==='Escape'){ closeClusters(); closeDrawer(); }
+  if (e.key==='Escape'){ if (document.querySelector('.trk-modal:not([hidden])')) return; closeClusters(); if ($('#drawer').classList.contains('on')) closeDrawer(); }
   if ((e.key==='Enter'||e.key===' ') && e.target.matches('[data-open],.tl li')){ e.preventDefault(); e.target.click(); }
 });
 $('#scrim').onclick = closeDrawer; $('#dr-close').onclick = closeDrawer;

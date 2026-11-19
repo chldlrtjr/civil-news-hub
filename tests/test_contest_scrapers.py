@@ -259,3 +259,20 @@ class ResultDateTest(unittest.TestCase):
         item = {"pst_id": "1", "title": "공모전", "date": "2026-11-01", "menu": 2377}
         card = jbnu.make_card(item, "결과 발표: 2026. 12. 7.", "", date(2026, 11, 20), "18:00")
         self.assertEqual(card["result_date"], "2026-12-07")
+
+    def test_find_result_date_stops_at_separator_or_next_keyword(self):
+        posted = date(2026, 11, 1)
+        self.assertEqual(jbnu.find_result_date("결과 발표: 개별 통보 ○ 시상식: 12. 20.", posted), "")
+        self.assertEqual(jbnu.find_result_date("결과 안내: 추후 공지 / 접수 마감 11. 30.", posted), "")
+        self.assertEqual(jbnu.find_result_date("최종 공고일로부터 3일 이내 제출, 11. 25.까지", posted), "")
+
+    def test_make_card_drops_result_date_not_after_deadline(self):
+        item = {"pst_id": "1", "title": "공모전", "date": "2026-11-01", "menu": 2377}
+        card = jbnu.make_card(item, "결과 발표: 2026. 11. 10.", "", date(2026, 11, 20), "18:00")
+        self.assertEqual(card["result_date"], "")
+
+    def test_find_result_date_poster_line_layout(self):
+        posted = date(2026, 11, 1)
+        self.assertEqual(jbnu.find_result_date("운영 일정\n결과 발표\n2027. 1. 15.(금) 예정\n세부 내용", posted), "2027-01-15")
+        self.assertEqual(jbnu.find_result_date("입상자 발표회: 2026. 11. 5.(목) 16:00", posted), "")
+        self.assertEqual(jbnu.find_result_date("최종 발표\n및 심사\n11/27", posted), "")

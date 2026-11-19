@@ -60,3 +60,39 @@ test('sortActive: 확인 필요 → 진행 중 → missed, result 제외 / sortR
 test('makeCard: id는 항상 문자열 (data-id 비교용)', () => {
   assert.equal(makeCard('job', {id: 7, co:'a', role:'b'}, T).id, '7');
 });
+
+// ---- 최종 리뷰 수정: 기기 간 삭제·되돌리기가 되살아나지 않게 (updatedAt + 삭제 표시) ----
+const { visible, sameTracked } = require('../static/tracker_core.js');
+test('mergeTracked: 더 나중에 바꾼 쪽이 이김 (다른 기기의 삭제·되돌리기 유지)', () => {
+  const old = c({id:'1', submittedAt:T, result:'win', resultAt:T, updatedAt:'2026-11-19T01:00:00Z'});
+  const del = {id:'1', deleted:true, updatedAt:'2026-11-19T02:00:00Z'};
+  assert.equal(mergeTracked([del], [old])[0].deleted, true);
+  assert.equal(mergeTracked([old], [del])[0].deleted, true);
+  const undone = c({id:'1', submittedAt:T, result:null, updatedAt:'2026-11-19T03:00:00Z'});
+  assert.equal(mergeTracked([old], [undone])[0].result, null);
+});
+test('mergeTracked: updatedAt이 같거나 없으면 더 진행된 쪽', () => {
+  assert.equal(mergeTracked([c({id:'1'})], [c({id:'1', submittedAt:T, result:'lose', resultAt:T})])[0].result, 'lose');
+});
+test('visible/sortActive/sortRecords: 삭제 표시는 화면에서 빠짐', () => {
+  const list = [c({id:'a'}), {id:'b', deleted:true, updatedAt:'x'}, {id:'r', deleted:true, result:'win', updatedAt:'x'}];
+  assert.deepEqual(visible(list).map(x=>x.id), ['a']);
+  assert.deepEqual(sortActive(list, T).map(x=>x.id), ['a']);
+  assert.deepEqual(sortRecords(list), []);
+});
+test('refreshFromSource: 삭제 표시는 건드리지 않음', () => {
+  const del = {id:'1', deleted:true, updatedAt:'x'};
+  assert.equal(refreshFromSource(del, {id:'1', deadline:'2026-12-01'}), del);
+});
+test('sameTracked: 필드 순서와 무관하게 id·updatedAt으로 비교', () => {
+  const a = [c({id:'1', updatedAt:'u1'})], b = [{updatedAt:'u1', id:'1'}];
+  assert.equal(sameTracked(a, b), true);
+  assert.equal(sameTracked(a, [{id:'1', updatedAt:'u2'}]), false);
+  assert.equal(sameTracked(a, []), false);
+});
+test('makeCard: updatedAt 기록, javascript: 링크는 # 로', () => {
+  const k = makeCard('contest', {id:'1', title:'t', link:'javascript:alert(1)'}, T, '2026-11-19T05:00:00Z');
+  assert.equal(k.link, '#');
+  assert.equal(k.updatedAt, '2026-11-19T05:00:00Z');
+  assert.equal(makeCard('contest', {id:'1', link:'https://ok.kr/a'}, T).link, 'https://ok.kr/a');
+});

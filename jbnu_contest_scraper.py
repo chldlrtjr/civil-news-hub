@@ -497,9 +497,20 @@ def _find_dates(segment: str, posted: date) -> list:
 _RESULT_KEY = re.compile(r"(결과|수상자?|수상작|당선자?|당선작|합격자?|입상자?|최종|선정)\s*(발표|공고|안내|통보|공지)")
 
 
+# 발표 문구 뒤를 읽다가 구분 기호나 다른 일정 단어가 나오면 멈춤 ('결과 발표: 개별 통보 ○ 시상식 12. 20.'의 시상식 날짜 방지)
+_RESULT_STOP = re.compile(r"[○●■□◆◇※▶\n/]|마감|시상|접수|제출|활동|교육|행사")
+
+
 def find_result_date(text: str, posted: date) -> str:
-    """'최종 수상자 발표 : 2026. 12. 7.' → '2026-12-07'. 발표 문구 뒤 40자 안의 날짜 중 가장 늦은 것, 없으면 ''"""
-    dates = [d for m in _RESULT_KEY.finditer(text or "") for d, _ in _find_dates(text[m.end():m.end() + 40], posted)[:1]]
+    """'최종 수상자 발표 : 2026. 12. 7.' → '2026-12-07'. 발표 문구 뒤(구분 기호 전, 최대 40자)의 날짜 중 가장 늦은 것, 없으면 ''"""
+    dates = []
+    for m in _RESULT_KEY.finditer(text or ""):
+        window = text[m.end():m.end() + 40]
+        if window.startswith("회"):  # '입상자 발표회'는 결과가 아니라 행사
+            continue
+        window = window.lstrip(" \t\n:：.-")  # 포스터는 '결과 발표\n2027. 1. 15.'처럼 다음 줄에 날짜
+        stop = _RESULT_STOP.search(window)
+        dates += [d for d, _ in _find_dates(window[:stop.start()] if stop else window, posted)[:1]]
     return max(dates).isoformat() if dates else ""
 
 
@@ -597,6 +608,7 @@ def make_card(item: dict, body_text: str, poster: str, deadline: date, deadline_
     m = re.match(r"^\s*\[([^\]]+)\]", item["title"])
     organizer = m.group(1) if m and m.group(1) != "공모전" else (item.get("writer") or "전북대학교")
     desc = body_text[:200] + ("…" if len(body_text) > 200 else "")
+    result_date = find_result_date(body_text, posted)  # 포스터 경로는 판독문이 body_text로 들어옴
 
     return {
         "id": f"campus-{item['pst_id']}",
@@ -613,7 +625,7 @@ def make_card(item: dict, body_text: str, poster: str, deadline: date, deadline_
         "period": f"{posted.strftime('%Y.%m.%d')} ~ {deadline.strftime('%m.%d')} ({deadline_time} 마감)",
         "deadline_date": deadline.strftime("%Y-%m-%d"),
         "deadline_time": deadline_time,
-        "result_date": find_result_date(body_text, posted),  # 포스터 경로는 판독문이 body_text로 들어옴
+        "result_date": result_date if result_date > deadline.isoformat() else "",  # 마감 전 날짜는 발표일일 수 없음
         "description": desc or item["title"],
         "link": f"https://www.jbnu.ac.kr/web/Board/{item['pst_id']}/detailView.do",
         "image": poster,
