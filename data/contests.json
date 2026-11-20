@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-20 14:02:20",
-  "last_updated_display": "11월 20일 14:02",
-  "total_count": 28,
-  "featured_count": 28,
+  "last_updated": "2026-11-20 15:01:57",
+  "last_updated_display": "11월 20일 15:01",
+  "total_count": 31,
+  "featured_count": 31,
   "categories": [
     "ALL",
     "토목",
@@ -67,6 +67,39 @@
       ],
       "description": "성평등가족부 주최 · 온라인, 무료, 대회, AI",
       "link": "https://www.mogefdatacontest.co.kr/",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "오늘마감",
+        "days": 0,
+        "is_urgent": true,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-6f4ef63282",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "NAVER Connect Robotics Cup 2026 결승전 현장 관람",
+      "organizer": "네이버 커넥트재단",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.18 ~ 11.20 마감",
+      "start_date": "2026-11-18",
+      "deadline_date": "2026-11-20",
+      "deadline_time": "23:30",
+      "fields": [
+        "오프라인(경기 성남)",
+        "대회",
+        "AI"
+      ],
+      "description": "네이버 커넥트재단 주최 · 오프라인(경기 성남), 무료, 대회, AI",
+      "link": "https://form.naver.com/response/38PbnPPGCJT",
       "image": "",
       "is_active": true,
       "dday_info": {
@@ -238,6 +271,40 @@
       }
     },
     {
+      "id": "devevent-560e7322cc",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "DevFest Cloud x Pangyo 2026",
+      "organizer": "GDG Cloud Korea · GDG Pangyo",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.17 ~ 11.28 마감",
+      "start_date": "2026-11-17",
+      "deadline_date": "2026-11-28",
+      "deadline_time": "13:00",
+      "fields": [
+        "오프라인(경기 성남)",
+        "대회",
+        "AI",
+        "클라우드"
+      ],
+      "description": "GDG Cloud Korea · GDG Pangyo 주최 · 오프라인(경기 성남), 유료, 대회, AI, 클라우드",
+      "link": "https://event-us.kr/gdgcloudkr/event/140493",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-8",
+        "days": 8,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
       "id": "wevity-112147",
       "source": "wevity",
       "source_name": "위비티",
@@ -329,6 +396,39 @@
       ],
       "description": "창업진흥원 · 현대건설 · SVC Seoul 주최 · 오프라인(서울 마포구), 무료, 대회, AI",
       "link": "https://onoffmix.com/event/353176",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-9",
+        "days": 9,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-030072b1e1",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "2026 INNO-CODER AI HACKATHON",
+      "organizer": "(재)운당나눔재단 · (재)울산창조경제혁신센터",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.16 ~ 11.29 마감",
+      "start_date": "2026-11-16",
+      "deadline_date": "2026-11-29",
+      "deadline_time": "23:59",
+      "fields": [
+        "오프라인(울산)",
+        "대회",
+        "AI"
+      ],
+      "description": "(재)운당나눔재단 · (재)울산창조경제혁신센터 주최 · 오프라인(울산), 무료, 대회, AI",
+      "link": "https://forms.gle/csx3ieajaqKMWgKh6",
       "image": "",
       "is_active": true,
       "dday_info": {
