@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-20 09:01:59",
-  "last_updated_display": "11월 20일 09:01",
-  "total_count": 29,
-  "featured_count": 29,
+  "last_updated": "2026-11-20 10:01:56",
+  "last_updated_display": "11월 20일 10:01",
+  "total_count": 28,
+  "featured_count": 28,
   "categories": [
     "ALL",
     "토목",
@@ -10,39 +10,6 @@
     "컴퓨터공학"
   ],
   "contests": [
-    {
-      "id": "devevent-1e1f66f18d",
-      "source": "devevent",
-      "source_name": "데브이벤트",
-      "track": "it",
-      "title": "제주 AI·빅데이터 활용 AI Agent 개발 챌린지",
-      "organizer": "제주테크노파크",
-      "category": "컴퓨터공학",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.10.26 ~ 11.20 마감",
-      "start_date": "2026-10-26",
-      "deadline_date": "2026-11-20",
-      "deadline_time": "10:00",
-      "fields": [
-        "온라인",
-        "대회",
-        "AI"
-      ],
-      "description": "제주테크노파크 주최 · 온라인, 무료, 대회, AI",
-      "link": "https://daker.ai/public/hackathons/jeju-ai-bigdata-agent-challenge",
-      "image": "",
-      "is_active": true,
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
     {
       "id": "devevent-28342ffdf6",
       "source": "devevent",
