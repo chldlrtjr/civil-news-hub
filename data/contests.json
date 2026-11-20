@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-20 17:02:34",
-  "last_updated_display": "11월 20일 17:02",
+  "last_updated": "2026-11-20 18:02:27",
+  "last_updated_display": "11월 20일 18:02",
   "total_count": 30,
   "featured_count": 30,
   "categories": [
@@ -10,39 +10,6 @@
     "컴퓨터공학"
   ],
   "contests": [
-    {
-      "id": "devevent-0198686a19",
-      "source": "devevent",
-      "source_name": "데브이벤트",
-      "track": "it",
-      "title": "2026 성평등 AI 벤치마크 챌린지",
-      "organizer": "성평등가족부",
-      "category": "컴퓨터공학",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.11.02 ~ 11.20 마감",
-      "start_date": "2026-11-02",
-      "deadline_date": "2026-11-20",
-      "deadline_time": "18:00",
-      "fields": [
-        "온라인",
-        "대회",
-        "AI"
-      ],
-      "description": "성평등가족부 주최 · 온라인, 무료, 대회, AI",
-      "link": "https://www.mogefdatacontest.co.kr/",
-      "image": "",
-      "is_active": true,
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
     {
       "id": "devevent-6f4ef63282",
       "source": "devevent",
@@ -499,6 +466,41 @@
       "start_date": "2026-11-06",
       "prize_total": "1천만원이하",
       "homepage": "https://www.dgucenter.or.kr/bbs/board.php?bo_table=notice&wr_id=744",
+      "track": "it",
+      "dday_info": {
+        "text": "D-10",
+        "days": 10,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-112449",
+      "source": "wevity_it",
+      "source_name": "위비티",
+      "title": "제1회 통합데이터플랫폼(원-윈도우) 활용 아이디어 공모전",
+      "organizer": "과학기술정보통신부",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "제한없음",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.12 ~ 11.30 마감",
+      "deadline_date": "2026-11-30",
+      "deadline_time": "23:59",
+      "fields": [
+        "기획/아이디어"
+      ],
+      "description": "과학기술정보통신부 주최 · 분야: 기획/아이디어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=112449",
+      "image": "",
+      "is_active": true,
+      "deadline_source": "wevity_detail",
+      "start_date": "2026-11-12",
+      "prize_total": "1천만원이하",
+      "prize_first": "100만원",
+      "homepage": "https://www.data1window.kr/ntcMttr/detail?pstTypeCd=001&pstSn=353",
       "track": "it",
       "dday_info": {
         "text": "D-10",
