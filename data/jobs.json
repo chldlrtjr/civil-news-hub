@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-23 13:01",
-  "last_updated_display": "2026년 11월 23일 13:01",
+  "last_updated": "2026-11-23 14:02",
+  "last_updated_display": "2026년 11월 23일 14:02",
   "source": "잡알리오(공공기관 채용정보) · 고용24 공채속보 Open API",
-  "total_count": 17,
+  "total_count": 18,
   "failed_sources": [],
   "categories": [
     {
@@ -586,6 +586,37 @@
         "서류전형",
         "2차 전형",
         "면접전형"
+      ]
+    },
+    {
+      "id": "w24-186140",
+      "source": "고용24 공채속보",
+      "company": "에스지씨이앤씨",
+      "company_type": "",
+      "category_id": "builder",
+      "category_name": "건설·민간기업",
+      "title": "국내 현장 토목(공사/공무), 토목(품질) 경력직 채용",
+      "fields": [
+        "토목 공무·시공",
+        "토목 품질"
+      ],
+      "career": "경력",
+      "is_intern": false,
+      "intern_type": "",
+      "location": "지역무관",
+      "period": "2026.11.16 ~ 2026.12.15",
+      "deadline_date": "2026-12-15",
+      "tags": [
+        "정규직"
+      ],
+      "link": "https://sgc.careerlink.kr/jobs/RC20261116039339",
+      "summary": "- 토목 현장 시공 경력 5년 이상(대리~차장급) - 터널 현장 경력자(NATM 및 TBM 공법) - 토목 관련 학과 전공자 / - 토목 현장 시공 경력 5년 이상(대리~차장급) - 현장 품질시험 업무를 전문적으로 수행하는 건설기술인",
+      "steps": [
+        "서류전형",
+        "1차면접(실무진면접)",
+        "2차면접(임원면접)",
+        "신체검사",
+        "입사"
       ]
     }
   ],
