@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Civil News Hub</title>
 <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<!-- 글꼴·로그인 라이브러리는 외부 CDN 대신 이 사이트에서 직접 제공 (방문자 접속 정보가 제3자 CDN으로 가지 않게, 파일 변조 위험 제거) -->
+<link rel="stylesheet" href="./static/vendor/pretendard/pretendardvariable-dynamic-subset.css">
 <script>try { const th = localStorage.getItem('cnh-theme'); if (th) document.documentElement.dataset.theme = th; } catch(e){}</script>
 <script>
 // 예전 사이트(old.html)에서 이어받은 정리: 옛 PWA 서비스워커·캐시와 더미 데이터 캐시를 지워 늘 최신 파일을 받게 해요
@@ -18,9 +18,9 @@ try { localStorage.removeItem('cnh-live-cache-v1'); } catch(e){}
 </script>
 <script src="./static/cnh_data_bundle.js?v=20261123"></script>
 <script src="./static/data_adapter.js?v=20261123"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="./static/vendor/supabase.js"></script>
 <script src="./static/tracker_core.js?v=20261123"></script>
-<script src="./static/v2_core.js?v=20261123"></script>
+<script src="./static/v2_core.js?v=20261124"></script>
 <style>
 /* v2 (2026-11-23부터 기본 사이트, 예전 사이트는 old.html): madia-design 기준. PC(#v2pc)와 모바일(#v2m)은 별도 화면이고, 규칙은 각자 범위 안에만 둬요 */
 :root{
@@ -210,6 +210,19 @@ a.h-row:hover .h-t{text-decoration:underline}
 
 /* ==================== 탭 화면 (static/v2_pages.js) ==================== */
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* 하단 고지(처리방침·문의)와 로그인 전 출생연도 확인 모달 */
+.site-foot{display:flex;flex-wrap:wrap;gap:8px 16px;padding:24px 0 32px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+.site-foot a{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+#v2m .site-foot{padding:24px 20px 16px}
+.age-gate{width:min(440px,calc(100% - 32px));padding:32px 24px 24px;border:0;border-radius:16px;background:var(--surface);color:var(--ink)}
+.age-gate::backdrop{background:rgba(0,0,0,.6)}
+.age-gate h2{margin:0;font-size:20px;font-weight:600}
+.age-p{margin:12px 0 0;font-size:14px;color:var(--muted)}
+.age-p a{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+.age-sel{display:flex;flex-direction:column;gap:8px;margin-top:24px;font-size:14px;font-weight:600}
+.age-sel select{height:48px;padding:0 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;font-size:16px}
+.age-msg{min-height:20px;margin:8px 0 0;font-size:14px;font-weight:600}
+.age-acts{display:flex;justify-content:flex-end;gap:8px;margin-top:24px}
 .dot{flex:none;display:inline-block;width:6px;height:6px;border-radius:999px;background:var(--dot);margin-right:6px;vertical-align:middle}
 .dd{flex:none;display:inline-block;min-width:56px;padding:4px 8px;border-radius:999px;text-align:center;font-size:14px;font-weight:600;background:var(--surface-2);color:var(--muted);font-variant-numeric:tabular-nums}
 .dd.hot{background:var(--accent);color:#fff}
@@ -388,9 +401,6 @@ a.tk-t:hover{text-decoration:underline}
 #v2m .tk{padding:20px}
 #v2m .rec{padding:16px 20px;flex-wrap:wrap}
 #v2m .rec .rec-m{flex-basis:calc(100% - 88px)}
-#v2m .hero{display:block;width:100%;padding:20px 20px 16px;text-align:left;border-bottom:1px solid var(--surface-2)}
-#v2m .hero img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:12px;background:var(--surface-2)}
-#v2m .hero-t{display:block;margin:12px 0 4px;font-size:18px;font-weight:600}
 #v2m .m-search{display:flex;gap:8px;padding:0 20px 16px;background:var(--surface)}
 #v2m .m-search input{flex:1;min-width:0;height:44px;padding:0 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;font-size:16px}
 #v2m .m-search .btn{height:44px}
@@ -427,6 +437,7 @@ a.tk-t:hover{text-decoration:underline}
     </div>
   </header>
   <main class="wrap"><div id="pc-home"></div><div id="pc-page" hidden></div></main>
+  <footer class="site-foot wrap"><span>Civil News Hub · 개인 운영 무료 사이트</span><a href="./privacy.html"><b>개인정보처리방침</b></a><span>문의 <a href="mailto:axisnode0000@gmail.com">axisnode0000@gmail.com</a></span></footer>
 </div>
 
 <div id="v2m" hidden>
@@ -445,6 +456,7 @@ a.tk-t:hover{text-decoration:underline}
     </nav>
     <main id="m-home"></main>
     <main id="m-page" hidden></main>
+    <footer class="site-foot"><span>Civil News Hub · 개인 운영 무료 사이트</span><a href="./privacy.html"><b>개인정보처리방침</b></a><span>문의 <a href="mailto:axisnode0000@gmail.com">axisnode0000@gmail.com</a></span></footer>
   </div>
   <nav class="tabbar" aria-label="하단 메뉴">
     <a href="#home" data-route="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11 12 4l9 7v9H3z"/></svg>홈</a>
@@ -460,7 +472,18 @@ a.tk-t:hover{text-decoration:underline}
   </div>
 </div>
 
-<script src="./static/v2_state.js?v=20261123"></script>
+<!-- 로그인 전 출생연도 확인: PC·모바일 공용 모달. 연도는 이 브라우저에서 비교만 하고 저장·전송하지 않아요 -->
+<dialog class="age-gate" id="age-gate" aria-labelledby="age-t">
+  <form data-age-form novalidate>
+    <h2 id="age-t">로그인 전에 출생연도를 확인해요</h2>
+    <p class="age-p">로그인은 출생연도 기준 19세가 되는 해부터 쓸 수 있어요. 고른 연도는 이 브라우저에서 확인만 하고 저장하거나 보내지 않아요.</p>
+    <label class="age-sel"><span>출생연도</span><select name="year" id="age-year"><option value="">선택</option></select></label>
+    <p class="age-msg" id="age-msg" role="alert"></p>
+    <p class="age-p">로그인하면 구글 계정의 이메일·이름·프로필 사진과 저장 목록이 계정에 보관돼요. <a href="./privacy.html" target="_blank" rel="noopener">개인정보처리방침</a></p>
+    <div class="age-acts"><button type="button" class="btn" data-age-cancel>취소</button><button type="submit" class="btn pri">확인하고 구글 로그인</button></div>
+  </form>
+</dialog>
+<script src="./static/v2_state.js?v=20261124"></script>
 <script>
 /* ---------- v2 화면: 데이터 준비, PC/모바일 고르기, 로그인 버튼, 테마 ---------- */
 const V2 = {
@@ -682,6 +705,6 @@ document.addEventListener('click', e => {
 savedListeners.push(() => { renderAuth(); V2.render(); });
 renderAuth();
 </script>
-<script src="./static/v2_pages.js?v=20261123"></script>
+<script src="./static/v2_pages.js?v=20261124"></script>
 </body>
 </html>

@@ -17,3 +17,6 @@ create policy "본인 북마크만" on public.user_saved
 
 -- 2026-11-19 마이페이지 진행 카드 (한 번 실행)
 alter table public.user_saved add column if not exists tracked jsonb not null default '[]'::jsonb;
+
+-- 2026-11-24 보안 경고 정리: 새 표에 RLS를 자동으로 켜는 이벤트 트리거 함수는 API(rpc)로 부를 필요가 없어요
+revoke execute on function public.rls_auto_enable() from public, anon, authenticated;

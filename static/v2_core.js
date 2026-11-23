@@ -165,7 +165,13 @@
     return out;
   }
 
-  const API = { ddayLabel, dateLabel, scheduleItems, urgentFallback, INTEREST_GROUPS, hasInterests, freshItems, rememberSeen, readJSON, isPhone, monthGrid, shiftMonth, weekdayOf,
+  // 로그인 연령: 출생연도 기준 19세가 되는 해부터 (청소년 보호법 제2조 제1호와 같은 연 나이 셈법)
+  function loginAllowed(birthYear, thisYear) {
+    const y = Number(birthYear);
+    return Number.isInteger(y) && y >= 1900 && y <= thisYear && thisYear - y >= 19;
+  }
+
+  const API = { loginAllowed, ddayLabel, dateLabel, scheduleItems, urgentFallback, INTEREST_GROUPS, hasInterests, freshItems, rememberSeen, readJSON, isPhone, monthGrid, shiftMonth, weekdayOf,
     isDate, ddayOf, contestList, jobList, albaList, newsList, countBy, searchAll, savedList };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   else window.CNHv2 = API;

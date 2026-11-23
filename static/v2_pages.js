@@ -84,7 +84,8 @@
     const due = (d) => (CNHv2.isDate(d) ? `${dayText(d)} ${ddPill(CNHv2.ddayOf(d, t))}` : '상시 모집');
     let meta = '', media = '', lede = '', dd = '';
     if (kind === 'news') {
-      meta = [x.src, x.ago].filter(Boolean).join(' · '); media = img(x.image);
+      // 기사 사진은 언론사 허락이 없어 보여 주지 않아요(저작권): 제목·출처·원문 링크만
+      meta = [x.src, x.ago].filter(Boolean).join(' · ');
       if (x.lede && x.lede !== x.title) lede = `<p class="dt-p">${esc(x.lede)}</p>`;
       dl('분야', `<i class="dot" style="--dot:var(--c-${x.cat})"></i>${esc(catName(x.cat))}`);
       const rel = (x.clusters || []).filter((r) => isWeb(r.link));
@@ -211,20 +212,10 @@
   function mPageHtml(route) {
     if (route === 'my') return mMyHtml();
     const m = model(route);
-    let hero = '';
-    // 뉴스는 첫 기사만 큰 사진으로 (규칙: 사진은 하나만)
-    if (route === 'news') {
-      const first = m.groups[0].entries[0];
-      if (first && isWeb(first.item.image)) {
-        const x = first.item;
-        hero = `<button type="button" class="hero" data-open="${esc(keyOf('news', x))}"><img src="${esc(x.image)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><span class="hero-t">${esc(x.title)}</span><span class="lr-s"><i class="dot" style="--dot:var(--c-${x.cat})"></i>${esc([x.src, x.ago].filter(Boolean).join(' · '))}</span></button>`;
-        m.groups[0] = { ...m.groups[0], entries: m.groups[0].entries.slice(1) };
-      }
-    }
     const search = route === 'search' ? `<form class="m-search" role="search" data-search-form><label class="sr" for="m-q">검색어</label><input id="m-q" type="search" name="q" value="${esc(ui.q)}" placeholder="뉴스·공모전·채용 검색" autocomplete="off"><button type="submit" class="btn pri">검색</button></form>` : '';
     return `<div class="m-head"><h1>${esc(m.title)}</h1>${m.sub ? `<p>${esc(m.sub)}</p>` : ''}</div>${search}
       ${m.filters ? `<div class="m-fbar">${m.filters}</div>` : ''}${route === 'search' && m.kws && m.kws.length ? `<div class="m-kws">${kwHtml(m.kws)}</div>` : ''}
-      <section class="m-sec">${hero}${groupsHtml('m', m, null)}${m.foot || ''}</section>`;
+      <section class="m-sec">${groupsHtml('m', m, null)}${m.foot || ''}</section>`;
   }
 
   /* ---------- 마이: 진행 중인 도전 / 저장한 공고 / 내 기록 + 계정·관심 분야·화면 ---------- */

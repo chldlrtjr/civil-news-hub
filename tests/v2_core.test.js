@@ -247,3 +247,13 @@ test('savedList: 북마크 id를 종류별 항목으로, 최근에 저장한 것
   assert.deepEqual(V.savedList(['c1', 'gone', 'n1', 'j1', 'a1', 's1'], src).map((x) => [x.kind, x.item.id]),
     [['sw', 's1'], ['alba', 'a1'], ['job', 'j1'], ['news', 'n1'], ['contest', 'c1']]);
 });
+
+test('loginAllowed: 출생연도 기준 19세가 되는 해부터 로그인 (2026년이면 2007년생까지)', () => {
+  assert.equal(V.loginAllowed('2007', 2026), true);
+  assert.equal(V.loginAllowed(2008, 2026), false);
+  assert.equal(V.loginAllowed('1960', 2026), true);
+  assert.equal(V.loginAllowed('', 2026), false);
+  assert.equal(V.loginAllowed('abc', 2026), false);
+  assert.equal(V.loginAllowed('1800', 2026), false);
+  assert.equal(V.loginAllowed('2030', 2026), false);
+});

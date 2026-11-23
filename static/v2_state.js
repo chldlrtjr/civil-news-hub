@@ -103,6 +103,35 @@ document.addEventListener('click', async e => {
   if (/; wv\)|FBAN|FBAV|Instagram|NAVER\(inapp|Line\//i.test(navigator.userAgent)){
     alert('이 앱 안의 브라우저에서는 구글 로그인이 안 돼요. 메뉴에서 "다른 브라우저로 열기"를 눌러 주세요.'); return;
   }
-  await SB.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname } });
+  if (!ageConfirmed()){ openAgeGate(); return; }
+  await googleLogin();
 });
+const googleLogin = () => SB.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname } });
+/* 로그인 전 출생연도 확인 (v2 전용, old.html은 2026-11-24부터 배포 제외): 연도는 비교만 하고 저장·전송하지 않고, 이 브라우저에 "확인함"만 남겨요 */
+const AGE_KEY = 'cnh-age-ok';
+function ageConfirmed(){ try { return localStorage.getItem(AGE_KEY) === '1'; } catch(e){ return false; } }
+function openAgeGate(){
+  const dlg = document.getElementById('age-gate');
+  if (!dlg || !dlg.showModal) return;  // 모달을 못 여는 아주 옛 브라우저는 확인 없이 로그인시키지 않아요
+  const sel = document.getElementById('age-year'), msg = document.getElementById('age-msg');
+  const thisYear = +kstToday().slice(0, 4);
+  if (!dlg.dataset.ready){
+    dlg.dataset.ready = '1';
+    for (let y = thisYear; y >= 1930; y--) sel.add(new Option(y + '년', y));
+    dlg.querySelector('[data-age-cancel]').addEventListener('click', () => dlg.close());
+    dlg.querySelector('[data-age-form]').addEventListener('submit', async e => {
+      e.preventDefault();
+      if (!sel.value){ msg.textContent = '출생연도를 골라 주세요.'; sel.focus(); return; }
+      if (!CNHv2.loginAllowed(sel.value, thisYear)){
+        msg.textContent = '로그인은 출생연도 기준 19세가 되는 해부터 쓸 수 있어요. 로그인하지 않아도 모든 정보를 보고 이 브라우저에 저장할 수 있어요.';
+        return;
+      }
+      try { localStorage.setItem(AGE_KEY, '1'); } catch(e){}
+      dlg.close();
+      await googleLogin();
+    });
+  }
+  sel.value = ''; msg.textContent = '';
+  dlg.showModal();
+}
 
