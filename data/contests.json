@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-23 20:01:47",
-  "last_updated_display": "11월 23일 20:01",
-  "total_count": 23,
-  "featured_count": 23,
+  "last_updated": "2026-11-23 21:01:46",
+  "last_updated_display": "11월 23일 21:01",
+  "total_count": 32,
+  "featured_count": 32,
   "categories": [
     "ALL",
     "토목",
@@ -177,6 +177,39 @@
       }
     },
     {
+      "id": "devevent-19567e592e",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "Build with Qwen: AutoRAG Hackathon 2026",
+      "organizer": "알리바바 클라우드 · Markr · 브레인크루",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.23 ~ 11.29 마감",
+      "start_date": "2026-11-23",
+      "deadline_date": "2026-11-29",
+      "deadline_time": "23:59",
+      "fields": [
+        "오프라인(서울 강남구)",
+        "대회",
+        "AI"
+      ],
+      "description": "알리바바 클라우드 · Markr · 브레인크루 주최 · 오프라인(서울 강남구), 무료, 대회, AI",
+      "link": "https://luma.com/pcd9sjr8",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-6",
+        "days": 6,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
       "id": "devevent-a976c10408",
       "source": "devevent",
       "source_name": "데브이벤트",
@@ -205,6 +238,106 @@
       "dday_info": {
         "text": "D-7",
         "days": 7,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-727d12fbe2",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "ForwardThon 2026 — 기업의 숫자를 바꾸는 FDE 해커톤",
+      "organizer": "위시켓 · AIDP × 요즘IT",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.10.22 ~ 11.30 마감",
+      "start_date": "2026-10-22",
+      "deadline_date": "2026-11-30",
+      "deadline_time": "23:59",
+      "fields": [
+        "오프라인(서울 광진구)",
+        "대회",
+        "AI"
+      ],
+      "description": "위시켓 · AIDP × 요즘IT 주최 · 오프라인(서울 광진구), 무료, 대회, AI",
+      "link": "https://forwardthon.com/",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-7",
+        "days": 7,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-4456ce912b",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "[한국체육산업개발] 공공데이터 활용 경진대회",
+      "organizer": "한국체육산업개발(주)",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.02 ~ 12.01 마감",
+      "start_date": "2026-11-02",
+      "deadline_date": "2026-12-01",
+      "deadline_time": "18:00",
+      "fields": [
+        "온라인",
+        "대회",
+        "기술일반"
+      ],
+      "description": "한국체육산업개발(주) 주최 · 온라인, 무료, 대회, 기술일반",
+      "link": "https://www.ssgsag.kr/posters/29549",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-8",
+        "days": 8,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-281ffa96e4",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "오렌지파크 해커톤 | 아이디어를 MVP로, 첫 고객을 만나기",
+      "organizer": "스마일게이트 오렌지플래닛",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.17 ~ 12.01 마감",
+      "start_date": "2026-11-17",
+      "deadline_date": "2026-12-01",
+      "deadline_time": "23:59",
+      "fields": [
+        "오프라인(서울 강남구)",
+        "온라인",
+        "대회",
+        "AI"
+      ],
+      "description": "스마일게이트 오렌지플래닛 주최 · 오프라인(서울 강남구), 온라인, 무료, 대회, AI",
+      "link": "https://www.orangepark.or.kr/articles/A8345675",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-8",
+        "days": 8,
         "is_urgent": false,
         "is_closed": false
       }
@@ -269,6 +402,41 @@
       "dday_info": {
         "text": "D-9",
         "days": 9,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-87f173c810",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "HSK Chain Horizon Hackathon · Seoul",
+      "organizer": "해시키 체인(HashKey Chain) · Pentabase",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.20 ~ 12.03 마감",
+      "start_date": "2026-11-20",
+      "deadline_date": "2026-12-03",
+      "deadline_time": "13:00",
+      "fields": [
+        "온라인",
+        "오프라인(서울 서초구)",
+        "대회",
+        "블록체인",
+        "AI"
+      ],
+      "description": "해시키 체인(HashKey Chain) · Pentabase 주최 · 온라인, 오프라인(서울 서초구), 무료, 대회, 블록체인, AI",
+      "link": "https://dorahacks.io/hackathon/hskchainseoul/detail",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-10",
+        "days": 10,
         "is_urgent": false,
         "is_closed": false
       }
@@ -373,6 +541,73 @@
       }
     },
     {
+      "id": "devevent-034f92022e",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "2026 서울 야간경제 활성화 해커톤 (Dopamine Seoul 24)",
+      "organizer": "서울특별시 · 서울창업허브 · 서울경제진흥원(SBA)",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.18 ~ 12.07 마감",
+      "start_date": "2026-11-18",
+      "deadline_date": "2026-12-07",
+      "deadline_time": "23:59",
+      "fields": [
+        "온라인",
+        "오프라인(서울 성동구)",
+        "대회",
+        "기술일반"
+      ],
+      "description": "서울특별시 · 서울창업허브 · 서울경제진흥원(SBA) 주최 · 온라인, 오프라인(서울 성동구), 무료, 대회, 기술일반",
+      "link": "https://aifactory.space/ko/competitions/9320",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-14",
+        "days": 14,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-8c02fe8f64",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "2026 강원 AI 창업아이디어 경진대회",
+      "organizer": "상지대학교 앵커사업단 · 상상력집단",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.23 ~ 12.07 마감",
+      "start_date": "2026-11-23",
+      "deadline_date": "2026-12-07",
+      "deadline_time": "23:59",
+      "fields": [
+        "오프라인(강원 원주)",
+        "대회",
+        "AI"
+      ],
+      "description": "상지대학교 앵커사업단 · 상상력집단 주최 · 오프라인(강원 원주), 무료, 대회, AI",
+      "link": "https://sangji-ai-startup-2026.workspace-700806.chatgpt.site/",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-14",
+        "days": 14,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
       "id": "devevent-959977e9d7",
       "source": "devevent",
       "source_name": "데브이벤트",
@@ -396,6 +631,39 @@
       ],
       "description": "AI Builders · GMI Cloud · F5 · NVIDIA 주최 · 오프라인(서울), 무료, 대회, AI",
       "link": "https://luma.com/aisecurityseoul",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-18",
+        "days": 18,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-4753180f3f",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "2026 AI학과 공모전 「일상의 편리를 위한 AI서비스개발」 (세종사이버대학교)",
+      "organizer": "세종사이버대학교 AI학과",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.10.06 ~ 12.11 마감",
+      "start_date": "2026-10-06",
+      "deadline_date": "2026-12-11",
+      "deadline_time": "23:59",
+      "fields": [
+        "온라인",
+        "대회",
+        "AI"
+      ],
+      "description": "세종사이버대학교 AI학과 주최 · 온라인, 무료, 대회, AI",
+      "link": "https://cms.sjcu.ac.kr/artificial-intelligence/community/data.do?mode=view&articleNo=138524",
       "image": "",
       "is_active": true,
       "dday_info": {
@@ -722,6 +990,40 @@
       "dday_info": {
         "text": "D-45",
         "days": 45,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "devevent-9b6d4dc727",
+      "source": "devevent",
+      "source_name": "데브이벤트",
+      "track": "it",
+      "title": "2027 제 2회 Superb AI X BDAI Vision AI Hackathon",
+      "organizer": "Superb AI × BDAI",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.16 ~ 01.10 마감",
+      "start_date": "2026-11-16",
+      "deadline_date": "2027-01-10",
+      "deadline_time": "23:59",
+      "fields": [
+        "온라인",
+        "오프라인",
+        "대회",
+        "AI"
+      ],
+      "description": "Superb AI × BDAI 주최 · 온라인, 오프라인, 무료, 대회, AI",
+      "link": "https://bdai.co.kr/lectures/contest/18/",
+      "image": "",
+      "is_active": true,
+      "dday_info": {
+        "text": "D-48",
+        "days": 48,
         "is_urgent": false,
         "is_closed": false
       }
