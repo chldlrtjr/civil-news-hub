@@ -1,9 +1,8 @@
 name: 아침 9시 토목 뉴스 다이제스트 (텔레그램)
 
 # jcloud는 학교 DNS가 api.telegram.org를 막아서 발송을 Actions에서 해요.
+# GitHub 예약은 4~5시간 밀려서(11-20~23 실측) jcloud cron이 09:00 KST에 trigger_digest.sh로 실행해요.
 on:
-  schedule:
-    - cron: '0 0 * * *'  # 09:00 KST (Actions 예약은 10~30분 늦을 수 있음)
   workflow_dispatch:
 
 jobs:

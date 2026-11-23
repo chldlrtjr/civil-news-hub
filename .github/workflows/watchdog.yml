@@ -23,8 +23,8 @@ jobs:
           last=$(gh api "repos/$GITHUB_REPOSITORY/commits?path=static/cnh_data_bundle.js&per_page=1" --jq '.[0].commit.committer.date')
           age=$(( ($(date +%s) - $(date -d "$last" +%s)) / 3600 ))
           echo "마지막 데이터 갱신: $last (${age}시간 전)"
-          # shortcut: 3시간째·이후 12시간마다 한 번만 알림(시간 단위 버림 기준), 예약이 밀리면 한 번 빠질 수 있음
-          if [ "$age" -ge 3 ] && [ $((age % 12)) -eq 3 ]; then
+          # 매시 예약이 실제로는 5~7시간 간격으로 돌아서(11-20~23 실측) 멈춘 걸 볼 때마다 알려요
+          if [ "$age" -ge 3 ]; then
             curl -sS -m 20 "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
               --data-urlencode "chat_id=$TELEGRAM_CHAT_ID" \
               --data-urlencode "text=⚠️ [Civil News Hub] jcloud 수집이 ${age}시간째 멈춰 있어요 (마지막: $last). Actions 비상 수집을 돌릴게요" > /dev/null
