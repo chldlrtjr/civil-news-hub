@@ -20,3 +20,15 @@ alter table public.user_saved add column if not exists tracked jsonb not null de
 
 -- 2026-11-24 보안 경고 정리: 새 표에 RLS를 자동으로 켜는 이벤트 트리거 함수는 API(rpc)로 부를 필요가 없어요
 revoke execute on function public.rls_auto_enable() from public, anon, authenticated;
+
+-- 2026-11-24 마이페이지 "계정 삭제": 로그인한 본인 계정만 지워요. auth.users를 지우면 user_saved·세션·연동 정보가 함께 지워져요(on delete cascade)
+create or replace function public.delete_my_account() returns void
+language plpgsql security definer set search_path = ''
+as $$
+begin
+  if auth.uid() is null then raise exception 'not signed in'; end if;
+  delete from auth.users where id = auth.uid();
+end;
+$$;
+revoke execute on function public.delete_my_account() from public, anon;
+grant execute on function public.delete_my_account() to authenticated;

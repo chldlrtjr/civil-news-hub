@@ -260,7 +260,7 @@
     else body = recs.length ? `<ul class="tks">${recs.map(recHtml).join('')}</ul>` : '<p class="l-empty">결과가 나온 도전이 여기에 모여요</p>';
     const meta = (authUser && authUser.user_metadata) || {};
     const acct = authUser
-      ? `<div class="acct-name">${esc(meta.full_name || meta.name || '내 계정')}님</div><p class="acct-hint">저장 목록과 진행 상황이 PC와 휴대폰에서 같이 보여요</p><button type="button" class="btn" data-auth="logout">로그아웃</button>`
+      ? `<div class="acct-name">${esc(meta.full_name || meta.name || '내 계정')}님</div><p class="acct-hint">저장 목록과 진행 상황이 PC와 휴대폰에서 같이 보여요</p><div class="acct-acts"><button type="button" class="btn" data-auth="logout">로그아웃</button><button type="button" class="btn" data-auth="delete">계정 삭제</button></div>`
       : `<h2>로그인</h2><p class="acct-hint">${SB ? '로그인하면 PC와 휴대폰에서 같은 저장 목록과 진행 상황을 봐요' : '저장한 항목은 이 브라우저에 보관돼요'}</p>${SB ? '<button type="button" class="btn pri" data-auth="login">Google 계정으로 로그인</button>' : ''}`;
     const groups = CNHv2.INTEREST_GROUPS.map((g) => `<div class="h-group"><h3>${g.title}</h3><div class="h-chips">${g.options.map(([v, l]) =>
       `<button type="button" class="h-chip" data-interest="${g.key}:${esc(v)}" aria-pressed="${interests[g.key].includes(v)}">${esc(l)}</button>`).join('')}</div></div>`).join('');
@@ -335,11 +335,15 @@
     ui.sheet = key; sheetFrom = key;
     renderSheet();
     $('m-sheet').hidden = false; document.body.style.overflow = 'hidden';
+    setBehindSheet(true);
     $('m-sheet').querySelector('.sheet-grab [data-sheet-close]').focus();
   }
+  // 시트가 열려 있는 동안 뒤 화면을 inert로: Tab 키가 시트 밖으로 빠져나가지 않고 스크린리더도 시트만 읽어요
+  function setBehindSheet(on) { document.querySelectorAll('#v2m > .app, #v2m > .tabbar').forEach((el) => { el.inert = on; }); }
   function closeSheet(restore = true) {
     if (!ui.sheet) return;
     ui.sheet = null; $('m-sheet').hidden = true; document.body.style.overflow = '';
+    setBehindSheet(false);
     // 다시 그리면서 원래 버튼이 바뀌었을 수 있어서 같은 항목의 줄을 찾아 포커스를 돌려요
     const back = restore && sheetFrom && $('m-page').querySelector(`[data-open="${CSS.escape(sheetFrom)}"]`);
     if (back) back.focus();

@@ -44,3 +44,49 @@ test('서버에 세션이 없어 라이브러리가 에러를 돌려줘도 이 �
   assert.equal(b.store['sb-ref-auth-token'], undefined);
   assert.equal(b.calls.reloads, 1);
 });
+
+function bootDelete({ confirmed, rpcError }) {
+  const calls = { rpc: [], removed: [], reloads: 0, alerts: [] };
+  let clickHandler = null;
+  const store = { 'sb-ref-auth-token': 'x', 'cnh-saved': '["a"]', 'cnh-tracked': '[]', 'cnh-theme': 'dark' };
+  const ctx = {
+    window: { supabase: { createClient: () => ({
+      auth: { storageKey: 'sb-ref-auth-token', onAuthStateChange: () => {} },
+      rpc: async (name) => { calls.rpc.push(name); return { error: rpcError || null }; },
+    }) } },
+    localStorage: { getItem: k => store[k] ?? null, setItem: (k, v) => { store[k] = v; }, removeItem: k => { calls.removed.push(k); delete store[k]; } },
+    document: { addEventListener: (t, f) => { if (t === 'click') clickHandler = f; }, hidden: false },
+    navigator: { userAgent: 'node' }, location: { origin: 'x', pathname: '/', href: 'x', reload: () => { calls.reloads++; } },
+    confirm: () => confirmed, alert: (m) => { calls.alerts.push(m); },
+    console, setTimeout, clearTimeout, Date, JSON, Promise, Map, Set, CNHTracker: require('../static/tracker_core.js'),
+  };
+  vm.createContext(ctx);
+  vm.runInContext(src, ctx);
+  const click = () => clickHandler({ target: { closest: () => ({ dataset: { auth: 'delete' } }) } });
+  return { calls, store, click };
+}
+
+test('계정 삭제: 확인을 취소하면 아무것도 지우지 않아요', async () => {
+  const b = bootDelete({ confirmed: false });
+  await b.click();
+  assert.equal(b.calls.rpc.length, 0);
+  assert.equal(b.calls.removed.length, 0);
+});
+
+test('계정 삭제: 서버에서 지운 뒤 이 브라우저의 로그인·저장 목록을 비우고 새로 그려요 (화면 설정은 남김)', async () => {
+  const b = bootDelete({ confirmed: true });
+  await b.click();
+  assert.equal(b.calls.rpc.join(), 'delete_my_account');
+  assert.equal(b.store['sb-ref-auth-token'], undefined);
+  assert.equal(b.store['cnh-saved'], undefined);
+  assert.equal(b.store['cnh-theme'], 'dark');
+  assert.equal(b.calls.reloads, 1);
+});
+
+test('계정 삭제: 서버가 실패하면 아무것도 지우지 않고 알려요', async () => {
+  const b = bootDelete({ confirmed: true, rpcError: { message: 'x' } });
+  await b.click();
+  assert.equal(b.calls.removed.length, 0);
+  assert.equal(b.calls.reloads, 0);
+  assert.equal(b.calls.alerts.length, 1);
+});

@@ -97,6 +97,17 @@ function authBoxHtml(){
 document.addEventListener('click', async e => {
   const b = e.target.closest('[data-auth]');
   if (!b || !SB) return;
+  if (b.dataset.auth === 'delete'){
+    if (!confirm('계정을 삭제할까요?\n계정 정보와 이 계정에 저장한 목록·진행 기록, 이 브라우저의 저장 목록이 지워지고 되돌릴 수 없어요.')) return;
+    clearTimeout(savedWriteT);
+    const { error } = await SB.rpc('delete_my_account');  // DB 함수: 로그인한 본인 계정만 지움 (supabase/schema.sql)
+    if (error){ alert('계정을 삭제하지 못했어요. 잠시 후 다시 시도하거나 axisnode0000@gmail.com 으로 알려 주세요.'); return; }
+    savedUid = null;
+    ['cnh-saved', 'cnh-tracked', SB.auth.storageKey].forEach(k => { try { localStorage.removeItem(k); } catch(e){} });
+    alert('계정을 삭제했어요.');
+    location.reload();
+    return;
+  }
   if (b.dataset.auth === 'logout'){
     // 이 기기만 로그아웃해요(전체 로그아웃은 다른 기기 세션까지 지움). 서버 세션이 이미 없으면
     // supabase-js 2.45.4는 에러만 돌려주고 기기 세션을 남기므로 직접 지우고 새로 그려요
