@@ -1,7 +1,7 @@
 /* v2 탭 화면: 뉴스·공모전·채용·전북대·마이·저장·검색과 주소(#해시) 이동.
    PC는 "목록 + 오른쪽 상세" 두 칸(눌러도 페이지가 바뀌지 않고 오른쪽에 자세히), 모바일은 "목록 + 아래에서 올라오는 상세 시트".
    두 화면은 같은 데이터·북마크·진행 카드를 쓰고 마크업은 각자 가져요. 이모지 금지.
-   v2.html 의 인라인 스크립트(V2, LS, interests, editingInterests, KIND, isWeb, linkOf, renderAuth)와 v2_state.js 를 이어서 써요. */
+   index.html(v2) 의 인라인 스크립트(V2, LS, interests, editingInterests, KIND, isWeb, linkOf, renderAuth)와 v2_state.js 를 이어서 써요. */
 (() => {
   const D = () => V2.data;
   const PER = { pc: 10, m: 6 };  // 처음 보여 줄 줄 수 (덜어내기 규칙 2), 더 보기로 같은 수만큼 더
@@ -305,7 +305,7 @@
   const $ = (id) => document.getElementById(id);
   V2.render = function () {
     const r = ui.route, home = r === 'home';
-    document.title = (home ? '' : TITLES[r] + ' · ') + 'Civil News Hub v2';
+    document.title = (home ? '' : TITLES[r] + ' · ') + 'Civil News Hub';
     document.querySelectorAll('[data-route]').forEach((a) => (a.dataset.route === r ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current')));
     $('pc-home').hidden = $('m-home').hidden = !home;
     $('pc-page').hidden = $('m-page').hidden = home;

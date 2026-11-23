@@ -1,4 +1,4 @@
-/* index.html 공용 스크립트("공용 북마크" ~ "마이페이지" 직전) 사본. 고칠 때는 두 곳을 같이 고치고 tests/sync_guard.test.js로 확인 */
+/* 예전 사이트 old.html(옛 index.html) 공용 스크립트("공용 북마크" ~ "마이페이지" 직전) 사본. 고칠 때는 두 곳을 같이 고치고 tests/sync_guard.test.js로 확인 */
 /* ---------- 공용 북마크: 두 화면이 같은 목록을 쓰고, 로그인한 사람은 기기 사이에서도 동기화돼요 ---------- */
 const saved = new Set();
 const savedListeners = [];

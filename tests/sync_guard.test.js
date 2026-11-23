@@ -1,14 +1,14 @@
-// index.html 공용 스크립트(북마크·로그인·진행 카드)를 가짜 Supabase로 돌려 저장/불러오기 순서를 검증
+// 예전 사이트 old.html 과 새 사이트 static/v2_state.js 의 공용 스크립트(북마크·로그인·진행 카드)를 가짜 Supabase로 돌려 저장/불러오기 순서를 검증
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
-const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+const html = fs.readFileSync(path.join(__dirname, '..', 'old.html'), 'utf8');
 const indexBlock = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]).find(b => b.includes('async function pullSavedRemote'));
 // v2.html 은 같은 스크립트의 사본을 써요: 두 사본이 같은 규칙을 지키는지 함께 검사
-const SOURCES = [['index.html', indexBlock], ['static/v2_state.js', fs.readFileSync(path.join(__dirname, '..', 'static', 'v2_state.js'), 'utf8')]];
+const SOURCES = [['old.html', indexBlock], ['static/v2_state.js', fs.readFileSync(path.join(__dirname, '..', 'static', 'v2_state.js'), 'utf8')]];
 const Tracker = require('../static/tracker_core.js');
 
 function boot(block, remoteRow) {
