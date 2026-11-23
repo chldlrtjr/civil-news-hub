@@ -68,6 +68,24 @@ class PublisherResolveTest(unittest.TestCase):
         self.assertEqual([a["publisher"] for a in arts], ["울산신문", "울산신문", "jtv.co.kr", "언론사", "연합뉴스"])
 
 
+class DropNewsImagesTest(unittest.TestCase):
+    def test_images_are_blanked_for_lead_and_related_articles(self):
+        arts = [{"title": "a", "image": "https://cdn.e.com/1.jpg",
+                 "related_articles": [{"title": "b", "image": "https://cdn.e.com/2.jpg"}]},
+                {"title": "c", "image": "https://cdn.e.com/3.jpg"}]
+        scraper.drop_news_images(arts)
+        self.assertEqual([a["image"] for a in arts], ["", ""])
+        self.assertEqual(arts[0]["related_articles"][0]["image"], "")
+
+    def test_photo_extraction_is_skipped_while_images_are_off(self):
+        self.assertFalse(scraper.NEWS_IMAGES)
+        arts = [{"id": "1", "title": "교량 공사 착공", "snippet": "", "link": "https://e.com/1", "publisher": "언론사",
+                 "iso_date": "2026-11-24T10:00:00+09:00"}]
+        with mock.patch.object(scraper, "extract_images_for_article_list") as ext:
+            scraper.cluster_related_articles(arts)
+        ext.assert_not_called()
+
+
 class ClusterTest(unittest.TestCase):
     @staticmethod
     def art(title, snippet="", iso="2026-10-28T10:00:00+09:00"):

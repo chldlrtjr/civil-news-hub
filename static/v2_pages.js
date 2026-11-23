@@ -80,7 +80,8 @@
   function detailHtml(kind, x, titleId) {
     const t = V2.today, rows = [], blocks = [];
     const dl = (k, v) => { if (v) rows.push(`<div><dt>${k}</dt><dd>${v}</dd></div>`); };
-    const img = (src, poster) => (isWeb(src) ? `<img class="dt-img${poster ? ' poster' : ''}" src="${esc(src)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : '');
+    // 상세 사진은 이제 포스터만: 무엇의 포스터인지 대체 텍스트로 알려요 (내용은 아래 글로도 제공)
+    const img = (src, title) => (isWeb(src) ? `<img class="dt-img poster" src="${esc(src)}" alt="${esc(title)} 포스터" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : '');
     const due = (d) => (CNHv2.isDate(d) ? `${dayText(d)} ${ddPill(CNHv2.ddayOf(d, t))}` : '상시 모집');
     let meta = '', media = '', lede = '', dd = '';
     if (kind === 'news') {
@@ -92,7 +93,7 @@
       if (rel.length) blocks.push(`<h3 class="dt-h">같은 소식을 다룬 기사 ${rel.length}</h3><ul class="dt-links">${rel.map((r) =>
         `<li><a href="${esc(r.link)}" target="_blank" rel="noopener noreferrer"><b>${esc(r.publisher)}</b>${esc(r.title)}</a></li>`).join('')}</ul>`);
     } else if (kind === 'contest') {
-      meta = x.org; media = img(x.image, true); dd = ddPill(CNHv2.ddayOf(x.deadline, t));
+      meta = x.org; media = img(x.image, x.title); dd = ddPill(CNHv2.ddayOf(x.deadline, t));
       dl('분야', `<i class="dot" style="--dot:var(--c-${COLOR[x.category] || 'general'})"></i>${esc(x.category)}`);
       dl('주최', esc(x.org)); dl('접수 기간', esc(x.period)); dl('마감', due(x.deadline));
       dl('결과 발표', esc(x.resultLabel || dayText(x.resultDate)));
@@ -112,7 +113,7 @@
       dl('근무처', esc(x.where)); dl('급여', `<b class="prize">${esc(x.wageText)}</b>`); dl('근무 시간', esc(x.time));
       dl('모집 인원', esc(x.person)); dl('분류', esc(x.tag)); dl('등록일', dayText(x.reg_date)); dl('마감', due(x.deadline_date));
     } else {
-      meta = x.kind; media = img(x.image, true); dd = ddPill(CNHv2.ddayOf(x.deadline_date, t));
+      meta = x.kind; media = img(x.image, x.title); dd = ddPill(CNHv2.ddayOf(x.deadline_date, t));
       dl('종류', esc(x.kind)); dl('활동 기간', esc(x.when)); dl('정원', esc(x.seats));
       dl('장소', x.location && x.location !== '-' ? esc(x.location) : ''); dl('마감', due(x.deadline_date));
     }
@@ -237,14 +238,14 @@
     const prog = `<ol class="prog" aria-label="진행 단계: ${T.LABEL[s]}">${STEPS.map((k, j) => `<li class="${j < at ? 'done' : j === at ? 'now' : ''}">${T.LABEL[k]}</li>`).join('')}</ol>`;
     return `<li class="tk${s === 'missed' ? ' off' : ''}"><div class="tk-top"><span>${c.kind === 'job' ? '채용' : '공모전'} · ${esc(c.org)}</span><span class="badge s-${s}">${T.LABEL[s]}</span></div>
       ${isWeb(c.link) ? `<a class="tk-t" href="${esc(c.link)}" target="_blank" rel="noopener noreferrer">${esc(c.title)}</a>` : `<span class="tk-t">${esc(c.title)}</span>`}
-      ${prog}<p class="tk-sub">${sub}</p><div class="tk-acts">${btns}${ui.confirmDel === c.id ? '' : `<button type="button" class="tk-del" data-trk="del" data-id="${esc(c.id)}" aria-label="삭제">${I.trash}</button>`}</div></li>`;
+      ${prog}<p class="tk-sub">${sub}</p><div class="tk-acts">${btns}${ui.confirmDel === c.id ? '' : `<button type="button" class="tk-del" data-trk="del" data-id="${esc(c.id)}" aria-label="${esc(c.title)} 삭제">${I.trash}</button>`}</div></li>`;
   }
   function recHtml(c) {
     const conf = ui.confirmDel === c.id;
     return `<li class="rec"><span class="res ${c.result === 'win' ? 'win' : 'lose'}">${c.result === 'win' ? '수상·합격' : '미선정'}</span>
       <div class="rec-m">${isWeb(c.link) ? `<a href="${esc(c.link)}" target="_blank" rel="noopener noreferrer">${esc(c.title)}</a>` : `<b>${esc(c.title)}</b>`}
       <span>${c.kind === 'job' ? '채용' : '공모전'} · ${esc(c.org)} · ${c.submittedAt ? mmdd(c.submittedAt) + ' 제출 · ' : ''}${mmdd(c.resultAt)} 결과</span></div>
-      <div class="tk-acts">${conf ? `${tkBtn('del-no', c.id, '취소')}${tkBtn('del-yes', c.id, '삭제', 'danger')}` : `${tkBtn('undo', c.id, '되돌리기')}<button type="button" class="tk-del" data-trk="del" data-id="${esc(c.id)}" aria-label="삭제">${I.trash}</button>`}</div></li>`;
+      <div class="tk-acts">${conf ? `${tkBtn('del-no', c.id, '취소')}${tkBtn('del-yes', c.id, '삭제', 'danger')}` : `${tkBtn('undo', c.id, '되돌리기')}<button type="button" class="tk-del" data-trk="del" data-id="${esc(c.id)}" aria-label="${esc(c.title)} 삭제">${I.trash}</button>`}</div></li>`;
   }
   function myModel(screen) {
     const d = D(), t = V2.today;
@@ -296,7 +297,29 @@
 
   /* ---------- 그리기와 주소 ---------- */
   const $ = (id) => document.getElementById(id);
+  // 다시 그리면 버튼이 새로 만들어져 키보드 포커스가 페이지 맨 위로 튀어요 → 같은 역할의 버튼을 찾아 포커스를 돌려줘요
+  const FOCUS_KEYS = ['open', 'save', 'more', 'trk', 'f', 'track', 'interest', 'cal', 'calDay', 'auth', 'interestEdit', 'interestDone'];
+  const dataAttr = (k) => 'data-' + k.replace(/[A-Z]/g, (c) => '-' + c.toLowerCase());
+  function focusTarget() {
+    const el = document.activeElement;
+    const k = el && el.dataset && FOCUS_KEYS.find((a) => a in el.dataset);
+    if (!k) return null;
+    const scope = el.closest('#v2pc') ? '#v2pc ' : el.closest('#v2m') ? '#v2m ' : '';
+    const q = (a, v) => `[${a}="${CSS.escape(v)}"]`;
+    const sel = scope + q(dataAttr(k), el.dataset[k]) + ('v' in el.dataset ? q('data-v', el.dataset.v) : '') + (el.dataset.id ? q('data-id', el.dataset.id) : '');
+    // 삭제 확인처럼 버튼이 바뀌는 경우: 같은 카드의 "취소" → 휴지통 → 같은 카드의 아무 버튼 순으로 찾아요
+    const fallbacks = el.dataset.id ? [scope + q('data-trk', 'del-no') + q('data-id', el.dataset.id), scope + q('data-trk', 'del') + q('data-id', el.dataset.id), scope + q('data-id', el.dataset.id)] : [];
+    return [sel, ...fallbacks];
+  }
+  function restoreFocus(sels) {
+    if (!sels || (document.activeElement && document.activeElement !== document.body)) return;
+    for (const s of sels) { const el = document.querySelector(s); if (el) { el.focus({ preventScroll: true }); return; } }
+  }
   V2.render = function () {
+    const keep = focusTarget();
+    try { renderNow(); } finally { restoreFocus(keep); }
+  };
+  function renderNow() {
     const r = ui.route, home = r === 'home';
     document.title = (home ? '' : TITLES[r] + ' · ') + 'Civil News Hub';
     document.querySelectorAll('[data-route]').forEach((a) => (a.dataset.route === r ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current')));
@@ -306,7 +329,7 @@
     else { $('pc-page').innerHTML = pcPageHtml(r); $('m-page').innerHTML = mPageHtml(r); }
     const q = $('pc-q'); if (q && document.activeElement !== q) q.value = r === 'search' ? ui.q : '';
     renderSheet();
-  };
+  }
 
   function parseHash() {
     let h = location.hash.slice(1);

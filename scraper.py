@@ -29,6 +29,8 @@ load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 DATA_DIR = os.path.join(BASE_DIR, "data")
 NEWS_JSON_PATH = os.path.join(DATA_DIR, "news.json")
+# 기사 사진은 언론사 허락이 없어 사이트에 쓰지 않음(2026-11-24): 사진 추출을 건너뛰고, 저장 전에 남은 사진 주소도 비움
+NEWS_IMAGES = False
 
 # 토목 전문 분야 및 정밀 검색어 그룹
 CATEGORIES = [
@@ -522,6 +524,8 @@ def scrape_civil_news():
     resolve_unknown_publishers(all_articles)
     enrich_google_articles(all_articles)
     final_articles, duplicate_count = cluster_related_articles(all_articles)
+    if not NEWS_IMAGES:
+        drop_news_images(final_articles)
 
     # 사진이 없는 기사는 큐레이션 예시 사진 대신 언론사(회사) 이름을 썸네일로 표출합니다.
 
@@ -649,6 +653,14 @@ def is_opinion_piece(title):
     return bool(OPINION_RE.match(title or ""))
 
 
+def drop_news_images(articles):
+    """사이트에 쓰지 않는 기사 사진 주소를 비움 (대표 기사와 묶인 관련 기사 모두)"""
+    for a in articles:
+        a["image"] = ""
+        for r in a.get("related_articles", []):
+            r["image"] = ""
+
+
 def cluster_related_articles(articles, max_workers=15):
     """동일/유사 보도자료를 발행한 타 언론사 기사들을 대표 기사 하위로 묶음.
     [원칙]:
@@ -691,21 +703,22 @@ def cluster_related_articles(articles, max_workers=15):
     for c in clusters:
         c['items'].sort(key=lambda x: x.get('iso_date', ''), reverse=True)
 
-    # 1단계: 모든 클러스터의 '가장 최신 기사'들의 이미지 병렬 추출
-    phase1_candidates = [c['items'][0] for c in clusters]
-    print(f"\n🖼️ [News Image] 1단계: {len(phase1_candidates)}개 대표 후보 기사 대표 사진(og:image) 병렬 추출...")
-    extract_images_for_article_list(phase1_candidates, max_workers=max_workers)
+    if NEWS_IMAGES:
+        # 1단계: 모든 클러스터의 '가장 최신 기사'들의 이미지 병렬 추출
+        phase1_candidates = [c['items'][0] for c in clusters]
+        print(f"\n🖼️ [News Image] 1단계: {len(phase1_candidates)}개 대표 후보 기사 대표 사진(og:image) 병렬 추출...")
+        extract_images_for_article_list(phase1_candidates, max_workers=max_workers)
 
-    # 2단계: 다중 기사 군집 중 1위 기사에 사진이 없는 군집 선별 -> 하위 기사(2위~최대 4위) 이미지 병렬 추출
-    phase2_candidates = []
-    for c in clusters:
-        if len(c['items']) > 1 and not c['items'][0].get('image'):
-            # 하위 기사들 중 상위 3개(2위, 3위, 4위)를 후보로 추가
-            phase2_candidates.extend(c['items'][1:4])
+        # 2단계: 다중 기사 군집 중 1위 기사에 사진이 없는 군집 선별 -> 하위 기사(2위~최대 4위) 이미지 병렬 추출
+        phase2_candidates = []
+        for c in clusters:
+            if len(c['items']) > 1 and not c['items'][0].get('image'):
+                # 하위 기사들 중 상위 3개(2위, 3위, 4위)를 후보로 추가
+                phase2_candidates.extend(c['items'][1:4])
 
-    if phase2_candidates:
-        print(f"🖼️ [News Image] 2단계: 사진 부재 군집 {len(phase2_candidates)}개 후속 기사 사진 병렬 추출 (사진 우선 대표 승격)...")
-        extract_images_for_article_list(phase2_candidates, max_workers=max_workers)
+        if phase2_candidates:
+            print(f"🖼️ [News Image] 2단계: 사진 부재 군집 {len(phase2_candidates)}개 후속 기사 사진 병렬 추출 (사진 우선 대표 승격)...")
+            extract_images_for_article_list(phase2_candidates, max_workers=max_workers)
 
     final_articles = []
     total_duplicates = 0
