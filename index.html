@@ -337,6 +337,7 @@ a.tk-t:hover{text-decoration:underline}
 .me-groups .h-group{margin-top:16px}
 .me-row{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:14px}
 .acct-hint{margin:4px 0 0;font-size:14px;color:var(--muted)}
+.acct-legal{margin:12px 0 0;font-size:14px;color:var(--muted)} .acct-legal a{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
 #v2pc .acct-acts .btn+.btn,#v2m .acct-acts .btn+.btn{margin-top:8px;color:var(--muted)}
 
 /* ---------- PC 탭: 머리 → (목록 | 오른쪽 상세) ---------- */
@@ -438,7 +439,7 @@ a.tk-t:hover{text-decoration:underline}
     </div>
   </header>
   <main class="wrap"><div id="pc-home"></div><div id="pc-page" hidden></div></main>
-  <footer class="site-foot wrap"><span>Civil News Hub · 개인 운영 무료 사이트</span><a href="./privacy.html"><b>개인정보처리방침</b></a><a href="./terms.html">이용약관</a><span>문의 <a href="mailto:axisnode0000@gmail.com">axisnode0000@gmail.com</a></span></footer>
+  <footer class="site-foot wrap"><span>Civil News Hub · 개인 운영 무료 사이트</span><a href="./privacy.html"><b>개인정보 처리방침</b></a><a href="./terms.html">이용약관</a><span>문의 <a href="mailto:axisnode0000@gmail.com">axisnode0000@gmail.com</a></span></footer>
 </div>
 
 <div id="v2m" hidden>
@@ -457,7 +458,7 @@ a.tk-t:hover{text-decoration:underline}
     </nav>
     <main id="m-home"></main>
     <main id="m-page" hidden></main>
-    <footer class="site-foot"><span>Civil News Hub · 개인 운영 무료 사이트</span><a href="./privacy.html"><b>개인정보처리방침</b></a><a href="./terms.html">이용약관</a><span>문의 <a href="mailto:axisnode0000@gmail.com">axisnode0000@gmail.com</a></span></footer>
+    <footer class="site-foot"><span>Civil News Hub · 개인 운영 무료 사이트</span><a href="./privacy.html"><b>개인정보 처리방침</b></a><a href="./terms.html">이용약관</a><span>문의 <a href="mailto:axisnode0000@gmail.com">axisnode0000@gmail.com</a></span></footer>
   </div>
   <nav class="tabbar" aria-label="하단 메뉴">
     <a href="#home" data-route="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11 12 4l9 7v9H3z"/></svg>홈</a>
@@ -480,7 +481,7 @@ a.tk-t:hover{text-decoration:underline}
     <p class="age-p">로그인은 출생연도 기준 19세가 되는 해부터 쓸 수 있어요. 고른 연도는 이 브라우저에서 확인만 하고 저장하거나 보내지 않아요.</p>
     <label class="age-sel"><span>출생연도</span><select name="year" id="age-year"><option value="">선택</option></select></label>
     <p class="age-msg" id="age-msg" role="alert"></p>
-    <p class="age-p">로그인하면 구글 계정의 이메일·이름·프로필 사진과 저장 목록이 계정에 보관되며, <a href="./terms.html" target="_blank" rel="noopener">이용약관</a>과 <a href="./privacy.html" target="_blank" rel="noopener">개인정보처리방침</a>에 동의하게 돼요.</p>
+    <p class="age-p">로그인하면 구글 계정의 이메일·이름·프로필 사진과 저장 목록이 계정에 보관돼요(<a href="./privacy.html" target="_blank" rel="noopener">개인정보 처리방침</a>). 로그인하면 <a href="./terms.html" target="_blank" rel="noopener">이용약관</a>에 동의하게 돼요.</p>
     <div class="age-acts"><button type="button" class="btn" data-age-cancel>취소</button><button type="submit" class="btn pri">확인하고 구글 로그인</button></div>
   </form>
 </dialog>
@@ -706,6 +707,6 @@ document.addEventListener('click', e => {
 savedListeners.push(() => { renderAuth(); V2.render(); });
 renderAuth();
 </script>
-<script src="./static/v2_pages.js?v=20261124c"></script>
+<script src="./static/v2_pages.js?v=20261124d"></script>
 </body>
 </html>

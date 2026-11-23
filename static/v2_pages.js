@@ -259,9 +259,11 @@
     else if (ui.mySeg === 'saved') body = listHtml(screen, 'my-saved', savedEntries, screen === 'pc' ? ui.sel.my : null, '목록의 책갈피 버튼을 누르면 여기에 모여요');
     else body = recs.length ? `<ul class="tks">${recs.map(recHtml).join('')}</ul>` : '<p class="l-empty">결과가 나온 도전이 여기에 모여요</p>';
     const meta = (authUser && authUser.user_metadata) || {};
+    // 로그인 영역에도 처리방침을 둬요(작성지침: 첫 화면에서 찾기 어려우면 메뉴·로그인 영역에 추가 공개)
+    const legalLinks = '<p class="acct-legal"><a href="./privacy.html"><b>개인정보 처리방침</b></a> · <a href="./terms.html">이용약관</a></p>';
     const acct = authUser
-      ? `<div class="acct-name">${esc(meta.full_name || meta.name || '내 계정')}님</div><p class="acct-hint">저장 목록과 진행 상황이 PC와 휴대폰에서 같이 보여요</p><div class="acct-acts"><button type="button" class="btn" data-auth="logout">로그아웃</button><button type="button" class="btn" data-auth="delete">계정 삭제</button></div>`
-      : `<h2>로그인</h2><p class="acct-hint">${SB ? '로그인하면 PC와 휴대폰에서 같은 저장 목록과 진행 상황을 봐요' : '저장한 항목은 이 브라우저에 보관돼요'}</p>${SB ? '<button type="button" class="btn pri" data-auth="login">Google 계정으로 로그인</button>' : ''}`;
+      ? `<div class="acct-name">${esc(meta.full_name || meta.name || '내 계정')}님</div><p class="acct-hint">저장 목록과 진행 상황이 PC와 휴대폰에서 같이 보여요</p><div class="acct-acts"><button type="button" class="btn" data-auth="logout">로그아웃</button><button type="button" class="btn" data-auth="delete">계정 삭제</button></div>${legalLinks}`
+      : `<h2>로그인</h2><p class="acct-hint">${SB ? '로그인하면 PC와 휴대폰에서 같은 저장 목록과 진행 상황을 봐요' : '저장한 항목은 이 브라우저에 보관돼요'}</p>${SB ? '<button type="button" class="btn pri" data-auth="login">Google 계정으로 로그인</button>' : ''}${legalLinks}`;
     const groups = CNHv2.INTEREST_GROUPS.map((g) => `<div class="h-group"><h3>${g.title}</h3><div class="h-chips">${g.options.map(([v, l]) =>
       `<button type="button" class="h-chip" data-interest="${g.key}:${esc(v)}" aria-pressed="${interests[g.key].includes(v)}">${esc(l)}</button>`).join('')}</div></div>`).join('');
     return { active, recs, savedEntries, segs, body, acct, groups };
