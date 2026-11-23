@@ -97,7 +97,13 @@ function authBoxHtml(){
 document.addEventListener('click', async e => {
   const b = e.target.closest('[data-auth]');
   if (!b || !SB) return;
-  if (b.dataset.auth === 'logout'){ await SB.auth.signOut(); return; }
+  if (b.dataset.auth === 'logout'){
+    // 이 기기만 로그아웃해요(전체 로그아웃은 다른 기기 세션까지 지움). 서버 세션이 이미 없으면
+    // supabase-js 2.45.4는 에러만 돌려주고 기기 세션을 남기므로 직접 지우고 새로 그려요
+    const { error } = await SB.auth.signOut({ scope: 'local' });
+    if (error){ try { localStorage.removeItem(SB.auth.storageKey); } catch(e){} location.reload(); }
+    return;
+  }
   // 카카오톡 등 인앱 브라우저는 구글이 로그인을 막아요 → 외부 브라우저로 열기
   if (/KAKAOTALK/i.test(navigator.userAgent)){ location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(location.href); return; }
   if (/; wv\)|FBAN|FBAV|Instagram|NAVER\(inapp|Line\//i.test(navigator.userAgent)){
