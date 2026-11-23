@@ -56,31 +56,44 @@ def test_render_cards_count():
     assert len(images) == 6 and all(img[:2] == b"\xff\xd8" for img in images)
 
 
-def test_gemini_busy_retries_then_next_model(monkeypatch):
+def test_codex_answer_with_fence_parsed_and_failure_retried(monkeypatch):
     import json as _json
-
-    class R:
-        def __init__(self, code, items=None):
-            self.status_code, self.ok, self.text = code, code == 200, ""
-            self._items = items
-
-        def json(self):
-            return {"candidates": [{"content": {"parts": [{"text": _json.dumps(self._items)}]}}]}
-
     arts = [art(1, 5), art(2, 5)]
     good = [{"headline": "h", "summary": "s"}] * 2
     calls = []
 
-    def fake_post(url, **kw):
-        calls.append(url.split("/models/")[1].split(":")[0])
-        return R(503) if calls[-1] == "busy-model" else R(200, good)
+    class R:
+        def __init__(self, code):
+            self.returncode, self.stderr = code, "err"
 
-    monkeypatch.setenv("GEMINI_API_KEY", "k")
-    monkeypatch.setenv("GEMINI_MODEL", "busy-model")
-    monkeypatch.setattr(dd.requests, "post", fake_post)
-    monkeypatch.setattr(dd.time, "sleep", lambda s: None)
-    assert dd.summarize_with_gemini(arts) == good
-    assert calls == ["busy-model"] * dd.GEMINI_TRIES + ["gemini-3.6-flash"]
+    def fake_run(cmd, **kw):
+        calls.append(cmd)
+        if len(calls) == 1:
+            return R(1)  # 첫 시도 실패 → 한 번 더
+        with open(cmd[cmd.index("-o") + 1], "w", encoding="utf-8") as f:
+            f.write("요약이에요\n```json\n" + _json.dumps(good, ensure_ascii=False) + "\n```")
+        return R(0)
+
+    monkeypatch.setattr(dd.subprocess, "run", fake_run)
+    assert dd.summarize_with_codex(arts) == good
+    assert len(calls) == 2 and calls[0][:2] == ["codex", "exec"]
+
+
+def test_parse_ai_items_rejects_wrong_count():
+    assert dd.parse_ai_items('[{"headline": "h"}]', 2) is None
+    assert dd.parse_ai_items("모르겠어요", 1) is None
+
+
+def test_send_built_refuses_stale_digest(monkeypatch, tmp_path):
+    built = tmp_path / "digest.json"
+    built.write_text('{"date": "2026-11-01", "items": []}', encoding="utf-8")
+    monkeypatch.setattr(dd, "BUILT_FILE", str(built))
+    monkeypatch.setattr(sys, "argv", ["dd", "--send-built", "--date", "2026-11-02"])
+    try:
+        dd.main()
+        assert False, "어제 것을 다시 보내면 안 돼요"
+    except SystemExit as e:
+        assert "2026-11-02" in str(e)
 
 
 def test_fallback_strips_byline_and_cuts_title_at_word():

@@ -3,20 +3,24 @@
 """
 Civil News Hub - 아침 토목 뉴스 Top 5 카드뉴스 (텔레그램 발송)
 
-매일 09:00(KST) cron으로 실행:
+jcloud에서 만들고(08:40 --build) GitHub Actions는 발송만(09:00 --send-built) 해요.
+jcloud는 학교 DNS가 api.telegram.org를 막아서 직접 못 보내요.
   1) data/news.json 에서 '전날(KST)' 기사만 추림
   2) 보도량(같은 사건을 다룬 언론사 수) 기준 Top 5 선정
-  3) Gemini로 "~했어요" 말투 2~3문장 요약 (키가 없거나 실패하면 기사 스니펫으로 대체)
-  4) 1080x1350 카드 이미지 6장(표지 + 기사 5장) 생성
+  3) Codex(ChatGPT 계정 로그인)로 "~했어요" 말투 2~3문장 요약 (실패하면 기사 스니펫으로 대체)
+  → data/digest.json 으로 push
+  4) Actions: 1080x1350 카드 이미지 6장(표지 + 기사 5장) 생성
   5) 텔레그램 봇으로 앨범(sendMediaGroup) + 전체 캡션/원문 링크(sendMessage) 발송
 
 사용법:
-  python daily_digest.py                 # 전날 기사로 생성 후 발송 (같은 날짜는 1회만)
+  python daily_digest.py --build         # (jcloud) 요약만 만들어 data/digest.json 저장
+  python daily_digest.py --send-built    # (Actions) data/digest.json 으로 카드 만들어 발송
+  python daily_digest.py                 # 한 번에 생성 후 발송 (같은 날짜는 1회만)
   python daily_digest.py --dry-run       # 발송 없이 이미지·캡션만 data/digest_out/ 에 저장
   python daily_digest.py --date 2026-11-05 --force
   python daily_digest.py --get-chat-id   # 봇에게 아무 메시지나 보낸 뒤 실행 → chat_id 확인
 
-필요 환경변수(.env): TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, (선택) GEMINI_API_KEY, GEMINI_MODEL
+필요 환경변수(.env): TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID (발송할 때만). 요약에는 codex CLI 로그인이 필요해요
 """
 
 import os
@@ -24,8 +28,9 @@ import io
 import re
 import sys
 import json
-import time
 import argparse
+import subprocess
+import tempfile
 from datetime import datetime, timedelta, timezone
 
 import requests
@@ -37,6 +42,7 @@ load_dotenv(os.path.join(BASE_DIR, ".env"))
 NEWS_FILE = os.path.join(BASE_DIR, "data", "news.json")
 OUT_DIR = os.path.join(BASE_DIR, "data", "digest_out")
 SENT_STATE_FILE = os.path.join(BASE_DIR, "data", ".digest_last_sent")
+BUILT_FILE = os.path.join(BASE_DIR, "data", "digest.json")  # jcloud가 만들어 push, Actions가 읽어 발송
 SITE_URL = "https://civil-news-hub.vercel.app/"
 
 KST = timezone(timedelta(hours=9))
@@ -133,62 +139,52 @@ def build_prompt(articles):
     )
 
 
-GEMINI_RETRYABLE = {429, 500, 502, 503, 504}
-GEMINI_TRIES = 3
-GEMINI_RETRY_WAIT = 15  # 초, 시도마다 15→30초로 늘림
+CODEX_TIMEOUT = 300  # 초
+CODEX_TRIES = 2
 
 
-def summarize_with_gemini(articles):
-    api_key = (os.environ.get("GEMINI_API_KEY") or "").strip()
-    if not api_key:
-        print("[*] GEMINI_API_KEY 없음 → 스니펫 요약으로 대체")
+def parse_ai_items(text, n):
+    """Codex 답에서 JSON 배열만 꺼냄 (```json 펜스나 앞뒤 설명이 붙어도 됨)"""
+    start, end = text.find("["), text.rfind("]")
+    if start < 0 or end < start:
         return None
+    try:
+        items = json.loads(text[start:end + 1])
+    except ValueError:
+        return None
+    if isinstance(items, list) and len(items) == n and all(isinstance(x, dict) for x in items):
+        return items
+    return None
 
-    # 쿼터가 모델별이라 flash-lite까지 두면 한 모델이 붐벼도 다른 모델로 넘어갈 수 있음
-    models = [os.environ.get("GEMINI_MODEL", "").strip(), "gemini-3.6-flash", "gemini-3.5-flash-lite", "gemini-flash-latest"]
-    seen = set()
-    models = [m for m in models if m and not (m in seen or seen.add(m))]
-    body = {
-        "contents": [{"role": "user", "parts": [{"text": build_prompt(articles)}]}],
-        "generationConfig": {"temperature": 0.3, "maxOutputTokens": 2000, "responseMimeType": "application/json"},
-    }
-    for model in models:
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-        for attempt in range(GEMINI_TRIES):
+
+def summarize_with_codex(articles):
+    """jcloud에 ChatGPT 계정으로 로그인한 Codex CLI로 요약. 실패하면 None → 스니펫 요약"""
+    prompt = build_prompt(articles)
+    for attempt in range(CODEX_TRIES):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = os.path.join(tmp, "answer.txt")
             try:
-                resp = requests.post(url, params={"key": api_key}, json=body, timeout=60)
-            except requests.RequestException as e:
-                print(f"[-] Gemini 요청 실패({model}): {e}")
-                resp = None
-            if resp is not None and resp.status_code not in GEMINI_RETRYABLE:
-                break
-            if resp is not None:
-                print(f"[-] Gemini 일시 오류({model}): {resp.status_code} → 재시도 {attempt + 1}/{GEMINI_TRIES}")
-            if attempt < GEMINI_TRIES - 1:
-                time.sleep(GEMINI_RETRY_WAIT * (attempt + 1))
-        if resp is None or resp.status_code in GEMINI_RETRYABLE:
-            continue  # 이 모델은 계속 붐빔/쿼터 소진 → 다음 모델
-        if resp.status_code == 404:
-            continue
-        if not resp.ok:
-            print(f"[-] Gemini 응답 오류({model}): {resp.status_code} {resp.text[:200]}")
-            return None
-        try:
-            text = resp.json()["candidates"][0]["content"]["parts"][0]["text"]
-            items = json.loads(text)
-        except (KeyError, IndexError, ValueError) as e:
-            print(f"[-] Gemini 결과 파싱 실패({model}): {e}")
-            return None
-        if isinstance(items, list) and len(items) == len(articles):
-            print(f"[+] Gemini 요약 완료 ({model})")
+                r = subprocess.run(
+                    ["codex", "exec", "--skip-git-repo-check", "--ephemeral", "-s", "read-only", "-C", tmp, "-o", out, "-"],
+                    input=prompt, capture_output=True, text=True, encoding="utf-8", timeout=CODEX_TIMEOUT,
+                )
+            except (OSError, subprocess.TimeoutExpired) as e:
+                print(f"[-] Codex 실행 실패: {e}")
+                continue
+            text = ""
+            if os.path.exists(out):
+                with open(out, encoding="utf-8") as f:
+                    text = f.read()
+        items = parse_ai_items(text, len(articles)) if r.returncode == 0 else None
+        if items:
+            print("[+] Codex 요약 완료")
             return items
-        print(f"[-] Gemini 결과 개수 불일치({model})")
-        return None
+        print(f"[-] Codex 요약 실패 ({attempt + 1}/{CODEX_TRIES}, 코드 {r.returncode}): {(r.stderr or text)[-300:]}")
     return None
 
 
 def build_items(articles, use_ai=True):
-    ai = summarize_with_gemini(articles) if use_ai else None
+    ai = summarize_with_codex(articles) if use_ai else None
     items = []
     for i, a in enumerate(articles):
         fb = fallback_summary(a)
@@ -437,7 +433,9 @@ def main():
     p.add_argument("--date", help="대상 날짜 YYYY-MM-DD (기본: KST 기준 어제)")
     p.add_argument("--dry-run", action="store_true", help="발송하지 않고 data/digest_out/ 에 저장")
     p.add_argument("--force", action="store_true", help="이미 발송한 날짜여도 다시 발송")
-    p.add_argument("--no-ai", action="store_true", help="Gemini 요약 없이 스니펫 사용")
+    p.add_argument("--no-ai", action="store_true", help="Codex 요약 없이 스니펫 사용")
+    p.add_argument("--build", action="store_true", help="요약만 만들어 data/digest.json 에 저장 (jcloud)")
+    p.add_argument("--send-built", action="store_true", help="data/digest.json 으로 발송 (Actions)")
     p.add_argument("--get-chat-id", action="store_true", help="봇이 받은 메시지에서 chat_id 출력")
     args = p.parse_args()
 
@@ -453,20 +451,34 @@ def main():
     target_date = (datetime.strptime(args.date, "%Y-%m-%d").date() if args.date
                    else (datetime.now(KST) - timedelta(days=1)).date())
 
-    if not args.dry_run and not args.force and os.path.exists(SENT_STATE_FILE):
+    if not (args.dry_run or args.build or args.force) and os.path.exists(SENT_STATE_FILE):
         with open(SENT_STATE_FILE, encoding="utf-8") as f:
             if f.read().strip() == target_date.isoformat():
                 print(f"[*] {target_date} 다이제스트는 이미 발송했어요. (--force 로 재발송)")
                 return
 
-    with open(NEWS_FILE, encoding="utf-8") as f:
-        articles = json.load(f).get("articles", [])
-    top = select_top_articles(articles, target_date)
-    if not top:
-        print(f"[-] {target_date} 기사가 없어 발송하지 않아요.")
+    if args.send_built:
+        with open(BUILT_FILE, encoding="utf-8") as f:
+            built = json.load(f)
+        # jcloud가 오늘 못 만들었으면 어제 것을 다시 보내지 않고 실패로 끝내 Actions 실패 메일로 알게 함
+        if built.get("date") != target_date.isoformat():
+            sys.exit(f"[-] jcloud가 만든 {target_date} 요약이 없어요 (있는 것: {built.get('date')})")
+        items = built["items"]
+    else:
+        with open(NEWS_FILE, encoding="utf-8") as f:
+            articles = json.load(f).get("articles", [])
+        top = select_top_articles(articles, target_date)
+        if not top:
+            print(f"[-] {target_date} 기사가 없어 발송하지 않아요.")
+            return
+        items = build_items(top, use_ai=not args.no_ai)
+
+    if args.build:
+        with open(BUILT_FILE, "w", encoding="utf-8") as f:
+            json.dump({"date": target_date.isoformat(), "items": items}, f, ensure_ascii=False, indent=1)
+        print(f"[+] {target_date} 요약 저장: {BUILT_FILE}")
         return
 
-    items = build_items(top, use_ai=not args.no_ai)
     images = render_cards(items, target_date)
     caption = build_caption(items, target_date)
     detail = build_detail_message(items, target_date)

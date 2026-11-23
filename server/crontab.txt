@@ -1,3 +1,5 @@
-0 * * * * /home/ubuntu/workspace/cron_scrape.sh
+# git을 만지는 작업은 같은 잠금(flock)으로 차례대로 돌려요
+0 * * * * flock /tmp/cnh_git.lock /home/ubuntu/workspace/cron_scrape.sh
 30 4 * * * /home/ubuntu/workspace/backup_server.sh
+40 8 * * * flock /tmp/cnh_git.lock /home/ubuntu/workspace/build_digest.sh
 0 9 * * * /home/ubuntu/workspace/trigger_digest.sh
