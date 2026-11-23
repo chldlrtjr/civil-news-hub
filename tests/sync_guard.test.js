@@ -6,10 +6,12 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
-const block = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]).find(b => b.includes('async function pullSavedRemote'));
+const indexBlock = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]).find(b => b.includes('async function pullSavedRemote'));
+// v2.html 은 같은 스크립트의 사본을 써요: 두 사본이 같은 규칙을 지키는지 함께 검사
+const SOURCES = [['index.html', indexBlock], ['static/v2_state.js', fs.readFileSync(path.join(__dirname, '..', 'static', 'v2_state.js'), 'utf8')]];
 const Tracker = require('../static/tracker_core.js');
 
-function boot(remoteRow) {
+function boot(block, remoteRow) {
   const calls = [];
   let authCb = null;
   let resolveSelect;
@@ -35,9 +37,10 @@ function boot(remoteRow) {
 }
 const tick = (ms = 0) => new Promise(r => setTimeout(r, ms));
 
-test('첫 불러오기 전에는 저장하지 않아요 (다른 기기 기록을 덮어쓰지 않게)', async () => {
+for (const [name, block] of SOURCES) {
+test(`[${name}] 첫 불러오기 전에는 저장하지 않아요 (다른 기기 기록을 덮어쓰지 않게)`, async () => {
   const remoteCard = Tracker.makeCard('contest', { id: 'r1', title: '원격' }, '2026-11-19', '2026-11-19T01:00:00Z');
-  const b = boot({ ids: [], tracked: [remoteCard] });
+  const b = boot(block, { ids: [], tracked: [remoteCard] });
   b.login(); await tick(5);
   b.ctx.__t.tracked = [Tracker.makeCard('contest', { id: 'l1', title: '로컬' }, '2026-11-19')];
   b.ctx.__t.persistTracked(); await tick(400);
@@ -48,9 +51,9 @@ test('첫 불러오기 전에는 저장하지 않아요 (다른 기기 기록을
   assert.deepEqual(ups.at(-1)[1].tracked.map(c => c.id).sort(), ['l1', 'r1']);
 });
 
-test('저장이 기다리는 중에는 불러오기를 건너뛰어요 (삭제가 옛 사본으로 되살아나지 않게)', async () => {
+test(`[${name}] 저장이 기다리는 중에는 불러오기를 건너뛰어요 (삭제가 옛 사본으로 되살아나지 않게)`, async () => {
   const card = Tracker.makeCard('contest', { id: 'c1', title: 'x' }, '2026-11-19', '2026-11-19T01:00:00Z');
-  const b = boot({ ids: [], tracked: [card] });
+  const b = boot(block, { ids: [], tracked: [card] });
   b.login(); await tick(5); b.resolveSelect(); await tick(20);
   const selectsBefore = b.calls.filter(c => c[0] === 'select').length;
   b.ctx.__t.trackRemove('c1');
@@ -61,11 +64,12 @@ test('저장이 기다리는 중에는 불러오기를 건너뛰어요 (삭제�
   assert.equal(last.tracked.find(c => c.id === 'c1').deleted, true);
 });
 
-test('원격과 같은 내용이면 탭에 돌아올 때 다시 저장하지 않아요', async () => {
+test(`[${name}] 원격과 같은 내용이면 탭에 돌아올 때 다시 저장하지 않아요`, async () => {
   const card = Tracker.makeCard('contest', { id: 'c1', title: 'x' }, '2026-11-19', '2026-11-19T01:00:00Z');
   const reordered = Object.fromEntries(Object.entries(card).reverse());
-  const b = boot({ ids: [], tracked: [reordered] });
+  const b = boot(block, { ids: [], tracked: [reordered] });
   b.ctx.__t.tracked = [card];
   b.login(); await tick(5); b.resolveSelect(); await tick(400);
   assert.equal(b.calls.filter(c => c[0] === 'upsert').length, 0);
 });
+}
