@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-24 19:01:51",
-  "last_updated_display": "11월 24일 19:01",
-  "total_count": 32,
-  "featured_count": 32,
+  "last_updated": "2026-11-24 20:01:48",
+  "last_updated_display": "11월 24일 20:01",
+  "total_count": 33,
+  "featured_count": 33,
   "categories": [
     "ALL",
     "토목",
@@ -568,6 +568,40 @@
       "dday_info": {
         "text": "D-13",
         "days": 13,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-112549",
+      "source": "wevity_it",
+      "source_name": "위비티",
+      "title": "대구광역시 남구 AI 행정혁신 경진대회",
+      "organizer": "대구광역시 남구청, 계명대학교 창업지원단",
+      "category": "컴퓨터공학",
+      "badge_color": "blue",
+      "prize": "",
+      "target": "일반인, 대학생, 기타",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.24 ~ 12.09 마감",
+      "deadline_date": "2026-12-09",
+      "deadline_time": "23:59",
+      "fields": [
+        "웹/모바일/IT"
+      ],
+      "description": "대구광역시 남구청, 계명대학교 창업지원단 주최 · 분야: 웹/모바일/IT",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=view&ix=112549",
+      "image": "",
+      "is_active": true,
+      "deadline_source": "wevity_detail",
+      "start_date": "2026-11-24",
+      "prize_total": "5천만원~3천만원",
+      "homepage": "https://kubic.kmu.ac.kr/kubic2025/35015/subview.do?enc=Zm5jdDF8QEB8JTJGYmJzJTJGa3ViaWMyMDI1JTJGMjQ0MSUyRjI0MTkxNyUyRmFydGNsVmlldy5kbyUzRnBhZ2UlM0QxJTI2ZmluZFR5cGUlM0QlMjZmaW5kV29yZCUzRCUyNmZpbmRDbFNlcSUzRCUyNmZpbmRPcG53cmQlM0QlMjZyZ3NCZ25kZVN0ciUzRCUyNnJn",
+      "track": "it",
+      "dday_info": {
+        "text": "D-15",
+        "days": 15,
         "is_urgent": false,
         "is_closed": false
       }
