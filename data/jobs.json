@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-24 13:01",
-  "last_updated_display": "2026년 11월 24일 13:01",
+  "last_updated": "2026-11-24 14:02",
+  "last_updated_display": "2026년 11월 24일 14:02",
   "source": "잡알리오(공공기관 채용정보) · 고용24 공채속보 Open API",
-  "total_count": 17,
+  "total_count": 20,
   "failed_sources": [],
   "categories": [
     {
@@ -179,6 +179,35 @@
       ]
     },
     {
+      "id": "w24-186234",
+      "source": "고용24 공채속보",
+      "company": "진흥기업",
+      "company_type": "",
+      "category_id": "builder",
+      "category_name": "건설·민간기업",
+      "title": "정규/계약/전문직 경력사원 수시채용",
+      "fields": [
+        "[경력(정규직) 부문] 토목영업 外"
+      ],
+      "career": "경력",
+      "is_intern": false,
+      "intern_type": "",
+      "location": "서울,지역무관,충남",
+      "period": "2026.11.20 ~ 2026.11.29",
+      "deadline_date": "2026-11-29",
+      "tags": [
+        "정규직",
+        "기간제"
+      ],
+      "link": "https://hyosung.recruiter.co.kr/app/jobnotice/view?systemKindCode=MRS2&jobnoticeSn=273113",
+      "summary": "[경력(정규직) 부문] - 토목영업 / 정비사업 영업 / 분양 마케팅 / 기술기획 / 안전관리 / 현장관리 [경력(계약직) 부문] - 건축공무 / 건축공사 / 토목공무 / 토목공사 / 기계 [경력(전문직) 부문] - 안전관리 / 품질관리 ※ 모집분야별 상세 내용은 채용 홈페이지 참조하시기 바랍니다.",
+      "steps": [
+        "서류전형",
+        "면접전형",
+        "최종합격"
+      ]
+    },
+    {
       "id": "w24-185452",
       "source": "고용24 공채속보",
       "company": "에스티인터내셔널코퍼레이션",
@@ -303,6 +332,38 @@
         "2차 전형",
         "인성면접",
         "실무면접"
+      ]
+    },
+    {
+      "id": "w24-186270",
+      "source": "고용24 공채속보",
+      "company": "한국동서발전",
+      "company_type": "공기업",
+      "category_id": "public",
+      "category_name": "공기업·공공기관",
+      "title": "2027년 상반기 신입직원 (대졸수준(일반/보훈) 및 고졸) 채용공고",
+      "fields": [
+        "[경영관리] 사무 상경 外"
+      ],
+      "career": "신입",
+      "is_intern": false,
+      "intern_type": "채용형",
+      "location": "울산",
+      "period": "2026.11.24 ~ 2026.12.01",
+      "deadline_date": "2026-12-01",
+      "tags": [
+        "정규직전환형",
+        "기간제",
+        "공기업"
+      ],
+      "link": "https://ewp.saramin.co.kr/service/ewp/4037/applicant/apply/recruit_default.asp",
+      "summary": "[경영관리] - 사무 상경 / 사무 법정 [발전운영관리] - 발전기계 / 발전전기 / 화학 [건설공사관리] - 토목 / 건축 ※ 모집분야별 상세 내용은 채용 홈페이지 및 채용 홈페이지 내 직무기술서 첨부파일을 참조하시기 바랍니다.",
+      "steps": [
+        "서류전형",
+        "필기전형",
+        "자기소개서 제출 및 평가",
+        "면접전형",
+        "신체검사, 신원조회 등"
       ]
     },
     {
@@ -547,6 +608,36 @@
         "1차 전형",
         "서류전형",
         "2차 전형",
+        "면접전형"
+      ]
+    },
+    {
+      "id": "alio-307367",
+      "source": "잡알리오",
+      "company": "국립공원공단",
+      "company_type": "공공기관",
+      "category_id": "public",
+      "category_name": "공기업·공공기관",
+      "title": "[중부지역본부] 국립공원공단 중부권역 내 기간제(기술) 직원 채용 공고",
+      "fields": [
+        "건설"
+      ],
+      "career": "신입·경력",
+      "is_intern": false,
+      "intern_type": "",
+      "civil_match": "토목 명시",
+      "location": "경기",
+      "period": "2026.11.24 ~ 2026.12.08",
+      "deadline_date": "2026-12-08",
+      "tags": [
+        "토목 명시",
+        "비정규직",
+        "1명"
+      ],
+      "link": "https://www.knps.or.kr/front/portal/recruit/recruitDtl.do?menuNo=7070064&emplyId=EMPM020083",
+      "summary": "- 공단 인사규정 제18조(결격사유)에 해당되지 않는 자(아래 결격사유 참조) - 건축기사, 토목기사, 조경기사 中 1개 이상 자격소지자 (필수) - 그 외 연령, 전공, 학력 제한 없음",
+      "steps": [
+        "서류전형",
         "면접전형"
       ]
     },
