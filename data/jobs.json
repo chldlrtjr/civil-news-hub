@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-24 23:01",
-  "last_updated_display": "2026년 11월 24일 23:01",
+  "last_updated": "2026-11-25 00:01",
+  "last_updated_display": "2026년 11월 25일 00:01",
   "source": "잡알리오(공공기관 채용정보) · 고용24 공채속보 Open API",
-  "total_count": 25,
+  "total_count": 24,
   "failed_sources": [],
   "categories": [
     {
@@ -23,34 +23,6 @@
     }
   ],
   "jobs": [
-    {
-      "id": "w24-185516",
-      "source": "고용24 공채속보",
-      "company": "삼성이엔에이",
-      "company_type": "",
-      "category_id": "builder",
-      "category_name": "건설·민간기업",
-      "title": "경력사원 채용(첨단산업 설계, 시공, 공무)",
-      "fields": [
-        "공무(Cost/Planning) 外"
-      ],
-      "career": "경력",
-      "is_intern": false,
-      "intern_type": "",
-      "location": "공고 원문 참조",
-      "period": "2026.11.11 ~ 2026.11.24",
-      "deadline_date": "2026-11-24",
-      "tags": [
-        "정규직"
-      ],
-      "link": "https://www.samsungcareers.com/hr/?no=23426",
-      "summary": "- 공무(Cost·Planning) / 시공관리(첨단산업) / 시공BIM관리(첨단산업) / 토목설계(첨단산업) / 구조설계(첨단산업) / 건축설계(첨단산업) / 설비설계(첨단산업) / 소방설계(첨단산업) / 배관설계(첨단산업) / 전기설계(첨단산업) / 제어설계(첨단산업) / 공정·기계설계(첨단산업) / 기계설계(하·폐수처리) / 공정설계(하·폐수처리) / 공정·기계설계(초순수) / 공정설계(재이용·ZLD) ※ 모집분야별 상세 내용은 채용 홈페이지 참조하시기 바랍니다.",
-      "steps": [
-        "서류전형",
-        "면접전형",
-        "건강검진"
-      ]
-    },
     {
       "id": "alio-306914",
       "source": "잡알리오",
