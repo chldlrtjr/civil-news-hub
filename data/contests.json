@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-24 10:01:38",
-  "last_updated_display": "11월 24일 10:01",
-  "total_count": 31,
-  "featured_count": 31,
+  "last_updated": "2026-11-24 11:01:33",
+  "last_updated_display": "11월 24일 11:01",
+  "total_count": 32,
+  "featured_count": 32,
   "categories": [
     "ALL",
     "토목",
@@ -955,6 +955,35 @@
       "dday_info": {
         "text": "D-44",
         "days": 44,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "campus-220148",
+      "source": "campus",
+      "source_name": "교내공지",
+      "title": "2026학년도 전기 졸업자격인증 신청 안내",
+      "organizer": "교무처 학사지원과",
+      "category": "전북대",
+      "badge_color": "teal",
+      "prize": "",
+      "target": "",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.23 ~ 01.08 (18:00 마감)",
+      "deadline_date": "2027-01-08",
+      "deadline_time": "18:00",
+      "result_date": "",
+      "result_label": "",
+      "description": "<2026 학년도 전기 졸업자격인증 신청 안내 > 1. 신청대상자 : 졸업자격인증 요건을 충족한 학생 및 조기졸업희망자 , 수료자 ※ 요건 충족한 학생 누구나 (1 학년 ~4 학년 ) 신청가능 ※ 졸업시까지 1 회 인증시 졸업요건 충족 ﻿ ※ 졸업자격인증 요건을 갖추지 못한 학생은 졸업이 불가하며 수료자로 처리됨 2. 신청기간 : 2026. 11. 20.(…",
+      "link": "https://www.jbnu.ac.kr/web/Board/220148/detailView.do",
+      "image": "",
+      "is_active": true,
+      "track": "campus",
+      "dday_info": {
+        "text": "D-45",
+        "days": 45,
         "is_urgent": false,
         "is_closed": false
       }
