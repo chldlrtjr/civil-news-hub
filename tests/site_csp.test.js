@@ -47,7 +47,7 @@ test('Vercel 빌드 단계에서 데이터 번들 형식을 검사해요 (검사
   assert.equal(vercel.buildCommand, 'node check_data_bundle.js');
   assert.equal(vercel.framework, null);
   assert.equal(vercel.outputDirectory, undefined);  // 출력 폴더는 지금처럼 저장소 맨 위
-  assert.ok(read('.vercelignore').split('\n').includes('!check_data_bundle.js'));
+  assert.ok(read('.vercelignore').split(/\r?\n/).includes('!check_data_bundle.js'));  // Windows 작업 사본(CRLF)에서도
 });
 
 test('마감일 캘린더 줄: 묶음 이름과 새 탭 안내(화면읽기)', () => {
