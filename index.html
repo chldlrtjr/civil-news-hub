@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="./static/vendor/pretendard/pretendardvariable-dynamic-subset.css">
 <script>try { const th = localStorage.getItem('cnh-theme'); if (th) document.documentElement.dataset.theme = th; } catch(e){}</script>
 <script>
-// 예전 사이트(old.html)에서 이어받은 정리: 옛 PWA 서비스워커·캐시와 더미 데이터 캐시를 지워 늘 최신 파일을 받게 해요
+// 예전 사이트에서 이어받은 정리: 옛 PWA 서비스워커·캐시와 더미 데이터 캐시를 지워 늘 최신 파일을 받게 해요
 if ('serviceWorker' in navigator && (location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
   navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(reg => reg.unregister()));
 }
@@ -26,11 +26,12 @@ if ('caches' in window) caches.keys().then(keys => keys.forEach(k => { if (k.inc
 </script>
 <script src="./static/cnh_data_bundle.js?v=20261123"></script>
 <script src="./static/data_adapter.js?v=20261125"></script>
+<!-- static/vendor 는 vercel.json 에서 1년 캐시(immutable): 파일을 바꿀 땐 이름도 바꿔요(예: supabase-2.x.y.js) -->
 <script src="./static/vendor/supabase.js"></script>
 <script src="./static/tracker_core.js?v=20261123"></script>
 <script src="./static/v2_core.js?v=20261125"></script>
 <style>
-/* v2 (2026-11-23부터 기본 사이트, 예전 사이트는 old.html): madia-design 기준. PC(#v2pc)와 모바일(#v2m)은 별도 화면이고, 규칙은 각자 범위 안에만 둬요 */
+/* v2 (2026-11-23부터 기본 사이트): madia-design 기준. PC(#v2pc)와 모바일(#v2m)은 별도 화면이고, 규칙은 각자 범위 안에만 둬요 */
 :root{
   --bg:#F7F7FB; --surface:#FFFFFF; --surface-2:#EFEFF4; --ink:#111111; --muted:#6B6B6B; --line:#E5E5EC;
   --accent:#B93C0B; --accent-soft:#FFE8DB; --on-accent:#FFFFFF;  /* 대비(WCAG AA): 흰 글자 5.65, 연주황 위 4.80 */

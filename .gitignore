@@ -9,6 +9,7 @@ venv/
 Thumbs.db
 .obsidian/
 *.log
+*.log.old
 .orca/
 .env
 kakao_token.json

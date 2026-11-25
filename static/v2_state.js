@@ -1,4 +1,4 @@
-/* 예전 사이트 old.html(옛 index.html) 공용 스크립트("공용 북마크" ~ "마이페이지" 직전) 사본. old.html 은 2026-11-24부터 배포 제외라 그 뒤 규칙은 여기에만 고쳐요. tests/sync_guard.test.js로 확인 */
+/* 공용 스크립트(북마크·로그인·진행 카드). 예전 사이트(old.html, 2026-11-25 삭제)에서 옮겨 온 것으로, 이제 이 파일이 원본이에요. tests/sync_guard.test.js로 확인 */
 /* ---------- 공용 북마크: 두 화면이 같은 목록을 쓰고, 로그인한 사람은 기기 사이에서도 동기화돼요 ---------- */
 const saved = new Set();
 const savedListeners = [];
@@ -158,7 +158,7 @@ document.addEventListener('click', async e => {
   await googleLogin();
 });
 const googleLogin = () => SB.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname } });
-/* 로그인 전 출생연도 확인 (v2 전용, old.html은 2026-11-24부터 배포 제외): 연도는 비교만 하고 저장·전송하지 않고, 이 브라우저에 "확인함"만 남겨요 */
+/* 로그인 전 출생연도 확인 (v2 전용): 연도는 비교만 하고 저장·전송하지 않고, 이 브라우저에 "확인함"만 남겨요 */
 const AGE_KEY = 'cnh-age-ok';
 function ageConfirmed(){ try { return localStorage.getItem(AGE_KEY) === '1'; } catch(e){ return false; } }
 function openAgeGate(){
