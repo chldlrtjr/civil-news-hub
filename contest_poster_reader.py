@@ -19,10 +19,11 @@ import base64
 import json
 import os
 import re
-import urllib.request
 from datetime import date, timedelta
 
 import requests
+
+import safe_http
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CACHE_FILE = os.path.join(BASE_DIR, "data", "poster_ocr_cache.json")
@@ -160,9 +161,11 @@ def read_poster(pst_id: str, poster_url: str, posted: date, find_dates, cache: d
     if hit and hit.get("poster") == poster_url:
         raw = hit.get("raw")
     else:
-        req = urllib.request.Request(poster_url, headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(req, timeout=20) as r:
-            image, mime = r.read(), r.headers.get_content_type()
+        # 전북대 주소의 png·jpeg·webp·gif 만 받아 Gemini 로 보냄 (그 밖은 BlockedError)
+        r = safe_http.fetch(poster_url, headers={"User-Agent": "Mozilla/5.0"}, timeout=20, deadline=60,
+                            image=True, hosts=safe_http.JBNU_HOSTS)
+        r.raise_for_status()
+        image, mime = r.content, r.headers["Content-Type"].split(";")[0].strip().lower()
         raw = ask_gemini(image, mime, api_key)
         cache[pst_id] = {"poster": poster_url, "model": POSTER_MODEL, "raw": raw}
     return verify(raw or {}, posted, find_dates)

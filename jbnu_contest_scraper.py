@@ -24,6 +24,7 @@ import urllib.parse
 from datetime import datetime, timezone, timedelta, date
 from bs4 import BeautifulSoup
 import contest_poster_reader
+import safe_http
 import contest_validator
 
 KST = timezone(timedelta(hours=9))
@@ -470,9 +471,9 @@ def _read_post_detail(pst_id: str) -> tuple:
     url = f"https://www.jbnu.ac.kr/web/Board/{pst_id}/detailView.do"
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
     body_text, poster = "", ""
-    req = urllib.request.Request(url, headers=headers)
-    with urllib.request.urlopen(req, timeout=8) as resp:
-        html = resp.read().decode("utf-8", errors="ignore")
+    r = safe_http.fetch(url, headers=headers, timeout=8, deadline=30, hosts=safe_http.JBNU_HOSTS)
+    r.raise_for_status()
+    html = r.content.decode("utf-8", errors="ignore")
     soup = BeautifulSoup(html, "html.parser")
 
     content = soup.select_one(".com-post-content-01")
@@ -486,8 +487,11 @@ def _read_post_detail(pst_id: str) -> tuple:
             if "visibility: hidden" in style:
                 continue
             if "max-width:100%" in style or "max-width: 100%" in style:
-                poster = f"https://www.jbnu.ac.kr{src}" if src.startswith("/") else src
-                break
+                cand = urllib.parse.urljoin(url, src)
+                # 공지 본문에 다른 사이트·file:// 주소가 들어 있으면 포스터로 쓰지 않음 (사이트 노출·판독 요청 방지)
+                if safe_http.allowed(cand, safe_http.JBNU_HOSTS):
+                    poster = cand
+                    break
     return body_text, poster
 
 

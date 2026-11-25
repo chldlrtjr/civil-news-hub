@@ -18,9 +18,9 @@ import re
 import sys
 import json
 import time
-import urllib.request
 from datetime import datetime, timezone, timedelta
 from bs4 import BeautifulSoup
+import safe_http
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
@@ -58,13 +58,14 @@ def clean_text(text):
     return text.strip()
 
 def safe_fetch(url, max_retries=3, timeout=12):
-    req = urllib.request.Request(url, headers=HEADERS)
     for attempt in range(max_retries):
         try:
-            with urllib.request.urlopen(req, timeout=timeout) as resp:
-                return resp.read().decode('utf-8', errors='ignore')
+            # 게시판 글 링크(href)를 그대로 여니 SW사업단 주소만 허용
+            r = safe_http.fetch(url, headers=HEADERS, timeout=timeout, deadline=30, hosts=safe_http.JBNU_HOSTS)
+            r.raise_for_status()
+            return r.content.decode('utf-8', errors='ignore')
         except Exception as e:
-            if attempt < max_retries - 1:
+            if attempt < max_retries - 1 and not isinstance(e, safe_http.BlockedError):
                 time.sleep(1.0)
             else:
                 print(f"[-] Fetch failed for {url}: {e}")

@@ -229,18 +229,16 @@ class FailureHandlingTest(unittest.TestCase):
     def test_non_google_link_works_without_decoder(self):
         html = '<meta property="og:image" content="https://cdn.example.com/photo/1.jpg">'
         with mock.patch.object(scraper, "googlenewsdecoder", None), mock.patch.object(scraper, "NEWS_IMAGES", True), \
-                mock.patch.object(scraper.requests, "get", return_value=mock.Mock(status_code=200, text=html)):
+                mock.patch.object(scraper.safe_http, "fetch", return_value=mock.Mock(status_code=200, text=html)):
             self.assertEqual(scraper.extract_news_og_image("https://news.example.com/1"), "https://cdn.example.com/photo/1.jpg")
             self.assertEqual(scraper.extract_news_og_image("https://news.google.com/rss/articles/abc"), "")
 
     def test_no_photo_requests_while_images_are_off(self):
         html = '<meta property="og:image" content="http://cdn.example.com/photo/1_v150.jpg"><meta property="og:description" content="요약">'
-        with mock.patch.object(scraper.requests, "get", return_value=mock.Mock(status_code=200, text=html)) as get, \
-                mock.patch.object(scraper.requests, "head") as head:
+        with mock.patch.object(scraper.safe_http, "fetch", return_value=mock.Mock(status_code=200, text=html)) as get:
             meta = scraper.fetch_article_meta("https://news.example.com/1")
         self.assertEqual((meta["image"], meta["description"]), ("", "요약"))
-        self.assertEqual(get.call_count, 1)  # 기사 원문 한 번만
-        head.assert_not_called()
+        self.assertEqual(get.call_count, 1)  # 기사 원문 한 번만 (사진 확인 요청 없음)
 
 
 if __name__ == "__main__":

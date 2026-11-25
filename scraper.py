@@ -12,6 +12,7 @@ from collections import Counter
 from dotenv import load_dotenv
 import requests
 from bs4 import BeautifulSoup
+import safe_http
 
 # 구글 뉴스 링크 → 원문 URL 디코더. 의존성(selectolax 등) 문제로 import가 깨져도
 # 구글이 아닌 기사의 사진 추출은 계속되도록 따로 불러오고, 실패 사유는 수집 로그에 남긴다
@@ -828,7 +829,8 @@ def _usable_og_image(img: str, page_url: str) -> str:
     cand = upgrade_to_high_res_image(img)
     if cand != img:
         try:
-            v_res = requests.head(cand, headers=ARTICLE_HEADERS, timeout=2.5, allow_redirects=True)
+            # shortcut: HEAD 대신 안전 조회(GET)라 사진을 최대 10MB 받음, NEWS_IMAGES 를 다시 켜서 느려지면 그때 HEAD 지원 추가
+            v_res = safe_http.fetch(cand, headers=ARTICLE_HEADERS, timeout=2.5, image=True)
             if v_res.status_code == 200:
                 img = cand
         except Exception:
@@ -838,7 +840,7 @@ def _usable_og_image(img: str, page_url: str) -> str:
     if img.startswith("http://"):
         https_img = "https://" + img[7:]
         try:
-            res = requests.get(https_img, headers=ARTICLE_HEADERS, timeout=3, stream=True)
+            res = safe_http.fetch(https_img, headers=ARTICLE_HEADERS, timeout=3, image=True)
             return https_img if 200 <= res.status_code < 400 else ""
         except Exception:
             return ""
@@ -867,7 +869,7 @@ def fetch_article_meta(link: str) -> dict:
         if not orig_url:
             return meta
 
-        r = requests.get(orig_url, headers=ARTICLE_HEADERS, timeout=4)
+        r = safe_http.fetch(orig_url, headers=ARTICLE_HEADERS, timeout=4, deadline=10)
         if r.status_code != 200:
             return meta
         if r.encoding in (None, "ISO-8859-1"):
@@ -958,7 +960,7 @@ def fetch_site_name(url: str) -> str:
     """기사 원문 페이지의 og:site_name (없거나 실패하면 '')"""
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"}
     try:
-        r = requests.get(url, headers=headers, timeout=4)
+        r = safe_http.fetch(url, headers=headers, timeout=4, deadline=10)
         if r.status_code != 200:
             return ""
         if r.encoding in (None, "ISO-8859-1"):

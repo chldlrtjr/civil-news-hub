@@ -68,7 +68,7 @@ class VerifyTest(unittest.TestCase):
 class ReadPosterCacheTest(unittest.TestCase):
     def test_cached_result_skips_download_and_model(self):
         cache = {"1": {"poster": "http://p/1", "raw": raw()}}
-        with mock.patch.object(reader.urllib.request, "urlopen") as urlopen, \
+        with mock.patch.object(reader.safe_http, "fetch") as urlopen, \
                 mock.patch.object(reader, "ask_gemini") as ask:
             info = reader.read_poster("1", "http://p/1", POSTED, jbnu._find_dates, cache, "k")
         urlopen.assert_not_called()
@@ -77,10 +77,8 @@ class ReadPosterCacheTest(unittest.TestCase):
 
     def test_changed_poster_is_read_again_and_cached(self):
         cache = {"1": {"poster": "http://p/old", "raw": raw(deadline_date=None)}}
-        resp = mock.MagicMock()
-        resp.__enter__.return_value.read.return_value = b"img"
-        resp.__enter__.return_value.headers.get_content_type.return_value = "image/png"
-        with mock.patch.object(reader.urllib.request, "urlopen", return_value=resp), \
+        resp = mock.Mock(content=b"img", headers={"Content-Type": "image/png"})
+        with mock.patch.object(reader.safe_http, "fetch", return_value=resp), \
                 mock.patch.object(reader, "ask_gemini", return_value=raw()) as ask:
             info = reader.read_poster("1", "http://p/new", POSTED, jbnu._find_dates, cache, "k")
         ask.assert_called_once_with(b"img", "image/png", "k")
@@ -89,9 +87,8 @@ class ReadPosterCacheTest(unittest.TestCase):
 
     def test_model_failure_is_not_cached(self):
         cache = {}
-        resp = mock.MagicMock()
-        resp.__enter__.return_value.read.return_value = b"img"
-        with mock.patch.object(reader.urllib.request, "urlopen", return_value=resp), \
+        resp = mock.Mock(content=b"img", headers={"Content-Type": "image/png"})
+        with mock.patch.object(reader.safe_http, "fetch", return_value=resp), \
                 mock.patch.object(reader, "ask_gemini", side_effect=reader.PosterQuotaError("429")):
             with self.assertRaises(reader.PosterQuotaError):
                 reader.read_poster("1", "http://p/1", POSTED, jbnu._find_dates, cache, "k")
