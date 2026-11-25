@@ -29,7 +29,7 @@ if ('caches' in window) caches.keys().then(keys => keys.forEach(k => { if (k.inc
 <!-- static/vendor 는 vercel.json 에서 1년 캐시(immutable): 파일을 바꿀 땐 이름도 바꿔요(예: supabase-2.x.y.js) -->
 <script src="./static/vendor/supabase.js"></script>
 <script src="./static/tracker_core.js?v=20261123"></script>
-<script src="./static/v2_core.js?v=20261125"></script>
+<script src="./static/v2_core.js?v=20261126"></script>
 <style>
 /* v2 (2026-11-23부터 기본 사이트): madia-design 기준. PC(#v2pc)와 모바일(#v2m)은 별도 화면이고, 규칙은 각자 범위 안에만 둬요 */
 :root{
@@ -296,6 +296,8 @@ a.h-row:hover .h-t{text-decoration:underline}
 .dt-img{display:block;width:100%;max-height:280px;object-fit:cover;margin-top:16px;border-radius:12px;background:var(--surface-2)}
 .dt-img.poster{max-height:480px;object-fit:contain}
 .dt-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.dt-cal{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px}
+.dt-cal>span{font-size:14px;color:var(--muted)}
 .dt-p{margin:16px 0 0;font-size:14px;color:var(--ink)}
 .dt-p.pre{white-space:pre-line;margin-top:0}
 .dt-dl{display:grid;gap:8px;margin:16px 0 0;padding-top:16px;border-top:1px solid var(--surface-2)}
@@ -433,6 +435,8 @@ a.tk-t:hover{text-decoration:underline}
 #v2m .sheet-grab span{width:40px;height:4px;border-radius:999px;background:var(--line)}
 #v2m .sheet-grab .ibtn{position:absolute;right:8px;top:2px}
 #v2m .dt-acts .btn{flex:1}
+#v2m .dt-cal>span{flex-basis:100%}
+#v2m .dt-cal .btn{flex:1}
 </style>
 </head>
 <body>
@@ -751,6 +755,6 @@ document.addEventListener('visibilitychange', () => {
   if (changed) V2.render();
 });
 </script>
-<script src="./static/v2_pages.js?v=20261125"></script>
+<script src="./static/v2_pages.js?v=20261126"></script>
 </body>
 </html>

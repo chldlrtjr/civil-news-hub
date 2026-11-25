@@ -123,9 +123,13 @@
       const on = CNHTracker.visible(tracked).some((c) => c.id === String(x.id));
       acts.push(on ? '<a class="btn" href="#my">도전 중 · 마이에서 보기</a>' : `<button type="button" class="btn" data-track="${kind}:${esc(x.id)}">도전 목록에 추가</button>`);
     }
+    // 마감일 캘린더에 넣기: 마감일이 오늘 이후인 공모전·채용만 (calEvent 가 아니면 null)
+    const ev = CNHv2.calEvent(kind, x, t);
+    const cal = ev ? `<div class="dt-cal"><span>마감일 캘린더에 넣기</span><a class="btn sm" href="${esc(CNHv2.calGoogleUrl(ev))}" target="_blank" rel="noopener noreferrer">Google 캘린더</a>`
+      + `<button type="button" class="btn sm" data-ics="${kind}:${esc(x.id)}">다른 캘린더 (.ics)</button></div>` : '';
     return `<article class="dt"><div class="dt-top"><span class="dt-kind">${KIND_NAME[kind]}</span>${dd}</div>`
       + `<h2 class="dt-t"${titleId ? ` id="${titleId}"` : ''}>${esc(kind === 'job' ? x.role : x.title)}</h2>${meta ? `<p class="dt-meta">${esc(meta)}</p>` : ''}`
-      + `${media}<div class="dt-acts">${acts.join('')}</div>${lede}${rows.length ? `<dl class="dt-dl">${rows.join('')}</dl>` : ''}${blocks.join('')}</article>`;
+      + `${media}<div class="dt-acts">${acts.join('')}</div>${cal}${lede}${rows.length ? `<dl class="dt-dl">${rows.join('')}</dl>` : ''}${blocks.join('')}</article>`;
   }
 
   /* ---------- 탭마다 무엇을 보여 줄지 (두 화면이 같이 써요) ---------- */
@@ -379,6 +383,16 @@
 
   /* ---------- 이벤트 ---------- */
   const setFilter = (field, v) => { ui[field] = v; ui.shown = {}; ui.confirmDel = null; if (field !== 'mySeg') delete ui.sel[ui.route]; V2.render(); };
+  // .ics 는 브라우저에서 만들어 내려받아요(서버 없음, 아무것도 저장·전송 안 함)
+  function downloadIcs(ev, key) {
+    const stamp = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z';
+    const url = URL.createObjectURL(new Blob([CNHv2.calIcs(ev, stamp)], { type: 'text/calendar;charset=utf-8' }));
+    const a = document.createElement('a');
+    a.href = url; a.download = '마감일-' + key.replace(/[^\w-]+/g, '-') + '.ics';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
   document.addEventListener('click', (e) => {
     const t = e.target;
     const open = t.closest('[data-open]');
@@ -392,6 +406,8 @@
     if (sv) { const id = sv.dataset.save; saved.has(id) ? saved.delete(id) : saved.add(id); persistSaved(); return; }
     const tr = t.closest('[data-track]');
     if (tr) { const f = findItem(tr.dataset.track); if (f) trackAdd(f.kind, f.item); return; }
+    const ic = t.closest('[data-ics]');
+    if (ic) { const f = findItem(ic.dataset.ics); const ev = f && CNHv2.calEvent(f.kind, f.item, V2.today); if (ev) downloadIcs(ev, ic.dataset.ics); return; }
     const more = t.closest('[data-more]');
     if (more) { const k = more.dataset.more; ui.shown[k] = (ui.shown[k] || PER[k.split(':')[0]]) + PER[k.split(':')[0]]; V2.render(); return; }
     const f = t.closest('button[data-f]');
