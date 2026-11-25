@@ -64,19 +64,35 @@ def test_codex_answer_with_fence_parsed_and_failure_retried(monkeypatch):
 
     class R:
         def __init__(self, code):
-            self.returncode, self.stderr = code, "err"
+            self.returncode, self.stderr, self.stdout = code, "err", ""
 
     def fake_run(cmd, **kw):
-        calls.append(cmd)
+        calls.append((cmd, kw))
         if len(calls) == 1:
             return R(1)  # 첫 시도 실패 → 한 번 더
-        with open(cmd[cmd.index("-o") + 1], "w", encoding="utf-8") as f:
-            f.write("요약이에요\n```json\n" + _json.dumps(good, ensure_ascii=False) + "\n```")
-        return R(0)
+        r = R(0)
+        r.stdout = "요약이에요\n```json\n" + _json.dumps(good, ensure_ascii=False) + "\n```"
+        return r
 
     monkeypatch.setattr(dd.subprocess, "run", fake_run)
+    monkeypatch.setattr(dd, "secret_windows", set)
     assert dd.summarize_with_codex(arts) == good
-    assert len(calls) == 2 and calls[0][:2] == ["codex", "exec"]
+    cmd, kw = calls[0]
+    # 비밀 파일을 못 읽는 digest 사용자로, 프롬프트는 stdin·답은 stdout 으로만 주고받아요
+    assert len(calls) == 2 and cmd[cmd.index("sudo"):][:5] == ["sudo", "-n", "-u", "digest", "-H"]
+    assert cmd[cmd.index("-H") + 1:][:2] == [dd.CODEX_BIN, "exec"] and cmd[-1] == "-" and "-o" not in cmd
+    assert 'web_search="disabled"' in cmd and kw["input"] and kw["cwd"] == "/"
+
+
+def test_codex_failure_log_hides_secret_like_stderr(monkeypatch, tmp_path, capsys):
+    _secret_env(monkeypatch, tmp_path)
+
+    class R:
+        returncode, stdout, stderr = 1, "", f"error: token {FAKE_TOKEN[:12]} rejected"
+
+    monkeypatch.setattr(dd.subprocess, "run", lambda cmd, **kw: R())
+    assert dd.summarize_with_codex([art(1, 5)]) is None
+    assert FAKE_TOKEN[:12] not in capsys.readouterr().out
 
 
 def test_parse_ai_items_rejects_wrong_count():
@@ -128,3 +144,67 @@ def test_ai_text_rejects_non_string_and_spaced_out_keys():
     assert dd.safe_ai_text(["목록"], 30) == "" and dd.safe_ai_text(123, 30) == ""
     assert dd.safe_ai_text("키는 sk-proj Ab12 Cd34 Ef56 Gh78 Ij90 이에요", 200) == ""  # 띄어 써도 걸려요
     assert dd.safe_ai_text("국토부가 교량 보수를 시작했어요.", 200) == "국토부가 교량 보수를 시작했어요."
+
+
+# --- 출력 검사 보강: 비밀값 대조, 항목당 영숫자 한도, 맨 도메인·@ ---
+FAKE_TOKEN = "github_pat_11ABCDEFG0hijklmnOPQRS1234"
+
+
+def _secret_env(monkeypatch, tmp_path):
+    env = tmp_path / ".env"
+    env.write_text(f"GEMINI_API_KEY={FAKE_TOKEN}\nPORT=5000\n", encoding="utf-8")
+    monkeypatch.setattr(dd, "SECRET_FILES", [str(env), str(tmp_path / "없는파일.json")])
+    monkeypatch.setattr(dd, "origin_token", lambda: "")
+
+
+def test_fragmented_token_with_korean_separators_falls_back(monkeypatch, tmp_path):
+    _secret_env(monkeypatch, tmp_path)
+    arts = [art(1, 5), art(2, 5)]
+    ai = [
+        {"headline": "교량 보수", "summary": "국토부가 교량 보수를 시작했어요."},
+        # 20자 미만 조각을 한글·문장부호로 이어 붙여 SUSPICIOUS_RE 를 피하는 꼴
+        {"headline": "요약", "summary": "공사는 11AB이고 CDEF·G0hi 구간이에요."},
+    ]
+    monkeypatch.setattr(dd, "summarize_with_codex", lambda a: ai)
+    items = dd.build_items(arts)
+    assert items[0]["summary"] == "국토부가 교량 보수를 시작했어요."
+    assert items[1]["summary"] == dd.fallback_summary(arts[1])["summary"]
+
+
+def test_fullwidth_and_split_across_items_caught(monkeypatch, tmp_path):
+    _secret_env(monkeypatch, tmp_path)
+    arts = [art(1, 5), art(2, 5)]
+    ai = [
+        {"headline": "교량 보수", "summary": "다리를 고쳐요 ｈｉｊｋ."},  # 전각 글자
+        {"headline": "요약", "summary": "lmnO 구간 공사예요."},       # 다음 항목으로 이어 붙임
+    ]
+    monkeypatch.setattr(dd, "summarize_with_codex", lambda a: ai)
+    items = dd.build_items(arts)
+    assert [it["summary"] for it in items] == [dd.fallback_summary(a)["summary"] for a in arts]
+
+
+def test_too_many_ascii_alnum_in_one_item_falls_back(monkeypatch, tmp_path):
+    _secret_env(monkeypatch, tmp_path)
+    arts = [art(1, 5)]
+    ai = [{"headline": "요약", "summary": "Qx7 Lm2 Zp9 Rt4 Wv8 Ny3 Kd6 Hs1 Bc5 오늘 착공했어요."}]
+    monkeypatch.setattr(dd, "summarize_with_codex", lambda a: ai)
+    assert dd.build_items(arts)[0]["summary"] == dd.fallback_summary(arts[0])["summary"]
+
+
+def test_bare_domain_and_at_sign_rejected():
+    for bad in ["공식 사이트가 civil-news.kr 로 바뀌었어요.", "새 주소는 공사.com 이에요.", "문의는 @civil_bot 으로 해요."]:
+        assert dd.safe_ai_text(bad, 200) == "", bad
+
+
+def test_normal_korean_summary_passes(monkeypatch, tmp_path):
+    _secret_env(monkeypatch, tmp_path)
+    arts = [art(1, 5), art(2, 5)]
+    ai = [
+        {"headline": "석문산단 철도 사업비 1조7228억",
+         "summary": "석문산단과 서해선 합덕역을 잇는 인입철도 사업비가 1조7228억원으로 확정됐어요. 기존보다 6509억원 늘어난 규모로, 재정투자평가위원회가 의결했어요."},
+        {"headline": "수공·KT, 물관리 AI 실증",
+         "summary": "한국수자원공사와 KT가 2026년 GTX-A 구간에서 AI 실증을 해요. 총 4.5km 구간이에요. 미국 사례도 참고했어요."},
+    ]
+    monkeypatch.setattr(dd, "summarize_with_codex", lambda a: ai)
+    items = dd.build_items(arts)
+    assert [(it["headline"], it["summary"]) for it in items] == [(s["headline"], s["summary"]) for s in ai]

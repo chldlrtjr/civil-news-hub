@@ -30,7 +30,7 @@ import sys
 import json
 import argparse
 import subprocess
-import tempfile
+import unicodedata
 from datetime import datetime, timedelta, timezone
 
 import requests
@@ -158,52 +158,131 @@ def parse_ai_items(text, n):
     return None
 
 
+# Codex 는 비밀 파일(.env·토큰·git 설정)을 읽을 수 없는 별도 OS 사용자 digest 로만 돌려요(server/setup_digest_user.sh).
+# 기사 글에 숨긴 지시를 따르더라도 읽을 수 있는 건 digest 자신의 Codex 로그인뿐이에요
+DIGEST_USER = "digest"
+CODEX_BIN = "/usr/bin/codex"  # sudoers 에 적힌 경로와 같아야 해요
+DIGEST_WORKDIR = "/home/digest/work"  # 빈 폴더
+
+
 def summarize_with_codex(articles):
     """jcloud에 ChatGPT 계정으로 로그인한 Codex CLI로 요약. 실패하면 None → 스니펫 요약"""
     prompt = build_prompt(articles)
+    cmd = [
+        # timeout 이 sudo 에 SIGTERM 을 보내면 sudo 가 codex 에 전해요(ubuntu 는 digest 프로세스를 직접 못 죽여요)
+        "timeout", "-k", "10", str(CODEX_TIMEOUT),
+        "sudo", "-n", "-u", DIGEST_USER, "-H", CODEX_BIN, "exec",
+        "--skip-git-repo-check", "--ephemeral", "-s", "read-only", "-c", 'web_search="disabled"',
+        "-C", DIGEST_WORKDIR, "-",
+    ]
     for attempt in range(CODEX_TRIES):
-        with tempfile.TemporaryDirectory() as tmp:
-            out = os.path.join(tmp, "answer.txt")
-            try:
-                r = subprocess.run(
-                    ["codex", "exec", "--skip-git-repo-check", "--ephemeral", "-s", "read-only", "-C", tmp, "-o", out, "-"],
-                    input=prompt, capture_output=True, text=True, encoding="utf-8", timeout=CODEX_TIMEOUT,
-                )
-            except (OSError, subprocess.TimeoutExpired) as e:
-                print(f"[-] Codex 실행 실패: {e}")
-                continue
-            text = ""
-            if os.path.exists(out):
-                with open(out, encoding="utf-8") as f:
-                    text = f.read()
+        try:
+            # 프롬프트는 stdin, 답은 stdout 으로만 받아요(digest 홈은 700 이라 파일로는 못 주고받아요)
+            r = subprocess.run(cmd, input=prompt, capture_output=True, text=True, encoding="utf-8",
+                               timeout=CODEX_TIMEOUT + 30, cwd="/")
+        except (OSError, subprocess.TimeoutExpired) as e:
+            print(f"[-] Codex 실행 실패: {e}")
+            continue
+        text = r.stdout or ""
         items = parse_ai_items(text, len(articles)) if r.returncode == 0 else None
         if items:
             print("[+] Codex 요약 완료")
             return items
-        print(f"[-] Codex 요약 실패 ({attempt + 1}/{CODEX_TRIES}, 코드 {r.returncode}): {(r.stderr or text)[-300:]}")
+        tail = (r.stderr or text)[-300:]
+        if leaks_secret(alnum_only(tail), secret_windows()):
+            tail = "(비밀값과 겹치는 글이 있어 로그에서 뺐어요)"
+        print(f"[-] Codex 요약 실패 ({attempt + 1}/{CODEX_TRIES}, 코드 {r.returncode}): {tail}")
     return None
 
 
 # 기사 글에 숨긴 지시로 Codex가 서버 파일(키·토큰)을 답에 넣으면 공개 저장소·텔레그램으로 나가요:
 # 너무 길거나 키처럼 생긴 긴 영숫자·주소가 섞인 답은 버리고 스니펫 요약을 써요
 SUSPICIOUS_RE = re.compile(r"[A-Za-z0-9_\-+/=]{20,}|https?://|\.env|auth\.json|token|secret", re.I)
+# 텔레그램은 스킴 없는 도메인(civil.kr, 공사.com)도 링크로 바꿔요. @아이디도 막아요
+BARE_LINK_RE = re.compile(r"[^\s.]\.[A-Za-z]{2,}|@")
+# 한 항목(제목+요약)의 ASCII 영숫자 한도. 15 로는 숫자 많은 정상 요약(예: '1조7228억 … 6509억' = 14자)이 자주 걸려서
+# 지난 다이제스트 최댓값(14)의 두 배 가까이로 둬요. 알려진 비밀값은 아래 8자 대조가 따로 막아요
+ITEM_ALNUM_LIMIT = 25
+SECRET_WINDOW = 8
+SECRET_FILES = [
+    os.path.join(BASE_DIR, ".env"),
+    os.path.join(BASE_DIR, "kakao_token.json"),
+    os.path.expanduser("~/.codex/auth.json"),
+]
+
+
+def alnum_only(text):
+    # 전각 글자(ｇｈｐ)도 같은 글자로 보고, 영숫자만 남겨 소문자로 이어 붙여요: 조각 내기·구분자 끼우기를 무력화
+    return re.sub(r"[^a-z0-9]", "", unicodedata.normalize("NFKC", text or "").lower())
+
+
+def origin_token():
+    """push 에 쓰는 origin URL 속 토큰(없으면 빈 글). 값은 어디에도 출력하지 않아요"""
+    try:
+        url = subprocess.run(["git", "-C", BASE_DIR, "remote", "get-url", "origin"],
+                             capture_output=True, text=True, timeout=10).stdout
+    except (OSError, subprocess.SubprocessError):
+        return ""
+    m = re.search(r"//([^@/\s]+)@", url)
+    return m.group(1) if m else ""
+
+
+def secret_windows():
+    """서버 비밀값들의 8자 구간(글자가 하나라도 섞인 것만: 날짜 같은 숫자열과 겹치지 않게)"""
+    values = [origin_token()]
+    for path in SECRET_FILES:
+        try:
+            with open(path, encoding="utf-8") as f:
+                values += re.findall(r"[^\s\"'=:,{}\[\]]{%d,}" % SECRET_WINDOW, f.read())
+        except (OSError, UnicodeDecodeError):
+            pass
+    windows = set()
+    for v in values:
+        a = alnum_only(v)
+        windows.update(w for w in (a[i:i + SECRET_WINDOW] for i in range(len(a) - SECRET_WINDOW + 1))
+                       if re.search("[a-z]", w))
+    return windows
+
+
+def leaks_secret(flat, windows):
+    return any(flat[i:i + SECRET_WINDOW] in windows for i in range(len(flat) - SECRET_WINDOW + 1))
 
 
 def safe_ai_text(text, limit):
     if not isinstance(text, str):
         return ""
     text = clean_text(text)
+    norm = unicodedata.normalize("NFKC", text)
     # 공백을 빼고도 검사해요: 키를 띄어 써서 정규식을 피하는 경우 (긴 영어 구절도 걸리지만 그땐 스니펫 요약이라 괜찮아요)
-    return text if text and len(text) <= limit and not SUSPICIOUS_RE.search(re.sub(r"\s", "", text)) else ""
+    if not text or len(text) > limit or SUSPICIOUS_RE.search(re.sub(r"\s", "", norm)) or BARE_LINK_RE.search(norm):
+        return ""
+    return text
+
+
+def checked_ai_items(ai):
+    """항목별 검사를 통과한 (headline, summary) 목록. 걸린 항목은 None → 스니펫 요약"""
+    windows = secret_windows()
+    out = []
+    for s in ai:
+        h, m = safe_ai_text(s.get("headline"), 30), safe_ai_text(s.get("summary"), 200)
+        flat = alnum_only(h + " " + m)
+        ok = h and m and len(flat) <= ITEM_ALNUM_LIMIT and not leaks_secret(flat, windows)
+        out.append((h, m) if ok else None)
+    # 비밀값을 여러 항목에 나눠 실으면 항목별 검사로는 안 보여요: 이어 붙여 다시 보고, 걸리면 AI 요약을 모두 버려요
+    if leaks_secret("".join(alnum_only(p[0] + p[1]) for p in out if p), windows):
+        print("[-] 항목을 이어 보니 비밀값과 겹쳐 AI 요약을 모두 버려요")
+        return [None] * len(ai)
+    return out
 
 
 def build_items(articles, use_ai=True):
     ai = summarize_with_codex(articles) if use_ai else None
+    checked = checked_ai_items(ai) if ai else [None] * len(articles)
     items = []
     for i, a in enumerate(articles):
         fb = fallback_summary(a)
         s = ai[i] if ai else {}
-        headline, summary = safe_ai_text(s.get("headline"), 30), safe_ai_text(s.get("summary"), 200)
+        headline, summary = checked[i] or ("", "")
         if not (headline and summary):
             if s:
                 print(f"[-] {i + 1}번 AI 요약이 검사에 걸려 스니펫 요약을 써요")

@@ -41,6 +41,14 @@ jcloud 서버 (cron)                    GitHub                         방문자
   - `tests.yml`: 코드가 바뀐 push마다 테스트를 돌려요(데이터만 바뀐 매시 커밋은 건너뜀).
   - `sync_notion.yml`: `NOTION_PORTFOLIO_GUIDE.md`가 바뀌면 Notion 포트폴리오에 반영해요.
 
+### 서버 운영 (보안)
+
+- **코드 배포는 사람이 직접 해요.** 서버 감시기(`auto_deploy_watcher.sh`)는 데이터만 바뀐 커밋(`data/**`, `static/cnh_data_bundle.js`)만 자동으로 받아요. 코드가 바뀐 커밋이 main 에 올라오면 받지 않고 카카오로 알려요(그동안 수집 push 도 멈춰요). 판정 규칙은 `server/deploy_guard.sh`에 있어요. PC 에서 push 한 뒤 이 한 줄로 배포해요:
+  `ssh jcloud ~/workspace/server/approve_deploy.sh $(git rev-parse HEAD)`
+- **아침 요약 Codex 는 `digest` 사용자로 돌아요.** 서버의 비밀 파일(.env·토큰·git 설정)을 못 읽는 사용자예요(`server/setup_digest_user.sh`로 만듦). Codex 로그인이 풀리면 이렇게 다시 로그인해요:
+  `ssh -t jcloud sudo -u digest -H codex login --device-auth`
+- 서버의 GitHub 토큰은 origin URL 한 곳에만 있어요(`~/.git-credentials` 없음).
+
 ### 주요 파일
 
 | 파일 | 하는 일 |
