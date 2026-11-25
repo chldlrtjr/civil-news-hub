@@ -37,6 +37,7 @@ async function writeSavedRemote(){
   if (!savedUid || !savedPulled) return;
   if (savedWriting){ savedAgain = true; return; }
   clearTimeout(savedWriteT);
+  capSynced();
   savedWriting = true;
   let ok = false;
   try {
@@ -48,6 +49,14 @@ async function writeSavedRemote(){
   if (savedAgain){ savedAgain = false; writeSavedRemote(); }
   // 네트워크가 잠깐 끊겨 실패하면 10초, 20초 ... 최대 5분 뒤 다시 올려요 (안 그러면 다음 저장 전까지 이 탭은 올리지도 받지도 않아요)
   else if (!ok && savedUid){ savedRetryMs = Math.min((savedRetryMs || 5000) * 2, 300000); savedWriteT = setTimeout(writeSavedRemote, savedRetryMs); }
+}
+// DB 상한(supabase/schema.sql)을 넘으면 저장이 통째로 거절돼요: 이 브라우저 사본째로 잘라 두어야 불러오기 때 또 올리지 않아요
+function capSynced(){
+  const t = CNHTracker.capTracked(tracked), ids = CNHTracker.capIds([...saved]);
+  if (t === tracked && ids.length === saved.size) return;
+  if (t !== tracked){ tracked = t; storeTrackedLocal(); }
+  if (ids.length !== saved.size){ saved.clear(); ids.forEach(id => saved.add(id)); storeSavedLocal(); }
+  notifySaved();
 }
 function persistSaved(){
   savedDirty = true;

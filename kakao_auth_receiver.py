@@ -1,5 +1,7 @@
+import hmac
+import html
 import http.server
-import socketserver
+import secrets
 import urllib.parse
 import requests
 import json
@@ -8,6 +10,7 @@ import sys
 import webbrowser
 import threading
 from dotenv import load_dotenv
+import kakao_notifier
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(BASE_DIR, ".env"))
@@ -17,16 +20,35 @@ REST_API_KEY = os.environ.get("KAKAO_REST_API_KEY", "").strip()
 CLIENT_SECRET = os.environ.get("KAKAO_CLIENT_SECRET", "").strip()
 REDIRECT_URI = f"http://localhost:{PORT}"
 
-TOKEN_FILE = os.path.join(BASE_DIR, "kakao_token.json")
+# OAuth state: 다른 곳에서 넘어온 콜백(CSRF)을 거르기 위해 실행마다 새로 만듦
+STATE = secrets.token_urlsafe(32)
+HTTP_TIMEOUT = 10
 
 server_instance = None
 
-class OAuthHandler(http.server.SimpleHTTPRequestHandler):
+def build_auth_url(state):
+    return "https://kauth.kakao.com/oauth/authorize?" + urllib.parse.urlencode({
+        "client_id": REST_API_KEY, "redirect_uri": REDIRECT_URI,
+        "response_type": "code", "scope": "talk_message", "state": state,
+    })
+
+def make_server(port=PORT):
+    # 이 PC 안에서만 받기(같은 네트워크의 다른 기기 접근 차단)
+    return http.server.HTTPServer(("127.0.0.1", port), OAuthHandler)
+
+# BaseHTTPRequestHandler: 폴더 파일을 내주는 기능 없음(GET 콜백만 처리)
+class OAuthHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         parsed = urllib.parse.urlparse(self.path)
         params = urllib.parse.parse_qs(parsed.query)
+        state = params.get("state", [""])[0]
 
-        if "code" in params:
+        if "code" in params and not hmac.compare_digest(state.encode("utf-8"), STATE.encode("utf-8")):
+            self.send_response(400)
+            self.send_header("Content-type", "text/html; charset=utf-8")
+            self.end_headers()
+            self.wfile.write("<h1>오류: state 값이 맞지 않습니다.</h1>".encode("utf-8"))
+        elif "code" in params:
             code = params["code"][0]
             print(f"[+] 인가 코드(code) 수신 완료: {code[:10]}...")
 
@@ -38,13 +60,12 @@ class OAuthHandler(http.server.SimpleHTTPRequestHandler):
                 "redirect_uri": REDIRECT_URI,
                 "code": code
             }
-            res = requests.post(token_url, data=data)
+            res = requests.post(token_url, data=data, timeout=HTTP_TIMEOUT)
             token_json = res.json()
 
             if "access_token" in token_json:
-                with open(TOKEN_FILE, "w", encoding="utf-8") as f:
-                    json.dump(token_json, f, indent=2, ensure_ascii=False)
-                print(f"[+] 카카오 토큰 저장 완료 -> {TOKEN_FILE}")
+                kakao_notifier.save_tokens(token_json)  # 0600 원자적 저장
+                print(f"[+] 카카오 토큰 저장 완료 -> {kakao_notifier.TOKEN_FILE}")
 
                 # 테스트 메시지 전송
                 headers = {"Authorization": f"Bearer {token_json.get('access_token')}"}
@@ -59,13 +80,13 @@ class OAuthHandler(http.server.SimpleHTTPRequestHandler):
                         "button_title": "허브 바로가기"
                     }, ensure_ascii=False)
                 }
-                send_res = requests.post("https://kapi.kakao.com/v2/api/talk/memo/default/send", headers=headers, data=msg_payload)
+                send_res = requests.post("https://kapi.kakao.com/v2/api/talk/memo/default/send", headers=headers, data=msg_payload, timeout=HTTP_TIMEOUT)
                 print(f"[+] 테스트 메시지 전송 응답: {send_res.status_code} {send_res.text}")
 
                 self.send_response(200)
                 self.send_header("Content-type", "text/html; charset=utf-8")
                 self.end_headers()
-                html = """
+                page = """
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -88,7 +109,7 @@ class OAuthHandler(http.server.SimpleHTTPRequestHandler):
                 </body>
                 </html>
                 """
-                self.wfile.write(html.encode("utf-8"))
+                self.wfile.write(page.encode("utf-8"))
 
                 # 1초 뒤 서버 정상 종료
                 def stop():
@@ -103,7 +124,7 @@ class OAuthHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_header("Content-type", "text/html; charset=utf-8")
                 self.end_headers()
                 err_msg = token_json.get("error_description", str(token_json))
-                self.wfile.write(f"<h1>토큰 발급 실패</h1><p>{err_msg}</p>".encode("utf-8"))
+                self.wfile.write(f"<h1>토큰 발급 실패</h1><p>{html.escape(str(err_msg))}</p>".encode("utf-8"))
         else:
             self.send_response(400)
             self.send_header("Content-type", "text/html; charset=utf-8")
@@ -120,7 +141,7 @@ def main():
         print("[-] .env 파일에 키를 설정한 후 다시 실행해주세요.")
         sys.exit(1)
 
-    auth_url = f"https://kauth.kakao.com/oauth/authorize?client_id={REST_API_KEY}&redirect_uri={REDIRECT_URI}&response_type=code&scope=talk_message"
+    auth_url = build_auth_url(STATE)
     print("=" * 60)
     print("🔑 [Civil News Hub] 카카오톡 인증 토큰 발급기")
     print(f"[*] 인가 요청 URL: {auth_url}")
@@ -130,7 +151,7 @@ def main():
     # 0.8초 후 브라우저 자동 오픈
     threading.Timer(0.8, lambda: webbrowser.open(auth_url)).start()
 
-    with socketserver.TCPServer(("", PORT), OAuthHandler) as httpd:
+    with make_server() as httpd:
         server_instance = httpd
         try:
             httpd.serve_forever()

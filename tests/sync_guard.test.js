@@ -191,3 +191,16 @@ test('[static/v2_state.js] 올리기가 실패하면 탭에 돌아올 때 불러
   assert.equal(b.calls.filter(c => c[0] === 'select').length, selects + 1);
   b.emit('SIGNED_OUT', null);  // 남은 타이머 정리
 });
+
+test('[static/v2_state.js] 계정에 올릴 때 북마크·진행 카드를 DB 상한 안으로 잘라요', async () => {
+  const ids = Array.from({ length: 1005 }, (_, i) => 'id' + i);
+  const cards = Array.from({ length: 205 }, (_, i) => ({ id: 't' + i, deleted: true, updatedAt: '2026-11-19T00:00:' + String(i % 60).padStart(2, '0') + 'Z' }));
+  const b = boot(V2, { ids: [], tracked: [] }, { 'cnh-saved': JSON.stringify(ids), 'cnh-tracked': JSON.stringify(cards) });
+  b.login(); await tick(5); b.resolveSelect(); await tick(400);
+  const up = b.calls.filter(c => c[0] === 'upsert').at(-1)[1];
+  assert.equal(up.ids.length, 1000);
+  assert.equal(up.ids[0], 'id5');
+  assert.equal(up.tracked.length, 200);
+  assert.equal(b.ctx.__t.saved.size, 1000);  // 이 브라우저 사본도 같이 잘라야 다음 불러오기 때 또 올리지 않아요
+  assert.equal(b.ctx.__t.tracked.length, 200);
+});

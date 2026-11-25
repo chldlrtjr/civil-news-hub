@@ -87,6 +87,16 @@ CAREER_PAGES = [
 ]
 
 
+# shortcut: defusedxml 없이 DTD·엔티티 선언이 든 응답은 통째로 거부(정상 응답엔 없음), 파서를 바꿀 일이 생기면 defusedxml 로
+_XML_DTD = re.compile(rb"<!\s*(DOCTYPE|ENTITY)", re.I)
+
+
+def parse_xml_safely(data):
+    if _XML_DTD.search(data):
+        raise ValueError("DTD/엔티티 선언이 든 XML 은 거부해요")
+    return ET.fromstring(data)
+
+
 def load_api_key(name):
     """환경변수 → .env 순으로 인증키 조회 (Actions 러너에는 python-dotenv가 없어서 직접 파싱)"""
     key = os.environ.get(name, "").strip()
@@ -106,7 +116,7 @@ def call_work24(code, params):
     url = WORK24_BASE.format(code) + "?" + urllib.parse.urlencode(params)
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
     with urllib.request.urlopen(req, timeout=20) as response:
-        root = ET.fromstring(response.read())
+        root = parse_xml_safely(response.read())
     error = root.findtext("error") or root.findtext(".//errMsg")
     if error:
         raise RuntimeError(f"고용24 API 오류({code}): {error}")
