@@ -75,15 +75,17 @@ else
   fi
 fi
 
-# 실패 알림: 실패 목록이 바뀔 때만 카카오톡 발송 (같은 실패로 매시간 알림이 쌓이지 않게, 복구 시 1회 알림)
+# 실패 알림: 같은 실패 목록이 2회 연속일 때만 카카오톡 1번 (학교 사이트 새벽 점검 같은 1회성 장애는 안 알림),
+# 알림 보낸 실패가 풀리면 복구 1번. 판정 규칙은 fail_alert.py
 FAIL_STATE_FILE="$SCRIPT_DIR/.cron_fail_state"
 CURRENT_FAILS="${FAILED_STEPS[*]}"
-PREV_FAILS="$(cat "$FAIL_STATE_FILE" 2>/dev/null || true)"
-if [ "$CURRENT_FAILS" != "$PREV_FAILS" ]; then
-  if [ -n "$CURRENT_FAILS" ]; then
+PREV_FAILS="$(tail -n 1 "$FAIL_STATE_FILE" 2>/dev/null || true)"  # 마지막으로 알린 실패 목록
+ALERT_KIND="$("$SCRIPT_DIR/venv/bin/python3" fail_alert.py check "$FAIL_STATE_FILE" "$CURRENT_FAILS" 2>> "$LOG_FILE")"
+if [ -n "$ALERT_KIND" ]; then
+  if [ "$ALERT_KIND" = "fail" ]; then
     ALERT="⚠️ [Civil News Hub] 자동 수집 실패 ($(date '+%m-%d %H:%M'))
 
-실패 단계: ${CURRENT_FAILS}
+실패 단계: ${CURRENT_FAILS} (2회 연속)
 
 서버 로그: ~/workspace/cron_scrape.log
 다른 단계는 계속 실행되며, 원인이 바뀌거나 복구되면 다시 알려드려요."
@@ -93,7 +95,7 @@ if [ "$CURRENT_FAILS" != "$PREV_FAILS" ]; then
 이전 실패(${PREV_FAILS})가 해결되어 모든 단계가 정상 동작합니다."
   fi
   if "$SCRIPT_DIR/venv/bin/python3" kakao_notifier.py --message "$ALERT" >> "$LOG_FILE" 2>&1; then
-    echo "$CURRENT_FAILS" > "$FAIL_STATE_FILE"  # 발송 성공 시에만 상태 저장 → 실패하면 다음 회차에 재시도
+    "$SCRIPT_DIR/venv/bin/python3" fail_alert.py sent "$FAIL_STATE_FILE" "$CURRENT_FAILS"  # 발송 성공 시에만 기록 → 실패하면 다음 회차에 재시도
   fi
 fi
 
