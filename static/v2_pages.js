@@ -390,7 +390,14 @@
     const a = document.createElement('a');
     a.href = url; a.download = '마감일-' + key.replace(/[^\w-]+/g, '-') + '.ics';
     document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setTimeout(() => URL.revokeObjectURL(url), 60000);  // 아이폰은 "다운로드할까요?" 확인을 누를 때까지 주소가 살아 있어야 해요
+  }
+  // 앱 속 브라우저면 바깥 브라우저로 보내요(카카오톡은 바로 열기, 그 밖은 안내): 버튼을 눌러도 아무 일이 없는 일이 없게
+  function leftInApp(url) {
+    const k = CNHv2.inAppBrowser(navigator.userAgent);
+    if (k === 'kakao') location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(url);
+    else if (k === 'other') alert('이 앱 안의 브라우저에서는 캘린더에 넣기가 안 될 수 있어요. 메뉴에서 "다른 브라우저로 열기"를 눌러 주세요.');
+    return !!k;
   }
 
   document.addEventListener('click', (e) => {
@@ -406,8 +413,10 @@
     if (sv) { const id = sv.dataset.save; saved.has(id) ? saved.delete(id) : saved.add(id); persistSaved(); return; }
     const tr = t.closest('[data-track]');
     if (tr) { const f = findItem(tr.dataset.track); if (f) trackAdd(f.kind, f.item); return; }
+    const gc = t.closest('.dt-cal a');
+    if (gc) { if (leftInApp(gc.href)) e.preventDefault(); return; }
     const ic = t.closest('[data-ics]');
-    if (ic) { const f = findItem(ic.dataset.ics); const ev = f && CNHv2.calEvent(f.kind, f.item, V2.today); if (ev) downloadIcs(ev, ic.dataset.ics); return; }
+    if (ic) { const f = findItem(ic.dataset.ics); const ev = f && CNHv2.calEvent(f.kind, f.item, V2.today); if (ev && !leftInApp(location.href)) downloadIcs(ev, ic.dataset.ics); return; }
     const more = t.closest('[data-more]');
     if (more) { const k = more.dataset.more; ui.shown[k] = (ui.shown[k] || PER[k.split(':')[0]]) + PER[k.split(':')[0]]; V2.render(); return; }
     const f = t.closest('button[data-f]');

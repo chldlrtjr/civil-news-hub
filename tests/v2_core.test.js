@@ -324,3 +324,32 @@ test('calGoogleUrl: 일정 입력 화면 링크, 글자 그대로 되돌아옴',
   assert.equal(q.get('dates'), '20261231/20270101');
   assert.equal(q.get('details'), e.details);
 });
+
+// 검수 반영: 수집 데이터가 이상해도 화면이 깨지거나 .ics 가 깨지지 않게
+test('calEvent: 달력에 없는 날짜는 null (화면이 예외로 깨지지 않게)', () => {
+  assert.equal(V.calEvent('contest', { ...C, deadline: '2026-13-01' }, '2026-11-26'), null);
+  assert.equal(V.calEvent('contest', { ...C, deadline: '2026-02-30' }, '2026-01-01'), null);
+  assert.ok(V.calEvent('contest', { ...C, deadline: '2028-02-29' }, '2026-11-26'));
+});
+
+test('calEvent: 공백·제어문자가 든 링크와 상대 주소는 빼고, UID 에 줄바꿈이 없어요', () => {
+  assert.equal(V.calEvent('contest', { ...C, link: 'https://ex.com/\r\nX-INJECT:1' }, '2026-11-26').link, '');
+  assert.equal(V.calEvent('contest', { ...C, link: '/contest/7' }, '2026-11-26').link, '');
+  assert.equal(V.calEvent('contest', { ...C, link: ' https://ex.com/a ' }, '2026-11-26').link, 'https://ex.com/a');
+  const s = V.calIcs(V.calEvent('contest', { ...C, id: '7\r\nX-INJECT:1' }, '2026-11-26'), '20261126T000000Z');
+  assert.ok(!/\r\nX-INJECT/.test(s));
+});
+
+test('calIcs: 제목의 줄바꿈·단독 CR 도 \\n 으로', () => {
+  const s = V.calIcs(V.calEvent('contest', { ...C, title: 'A\rB\nC\r\nD' }, '2026-11-26'), '20261126T000000Z');
+  assert.ok(s.replace(/\r\n /g, '').split('\r\n').includes('SUMMARY:[마감] A\\nB\\nC\\nD'));
+  assert.ok(!/\r(?!\n)/.test(s));
+});
+
+test('inAppBrowser: 카카오톡은 kakao, 그 밖의 앱 속 브라우저는 other, 보통 브라우저는 빈 문자열', () => {
+  assert.equal(V.inAppBrowser('Mozilla/5.0 (Linux; Android 14) KAKAOTALK 10.8.0'), 'kakao');
+  assert.equal(V.inAppBrowser('Mozilla/5.0 (Linux; Android 14; SM-S918N; wv) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36'), 'other');
+  assert.equal(V.inAppBrowser('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Instagram 300.0'), 'other');
+  assert.equal(V.inAppBrowser('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Version/17.0 Mobile/15E148 Safari/604.1'), '');
+  assert.equal(V.inAppBrowser('Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36'), '');
+});

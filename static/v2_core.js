@@ -180,12 +180,15 @@
   }
 
   // 마감일 캘린더에 넣기: 공모전·채용 마감을 하루 종일 일정으로 (.ics 파일 / Google 캘린더 링크). 오늘 마감까지, 날짜가 없거나 지났으면 null
+  // 달력에 실제로 있는 날짜만 (2026-02-30 같은 수집 오류에서 날짜 계산이 예외를 내면 상세 화면이 통째로 깨져요)
+  const realDate = (d) => isDate(d) && new Date(Date.parse(d + 'T00:00:00Z') || 0).toISOString().slice(0, 10) === d;
   function calEvent(kind, item, today) {
-    if ((kind !== 'contest' && kind !== 'job') || !isDate(item.deadline) || item.deadline < today) return null;
+    if ((kind !== 'contest' && kind !== 'job') || !realDate(item.deadline) || item.deadline < today) return null;
     const job = kind === 'job', org = (job ? item.co : item.org) || '';
-    const link = /^https?:\/\//i.test(item.link || '') ? item.link : '';
+    // 링크·ID 에 줄바꿈이 섞이면 .ics 에 줄이 끼어들어요: 공백·제어문자 없는 http(s) 주소만, ID 는 그런 글자를 - 로
+    const raw = String(item.link || '').trim(), link = /^https?:\/\/[^\s\x00-\x1f\x7f]+$/i.test(raw) ? raw : '';
     return {
-      uid: `${kind}-${item.id}@civil-news-hub.vercel.app`, date: item.deadline, link,
+      uid: `${kind}-${String(item.id).replace(/[\s\x00-\x1f\x7f]+/g, '-')}@civil-news-hub.vercel.app`, date: item.deadline, link,
       title: '[마감] ' + (job ? `${item.role || ''}${org ? ` (${org})` : ''}` : item.title || ''),
       details: [org, link, '토목 뉴스 브리핑에서 추가'].filter(Boolean).join('\n'),
     };
@@ -194,7 +197,7 @@
   const calNextDay = (date) => new Date(Date.parse(date + 'T00:00:00Z') + 86400000).toISOString().slice(0, 10).replace(/-/g, '');
   const calDay = (date) => date.replace(/-/g, '');
   // RFC 5545: 글자 값의 \ ; , 줄바꿈 이스케이프, 75바이트(UTF-8) 넘는 줄은 CRLF+공백으로 접기(글자 단위라 한글이 안 깨짐)
-  const icsText = (s) => s.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
+  const icsText = (s) => s.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r\n?|\n/g, '\\n');
   const utf8Len = (ch) => { const c = ch.codePointAt(0); return c < 0x80 ? 1 : c < 0x800 ? 2 : c < 0x10000 ? 3 : 4; };
   function icsFold(line) {
     const out = []; let cur = '', size = 0, max = 75;
@@ -215,6 +218,8 @@
       ...alarm('-PT63H'), ...alarm('-PT15H'), 'END:VEVENT', 'END:VCALENDAR'];
     return lines.map(icsFold).join('\r\n') + '\r\n';
   }
+  // 앱 속 브라우저(카카오톡·인스타 등)는 파일 내려받기와 구글 로그인을 막아요. v2_state.js 로그인 버튼과 같은 규칙
+  const inAppBrowser = (ua) => (/KAKAOTALK/i.test(ua) ? 'kakao' : /; wv\)|FBAN|FBAV|Instagram|NAVER\(inapp|Line\//i.test(ua) ? 'other' : '');
   const calGoogleUrl = (ev) => 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(ev.title)
     + '&dates=' + calDay(ev.date) + '/' + calNextDay(ev.date) + '&details=' + encodeURIComponent(ev.details);
 
@@ -226,7 +231,7 @@
 
   const API = { loginAllowed, relTime, ddayLabel, dateLabel, scheduleItems, urgentFallback, INTEREST_GROUPS, hasInterests, freshItems, rememberSeen, readJSON, isPhone, monthGrid, shiftMonth, weekdayOf,
     isDate, ddayOf, contestList, jobList, albaList, newsList, countBy, searchAll, savedList,
-    calEvent, calNextDay, calIcs, calGoogleUrl };
+    calEvent, calNextDay, calIcs, calGoogleUrl, inAppBrowser };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   else window.CNHv2 = API;
 })();
