@@ -39,8 +39,10 @@ def load_tokens():
 
 def save_tokens(tokens):
     temp_file = TOKEN_FILE + ".tmp"
-    with open(temp_file, "w", encoding="utf-8") as f:
+    # 토큰 파일은 소유자만 읽게(600): 바꿔 쓸 때마다 umask(664)로 돌아가지 않게
+    with os.fdopen(os.open(temp_file, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600), "w", encoding="utf-8") as f:
         json.dump(tokens, f, indent=2, ensure_ascii=False)
+    os.chmod(temp_file, 0o600)  # 이전에 남은 .tmp 가 있으면 O_CREAT 모드가 안 먹어서
     os.replace(temp_file, TOKEN_FILE)
 
 def refresh_access_token(tokens):
