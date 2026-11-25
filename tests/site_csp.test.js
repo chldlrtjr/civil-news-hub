@@ -46,7 +46,8 @@ test('HTML 이 부르는 로컬 스크립트는 모두 있고 Vercel 에 올라�
 test('Vercel 빌드 단계에서 데이터 번들 형식을 검사해요 (검사 파일도 업로드 허용)', () => {
   assert.equal(vercel.buildCommand, 'node check_data_bundle.js');
   assert.equal(vercel.framework, null);
-  assert.equal(vercel.outputDirectory, undefined);  // 출력 폴더는 지금처럼 저장소 맨 위
+  // 빌드 명령이 있으면 Vercel 은 출력 폴더를 public 으로 찾아 실패해요(미리보기 배포에서 확인): 저장소 맨 위로 지정
+  assert.equal(vercel.outputDirectory, '.');
   assert.ok(read('.vercelignore').split(/\r?\n/).includes('!check_data_bundle.js'));  // Windows 작업 사본(CRLF)에서도
 });
 
