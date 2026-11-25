@@ -141,6 +141,11 @@ def clean_text(text):
     return re.sub(r"\s+", " ", (text or "").replace("&#xd;", " ")).strip()
 
 
+def web_link(*candidates, fallback):
+    """http(s) 주소만 링크로 써요: 'www.x.or.kr' 처럼 스킴이 없으면 사이트 기준 상대 경로가 돼 깨져요"""
+    return next((u.strip() for u in candidates if (u or "").strip().lower().startswith(("http://", "https://"))), fallback)
+
+
 def fmt_date(yyyymmdd):
     """20261109 → 2026-11-09"""
     if not yyyymmdd or len(yyyymmdd) != 8:
@@ -219,7 +224,7 @@ def parse_civil_job(root):
     category_id = classify_category(company, co_type)
     start = fmt_date(root.findtext("empWantedStdt"))
     end = fmt_date(root.findtext("empWantedEndt"))
-    link = (root.findtext("empWantedHomepgDetail") or root.findtext("empWantedHomepg") or "").strip()
+    link = web_link(root.findtext("empWantedHomepgDetail"), root.findtext("empWantedHomepg"), fallback="https://www.work24.go.kr")
 
     return {
         "id": f"w24-{seq}",
@@ -237,7 +242,7 @@ def parse_civil_job(root):
         "period": f"{start.replace('-', '.')} ~ {end.replace('-', '.')}",
         "deadline_date": end,
         "tags": tags,
-        "link": link or "https://www.work24.go.kr",
+        "link": link,
         "summary": summary,
         "steps": steps
     }
@@ -427,7 +432,7 @@ def parse_jobalio_job(item):
         "period": f"{start.replace('-', '.')} ~ {end.replace('-', '.')}",
         "deadline_date": end,
         "tags": tags,
-        "link": (item.get("srcUrl") or "").strip() or f"https://job.alio.go.kr/recruitview.do?idx={sn}",
+        "link": web_link(item.get("srcUrl"), fallback=f"https://job.alio.go.kr/recruitview.do?idx={sn}"),
         "summary": clean_text(item.get("aplyQlfcCn"))[:400],
         "steps": extract_steps(item.get("scrnprcdrMthdExpln"))
     }

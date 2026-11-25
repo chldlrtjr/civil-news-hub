@@ -1,0 +1,37 @@
+name: 테스트
+
+# main 에 push 하면 곧 운영 배포(Vercel·jcloud)라서, 코드가 바뀐 push 마다 테스트를 돌려요.
+# 매시 데이터 커밋(data/, 번들)만 바뀐 push 는 건너뛰어요.
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'data/**'
+      - 'static/cnh_data_bundle.js'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
+        with:
+          python-version: '3.12'
+          cache: pip
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4.4.0
+        with:
+          node-version: '24'
+      # 다이제스트 카드 그리기 테스트에 한글 폰트가 필요해요 (daily_digest.yml 과 같은 폰트)
+      # requirements.txt 는 해시 검사 모드라 pytest 는 따로 깔아요
+      - run: |
+          sudo apt-get update -q && sudo apt-get install -y -q fonts-nanum
+          pip install -q -r requirements.txt
+          pip install -q pytest==9.2.0
+      - name: 파이썬 테스트
+        run: python -m pytest -q tests
+      - name: 화면 스크립트 테스트
+        run: node --test tests/*.test.js

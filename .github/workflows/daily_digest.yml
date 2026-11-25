@@ -7,20 +7,39 @@ on:
 
 permissions:
   contents: read
+  actions: read  # 오늘 이미 보냈는지 확인용
+
+# 같은 날 두 번 실행돼도(아래 확인 단계) 차례대로 돌아서 한 번만 보내요
+concurrency:
+  group: daily-digest
+  cancel-in-progress: false
 
 jobs:
   digest:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      # jcloud 요청이 응답 시간 초과로 재시도되면 GitHub 이 이미 받은 요청까지 두 번 실행될 수 있어요
+      - name: 오늘 이미 보냈으면 건너뛰기
+        id: dup
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          n=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow daily_digest.yml --status success --created ">=$(TZ=Asia/Seoul date +%F)T00:00:00+09:00" --json databaseId --jq length)
+          echo "오늘 성공한 실행: $n"
+          echo "sent=$([ "$n" -gt 0 ] && echo 1 || echo 0)" >> "$GITHUB_OUTPUT"
+      - if: steps.dup.outputs.sent != '1'
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
+      - if: steps.dup.outputs.sent != '1'
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
         with:
           python-version: '3.12'
       - name: 한글 폰트와 패키지 설치
+        if: steps.dup.outputs.sent != '1'
         run: |
           sudo apt-get update -q && sudo apt-get install -y -q fonts-nanum
-          pip install -q -c requirements.txt requests pillow python-dotenv  # 하위 의존성까지 requirements.txt 버전으로
+          pip install -q -r requirements.txt  # 해시까지 고정된 목록 그대로 (해시 파일은 -c 로 일부만 깔 수 없어요)
       - name: 다이제스트 발송
+        if: steps.dup.outputs.sent != '1'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}

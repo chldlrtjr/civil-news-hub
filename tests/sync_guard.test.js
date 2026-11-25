@@ -11,14 +11,15 @@ const indexBlock = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => 
 const SOURCES = [['old.html', indexBlock], ['static/v2_state.js', fs.readFileSync(path.join(__dirname, '..', 'static', 'v2_state.js'), 'utf8')]];
 const Tracker = require('../static/tracker_core.js');
 
-function boot(block, remoteRow, initialStore = {}) {
+function boot(block, remoteRow, initialStore = {}, opts = {}) {
   const calls = [];
-  let authCb = null, clickH = null;
+  let authCb = null, clickH = null, visH = null;
+  let failUpserts = opts.failUpserts || 0;
   let resolveSelect;
   const fakeSB = {
     auth: { onAuthStateChange: cb => { authCb = cb; }, signOut: async () => { calls.push(['signOut']); return { error: null }; }, signInWithOAuth: async () => {} },
     from: () => ({
-      upsert: async row => { calls.push(['upsert', JSON.parse(JSON.stringify(row))]); return { error: null }; },
+      upsert: async row => { calls.push(['upsert', JSON.parse(JSON.stringify(row))]); return { error: failUpserts-- > 0 ? { message: 'offline' } : null }; },
       select: () => ({ eq: () => ({ maybeSingle: () => { calls.push(['select']); return new Promise(r => { resolveSelect = () => r({ data: remoteRow, error: null }); }); } }) }),
     }),
   };
@@ -26,7 +27,7 @@ function boot(block, remoteRow, initialStore = {}) {
   const ctx = {
     window: { supabase: { createClient: () => fakeSB } },
     localStorage: { getItem: k => store[k] ?? null, setItem: (k, v) => { store[k] = v; }, removeItem: k => { delete store[k]; } },
-    document: { addEventListener: (t, f) => { if (t === 'click') clickH = f; }, hidden: false, querySelectorAll: () => [] },
+    document: { addEventListener: (t, f) => { if (t === 'click') clickH = f; if (t === 'visibilitychange') visH = f; }, hidden: false, querySelectorAll: () => [] },
     navigator: { userAgent: 'node' }, location: { origin: 'x', pathname: '/', href: 'x' },
     matchMedia: () => ({ matches: false }), console, setTimeout, clearTimeout, Date, JSON, Promise, Map, Set,
     CNHTracker: Tracker, alert: () => {},
@@ -34,7 +35,7 @@ function boot(block, remoteRow, initialStore = {}) {
   vm.createContext(ctx);
   vm.runInContext(block + '\n;this.__t = { get saved(){ return saved; }, get tracked(){ return tracked; }, set tracked(v){ tracked = v; }, persistTracked, persistSaved, trackRemove, pullSavedRemote };', ctx);
   return { ctx, calls, store, login: () => authCb('SIGNED_IN', { user: { id: 'u1', user_metadata: {} } }), emit: (ev, s) => authCb(ev, s), resolveSelect: () => resolveSelect(),
-    click: auth => clickH({ target: { closest: () => ({ dataset: { auth } }) } }) };
+    click: auth => clickH({ target: { closest: () => ({ dataset: { auth } }) } }), visible: () => visH() };
 }
 const tick = (ms = 0) => new Promise(r => setTimeout(r, ms));
 
@@ -177,4 +178,19 @@ test('[static/v2_state.js] 첫 불러오기 전에 누른 변경이 계정과 �
   const before = b.calls.filter(c => c[0] === 'select').length;
   b.ctx.__t.pullSavedRemote(); await tick(5);
   assert.equal(b.calls.filter(c => c[0] === 'select').length, before + 1);
+});
+
+test('[static/v2_state.js] 올리기가 실패하면 탭에 돌아올 때 불러오기 대신 다시 올려요', async () => {
+  const b = boot(V2, { ids: [], tracked: [] }, {}, { failUpserts: 1 });
+  b.login(); await tick(5); b.resolveSelect(); await tick(20);
+  b.ctx.__t.saved.add('Y'); b.ctx.__t.persistSaved(); await tick(400);
+  assert.equal(ups(b).length, 1);  // 실패 (재시도는 10초 뒤로 예약)
+  const selects = b.calls.filter(c => c[0] === 'select').length;
+  b.visible(); await tick(20);
+  assert.equal(ups(b).length, 2);
+  assert.deepEqual(ups(b).at(-1)[1].ids, ['Y']);
+  assert.equal(b.calls.filter(c => c[0] === 'select').length, selects);
+  b.visible(); await tick(20);  // 올렸으니 이제는 불러오기
+  assert.equal(b.calls.filter(c => c[0] === 'select').length, selects + 1);
+  b.emit('SIGNED_OUT', null);  // 남은 타이머 정리
 });

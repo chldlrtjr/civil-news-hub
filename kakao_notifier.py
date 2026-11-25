@@ -209,9 +209,7 @@ def main():
 
     if args.refresh:
         tokens = load_tokens()
-        if tokens:
-            refresh_access_token(tokens)
-        return
+        sys.exit(0 if tokens and refresh_access_token(tokens) else 1)
 
     if args.url:
         send_kakao_notice(args.url, force=True)

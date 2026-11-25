@@ -70,7 +70,8 @@
   }
   const as = (kind, list) => list.map((item) => ({ kind, item }));
 
-  const chips = (field, opts, cur, counts) => `<div class="chips" role="group">${opts.map(([v, l]) =>
+  const CHIP_LABEL = { newsCat: '뉴스 분야', contestCat: '공모전 종류', jobLvl: '경력 구분', jbnuSeg: '전북대 항목', mySeg: '마이 페이지 항목' };
+  const chips = (field, opts, cur, counts) => `<div class="chips" role="group" aria-label="${CHIP_LABEL[field] || ''}">${opts.map(([v, l]) =>
     `<button type="button" class="chip" data-f="${field}" data-v="${esc(v)}" aria-pressed="${cur === v}">${esc(l)}${counts && counts[v] != null ? `<span>${counts[v]}</span>` : ''}</button>`).join('')}</div>`;
   const select = (field, opts, cur, label) => `<label class="sel"><span class="sr">${label}</span><select data-f="${field}">${opts.map(([v, l]) =>
     `<option value="${esc(v)}"${cur === v ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select></label>`;
@@ -269,7 +270,7 @@
       `<button type="button" class="h-chip" data-interest="${g.key}:${esc(v)}" aria-pressed="${interests[g.key].includes(v)}">${esc(l)}</button>`).join('')}</div></div>`).join('');
     return { active, recs, savedEntries, segs, body, acct, groups };
   }
-  const themeRow = '<div class="me-row"><span>화면 밝기</span><button type="button" class="btn sm" data-theme-toggle>라이트 / 다크 바꾸기</button></div>';
+  const themeRow = () => `<div class="me-row"><span>화면 밝기</span><button type="button" class="btn sm" data-theme-toggle aria-pressed="${isDarkTheme()}">어두운 화면</button></div>`;
   function pcMyHtml() {
     const m = myModel('pc');
     let detail = '';
@@ -284,7 +285,7 @@
       <div class="md${detail ? '' : ' wide'}">${main}<aside class="${detail ? 'md-detail' : 'me-side'}" aria-label="${detail ? '자세히' : '내 설정'}">${detail || `
         <section class="card me-card">${m.acct}</section>
         <section class="card me-card"><h2>관심 분야</h2><p class="acct-hint">홈의 "내 관심 분야 새 소식"에 쓰여요</p><div class="me-groups">${m.groups}</div></section>
-        <section class="card me-card">${themeRow}</section>`}</aside></div>`;
+        <section class="card me-card">${themeRow()}</section>`}</aside></div>`;
   }
   function mMyHtml() {
     const m = myModel('m');
@@ -292,7 +293,7 @@
       <div class="m-acct">${m.acct}</div>
       <div class="m-fbar m-sticky">${m.segs}</div><section class="m-sec">${m.body}</section>
       <section class="m-sec m-pad"><h2 class="m-h">관심 분야</h2><p class="acct-hint">홈의 "내 관심 분야 새 소식"에 쓰여요</p><div class="me-groups">${m.groups}</div></section>
-      <section class="m-sec m-pad">${themeRow}</section>`;
+      <section class="m-sec m-pad">${themeRow()}</section>`;
   }
 
   /* ---------- 그리기와 주소 ---------- */
@@ -304,11 +305,13 @@
     const el = document.activeElement;
     const k = el && el.dataset && FOCUS_KEYS.find((a) => a in el.dataset);
     if (!k) return null;
-    const scope = el.closest('#v2pc') ? '#v2pc ' : el.closest('#v2m') ? '#v2m ' : '';
+    // 모바일 시트·PC 상세 안에서 누른 버튼은 그 안에서 찾아요 (시트 뒤 목록 줄은 inert 라 포커스를 못 받아요)
+    const scope = el.closest('#m-sheet') ? '#m-sheet ' : el.closest('.md-detail') ? '#v2pc .md-detail ' : el.closest('#v2pc') ? '#v2pc ' : el.closest('#v2m') ? '#v2m ' : '';
     const q = (a, v) => `[${a}="${CSS.escape(v)}"]`;
     const sel = scope + q(dataAttr(k), el.dataset[k]) + ('v' in el.dataset ? q('data-v', el.dataset.v) : '') + (el.dataset.id ? q('data-id', el.dataset.id) : '');
     // 삭제 확인처럼 버튼이 바뀌는 경우: 같은 카드의 "취소" → 휴지통 → 같은 카드의 아무 버튼 순으로 찾아요
     const fallbacks = el.dataset.id ? [scope + q('data-trk', 'del-no') + q('data-id', el.dataset.id), scope + q('data-trk', 'del') + q('data-id', el.dataset.id), scope + q('data-id', el.dataset.id)] : [];
+    if (k === 'track') fallbacks.push(scope + '.dt-acts a[href="#my"]');  // "도전 목록에 추가"를 누르면 마이 링크로 바뀌어요
     return [sel, ...fallbacks];
   }
   function restoreFocus(sels) {
@@ -420,8 +423,4 @@
   addEventListener('hashchange', onRoute);
 
   onRoute();
-  // 번들 다음으로 최신 수집 데이터를 받아 오면 다시 그려요 (실패하면 번들 그대로)
-  if (window.CivilData && CivilData.loadAll && location.protocol !== 'file:') {
-    CivilData.loadAll().then((fresh) => { if (fresh && fresh.NEWS && fresh.NEWS.length) { V2.data = { ...V2.data, ...fresh }; V2.render(); } }).catch(() => {});
-  }
 })();

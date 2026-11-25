@@ -139,6 +139,23 @@ class GoogleEnrichTest(unittest.TestCase):
         self.assertEqual(arts[0]["image"], "https://cdn.e.com/p.jpg")
         self.assertEqual(arts[1]["snippet"], "원래 요약")
 
+    def test_cached_lede_is_not_fetched_again_and_failures_retry(self):
+        import tempfile
+        meta = {"description": "전북과 전남광주 서해안권 5개 시군이 철도교통 단절 해소와 지역 간 상생발전을 위해 하나로 뭉쳤다.", "image": ""}
+        new = lambda: [{"title": "서해안철도 공동 대응", "link": "https://news.google.com/rss/articles/a", "snippet": self.FALLBACK, "image": ""},
+                       {"title": "다른 기사", "link": "https://news.google.com/rss/articles/b", "snippet": self.FALLBACK, "image": ""}]
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "c.json")
+            ok_a = lambda link: meta if link.endswith("/a") else {"description": "", "image": ""}  # b 는 실패
+            with mock.patch.object(scraper, "fetch_article_meta", side_effect=ok_a) as fetch:
+                scraper.enrich_google_articles(new(), cache_path=path)
+            self.assertEqual(fetch.call_count, 2)
+            arts = new()
+            with mock.patch.object(scraper, "fetch_article_meta", return_value={"description": "", "image": ""}) as fetch:
+                scraper.enrich_google_articles(arts, cache_path=path)
+            fetch.assert_called_once_with("https://news.google.com/rss/articles/b")  # 실패했던 것만 다시
+            self.assertTrue(arts[0]["snippet"].startswith("전북과"))
+
     def test_short_or_title_only_description_keeps_fallback(self):
         arts = [{"title": "서해안철도 공동 대응", "link": "https://news.google.com/rss/articles/a", "snippet": self.FALLBACK, "image": ""}]
         with mock.patch.object(scraper, "fetch_article_meta", return_value={"description": "서해안철도 공동 대응", "image": ""}):
@@ -211,10 +228,19 @@ class FailureHandlingTest(unittest.TestCase):
 
     def test_non_google_link_works_without_decoder(self):
         html = '<meta property="og:image" content="https://cdn.example.com/photo/1.jpg">'
-        with mock.patch.object(scraper, "googlenewsdecoder", None), \
+        with mock.patch.object(scraper, "googlenewsdecoder", None), mock.patch.object(scraper, "NEWS_IMAGES", True), \
                 mock.patch.object(scraper.requests, "get", return_value=mock.Mock(status_code=200, text=html)):
             self.assertEqual(scraper.extract_news_og_image("https://news.example.com/1"), "https://cdn.example.com/photo/1.jpg")
             self.assertEqual(scraper.extract_news_og_image("https://news.google.com/rss/articles/abc"), "")
+
+    def test_no_photo_requests_while_images_are_off(self):
+        html = '<meta property="og:image" content="http://cdn.example.com/photo/1_v150.jpg"><meta property="og:description" content="요약">'
+        with mock.patch.object(scraper.requests, "get", return_value=mock.Mock(status_code=200, text=html)) as get, \
+                mock.patch.object(scraper.requests, "head") as head:
+            meta = scraper.fetch_article_meta("https://news.example.com/1")
+        self.assertEqual((meta["image"], meta["description"]), ("", "요약"))
+        self.assertEqual(get.call_count, 1)  # 기사 원문 한 번만
+        head.assert_not_called()
 
 
 if __name__ == "__main__":

@@ -27,7 +27,7 @@ function boot(signOutResult) {
   vm.createContext(ctx);
   vm.runInContext(src, ctx);
   const clickLogout = () => clickHandler({ target: { closest: () => ({ dataset: { auth: 'logout' } }) } });
-  return { calls, store, clickLogout };
+  return { calls, store, clickLogout, ctx };
 }
 
 test('로그아웃은 이 기기만 (다른 기기 세션은 그대로)', async () => {
@@ -90,4 +90,12 @@ test('계정 삭제: 서버가 실패하면 아무것도 지우지 않고 알려
   assert.equal(b.calls.removed.length, 0);
   assert.equal(b.calls.reloads, 0);
   assert.equal(b.calls.alerts.length, 1);
+});
+
+test('화면에 넣는 글자(esc)에서 수집 데이터의 이모지를 빼고 HTML은 이스케이프해요', () => {
+  const { ctx } = boot({ error: null });
+  ctx.input = '\u{1F687} 지하철 파업 \u2708\uFE0F <b>';
+  assert.equal(vm.runInContext('esc(input)', ctx), ' 지하철 파업  &lt;b&gt;');
+  ctx.input = '\u{1F1F0}\u{1F1F7}국기 \u{1F44D}\u{1F3FD}엄지 \u{1F468}‍\u{1F527}정비';  // 국기·피부색·ZWJ 결합
+  assert.equal(vm.runInContext('esc(input)', ctx), '국기 엄지 정비');
 });

@@ -143,6 +143,42 @@ class WevityParseTest(unittest.TestCase):
     def test_missing_list_means_layout_changed(self):
         self.assertIsNone(wevity.parse_list_page("<html><body>점검중</body></html>", datetime.now(KST), 24))
 
+    def test_one_category_failing_fails_whole_fetch(self):
+        # 일부만 저장하면 그 분야 공모전이 한 시간 동안 사라졌다 돌아와요 → 실패로 보고 이전 회차 항목을 쓰게
+        ok = mock.Mock(text=WEVITY_HTML, raise_for_status=lambda: None)
+        calls = []
+
+        def fake_get(url, **kw):
+            calls.append(url)
+            if "cidx=2" in url:
+                raise TimeoutError("timeout")
+            return ok
+        with mock.patch.object(wevity.requests, "get", side_effect=fake_get), mock.patch.dict(wevity._list_pages, clear=True):
+            with self.assertRaises(wevity.WevityFetchError):
+                wevity.fetch_wevity([(1, "A", 1), (2, "B", 1)], lambda c: True, "테스트")
+        self.assertEqual(len(calls), 2)
+
+    def test_same_list_page_fetched_once_per_run(self):
+        # 토목용·IT용이 같은 분야(과학/공학 등)를 함께 보므로 한 실행에서 같은 쪽은 한 번만 받아요
+        ok = mock.Mock(text=WEVITY_HTML, raise_for_status=lambda: None)
+        with mock.patch.object(wevity.requests, "get", return_value=ok) as get, mock.patch.dict(wevity._list_pages, clear=True), \
+                mock.patch.object(wevity, "load_detail_cache", return_value={}), mock.patch.object(wevity, "save_detail_cache"), \
+                mock.patch.object(wevity, "enrich_with_details", return_value=[]):
+            a = wevity.fetch_wevity([(22, "과학/공학", 1)], lambda c: True, "토목")
+            b = wevity.fetch_wevity([(22, "과학/공학", 1)], lambda c: True, "IT", source="wevity_it")
+        self.assertEqual(get.call_count, 1)
+        self.assertEqual([c["id"] for c in a], [c["id"] for c in b])
+
+    def test_broken_list_page_is_not_reused(self):
+        # 점검 페이지(목록 없음)는 캐시하지 않아 IT 수집 때 다시 받아요
+        bad = mock.Mock(text="<html><body>점검중</body></html>", raise_for_status=lambda: None)
+        with mock.patch.object(wevity.requests, "get", return_value=bad) as get, mock.patch.dict(wevity._list_pages, clear=True):
+            for label in ("토목", "IT"):
+                with self.assertRaises(wevity.WevityFetchError):
+                    wevity.fetch_wevity([(22, "과학/공학", 1)], lambda c: True, label)
+            self.assertEqual(get.call_count, 2)
+            self.assertEqual(wevity._list_pages, {})
+
 
 DEVEVENT_MD = """
 ## `26년 12월`
@@ -201,6 +237,45 @@ class DevEventParseTest(unittest.TestCase):
         self.assertFalse(keep("2026 AI 플레이 콘텐츠 제작 공모전"))
         self.assertFalse(keep("2026 대경권 캠퍼스 IR 챔피언십 (창업 공모전)"))
         self.assertFalse(keep("공모전 준비 중이라면? AI 교정 서비스 [교정의 신]과 함께!"))
+
+
+class JbnuDetailCacheTest(unittest.TestCase):
+    """공지 상세: 하루 한 번만 받고, 받기가 실패하면 예전 본문으로 (카드가 한 시간 동안 사라지지 않게)"""
+
+    def setUp(self):
+        self.cache = {}
+        p = mock.patch.object(jbnu, "_detail_cache", self.cache)
+        p.start()
+        self.addCleanup(p.stop)
+
+    def test_same_day_uses_cache(self):
+        read = mock.Mock(return_value=("본문", "http://p/1"))
+        self.assertEqual(jbnu.fetch_jbnu_post_detail("1", read), ("본문", "http://p/1"))
+        self.assertEqual(jbnu.fetch_jbnu_post_detail("1", read), ("본문", "http://p/1"))
+        self.assertEqual(read.call_count, 1)
+
+    def test_failure_falls_back_to_previous_body(self):
+        self.cache["2"] = {"fetched": "2026-01-01", "body": "예전 본문", "poster": ""}
+        self.assertEqual(jbnu.fetch_jbnu_post_detail("2", mock.Mock(side_effect=TimeoutError("t"))), ("예전 본문", ""))
+        self.assertEqual(jbnu.fetch_jbnu_post_detail("3", mock.Mock(side_effect=TimeoutError("t"))), ("", ""))
+
+    def test_empty_page_does_not_overwrite_good_cache(self):
+        # 200 으로 온 점검 페이지(본문·포스터 없음)로 어제 받은 정상 본문을 지우지 않아요
+        self.cache["4"] = {"fetched": "2026-01-01", "body": "정상 본문", "poster": "http://p/4"}
+        self.assertEqual(jbnu.fetch_jbnu_post_detail("4", mock.Mock(return_value=("", ""))), ("정상 본문", "http://p/4"))
+        self.assertEqual(self.cache["4"]["fetched"], "2026-01-01")  # 다음 회차에 다시 받아요
+
+    def test_save_drops_old_entries(self):
+        import json
+        import tempfile
+        self.cache.update({"old": {"fetched": "2020-01-01", "body": "", "poster": ""}})
+        jbnu.fetch_jbnu_post_detail("new", mock.Mock(return_value=("b", "")))
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "c.json")
+            with mock.patch.object(jbnu, "DETAIL_CACHE", path):
+                jbnu.save_detail_cache()
+            with open(path, encoding="utf-8") as f:
+                self.assertEqual(list(json.load(f)), ["new"])
 
 
 class DuplicateTitleTest(unittest.TestCase):

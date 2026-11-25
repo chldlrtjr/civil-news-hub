@@ -3,7 +3,7 @@
 const saved = new Set();
 const savedListeners = [];
 try { JSON.parse(localStorage.getItem('cnh-saved') || '[]').forEach(id => saved.add(id)); } catch(e){}
-let savedUid = null, savedWriteT = null, savedWriting = false, savedAgain = false;
+let savedUid = null, savedWriteT = null, savedWriting = false, savedAgain = false, savedRetryMs = 0;
 // savedPulled: 로그인 후 첫 불러오기 전엔 저장 금지(다른 기기 기록 보호) / savedDirty: 올릴 변경이 남아 있음
 let savedPulled = false, savedDirty = false;
 // 이 브라우저의 북마크·진행 카드가 어느 계정의 사본인지 (비로그인 때 모은 목록이면 없음)
@@ -36,14 +36,18 @@ function notifySaved(){ savedListeners.forEach(f => { try { f(); } catch(e){} })
 async function writeSavedRemote(){
   if (!savedUid || !savedPulled) return;
   if (savedWriting){ savedAgain = true; return; }
+  clearTimeout(savedWriteT);
   savedWriting = true;
+  let ok = false;
   try {
     const { error } = await SB.from('user_saved').upsert({ user_id: savedUid, ids: [...saved], tracked, updated_at: new Date().toISOString() });
     if (error) console.warn('북마크 동기화 실패:', error.message);
-    else if (!savedAgain) savedDirty = false;
+    else { ok = true; savedRetryMs = 0; if (!savedAgain) savedDirty = false; }
   } catch(e){ console.warn('북마크 동기화 실패:', e); }
   savedWriting = false;
   if (savedAgain){ savedAgain = false; writeSavedRemote(); }
+  // 네트워크가 잠깐 끊겨 실패하면 10초, 20초 ... 최대 5분 뒤 다시 올려요 (안 그러면 다음 저장 전까지 이 탭은 올리지도 받지도 않아요)
+  else if (!ok && savedUid){ savedRetryMs = Math.min((savedRetryMs || 5000) * 2, 300000); savedWriteT = setTimeout(writeSavedRemote, savedRetryMs); }
 }
 function persistSaved(){
   savedDirty = true;
@@ -100,16 +104,18 @@ if (SB){
     if (changed && u) setTimeout(pullSavedRemote, 0);  // 콜백 안에서 바로 DB 호출하면 막힐 수 있어 다음 틱으로
   });
   // 다른 기기에서 바꾼 북마크는 이 탭으로 돌아올 때 가져와요
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) pullSavedRemote(); });
+  // 못 올린 변경이 남아 있으면 불러오기보다 먼저 올려요 (불러오기는 그동안 건너뛰어져요)
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) (savedDirty && savedPulled ? writeSavedRemote() : pullSavedRemote()); });
 }
 // 계정 사본은 서버에 남아서 다시 로그인하면 돌아와요
 function clearAccountLocal(){
   clearTimeout(savedWriteT);
-  saved.clear(); tracked = []; savedDirty = false; savedAgain = false;
+  saved.clear(); tracked = []; savedDirty = false; savedAgain = false; savedRetryMs = 0;
   ['cnh-saved', 'cnh-tracked', SYNC_UID_KEY].forEach(k => { try { localStorage.removeItem(k); } catch(e){} });
   notifySaved();
 }
-const esc = t => String(t || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// 수집한 글자에 섞여 온 이모지도 여기서 빼요 (사이트 이모지 금지 규칙: 모든 데이터 글자가 이 함수를 거쳐요)
+const esc = t => String(t || '').replace(/\p{Extended_Pictographic}|\p{Emoji_Modifier}|\p{Regional_Indicator}|[\uFE0F\u20E3\u200D]/gu, '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function authBoxHtml(){
   if (!SB) return '';
   if (authUser){

@@ -16,6 +16,8 @@ Civil News Hub - 전북대학교 공지사항 공모전 수집기 (jbnu_contest_
 """
 
 import calendar
+import json
+import os
 import re
 import urllib.request
 import urllib.parse
@@ -431,35 +433,81 @@ def scrape_jbnu_board(base_url: str, menu_id: int, keywords: list, max_pages: in
     return discovered, ok_requests
 
 
-def fetch_jbnu_post_detail(pst_id: str) -> tuple:
+# 공지 상세는 하루 한 번만 받아요 (매시간 같은 글을 다시 받지 않게). 받기가 실패하면 예전에 받은 본문을 써서
+# 그 공모전이 한 시간 동안 목록에서 사라지지 않게 해요. 30일 넘게 안 쓴 글은 지워요
+DETAIL_CACHE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "jbnu_detail_cache.json")
+DETAIL_CACHE_DAYS = 30
+_detail_cache = None
+
+
+def _load_detail_cache() -> dict:
+    global _detail_cache
+    if _detail_cache is None:
+        try:
+            with open(DETAIL_CACHE, encoding="utf-8") as f:
+                _detail_cache = json.load(f)
+        except Exception:
+            _detail_cache = {}
+    return _detail_cache
+
+
+def save_detail_cache() -> None:
+    if _detail_cache is None:
+        return
+    cutoff = (datetime.now(KST).date() - timedelta(days=DETAIL_CACHE_DAYS)).isoformat()
+    keep = {k: v for k, v in _detail_cache.items() if v.get("fetched", "") >= cutoff}
+    tmp = DETAIL_CACHE + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(keep, f, ensure_ascii=False, indent=1)
+    os.replace(tmp, DETAIL_CACHE)
+
+
+def _read_post_detail(pst_id: str) -> tuple:
     """
-    전북대 공지 상세 페이지에서 (본문 텍스트, 포스터 이미지 URL) 추출
+    전북대 공지 상세 페이지에서 (본문 텍스트, 포스터 이미지 URL) 추출. 요청 실패는 예외로 올려요
     포스터 규칙: visibility:hidden 팝업 배너 제외, style에 max-width:100%가 포함된 첫 번째 /common/file.do 이미지
     """
     url = f"https://www.jbnu.ac.kr/web/Board/{pst_id}/detailView.do"
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
     body_text, poster = "", ""
+    req = urllib.request.Request(url, headers=headers)
+    with urllib.request.urlopen(req, timeout=8) as resp:
+        html = resp.read().decode("utf-8", errors="ignore")
+    soup = BeautifulSoup(html, "html.parser")
+
+    content = soup.select_one(".com-post-content-01")
+    if content:
+        body_text = re.sub(r"\s+", " ", content.get_text(" ")).strip()
+
+    for img in soup.find_all("img"):
+        src = img.get("src", "")
+        style = img.get("style", "")
+        if "/common/file.do" in src:
+            if "visibility: hidden" in style:
+                continue
+            if "max-width:100%" in style or "max-width: 100%" in style:
+                poster = f"https://www.jbnu.ac.kr{src}" if src.startswith("/") else src
+                break
+    return body_text, poster
+
+
+def fetch_jbnu_post_detail(pst_id: str, read=_read_post_detail) -> tuple:
+    """(본문 텍스트, 포스터 URL). 오늘 받은 글은 캐시, 받기가 실패하면 예전 캐시, 그것도 없으면 빈 값"""
+    cache = _load_detail_cache()
+    today = datetime.now(KST).date().isoformat()
+    hit = cache.get(pst_id)
+    if hit and hit.get("fetched") == today:
+        return hit["body"], hit["poster"]
     try:
-        req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req, timeout=8) as resp:
-            html = resp.read().decode("utf-8", errors="ignore")
-        soup = BeautifulSoup(html, "html.parser")
-
-        content = soup.select_one(".com-post-content-01")
-        if content:
-            body_text = re.sub(r"\s+", " ", content.get_text(" ")).strip()
-
-        for img in soup.find_all("img"):
-            src = img.get("src", "")
-            style = img.get("style", "")
-            if "/common/file.do" in src:
-                if "visibility: hidden" in style:
-                    continue
-                if "max-width:100%" in style or "max-width: 100%" in style:
-                    poster = f"https://www.jbnu.ac.kr{src}" if src.startswith("/") else src
-                    break
+        body_text, poster = read(pst_id)
     except Exception as e:
-        print(f"⚠️ [JBNU Detail] {pst_id} 상세 페이지 조회 실패: {e}")
+        print(f"⚠️ [JBNU Detail] {pst_id} 상세 페이지 조회 실패{' — 이전에 받은 본문 사용' if hit else ''}: {e}")
+        return (hit["body"], hit["poster"]) if hit else ("", "")
+    if not (body_text or poster):
+        # 200 으로 온 점검 페이지 등: 저장하지 않고(다음 회차에 다시) 예전 본문이 있으면 그걸 써요
+        print(f"⚠️ [JBNU Detail] {pst_id} 상세 본문이 비어 있음{' — 이전에 받은 본문 사용' if hit else ''}")
+        return (hit["body"], hit["poster"]) if hit else ("", "")
+    cache[pst_id] = {"fetched": today, "body": body_text, "poster": poster}
     return body_text, poster
 
 
@@ -782,6 +830,10 @@ def fetch_jbnu_contest_notices(max_pages: int = 1) -> list:
         contest_poster_reader.save_cache(poster_cache)
     except OSError as e:
         print(f"  ⚠️ [포스터 판독] 캐시 저장 실패: {e}")
+    try:
+        save_detail_cache()
+    except OSError as e:
+        print(f"  ⚠️ [JBNU Detail] 상세 캐시 저장 실패: {e}")
 
     if no_deadline:
         print(f"  ℹ️ 마감일이 글·포스터에 명시되지 않아 제외한 후보 {len(no_deadline)}건 (필요하면 VERIFIED_JBNU_FACTS에 수동 등록):")

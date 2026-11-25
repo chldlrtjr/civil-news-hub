@@ -257,3 +257,13 @@ test('loginAllowed: 출생연도 기준 19세가 되는 해부터 로그인 (202
   assert.equal(V.loginAllowed('1800', 2026), false);
   assert.equal(V.loginAllowed('2030', 2026), false);
 });
+
+test('relTime: 뉴스 시각을 지금 기준으로 (수집 때 굳은 값 대신)', () => {
+  const now = Date.parse('2026-11-25T21:30:00+09:00');
+  assert.equal(V.relTime('2026-11-25T21:26:00+09:00', now), '4분 전');
+  assert.equal(V.relTime('2026-11-25T18:00:00+09:00', now), '3시간 전');
+  assert.equal(V.relTime('2026-11-24T20:00:00+09:00', now), '어제');
+  assert.equal(V.relTime('2026-11-15T23:30:00+09:00', now), '2026.11.15');  // KST 날짜 (UTC로는 14일)
+  assert.equal(V.relTime('2026-11-25T21:31:00+09:00', now), '방금 전');
+  assert.equal(V.relTime('', now), '');
+});

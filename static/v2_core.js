@@ -165,13 +165,27 @@
     return out;
   }
 
+  // 뉴스 'N분 전'은 수집할 때 계산해 번들에 굳어 있어서, 기사 시각(iso)으로 지금 기준으로 다시 계산 (scraper.format_relative_time 과 같은 규칙)
+  function relTime(iso, now) {
+    const t = Date.parse(iso || '');
+    if (isNaN(t)) return '';
+    const sec = Math.floor((now - t) / 1000), min = Math.floor(sec / 60), hr = Math.floor(min / 60), day = Math.floor(hr / 24);
+    if (sec < 0) return '방금 전';
+    if (sec < 60) return sec + '초 전';
+    if (min < 60) return min + '분 전';
+    if (hr < 24) return hr + '시간 전';
+    if (day === 1) return '어제';
+    if (day < 7) return day + '일 전';
+    return new Date(t + 9 * 3600000).toISOString().slice(0, 10).replace(/-/g, '.');
+  }
+
   // 로그인 연령: 출생연도 기준 19세가 되는 해부터 (청소년 보호법 제2조 제1호와 같은 연 나이 셈법)
   function loginAllowed(birthYear, thisYear) {
     const y = Number(birthYear);
     return Number.isInteger(y) && y >= 1900 && y <= thisYear && thisYear - y >= 19;
   }
 
-  const API = { loginAllowed, ddayLabel, dateLabel, scheduleItems, urgentFallback, INTEREST_GROUPS, hasInterests, freshItems, rememberSeen, readJSON, isPhone, monthGrid, shiftMonth, weekdayOf,
+  const API = { loginAllowed, relTime, ddayLabel, dateLabel, scheduleItems, urgentFallback, INTEREST_GROUPS, hasInterests, freshItems, rememberSeen, readJSON, isPhone, monthGrid, shiftMonth, weekdayOf,
     isDate, ddayOf, contestList, jobList, albaList, newsList, countBy, searchAll, savedList };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   else window.CNHv2 = API;

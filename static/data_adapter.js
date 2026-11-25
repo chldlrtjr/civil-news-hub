@@ -1,15 +1,11 @@
 /**
  * Civil News Hub: 실시간 크롤링 데이터 어댑터 (Data Adapter)
  * -------------------------------------------------------------
- * 1. 번들된 정적 실제 데이터(window.CNH_STATIC_DATA)를 1순위로 즉시 로딩 (0ms 로딩 보장).
- * 2. file:/// 프로토콜(로컬 HTML 직접 열기) 및 오프라인 환경에서도 CORS 에러 없이 100% 실제 데이터 구동.
- * 3. HTTP/HTTPS 환경에서는 백그라운드로 최신 API/JSON을 확인하여 자동 갱신(SWR).
- * 4. 가짜 예시 데이터(더미) 노출 원천 차단.
+ * 번들된 실제 데이터(window.CNH_STATIC_DATA)를 화면용 모양으로 바꿔요 (file:/// 로 열어도 동작).
+ * 가짜 예시 데이터(더미)는 넣지 않아요.
  */
 
 window.CivilData = (() => {
-  const CACHE_KEY = 'cnh-live-cache-v2';
-
   // 날짜 기반 남은 일수 (D-Day) 계산 유틸
   function calcDaysLeft(dateStr) {
     if (!dateStr) return 99;
@@ -61,7 +57,8 @@ window.CivilData = (() => {
           id: a.id || ('n' + (idx + 1)),
           cat: mapNewsCat(a.category_id),
           src: a.publisher || '토목뉴스',
-          ago: a.relative_date || (a.published_at ? a.published_at.slice(5, 10) : '최근'),
+          iso: a.iso_date || '',  // 탭 복귀 때 'N분 전'을 다시 계산하려고 남겨요 (index.html visibilitychange)
+          ago: (window.CNHv2 && CNHv2.relTime(a.iso_date, Date.now())) || a.relative_date || (a.published_at ? a.published_at.slice(5, 10) : '최근'),
           n: related.length,
           title: a.title,
           lede: (a.snippet && a.snippet.trim().length >= 10) ? a.snippet.trim() : a.title,
@@ -263,108 +260,21 @@ window.CivilData = (() => {
     return result;
   }
 
-  // 1순위: 번들 데이터 또는 로컬 스토리지 캐시에서 즉시 동기 데이터 반환 (0ms)
+  // 번들(cnh_data_bundle.js)이 곧 최신 데이터예요: data/*.json 과 같은 커밋으로 함께 배포돼서 다시 받을 필요가 없어요
   function getInitialData() {
-    // 1-1. cnh_data_bundle.js에서 컴파일된 실제 데이터가 있으면 최우선 파싱
     if (window.CNH_STATIC_DATA && typeof window.CNH_STATIC_DATA === 'object') {
       try {
         const parsed = parseRawDatasets(window.CNH_STATIC_DATA);
-        if (parsed && parsed.NEWS && parsed.NEWS.length) {
-          saveCached(parsed);
-          return parsed;
-        }
+        if (parsed && parsed.NEWS && parsed.NEWS.length) return parsed;
       } catch (e) {
         console.warn('Failed to parse CNH_STATIC_DATA:', e);
       }
     }
-
-    // 1-2. 브라우저 localStorage 캐시 복원
-    const cached = getCached();
-    if (cached) return cached;
-
     return null;
-  }
-
-  // API 우선 호출 후 로컬 정적 JSON 폴백
-  async function fetchWithFallback(apiPath, jsonPath) {
-    try {
-      const res = await fetch(apiPath + '?t=' + Date.now());
-      if (res.ok) return await res.json();
-    } catch (e) {}
-    try {
-      const res = await fetch(jsonPath + '?t=' + Date.now());
-      if (res.ok) return await res.json();
-    } catch (e) {}
-    return null;
-  }
-
-  // 비동기 전체 동기화 (SWR)
-  async function loadAll() {
-    const baseline = getInitialData();
-
-    // file:/// 프로토콜이거나 오프라인이면 fetch가 불가능하므로 번들 데이터를 즉시 반환
-    if (location.protocol === 'file:') {
-      return baseline;
-    }
-
-    try {
-      const [newsData, contestsData, jobsData, albasData, swunivData] = await Promise.all([
-        fetchWithFallback('/api/news', './data/news.json'),
-        fetchWithFallback('/api/contests', './data/contests.json'),
-        fetchWithFallback('/api/jobs', './data/jobs.json'),
-        fetchWithFallback('/api/jbnu-albas', './data/jbnu_albas.json'),
-        fetchWithFallback('/api/swuniv-programs', './data/swuniv_programs.json')
-      ]);
-
-      const raw = {
-        news: newsData || (window.CNH_STATIC_DATA && window.CNH_STATIC_DATA.news) || null,
-        contests: contestsData || (window.CNH_STATIC_DATA && window.CNH_STATIC_DATA.contests) || null,
-        jobs: jobsData || (window.CNH_STATIC_DATA && window.CNH_STATIC_DATA.jobs) || null,
-        albas: albasData || (window.CNH_STATIC_DATA && window.CNH_STATIC_DATA.albas) || null,
-        swuniv: swunivData || (window.CNH_STATIC_DATA && window.CNH_STATIC_DATA.swuniv) || null
-      };
-
-      const result = parseRawDatasets(raw);
-      if (result && result.NEWS && result.NEWS.length) {
-        saveCached(result);
-        return result;
-      }
-    } catch (e) {
-      console.warn('loadAll fetch failed, using baseline:', e);
-    }
-
-    return baseline;
-  }
-
-  function getCached() {
-    try {
-      const raw = localStorage.getItem(CACHE_KEY);
-      if (!raw) return null;
-      const parsed = JSON.parse(raw);
-      if (parsed && parsed.NEWS && parsed.NEWS.length) {
-        return parsed;
-      }
-    } catch (e) {
-      console.warn('Failed to read live cache:', e);
-    }
-    return null;
-  }
-
-  function saveCached(data) {
-    try {
-      if (data && data.NEWS && data.NEWS.length) {
-        localStorage.setItem(CACHE_KEY, JSON.stringify(data));
-      }
-    } catch (e) {
-      console.warn('Failed to save live cache:', e);
-    }
   }
 
   return {
     getInitialData,
-    loadAll,
-    getCached,
-    saveCached,
     calcDaysLeft,
     mapNewsCat
   };

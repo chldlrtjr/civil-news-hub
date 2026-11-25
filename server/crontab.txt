@@ -1,5 +1,7 @@
-# git을 만지는 작업은 같은 잠금(flock)으로 차례대로 돌려요
-0 * * * * flock /tmp/cnh_git.lock /home/ubuntu/workspace/cron_scrape.sh
+# git을 만지는 작업은 같은 잠금(flock)으로 차례대로 돌려요. 앞 작업이 멈춰도 줄줄이 쌓이지 않게 기다리는 시간에 한도(-w 초)를 둬요
+0 * * * * flock -w 3000 /tmp/cnh_git.lock /home/ubuntu/workspace/cron_scrape.sh
 30 4 * * * /home/ubuntu/workspace/backup_server.sh
-40 8 * * * flock /tmp/cnh_git.lock /home/ubuntu/workspace/build_digest.sh
+40 8 * * * flock -w 900 /tmp/cnh_git.lock /home/ubuntu/workspace/build_digest.sh
 0 9 * * * /home/ubuntu/workspace/trigger_digest.sh
+# 카카오 refresh 토큰(60일)은 남은 기간이 30일 아래일 때 갱신 요청을 해야 새로 나와요: 알림이 없는 주에도 만료되지 않게 매주 갱신
+10 5 * * 1 cd /home/ubuntu/workspace && venv/bin/python3 kakao_notifier.py --refresh >> cron_scrape.log 2>&1

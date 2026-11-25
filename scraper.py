@@ -522,7 +522,7 @@ def scrape_civil_news():
 
     # 유사/중복 기사 군집화 & 사진 우선 대표 선발 (최신순으로 내려가며 사진 있는 기사 우선 대표 승격)
     resolve_unknown_publishers(all_articles)
-    enrich_google_articles(all_articles)
+    enrich_google_articles(all_articles, cache_path=NEWS_META_CACHE)
     final_articles, duplicate_count = cluster_related_articles(all_articles)
     if not NEWS_IMAGES:
         drop_news_images(final_articles)
@@ -879,7 +879,8 @@ def fetch_article_meta(link: str) -> dict:
             meta["description"] = clean_html(desc["content"]).strip()
 
         og = soup.find("meta", property="og:image") or soup.find("meta", attrs={"name": "og:image"})
-        if og and og.get("content"):
+        # 사진을 안 쓰는 동안(NEWS_IMAGES=False)은 사진 주소 확인 요청(HEAD·GET)도 보내지 않아요
+        if NEWS_IMAGES and og and og.get("content"):
             meta["image"] = _usable_og_image(og["content"].strip(), orig_url)
     except Exception as e:
         print(f"    [News Meta] {link[:80]} 원문 조회 실패: {type(e).__name__}: {e}")
@@ -891,18 +892,46 @@ def extract_news_og_image(link: str) -> str:
     return fetch_article_meta(link)["image"]
 
 
-def enrich_google_articles(articles, max_workers=15):
+NEWS_META_CACHE = os.path.join(DATA_DIR, "news_meta_cache.json")
+NEWS_META_CACHE_DAYS = 7  # 뉴스는 최근 3일 창이라 그보다 오래 받은 원문 요약은 지워요
+
+
+def enrich_google_articles(articles, max_workers=15, cache_path=None):
     """
     구글 뉴스 RSS에는 요약문이 없어 제목으로 만든 대체 문구가 들어가 있음 →
     원문 og:description(첫 문단)으로 바꿔 같은 보도자료 묶기와 카드 요약에 사용. 같은 조회에서 사진도 채움
+    cache_path 가 있으면 받은 원문 요약을 저장해 두고 다음 회차엔 다시 받지 않음
+    (구글 주소 풀기 + 원문 조회가 매시간 수백 건이라 구글·언론사에서 429·차단을 받을 수 있어요)
     """
     from concurrent.futures import ThreadPoolExecutor
 
     targets = [a for a in articles if "news.google.com" in a.get("link", "") and LEDE_FALLBACK_PHRASE in a.get("snippet", "")]
     if not targets:
         return
+    cache = {}
+    if cache_path:
+        try:
+            with open(cache_path, encoding="utf-8") as f:
+                cache = json.load(f)
+        except Exception:
+            cache = {}
+    todo = [a for a in targets if a["link"] not in cache]
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        metas = list(executor.map(lambda a: fetch_article_meta(a["link"]), targets))
+        fetched = dict(zip((a["link"] for a in todo), executor.map(lambda a: fetch_article_meta(a["link"]), todo)))
+    today = datetime.now(timezone(timedelta(hours=9))).date()
+    for link, meta in fetched.items():
+        if meta["description"]:  # 실패(빈 값)는 저장하지 않고 다음 회차에 다시 받아요
+            cache[link] = {**meta, "fetched": today.isoformat()}
+    metas = [cache.get(a["link"]) or fetched.get(a["link"]) or {"description": "", "image": ""} for a in targets]
+    if cache_path:
+        cutoff = (today - timedelta(days=NEWS_META_CACHE_DAYS)).isoformat()
+        try:
+            tmp = cache_path + ".tmp"
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump({k: v for k, v in cache.items() if v.get("fetched", "") >= cutoff}, f, ensure_ascii=False)
+            os.replace(tmp, cache_path)
+        except OSError as e:
+            print(f"⚠️ [구글 뉴스 요약 보완] 캐시 저장 실패: {e}")
 
     filled = 0
     for a, meta in zip(targets, metas):
@@ -913,7 +942,7 @@ def enrich_google_articles(articles, max_workers=15):
             filled += 1
         if meta["image"] and not a.get("image"):
             a["image"] = meta["image"]
-    print(f"📝 [구글 뉴스 요약 보완] {len(targets)}건 중 {filled}건 원문 첫 문단으로 교체, 사진 {sum(bool(m['image']) for m in metas)}건 확보")
+    print(f"📝 [구글 뉴스 요약 보완] {len(targets)}건 중 {filled}건 원문 첫 문단으로 교체 (새로 조회 {len(todo)}건), 사진 {sum(bool(m['image']) for m in metas)}건 확보")
 
 
 UNKNOWN_PUBLISHERS = {"", "네이버뉴스", "언론사"}

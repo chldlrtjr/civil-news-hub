@@ -244,6 +244,10 @@ def enrich_with_details(items: list, cache: dict, today: date, get_html=_get_htm
     return notes
 
 
+# 같은 실행 안에서 토목용·IT용 수집이 같은 분야 목록(과학/공학·기획/아이디어, 최대 13쪽)을 두 번 받지 않게 (성공한 쪽만)
+_list_pages = {}
+
+
 def fetch_wevity(categories, keep, label: str, source: str = "wevity") -> list:
     """위비티 접수중 공모전 중 keep(contest)을 통과한 것만 수집. 모든 요청이 실패하면 WevityFetchError"""
     print("\n" + "-" * 60)
@@ -261,17 +265,21 @@ def fetch_wevity(categories, keep, label: str, source: str = "wevity") -> list:
         kept_count = 0
         for page in range(1, max_pages + 1):
             url = f"{BASE_URL}?c=find&s=1&gub=1&cidx={cidx}&mode=ing&gp={page}"
-            try:
-                r = requests.get(url, headers=HEADERS, timeout=10)
-                r.raise_for_status()
-                r.encoding = "utf-8"
-            except Exception as e:
-                errors.append(f"{cat_label} p{page}: {e}")
-                break
-            items = parse_list_page(r.text, today, cidx)
+            html = _list_pages.get(url)
+            if html is None:
+                try:
+                    r = requests.get(url, headers=HEADERS, timeout=10)
+                    r.raise_for_status()
+                    r.encoding = "utf-8"
+                except Exception as e:
+                    errors.append(f"{cat_label} p{page}: {e}")
+                    break
+                html = r.text
+            items = parse_list_page(html, today, cidx)
             if items is None:
                 errors.append(f"{cat_label} p{page}: 목록 영역(ul.list)을 찾지 못함 — 페이지 구조 변경 의심")
                 break
+            _list_pages[url] = html  # 목록 모양이 맞는 쪽만 (점검 페이지를 IT 수집까지 재사용하지 않게)
             ok_pages += 1
             new = [c for c in items if c["id"] not in seen_in_category]
             if not new:
@@ -288,7 +296,8 @@ def fetch_wevity(categories, keep, label: str, source: str = "wevity") -> list:
 
     for e in errors:
         print(f"  ⚠️ [Wevity] {e}")
-    if ok_pages == 0:
+    # 한 분야·한 쪽만 실패해도 실패로: 일부만 저장하면 그 공모전들이 한 시간 동안 사라졌다 돌아와요 (호출한 쪽이 이전 회차 위비티 항목을 씀)
+    if ok_pages == 0 or errors:
         raise WevityFetchError("; ".join(errors) or "목록 페이지를 하나도 읽지 못함")
 
     cache = load_detail_cache()

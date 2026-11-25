@@ -32,3 +32,8 @@ end;
 $$;
 revoke execute on function public.delete_my_account() from public, anon;
 grant execute on function public.delete_my_account() to authenticated;
+
+-- 2026-11-25 검수 반영 (한 번 실행): 쓰지 않는 표 권한 회수(TRUNCATE 는 RLS 를 건너뛰어요) + 한 사람 행 크기 상한 256KB (지금 가장 큰 행 약 1KB)
+revoke truncate, references, trigger on public.user_saved from anon, authenticated;
+alter table public.user_saved drop constraint if exists user_saved_size;
+alter table public.user_saved add constraint user_saved_size check (pg_column_size(ids) + pg_column_size(tracked) < 262144);

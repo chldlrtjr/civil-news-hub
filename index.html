@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Civil News Hub</title>
+<meta name="description" content="토목·인프라 뉴스, 공모전, 채용 공고, 전북대 알바를 매시간 모아 보여 주는 토목 전공 학생용 사이트">
+<link rel="canonical" href="https://civil-news-hub.vercel.app/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://civil-news-hub.vercel.app/">
+<meta property="og:title" content="Civil News Hub">
+<meta property="og:description" content="토목·인프라 뉴스, 공모전, 채용 공고, 전북대 알바를 매시간 모아 보여 줘요">
+<meta name="theme-color" content="#111111">
 <link rel="icon" href="./favicon.svg" type="image/svg+xml">
 <!-- 글꼴·로그인 라이브러리는 외부 CDN 대신 이 사이트에서 직접 제공 (방문자 접속 정보가 제3자 CDN으로 가지 않게, 파일 변조 위험 제거) -->
 <link rel="stylesheet" href="./static/vendor/pretendard/pretendardvariable-dynamic-subset.css">
@@ -14,13 +21,14 @@ if ('serviceWorker' in navigator && (location.hostname === 'localhost' || locati
   navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(reg => reg.unregister()));
 }
 if ('caches' in window) caches.keys().then(keys => keys.forEach(k => { if (k.includes('civil-news-hub') && !k.includes('v1.1.91')) caches.delete(k); }));
-try { localStorage.removeItem('cnh-live-cache-v1'); } catch(e){}
+// 예전 데이터 캐시: 번들이 곧 최신 데이터라 더는 쓰지 않아요
+['cnh-live-cache-v1', 'cnh-live-cache-v2'].forEach(k => { try { localStorage.removeItem(k); } catch(e){} });
 </script>
 <script src="./static/cnh_data_bundle.js?v=20261123"></script>
-<script src="./static/data_adapter.js?v=20261123"></script>
+<script src="./static/data_adapter.js?v=20261125"></script>
 <script src="./static/vendor/supabase.js"></script>
 <script src="./static/tracker_core.js?v=20261123"></script>
-<script src="./static/v2_core.js?v=20261124"></script>
+<script src="./static/v2_core.js?v=20261125"></script>
 <style>
 /* v2 (2026-11-23부터 기본 사이트, 예전 사이트는 old.html): madia-design 기준. PC(#v2pc)와 모바일(#v2m)은 별도 화면이고, 규칙은 각자 범위 안에만 둬요 */
 :root{
@@ -98,7 +106,7 @@ a.h-row:hover .h-t{text-decoration:underline}
 .h-empty{margin:0;font-size:14px;color:var(--muted)}
 .h-chips{display:flex;flex-wrap:wrap;gap:8px}
 .h-chip{font-size:14px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);transition:background-color .3s,color .3s,border-color .3s}
-.h-chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.h-chip[aria-pressed="true"],.h-chip.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
 .h-group{margin-top:16px}
 .h-group:first-of-type{margin-top:0}
 .h-group h3{margin:0 0 8px;font-size:14px;font-weight:500;color:var(--muted)}
@@ -210,6 +218,9 @@ a.h-row:hover .h-t{text-decoration:underline}
 
 /* ==================== 탭 화면 (static/v2_pages.js) ==================== */
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+#v2pc .skip{position:fixed;left:16px;top:-64px;z-index:100;padding:8px 16px;border-radius:8px;background:var(--ink);color:var(--bg);font-size:14px}
+#v2pc .skip:focus{top:16px}
+#v2pc main:focus{outline:none}
 /* 하단 고지(처리방침·문의)와 로그인 전 출생연도 확인 모달 */
 .site-foot{display:flex;flex-wrap:wrap;gap:8px 16px;padding:24px 0 32px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
 .site-foot a{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
@@ -238,7 +249,7 @@ a.h-row:hover .h-t{text-decoration:underline}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:40px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-size:14px;font-weight:600;white-space:nowrap;transition:background-color .3s,border-color .3s,color .3s}
 .btn:hover{border-color:var(--ink)}
 .btn svg{width:16px;height:16px}
-.btn.pri{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.btn.pri,.btn[data-theme-toggle][aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
 .btn.sm{height:32px;padding:0 12px;border-radius:8px}
 .btn.danger{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 [data-save][aria-pressed="true"] svg{fill:currentColor}
@@ -306,7 +317,7 @@ a.h-row:hover .h-t{text-decoration:underline}
 .tks{margin:0;padding:0;list-style:none}
 .tk{border-bottom:1px solid var(--surface-2)}
 .tk:last-child{border-bottom:0}
-.tk.off{opacity:.6}
+.tk.off .tk-t{color:var(--muted)}  /* 투명도로 흐리면 회색 글자 대비가 AA 아래로 떨어져요 */
 .tk-top{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:14px;color:var(--muted)}
 .badge{flex:none;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:600;background:var(--surface-2);color:var(--muted)}
 .badge.s-todo{background:var(--accent-soft);color:var(--accent)}
@@ -426,6 +437,7 @@ a.tk-t:hover{text-decoration:underline}
 <body>
 
 <div id="v2pc" hidden>
+  <button type="button" class="skip" data-skip>본문 바로가기</button>
   <header class="gnb">
     <div class="wrap">
       <a class="logo" href="#home"><b>CNH</b>Civil News Hub</a>
@@ -440,12 +452,12 @@ a.tk-t:hover{text-decoration:underline}
       <form class="gsearch" role="search" data-search-form><label class="sr" for="pc-q">검색</label><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="pc-q" type="search" name="q" placeholder="뉴스·공모전·채용 검색" autocomplete="off"></form>
       <div class="util">
         <span class="who" id="pc-who"></span>
-        <button class="ibtn" type="button" data-theme-toggle aria-label="화면 밝기 전환"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+        <button class="ibtn" type="button" data-theme-toggle aria-label="어두운 화면" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
         <button class="login" type="button" id="pc-auth" data-auth="login">구글 로그인</button>
       </div>
     </div>
   </header>
-  <main class="wrap"><div id="pc-home"></div><div id="pc-page" hidden></div></main>
+  <main class="wrap" tabindex="-1"><div id="pc-home"></div><div id="pc-page" hidden></div></main>
   <footer class="site-foot wrap"><span>Civil News Hub · 개인 운영 무료 사이트</span><a href="./privacy.html"><b>개인정보 처리방침</b></a><a href="./terms.html">이용약관</a><span>문의 <a href="mailto:axisnode0000@gmail.com">axisnode0000@gmail.com</a></span></footer>
 </div>
 
@@ -454,7 +466,7 @@ a.tk-t:hover{text-decoration:underline}
     <header class="bar">
       <a class="logo" href="#home"><b>CNH</b>토목허브</a>
       <a class="ibtn" href="#search" aria-label="검색"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></a>
-      <button class="ibtn" type="button" data-theme-toggle aria-label="화면 밝기 전환"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+      <button class="ibtn" type="button" data-theme-toggle aria-label="어두운 화면" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
     </header>
     <nav class="ntabs" aria-label="주요 메뉴">
       <a href="#home" data-route="home">오늘</a>
@@ -492,7 +504,7 @@ a.tk-t:hover{text-decoration:underline}
     <div class="age-acts"><button type="button" class="btn" data-age-cancel>취소</button><button type="submit" class="btn pri">확인하고 구글 로그인</button></div>
   </form>
 </dialog>
-<script src="./static/v2_state.js?v=20261125"></script>
+<script src="./static/v2_state.js?v=20261125b"></script>
 <script>
 /* ---------- v2 화면: 데이터 준비, PC/모바일 고르기, 로그인 버튼, 테마 ---------- */
 const V2 = {
@@ -523,13 +535,17 @@ function renderAuth(){
   who.textContent = authUser ? (meta.full_name || meta.name || authUser.email || '') : '';
 }
 
+const isDarkTheme = () => { const r = document.documentElement; return r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches; };
+const syncThemeBtns = () => document.querySelectorAll('[data-theme-toggle]').forEach(b => b.setAttribute('aria-pressed', isDarkTheme()));
 document.addEventListener('click', e => {
+  if (e.target.closest('[data-skip]')) { document.querySelector('#v2pc main').focus(); return; }
   if (!e.target.closest('[data-theme-toggle]')) return;
   const r = document.documentElement;
-  const dark = r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
-  r.dataset.theme = dark ? 'light' : 'dark';
+  r.dataset.theme = isDarkTheme() ? 'light' : 'dark';
   try { localStorage.setItem('cnh-theme', r.dataset.theme); } catch(e){}
+  syncThemeBtns();
 });
+syncThemeBtns();
 
 /* ---------- 홈: 오늘 챙길 것 → 내 관심 분야 새 소식 → 오늘의 토목 뉴스 ---------- */
 const KIND = { contest: '공모전', job: '채용', alba: '알바' };
@@ -578,7 +594,8 @@ function homeHtml(){
   const groupsHtml = (only) => CNHv2.INTEREST_GROUPS.map(g => {
     const opts = g.options.filter(([v]) => !only || interests[g.key].includes(v));
     if (!opts.length) return '';
-    const chips = opts.map(([v, label]) => `<button type="button" class="h-chip" data-interest="${g.key}:${esc(v)}" aria-pressed="${interests[g.key].includes(v)}"${only ? ' disabled' : ''}>${esc(label)}</button>`).join('');
+    const chips = opts.map(([v, label]) => only ? `<span class="h-chip on">${esc(label)}</span>`
+      : `<button type="button" class="h-chip" data-interest="${g.key}:${esc(v)}" aria-pressed="${interests[g.key].includes(v)}">${esc(label)}</button>`).join('');
     return only ? chips : `<div class="h-group"><h3>${g.title}</h3><div class="h-chips">${chips}</div></div>`;
   }).join('');
   if (editingInterests || !CNHv2.hasInterests(interests)) {
@@ -635,7 +652,9 @@ function pcHomeHtml(){
     : '<p class="empty">다가오는 마감이 없어요</p>'}</section>`;
 
   const groups = CNHv2.INTEREST_GROUPS;
-  const chip = (g, v, label, off) => `<button type="button" class="h-chip" data-interest="${g.key}:${esc(v)}" aria-pressed="${interests[g.key].includes(v)}"${off ? ' disabled' : ''}>${esc(label)}</button>`;
+  // 고른 분야 표시(off)는 누를 수 없으니 버튼이 아니라 글자로 (스크린리더가 "사용 불가 버튼"으로 읽지 않게)
+  const chip = (g, v, label, off) => off ? `<span class="h-chip on">${esc(label)}</span>`
+    : `<button type="button" class="h-chip" data-interest="${g.key}:${esc(v)}" aria-pressed="${interests[g.key].includes(v)}">${esc(label)}</button>`;
   let freshPanel;
   if (editingInterests || !CNHv2.hasInterests(interests)) {
     const cols = groups.map(g => `<div class="h-group"><h3>${g.title}</h3><div class="h-chips">${g.options.map(([v, l]) => chip(g, v, l, false)).join('')}</div></div>`).join('');
@@ -713,7 +732,24 @@ document.addEventListener('click', e => {
 
 savedListeners.push(() => { renderAuth(); V2.render(); });
 renderAuth();
+// 탭을 열어 둔 채 오래 두면 뉴스 'N분 전'이, 자정을 넘기면 D-day·오늘 일정이 틀려요: 돌아올 때 다시 계산해 그려요
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) return;
+  const now = Date.now(), t = kstToday();
+  let changed = false;
+  (V2.data.NEWS || []).forEach(n => { const a = n.iso && CNHv2.relTime(n.iso, now); if (a && a !== n.ago) { n.ago = a; changed = true; } });
+  if (t !== V2.today) {
+    V2.today = t; changed = true;
+    // 홈 새 소식의 공모전 D-day도 새 날짜로, 마감 지난 건 빼요 (V2.fresh 를 비우면 이미 본 항목이라 새 소식이 사라져요)
+    if (V2.fresh) V2.fresh = V2.fresh.flatMap(x => {
+      const c = x.kind === 'contest' && (V2.data.CONTESTS || []).find(y => String(y.id) === x.id);
+      if (!c || !CNHv2.isDate(c.deadline)) return [x];
+      return c.deadline < t ? [] : [{ ...x, meta: CNHv2.ddayLabel(c.deadline, t) }];
+    });
+  }
+  if (changed) V2.render();
+});
 </script>
-<script src="./static/v2_pages.js?v=20261124e"></script>
+<script src="./static/v2_pages.js?v=20261125"></script>
 </body>
 </html>

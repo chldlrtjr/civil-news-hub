@@ -43,5 +43,13 @@ class CareerPagesTest(unittest.TestCase):
         self.assertIn("https://samaneng.com/board/recruit2/index.html", links)
 
 
+
+class WebLinkTest(unittest.TestCase):
+    def test_scheme_less_link_falls_back(self):
+        self.assertEqual(job_scraper.web_link("www.kohom.or.kr", fallback="https://job.alio.go.kr/x"), "https://job.alio.go.kr/x")
+        self.assertEqual(job_scraper.web_link(None, " https://a.kr/d ", fallback="f"), "https://a.kr/d")
+        self.assertEqual(job_scraper.web_link("javascript:alert(1)", fallback="f"), "f")
+
+
 if __name__ == "__main__":
     unittest.main()

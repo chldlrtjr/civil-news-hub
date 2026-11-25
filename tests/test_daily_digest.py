@@ -107,3 +107,24 @@ def test_fallback_strips_byline_and_cuts_title_at_word():
     for s in ["(서울=연합뉴스) 홍길동 기자 = 본문이다.", "홍길동 기자 = 본문이다."]:
         assert dd.strip_byline(s) == "본문이다."
     assert dd.strip_byline("[선제적 제설]한국도로공사") == "[선제적 제설]한국도로공사"  # 기사 말머리는 유지
+
+
+def test_ai_summary_with_secret_or_too_long_falls_back(monkeypatch):
+    arts = [art(1, 5), art(2, 5), art(3, 5)]
+    ai = [
+        {"headline": "교량 보수 착수", "summary": "국토부가 교량 보수를 시작했어요."},
+        {"headline": "요약", "summary": "키는 sk-proj-AbCdEf0123456789XyZ 이에요."},  # 키처럼 생긴 값
+        {"headline": "요약", "summary": "가" * 201},
+    ]
+    monkeypatch.setattr(dd, "summarize_with_codex", lambda a: ai)
+    items = dd.build_items(arts)
+    assert items[0]["summary"] == "국토부가 교량 보수를 시작했어요."
+    fb = dd.fallback_summary(arts[1])
+    assert (items[1]["headline"], items[1]["summary"]) == (fb["headline"], fb["summary"])
+    assert items[2]["summary"] == dd.fallback_summary(arts[2])["summary"]
+
+
+def test_ai_text_rejects_non_string_and_spaced_out_keys():
+    assert dd.safe_ai_text(["목록"], 30) == "" and dd.safe_ai_text(123, 30) == ""
+    assert dd.safe_ai_text("키는 sk-proj Ab12 Cd34 Ef56 Gh78 Ij90 이에요", 200) == ""  # 띄어 써도 걸려요
+    assert dd.safe_ai_text("국토부가 교량 보수를 시작했어요.", 200) == "국토부가 교량 보수를 시작했어요."

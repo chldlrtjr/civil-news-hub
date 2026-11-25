@@ -25,6 +25,10 @@ data/digest_out/
 data/.digest_last_sent
 data/wevity_detail_cache.json
 data/wevity_detail_cache.json.tmp
+data/jbnu_detail_cache.json
+data/jbnu_detail_cache.json.tmp
+data/news_meta_cache.json
+data/news_meta_cache.json.tmp
 
 # brainstorm mockups
 .superpowers/

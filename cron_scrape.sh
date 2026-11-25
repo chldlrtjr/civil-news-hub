@@ -21,7 +21,8 @@ FAILED_STEPS=()
 run_step() {
   local label="$1" script="$2"
   echo "$label ($script)..." >> "$LOG_FILE"
-  if ! nice -n 10 "$SCRIPT_DIR/venv/bin/python3" "$script" >> "$LOG_FILE" 2>&1; then
+  # 15분 한도: 응답을 아주 느리게 흘리는 사이트에 걸려도 다음 회차·아침 다이제스트를 막지 않게 (보통 전체 2~3분)
+  if ! timeout -k 30s 15m nice -n 10 "$SCRIPT_DIR/venv/bin/python3" "$script" >> "$LOG_FILE" 2>&1; then
     echo "  ❌ $script 실패" >> "$LOG_FILE"
     FAILED_STEPS+=("$script")
     return 1
@@ -35,17 +36,17 @@ run_step "[4/8] 전북대 아르바이트 수집 및 정제 중" jbnu_scraper.py
 run_step "[5/8] 전북대 SW사업단 프로그램 수집 중" swuniv_scraper.py || true
 run_step "[6/8] 정적 데이터 번들 컴파일 중" build_data_bundle.py || true
 
-# 7. 공모전 데이터 무결성 전수 검증 (GEMINI.md Rule 1-⑦) — 실패 시 잘못된 데이터가 배포되지 않도록 push 중단
-INTEGRITY_OK=1
+# 7. 공모전 데이터 무결성 전수 검증 (GEMINI.md Rule 1-⑦)
+# 실패하면 공모전만 지난 회차로 되돌려 번들을 다시 만들고, 뉴스·채용·알바는 그대로 올려요 (공모전 하나로 전부 멈추지 않게)
 DATA_OK=1  # 이번 회차 데이터가 사이트에 올라갔거나 바뀐 게 없음 (생존 신호 성공/실패 구분)
-run_step "[7/8] 공모전 무결성 전수 검증 중" test_contests_integrity.py || INTEGRITY_OK=0
+if ! run_step "[7/8] 공모전 무결성 전수 검증 중" test_contests_integrity.py; then
+  echo "  ⛔ 무결성 검증 실패 — 공모전은 지난 회차 그대로 두고 나머지만 올려요" >> "$LOG_FILE"
+  git checkout HEAD -- data/contests.json >> "$LOG_FILE" 2>&1
+  run_step "  번들 다시 만들기" build_data_bundle.py || git checkout HEAD -- static/cnh_data_bundle.js >> "$LOG_FILE" 2>&1
+fi
 
-# 8. GitHub 자동 배포 (data 변경분 commit + push → GitHub Pages 자동 반영)
+# 8. GitHub 자동 배포 (data 변경분 commit + push → Vercel 자동 배포)
 echo "[8/8] GitHub 자동 배포 중..." >> "$LOG_FILE"
-if [ "$INTEGRITY_OK" -eq 0 ]; then
-  echo "  ⛔ 무결성 검증 실패 — 이번 회차 push 건너뜀" >> "$LOG_FILE"
-  DATA_OK=0
-else
 git add data/news.json data/contests.json data/jobs.json data/work24_cache.json data/jbnu_albas.json data/swuniv_programs.json static/cnh_data_bundle.js >> "$LOG_FILE" 2>&1
 
 if git diff --cached --quiet; then
@@ -70,9 +71,8 @@ else
     FAILED_STEPS+=("git push")
     DATA_OK=0
   else
-    echo "  ✅ GitHub push 성공 → GitHub Pages 자동 배포 트리거됨" >> "$LOG_FILE"
+    echo "  ✅ GitHub push 성공 → Vercel 자동 배포" >> "$LOG_FILE"
   fi
-fi
 fi
 
 # 실패 알림: 실패 목록이 바뀔 때만 카카오톡 발송 (같은 실패로 매시간 알림이 쌓이지 않게, 복구 시 1회 알림)
