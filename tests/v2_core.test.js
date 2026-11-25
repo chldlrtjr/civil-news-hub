@@ -267,3 +267,60 @@ test('relTime: 뉴스 시각을 지금 기준으로 (수집 때 굳은 값 대�
   assert.equal(V.relTime('2026-11-25T21:31:00+09:00', now), '방금 전');
   assert.equal(V.relTime('', now), '');
 });
+
+// 마감일 캘린더에 넣기 (.ics + Google 캘린더 링크)
+const C = { id: 7, title: '제5회 도로 설계, 공모전; A\\B', org: '한국도로학회', link: 'https://ex.com/a', deadline: '2026-12-31' };
+const J = { id: 'j1', role: '토목직 신입', co: '한국도로공사', link: 'javascript:alert(1)', deadline: '2026-11-26' };
+
+test('calEvent: 마감일이 오늘 이후인 공모전·채용만, 제목·설명·UID', () => {
+  const e = V.calEvent('contest', C, '2026-11-26');
+  assert.equal(e.uid, 'contest-7@civil-news-hub.vercel.app');
+  assert.equal(e.date, '2026-12-31');
+  assert.equal(e.title, '[마감] 제5회 도로 설계, 공모전; A\\B');
+  assert.equal(e.details, '한국도로학회\nhttps://ex.com/a\n토목 뉴스 브리핑에서 추가');
+  const j = V.calEvent('job', J, '2026-11-26');          // 오늘 마감도 보여요
+  assert.equal(j.title, '[마감] 토목직 신입 (한국도로공사)');
+  assert.equal(j.link, '');                               // javascript: 는 빼요
+  assert.equal(j.details, '한국도로공사\n토목 뉴스 브리핑에서 추가');
+  assert.equal(V.calEvent('job', J, '2026-11-27'), null); // 지난 마감
+  assert.equal(V.calEvent('contest', { ...C, deadline: '상시모집' }, '2026-11-26'), null);
+  assert.equal(V.calEvent('contest', { ...C, deadline: '' }, '2026-11-26'), null);
+  assert.equal(V.calEvent('alba', { ...C }, '2026-11-26'), null);
+});
+
+test('calNextDay: 월·해 넘김', () => {
+  assert.equal(V.calNextDay('2026-12-31'), '20270101');
+  assert.equal(V.calNextDay('2028-02-28'), '20280229');
+});
+
+test('calIcs: RFC 5545 하루 종일 일정 + 알림 2개, CRLF, 이스케이프', () => {
+  const s = V.calIcs(V.calEvent('contest', C, '2026-11-26'), '20261126T000000Z');
+  assert.ok(s.endsWith('\r\n'));
+  assert.ok(!/[^\r]\n/.test(s));                          // 맨 \n 없음
+  const un = s.replace(/\r\n /g, '');                      // 접은 줄 펼치기
+  for (const l of ['BEGIN:VCALENDAR', 'VERSION:2.0', 'BEGIN:VEVENT', 'UID:contest-7@civil-news-hub.vercel.app',
+    'DTSTAMP:20261126T000000Z', 'DTSTART;VALUE=DATE:20261231', 'DTEND;VALUE=DATE:20270101',
+    'SUMMARY:[마감] 제5회 도로 설계\\, 공모전\\; A\\\\B', 'DESCRIPTION:한국도로학회\\nhttps://ex.com/a\\n토목 뉴스 브리핑에서 추가',
+    'URL:https://ex.com/a', 'TRIGGER:-PT63H', 'TRIGGER:-PT15H', 'END:VEVENT', 'END:VCALENDAR'])
+    assert.ok(un.split('\r\n').includes(l), l);
+  assert.equal((un.match(/BEGIN:VALARM/g) || []).length, 2);
+  // 링크 없는 채용 일정에는 URL 줄이 없어요
+  assert.ok(!V.calIcs(V.calEvent('job', J, '2026-11-26'), '20261126T000000Z').includes('URL:'));
+});
+
+test('calIcs: 75바이트 접기, 한글을 자르지 않고 펼치면 원문', () => {
+  const long = { ...C, title: '가'.repeat(80) };
+  const s = V.calIcs(V.calEvent('contest', long, '2026-11-26'), '20261126T000000Z');
+  for (const line of s.split('\r\n')) assert.ok(Buffer.byteLength(line) <= 75, line);
+  assert.ok(s.replace(/\r\n /g, '').includes('SUMMARY:[마감] ' + '가'.repeat(80)));
+});
+
+test('calGoogleUrl: 일정 입력 화면 링크, 글자 그대로 되돌아옴', () => {
+  const e = V.calEvent('contest', C, '2026-11-26');
+  const u = V.calGoogleUrl(e);
+  assert.ok(u.startsWith('https://calendar.google.com/calendar/render?action=TEMPLATE&'));
+  const q = new URL(u).searchParams;
+  assert.equal(q.get('text'), e.title);
+  assert.equal(q.get('dates'), '20261231/20270101');
+  assert.equal(q.get('details'), e.details);
+});

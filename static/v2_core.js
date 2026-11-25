@@ -179,6 +179,45 @@
     return new Date(t + 9 * 3600000).toISOString().slice(0, 10).replace(/-/g, '.');
   }
 
+  // 마감일 캘린더에 넣기: 공모전·채용 마감을 하루 종일 일정으로 (.ics 파일 / Google 캘린더 링크). 오늘 마감까지, 날짜가 없거나 지났으면 null
+  function calEvent(kind, item, today) {
+    if ((kind !== 'contest' && kind !== 'job') || !isDate(item.deadline) || item.deadline < today) return null;
+    const job = kind === 'job', org = (job ? item.co : item.org) || '';
+    const link = /^https?:\/\//i.test(item.link || '') ? item.link : '';
+    return {
+      uid: `${kind}-${item.id}@civil-news-hub.vercel.app`, date: item.deadline, link,
+      title: '[마감] ' + (job ? `${item.role || ''}${org ? ` (${org})` : ''}` : item.title || ''),
+      details: [org, link, '토목 뉴스 브리핑에서 추가'].filter(Boolean).join('\n'),
+    };
+  }
+  // 하루 종일 일정의 끝 날짜(다음 날, 'YYYYMMDD'): UTC로 더해 시간대 때문에 날짜가 밀리지 않게
+  const calNextDay = (date) => new Date(Date.parse(date + 'T00:00:00Z') + 86400000).toISOString().slice(0, 10).replace(/-/g, '');
+  const calDay = (date) => date.replace(/-/g, '');
+  // RFC 5545: 글자 값의 \ ; , 줄바꿈 이스케이프, 75바이트(UTF-8) 넘는 줄은 CRLF+공백으로 접기(글자 단위라 한글이 안 깨짐)
+  const icsText = (s) => s.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
+  const utf8Len = (ch) => { const c = ch.codePointAt(0); return c < 0x80 ? 1 : c < 0x800 ? 2 : c < 0x10000 ? 3 : 4; };
+  function icsFold(line) {
+    const out = []; let cur = '', size = 0, max = 75;
+    for (const ch of line) {
+      const b = utf8Len(ch);
+      if (size + b > max) { out.push(cur); cur = ''; size = 0; max = 74; }
+      cur += ch; size += b;
+    }
+    out.push(cur);
+    return out.join('\r\n ');
+  }
+  function calIcs(ev, stamp) {
+    // 알림: 마감 3일 전·1일 전 오전 9시 (일정 시작 = 마감일 0시 기준)
+    const alarm = (trigger) => ['BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + icsText(ev.title), 'TRIGGER:' + trigger, 'END:VALARM'];
+    const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//civil-news-hub//ko', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
+      'BEGIN:VEVENT', 'UID:' + ev.uid, 'DTSTAMP:' + stamp, 'DTSTART;VALUE=DATE:' + calDay(ev.date), 'DTEND;VALUE=DATE:' + calNextDay(ev.date),
+      'SUMMARY:' + icsText(ev.title), 'DESCRIPTION:' + icsText(ev.details), ...(ev.link ? ['URL:' + ev.link] : []),
+      ...alarm('-PT63H'), ...alarm('-PT15H'), 'END:VEVENT', 'END:VCALENDAR'];
+    return lines.map(icsFold).join('\r\n') + '\r\n';
+  }
+  const calGoogleUrl = (ev) => 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(ev.title)
+    + '&dates=' + calDay(ev.date) + '/' + calNextDay(ev.date) + '&details=' + encodeURIComponent(ev.details);
+
   // 로그인 연령: 출생연도 기준 19세가 되는 해부터 (청소년 보호법 제2조 제1호와 같은 연 나이 셈법)
   function loginAllowed(birthYear, thisYear) {
     const y = Number(birthYear);
@@ -186,7 +225,8 @@
   }
 
   const API = { loginAllowed, relTime, ddayLabel, dateLabel, scheduleItems, urgentFallback, INTEREST_GROUPS, hasInterests, freshItems, rememberSeen, readJSON, isPhone, monthGrid, shiftMonth, weekdayOf,
-    isDate, ddayOf, contestList, jobList, albaList, newsList, countBy, searchAll, savedList };
+    isDate, ddayOf, contestList, jobList, albaList, newsList, countBy, searchAll, savedList,
+    calEvent, calNextDay, calIcs, calGoogleUrl };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   else window.CNHv2 = API;
 })();
