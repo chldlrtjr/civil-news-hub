@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-25 23:01",
-  "last_updated_display": "2026년 11월 25일 23:01",
+  "last_updated": "2026-11-26 00:01",
+  "last_updated_display": "2026년 11월 26일 00:01",
   "source": "잡알리오(공공기관 채용정보) · 고용24 공채속보 Open API",
-  "total_count": 25,
+  "total_count": 23,
   "failed_sources": [],
   "categories": [
     {
@@ -23,70 +23,6 @@
     }
   ],
   "jobs": [
-    {
-      "id": "alio-306914",
-      "source": "잡알리오",
-      "company": "한국환경공단",
-      "company_type": "공공기관",
-      "category_id": "public",
-      "category_name": "공기업·공공기관",
-      "title": "한국환경공단 충청권환경본부 환경시설관리처 기간제근로자(촉탁직, 일용직) 채용 공고",
-      "fields": [
-        "경영.회계.사무",
-        "건설",
-        "환경.에너지.안전"
-      ],
-      "career": "신입·경력",
-      "is_intern": false,
-      "intern_type": "",
-      "civil_match": "건설 분야 · 공고문 확인",
-      "location": "충남",
-      "period": "2026.11.11 ~ 2026.11.25",
-      "deadline_date": "2026-11-25",
-      "tags": [
-        "건설 분야 · 공고문 확인",
-        "비정규직",
-        "5명"
-      ],
-      "link": "https://www.keco.or.kr/web/lay1/bbs/S1T1205C1207/A/22/view.do?article_seq=100873&cpage=1&rows=10&condition=&keyword=",
-      "summary": "1. 촉탁나급: 아래 각 호중 어느 하나 이상에 해당하는 자 - 해당분야의 박사학위 또는 기술사 자격을 취득한 자 - 해당분야의 기사자격을 취득한 후 10년 이상 당해분야의 경력이 있는 자 - 관련협회 기술인 등급 고급 이상인 자 2. 일용직: 제한 없음 ※ 자세한 사항은 채용 공고문 참조",
-      "steps": [
-        "1차 전형",
-        "서류전형",
-        "2차 전형",
-        "면접전형"
-      ]
-    },
-    {
-      "id": "w24-184688",
-      "source": "고용24 공채속보",
-      "company": "케이알산업",
-      "company_type": "중견기업",
-      "category_id": "builder",
-      "category_name": "건설·민간기업",
-      "title": "건축본부 경력직(정규직) 모집 공고",
-      "fields": [
-        "건축본부(공무/시공/부대토목)"
-      ],
-      "career": "경력",
-      "is_intern": false,
-      "intern_type": "",
-      "location": "경기",
-      "period": "2026.11.05 ~ 2026.11.25",
-      "deadline_date": "2026-11-25",
-      "tags": [
-        "정규직",
-        "중견기업"
-      ],
-      "link": "https://recruit.krindus.co.kr/hp/krcon/kor/recruit/recruit/ab_hire_list.dev#",
-      "summary": "- 건축 및 토목 관련학과 졸업자 (해당자격 취득자) - 건축현장 6년 이상 유경험자",
-      "steps": [
-        "서류전형",
-        "면접",
-        "건강검진",
-        "최종합격"
-      ]
-    },
     {
       "id": "w24-185907",
       "source": "고용24 공채속보",
