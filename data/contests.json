@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-25 16:02:02",
-  "last_updated_display": "11월 25일 16:02",
-  "total_count": 35,
-  "featured_count": 35,
+  "last_updated": "2026-11-25 17:02:06",
+  "last_updated_display": "11월 25일 17:02",
+  "total_count": 36,
+  "featured_count": 36,
   "categories": [
     "ALL",
     "토목",
@@ -667,6 +667,41 @@
       "dday_info": {
         "text": "D-14",
         "days": 14,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-112568",
+      "source": "wevity_it",
+      "source_name": "위비티",
+      "title": "AI·공공데이터·정보공개 대국민 혁신 아이디어 공모전",
+      "organizer": "국토안전관리원",
+      "category": "토목",
+      "badge_color": "emerald",
+      "prize": "",
+      "target": "제한없음",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.23 ~ 12.10 마감",
+      "deadline_date": "2026-12-10",
+      "deadline_time": "23:59",
+      "fields": [
+        "웹/모바일/IT"
+      ],
+      "description": "국토안전관리원 주최 · 분야: 웹/모바일/IT",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=20&gbn=view&ix=112568",
+      "image": "",
+      "is_active": true,
+      "deadline_source": "wevity_detail",
+      "start_date": "2026-11-23",
+      "prize_total": "1천만원이하",
+      "prize_first": "20만원",
+      "homepage": "https://bigtori.kalis.or.kr/contest/ai-idea-contest",
+      "track": "civil",
+      "dday_info": {
+        "text": "D-15",
+        "days": 15,
         "is_urgent": false,
         "is_closed": false
       }
