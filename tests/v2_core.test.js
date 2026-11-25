@@ -353,3 +353,9 @@ test('inAppBrowser: 카카오톡은 kakao, 그 밖의 앱 속 브라우저는 ot
   assert.equal(V.inAppBrowser('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Version/17.0 Mobile/15E148 Safari/604.1'), '');
   assert.equal(V.inAppBrowser('Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36'), '');
 });
+
+test('calIcs: 줄 구분자(U+2028·U+2029·U+0085)와 탭 밖의 제어문자는 공백으로 (일부 달력 앱이 파일을 거부하지 않게)', () => {
+  const s = V.calIcs(V.calEvent('contest', { ...C, title: 'A\u2028B\u2029C\u0085D\x0bE\x0cF\x00G\x1bH\x7fI\tJ' }, '2026-11-26'), '20261126T000000Z');
+  assert.ok(s.replace(/\r\n /g, '').split('\r\n').includes('SUMMARY:[마감] A B C D E F G H I\tJ'));
+  assert.ok(!/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f\x85\u2028\u2029]/.test(s));
+});
