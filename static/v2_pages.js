@@ -10,17 +10,17 @@
     newsCat: 'all', contestCat: 'all', contestSort: 'deadline', jobLvl: '전체', jobOrg: 'all', jbnuSeg: 'contest', mySeg: 'active',
     shown: {}, sel: {}, sheet: null, confirmDel: null,
   };
-  const ROUTES = ['home', 'news', 'contests', 'jobs', 'jbnu', 'my', 'saved', 'search'];
-  const TITLES = { home: '홈', news: '뉴스', contests: '공모전', jobs: '채용', jbnu: '전북대', my: '마이페이지', saved: '저장', search: '검색' };
+  const ROUTES = ['home', 'news', 'contests', 'jobs', 'exams', 'jbnu', 'my', 'saved', 'search'];
+  const TITLES = { home: '홈', news: '뉴스', contests: '공모전', jobs: '채용', exams: '시험·공채 일정', jbnu: '전북대', my: '마이페이지', saved: '저장', search: '검색' };
   // 필터 칩은 한 줄에 들어가게 짧은 이름 (관심 분야 고르기는 긴 이름)
   const NEWS_CATS = [['all', '전체'], ['general', '토목 종합'], ['road', '도로·철도'], ['water', '수자원·항만'], ['tunnel', '터널·지반'], ['smart', '스마트건설']];
   const CONTEST_CATS = [['all', '전체'], ['토목', '토목'], ['컴퓨터공학', '컴퓨터공학'], ['전북대', '전북대']];
   const COLOR = { general: 'general', road: 'road', water: 'water', tunnel: 'tunnel', smart: 'smart', '토목': 'road', '컴퓨터공학': 'smart', '전북대': 'water' };
-  const JOB_LVLS = ['전체', '인턴', '신입', '경력'];
+  const JOB_LVLS = ['전체', '신입·인턴만', '인턴', '신입', '경력'];  // 신입·인턴만: CNHv2.studentJob (경력직·기간제·일용직 빼고)
   const JOB_ORGS = [['all', '모든 기관'], ['public', '공기업·공공기관'], ['major', '건설·민간기업'], ['design', '설계·엔지니어링']];
   const GRP_NAME = { public: '공기업·공공기관', major: '건설·민간기업', design: '설계·엔지니어링' };
-  const KIND_NAME = { news: '뉴스', contest: '공모전', job: '채용', alba: '알바', sw: 'SW 프로그램' };
-  const POOL = { news: 'NEWS', contest: 'CONTESTS', job: 'JOBS', alba: 'ALBA', sw: 'SW' };
+  const KIND_NAME = { news: '뉴스', contest: '공모전', job: '채용', alba: '알바', sw: 'SW 프로그램', exam: '시험·공채' };
+  const POOL = { news: 'NEWS', contest: 'CONTESTS', job: 'JOBS', alba: 'ALBA', sw: 'SW', exam: 'EXAMS' };
   const catName = (id) => (NEWS_CATS.find(([v]) => v === id) || [, '토목 종합'])[1];
   const SVG = (d, fill = 'none') => `<svg viewBox="0 0 24 24" fill="${fill}" stroke="currentColor" stroke-width="2" aria-hidden="true">${d}</svg>`;
   const I = {
@@ -49,6 +49,7 @@
     if (kind === 'contest') return { title: x.title, sub: x.org, color: COLOR[x.category], dd: CNHv2.ddayOf(x.deadline, t) };
     if (kind === 'job') return { title: x.role, sub: x.co, dd: CNHv2.ddayOf(x.deadline, t) };
     if (kind === 'alba') return { title: x.title, sub: [x.where, x.wageText].filter(Boolean).join(' · '), dd: CNHv2.ddayOf(x.deadline_date, t) };
+    if (kind === 'exam') return { title: x.title, sub: [x.type, x.org].join(' · '), dd: CNHv2.examLabel(x, t) };
     return { title: x.title, sub: x.kind, dd: CNHv2.ddayOf(x.deadline_date, t) };
   }
   const saveBtn = (id, cls, withText) => {
@@ -59,7 +60,7 @@
     const v = rowView(e.kind, e.item), k = keyOf(e.kind, e.item), on = selKey === k;
     return `<li class="lr${on ? ' on' : ''}"><button type="button" class="lr-main" data-open="${esc(k)}"${on ? ' aria-current="true"' : ''}>${ddPill(v.dd)}`
       + `<span class="lr-txt"><span class="lr-t">${esc(v.title)}</span><span class="lr-s">${v.color ? `<i class="dot" style="--dot:var(--c-${v.color})"></i>` : ''}${esc(v.sub)}</span></span></button>`
-      + `${saveBtn(e.item.id, 'lr-bm')}</li>`;
+      + `${e.kind === 'exam' ? '' : saveBtn(e.item.id, 'lr-bm')}</li>`;
   }
   // entries: [{kind, item}]. 화면마다 펼친 개수를 따로 기억해요
   function listHtml(screen, key, entries, selKey, empty) {
@@ -115,19 +116,26 @@
       meta = x.where; dd = ddPill(CNHv2.ddayOf(x.deadline_date, t));
       dl('근무처', esc(x.where)); dl('급여', `<b class="prize">${esc(x.wageText)}</b>`); dl('근무 시간', esc(x.time));
       dl('모집 인원', esc(x.person)); dl('분류', esc(x.tag)); dl('등록일', dayText(x.reg_date)); dl('마감', due(x.deadline_date));
+    } else if (kind === 'exam') {
+      meta = x.org; dd = ddPill(CNHv2.examLabel(x, t));
+      dl('구분', esc(x.type)); dl('기관', esc(x.org));
+      const full = (d) => `${d.replace(/-/g, '.')} (${CNHv2.weekdayOf(d)})`;  // 내년 일정이 많아 연도까지
+      dl(x.end ? '기간' : '날짜', x.date ? full(x.date) + (x.end ? ' ~ ' + full(x.end) : '') : `${esc(CNHv2.examLabel(x, t))} (발표 전, 예정)`);
+      dl('확인한 날', esc(x.checked.replace(/-/g, '.')));
+      if (x.basis) lede = `<p class="dt-p">${esc(x.basis)}</p>`;
     } else {
       meta = x.kind; media = img(x.image, x.title); dd = ddPill(CNHv2.ddayOf(x.deadline_date, t));
       dl('종류', esc(x.kind)); dl('활동 기간', esc(x.when)); dl('정원', esc(x.seats));
       dl('장소', x.location && x.location !== '-' ? esc(x.location) : ''); dl('마감', due(x.deadline_date));
     }
-    const acts = [isWeb(x.link) ? `<a class="btn pri" href="${esc(x.link)}" target="_blank" rel="noopener noreferrer">원문 보기${I.out}</a>` : '', saveBtn(x.id, 'btn', true)];
+    const acts = [isWeb(x.link) ? `<a class="btn pri" href="${esc(x.link)}" target="_blank" rel="noopener noreferrer">${kind === 'exam' ? '출처 보기' : '원문 보기'}${I.out}</a>` : '', kind === 'exam' ? '' : saveBtn(x.id, 'btn', true)];
     if (kind === 'contest' || kind === 'job') {
       const on = CNHTracker.visible(tracked).some((c) => c.id === String(x.id));
       acts.push(on ? '<a class="btn" href="#my">도전 중 · 마이에서 보기</a>' : `<button type="button" class="btn" data-track="${kind}:${esc(x.id)}">도전 목록에 추가</button>`);
     }
-    // 마감일 캘린더에 넣기: 마감일이 오늘 이후인 공모전·채용만 (calEvent 가 아니면 null)
-    const ev = CNHv2.calEvent(kind, x, t);
-    const cal = ev ? `<div class="dt-cal" role="group" aria-label="마감일 캘린더에 넣기"><span>마감일 캘린더에 넣기</span><a class="btn sm" href="${esc(CNHv2.calGoogleUrl(ev))}" target="_blank" rel="noopener noreferrer">Google 캘린더<span class="sr"> (새 탭)</span></a>`
+    // 캘린더에 넣기: 마감일이 오늘 이후인 공모전·채용, 확정 날짜인 시험·공채만 (아니면 calEvent 가 null)
+    const ev = CNHv2.calEvent(kind, x, t), calName = kind === 'exam' ? '일정 캘린더에 넣기' : '마감일 캘린더에 넣기';
+    const cal = ev ? `<div class="dt-cal" role="group" aria-label="${calName}"><span>${calName}</span><a class="btn sm" href="${esc(CNHv2.calGoogleUrl(ev))}" target="_blank" rel="noopener noreferrer">Google 캘린더<span class="sr"> (새 탭)</span></a>`
       + `<button type="button" class="btn sm" data-ics="${kind}:${esc(x.id)}">다른 캘린더 (.ics)</button></div>` : '';
     return `<article class="dt"><div class="dt-top"><span class="dt-kind">${KIND_NAME[kind]}</span>${dd}</div>`
       + `<h2 class="dt-t"${titleId ? ` id="${titleId}"` : ''}>${esc(kind === 'job' ? x.role : x.title)}</h2>${meta ? `<p class="dt-meta">${esc(meta)}</p>` : ''}`
@@ -165,6 +173,14 @@
         groups: [{ key: 'jobs', entries: as('job', CNHv2.jobList(d.JOBS, { lvl: ui.jobLvl, org: ui.jobOrg }, t)), empty: '조건에 맞는 공고가 없어요. 채용 형태나 기관을 바꿔 보세요' }],
         foot: pages.length ? `<details class="fold"><summary>공채 소식에 안 올라오는 기관 채용 페이지<span>${pages.length}</span></summary><ul class="fold-links">${pages.map((p) =>
           `<li><a href="${esc(p.link)}" target="_blank" rel="noopener noreferrer"><b>${esc(p.co)}</b><span>${GRP_NAME[p.grp] || ''}</span></a></li>`).join('')}</ul></details>` : '',
+      };
+    }
+    if (route === 'exams') {
+      const list = CNHv2.examList(d.EXAMS, t);
+      return {
+        title: '시험·공채 일정', sub: `다가오는 일정 ${list.length}개 · 확정은 D-day, 발표 전은 지난해 기준 시기`,
+        groups: [{ key: 'exams', entries: as('exam', list), empty: '다가오는 시험·공채 일정이 없어요' }],
+        foot: '<p class="l-note">확정 날짜는 공식 공고에서 확인한 것만 넣었어요. "○월쯤"은 발표 전이라 지난해 일정 기준이니 꼭 출처에서 다시 확인해 주세요</p>',
       };
     }
     if (route === 'jbnu') {
@@ -390,7 +406,7 @@
     const stamp = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z';
     const url = URL.createObjectURL(new Blob([CNHv2.calIcs(ev, stamp)], { type: 'text/calendar;charset=utf-8' }));
     const a = document.createElement('a');
-    a.href = url; a.download = '마감일-' + key.replace(/[^\w-]+/g, '-') + '.ics';
+    a.href = url; a.download = (key.startsWith('exam:') ? '시험일정-' : '마감일-') + key.replace(/[^\w-]+/g, '-') + '.ics';
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 60000);  // 아이폰은 "다운로드할까요?" 확인을 누를 때까지 주소가 살아 있어야 해요
   }

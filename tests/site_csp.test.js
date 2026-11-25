@@ -52,7 +52,8 @@ test('Vercel 빌드 단계에서 데이터 번들 형식을 검사해요 (검사
 
 test('마감일 캘린더 줄: 묶음 이름과 새 탭 안내(화면읽기)', () => {
   const pages = read('static/v2_pages.js');
-  assert.ok(pages.includes('<div class="dt-cal" role="group" aria-label="마감일 캘린더에 넣기">'));
+  assert.ok(pages.includes('<div class="dt-cal" role="group" aria-label="${calName}"><span>${calName}</span>'));
+  assert.ok(pages.includes("calName = kind === 'exam' ? '일정 캘린더에 넣기' : '마감일 캘린더에 넣기'"));
   assert.ok(/Google 캘린더<span class="sr">\s*\(새 탭\)<\/span><\/a>/.test(pages));
   const css = read('index.html');
   assert.ok(/#v2m \.dt-cal \.btn\{flex:1;height:40px\}/.test(css));

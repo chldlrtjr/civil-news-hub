@@ -20,7 +20,7 @@
 <!-- static/vendor 는 vercel.json 에서 1년 캐시(immutable): 파일을 바꿀 땐 이름도 바꿔요(예: supabase-2.x.y.js) -->
 <script src="./static/vendor/supabase.js"></script>
 <script src="./static/tracker_core.js?v=20261126"></script>
-<script src="./static/v2_core.js?v=20261126b"></script>
+<script src="./static/v2_core.js?v=20261126c"></script>
 <style>
 /* v2 (2026-11-23부터 기본 사이트): madia-design 기준. PC(#v2pc)와 모바일(#v2m)은 별도 화면이고, 규칙은 각자 범위 안에만 둬요 */
 :root{
@@ -261,6 +261,7 @@ a.h-row:hover .h-t{text-decoration:underline}
 .more-btn:hover{background:var(--bg)}
 .more-btn span{margin-left:8px;font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums}
 .l-empty{margin:0;padding:48px 24px;text-align:center;font-size:14px;color:var(--muted)}
+.l-note{margin:0;padding:16px 24px;font-size:12px;line-height:1.6;color:var(--muted);border-top:1px solid var(--line)}
 .empty-go{display:flex;justify-content:center;gap:8px;margin-top:16px}
 .grp-h{display:flex;align-items:center;gap:8px;margin:0;padding:16px 24px 8px;font-size:14px;font-weight:600;border-top:1px solid var(--line)}
 .grp-h:first-child{border-top:0}
@@ -502,7 +503,8 @@ a.tk-t:hover{text-decoration:underline}
   </form>
 </dialog>
 <script src="./static/v2_state.js?v=20261126"></script>
-<script src="./static/v2_main.js?v=20261126"></script>
-<script src="./static/v2_pages.js?v=20261126b"></script>
+<script src="./static/v2_exams.js?v=20261126"></script>
+<script src="./static/v2_main.js?v=20261126b"></script>
+<script src="./static/v2_pages.js?v=20261126c"></script>
 </body>
 </html>

@@ -131,8 +131,12 @@
     const open = (list || []).filter((x) => isOpen(x.deadline, today) && (cat === 'all' || x.category === cat));
     return sort === 'new' ? newestFirst(open, (x) => x.startDate || '') : open.slice().sort(soonest((x) => x.deadline));
   }
+  // 학생에게 맞는 공고: 채용 형태·제목에 신입·인턴·채용형·체험형·경력무관이 있고, 제목이 경력직·기간제·일용직·촉탁·계약직·PJT·특수직(K-water 비정규 기술직)이 아닌 것
+  const STUDENT_IN = /인턴|신입|채용형|체험형|경력무관/, STUDENT_OUT = /경력직|경력사원|기간제|일용직|촉탁|계약직|PJT|특수직/i;
+  const studentJob = (x) => STUDENT_IN.test((x.lvl || '') + ' ' + (x.role || '')) && !STUDENT_OUT.test(x.role || '');
+  const lvlMatch = (x, lvl) => (lvl === '전체' ? true : lvl === '신입·인턴만' ? studentJob(x) : (x.lvl || '').includes(lvl));
   function jobList(list, { lvl = '전체', org = 'all' } = {}, today) {
-    return (list || []).filter((x) => isOpen(x.deadline, today) && (lvl === '전체' || (x.lvl || '').includes(lvl)) && (org === 'all' || x.grp === org))
+    return (list || []).filter((x) => isOpen(x.deadline, today) && lvlMatch(x, lvl) && (org === 'all' || x.grp === org))
       .sort(soonest((x) => x.deadline));
   }
   const albaList = (list, today) => (list || []).filter((x) => isOpen(x.deadline_date, today)).sort(soonest((x) => x.deadline_date));
@@ -179,17 +183,33 @@
     return new Date(t + 9 * 3600000).toISOString().slice(0, 10).replace(/-/g, '.');
   }
 
+  // 시험·공채 일정(static/v2_exams.js): 확정은 date(접수 기간이면 end 까지), 발표 전 예정은 month('YYYY-MM')만
+  // 지난 일정은 숨기고 가까운 순. 예정은 그 달 어느 날일지 몰라 그 달 맨 앞에 둬요
+  const isMonth = (s) => /^\d{4}-\d{2}$/.test(s || '');
+  const examKey = (x) => (isDate(x.date) ? x.date : isMonth(x.month) ? x.month + '-00' : '');
+  const examOpen = (x, today) => (isDate(x.date) ? (isDate(x.end) ? x.end : x.date) >= today : isMonth(x.month) && x.month >= today.slice(0, 7));
+  const examList = (list, today) => (list || []).filter((x) => examOpen(x, today)).sort((a, b) => (examKey(a) < examKey(b) ? -1 : examKey(a) > examKey(b) ? 1 : 0));
+  function examLabel(x, today) {
+    if (isDate(x.date)) return x.date < today ? '진행 중' : ddayLabel(x.date, today);
+    // 지난 달은 목록에서 빠지니 12달 안이면 달만으로도 어느 해인지 분명해요. 더 멀면 연도까지
+    const y = +x.month.slice(0, 4), m = +x.month.slice(5, 7), ahead = (y - +today.slice(0, 4)) * 12 + m - +today.slice(5, 7);
+    return (ahead < 12 ? '' : y + '년 ') + m + '월쯤';
+  }
+
   // 마감일 캘린더에 넣기: 공모전·채용 마감을 하루 종일 일정으로 (.ics 파일 / Google 캘린더 링크). 오늘 마감까지, 날짜가 없거나 지났으면 null
   // 달력에 실제로 있는 날짜만 (2026-02-30 같은 수집 오류에서 날짜 계산이 예외를 내면 상세 화면이 통째로 깨져요)
   const realDate = (d) => isDate(d) && new Date(Date.parse(d + 'T00:00:00Z') || 0).toISOString().slice(0, 10) === d;
+  // 시험·공채(exam)는 확정 날짜(date)만: 예정(month)은 날짜가 없어 null
+  const CAL_DATE = { contest: (x) => x.deadline, job: (x) => x.deadline, exam: (x) => x.date };
   function calEvent(kind, item, today) {
-    if ((kind !== 'contest' && kind !== 'job') || !realDate(item.deadline) || item.deadline < today) return null;
+    const date = CAL_DATE[kind] && CAL_DATE[kind](item);
+    if (!realDate(date) || date < today) return null;
     const job = kind === 'job', org = (job ? item.co : item.org) || '';
     // 링크·ID 에 줄바꿈이 섞이면 .ics 에 줄이 끼어들어요: 공백·제어문자 없는 http(s) 주소만, ID 는 그런 글자를 - 로
     const raw = String(item.link || '').trim(), link = /^https?:\/\/[^\s\x00-\x1f\x7f]+$/i.test(raw) ? raw : '';
     return {
-      uid: `${kind}-${String(item.id).replace(/[\s\x00-\x1f\x7f]+/g, '-')}@civil-news-hub.vercel.app`, date: item.deadline, link,
-      title: '[마감] ' + (job ? `${item.role || ''}${org ? ` (${org})` : ''}` : item.title || ''),
+      uid: `${kind}-${String(item.id).replace(/[\s\x00-\x1f\x7f]+/g, '-')}@civil-news-hub.vercel.app`, date, link,
+      title: kind === 'exam' ? '[시험·공채] ' + (item.title || '') : '[마감] ' + (job ? `${item.role || ''}${org ? ` (${org})` : ''}` : item.title || ''),
       details: [org, link, '토목 뉴스 브리핑에서 추가'].filter(Boolean).join('\n'),
     };
   }
@@ -231,7 +251,7 @@
   }
 
   const API = { loginAllowed, relTime, ddayLabel, dateLabel, scheduleItems, urgentFallback, INTEREST_GROUPS, hasInterests, freshItems, rememberSeen, readJSON, isPhone, monthGrid, shiftMonth, weekdayOf,
-    isDate, ddayOf, contestList, jobList, albaList, newsList, countBy, searchAll, savedList,
+    isDate, ddayOf, contestList, jobList, studentJob, examList, examLabel, albaList, newsList, countBy, searchAll, savedList,
     calEvent, calNextDay, calIcs, calGoogleUrl, inAppBrowser };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   else window.CNHv2 = API;

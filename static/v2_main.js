@@ -1,7 +1,7 @@
 /* ---------- v2 화면: 데이터 준비, PC/모바일 고르기, 로그인 버튼, 테마 ---------- */
 const V2 = {
   // 데이터 번들을 못 불러왔고 캐시도 없으면 getInitialData()가 null: 빈 목록으로 그려서 화면이 비지 않게
-  data: { NEWS: [], CONTESTS: [], JOBS: [], ALBA: [], ...((typeof CivilData !== 'undefined' && CivilData.getInitialData && CivilData.getInitialData()) || {}) },
+  data: { NEWS: [], CONTESTS: [], JOBS: [], ALBA: [], ...((typeof CivilData !== 'undefined' && CivilData.getInitialData && CivilData.getInitialData()) || {}), EXAMS: window.CNH_EXAMS || [] },
   today: kstToday(),
   render(){}
 };
@@ -51,7 +51,7 @@ let editingInterests = false;
 // 원문 링크: 수집 데이터에서 id로 찾고, 없으면(사라진 공고) 진행 카드에 저장된 링크
 function linkOf(id){
   const d = V2.data;
-  for (const list of [d.NEWS, d.CONTESTS, d.JOBS, d.ALBA]) { const x = (list || []).find(y => String(y.id) === id); if (x) return x.link; }
+  for (const list of [d.NEWS, d.CONTESTS, d.JOBS, d.ALBA, d.EXAMS]) { const x = (list || []).find(y => String(y.id) === id); if (x) return x.link; }
   const c = tracked.find(t => t.id === id);
   return c ? c.link : '';
 }
@@ -106,7 +106,13 @@ function homeHtml(){
     return href ? `<a class="h-row" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${t}</a>` : `<div class="h-row">${t}</div>`;
   }).join('');
   const newsSec = `<section class="h-sec"><div class="h-sec-h"><h2>오늘의 토목 뉴스</h2><a href="#news">뉴스 탭</a></div>${news || '<p class="h-empty">아직 수집된 기사가 없어요</p>'}</section>`;
-  return { head, schedSec, freshSec, newsSec };
+  return { head, schedSec, examSec: examSec(3), freshSec, newsSec };
+}
+
+// 시험·공채 일정 (static/v2_exams.js): 확정은 D-day, 발표 전은 '○월쯤'. 줄을 누르면 출처, 전체·캘린더 넣기는 #exams
+function examSec(n){
+  const rows = CNHv2.examList(V2.data.EXAMS, V2.today).slice(0, n).map(x => { const l = CNHv2.examLabel(x, V2.today); return rowHtml(x.id, l, l === 'D-DAY' ? 'hot' : '', x.title, x.type); }).join('');
+  return `<section class="h-sec"><div class="h-sec-h"><h2>시험·공채 일정</h2><a href="#exams">전체 일정</a></div>${rows || '<p class="h-empty">다가오는 일정이 없어요</p>'}</section>`;
 }
 
 // 같은 기사가 "새 소식"과 "오늘의 토목 뉴스"에 두 번 나오지 않게
@@ -187,7 +193,15 @@ function pcHomeHtml(){
     return `<li>${isWeb(n.link) ? `<a href="${esc(n.link)}" target="_blank" rel="noopener noreferrer">${inner}</a>` : `<div>${inner}</div>`}</li>`; }).join('');
   const news = `<section class="card news"><div class="side-h"><h2>오늘의 토목 뉴스</h2><a class="more" href="#news">더 보기</a></div>${newsItems ? `<ul class="news-l">${newsItems}</ul>` : '<p class="acct-hint">아직 수집된 기사가 없어요</p>'}</section>`;
 
-  return `<div class="layout"><div class="col">${head}${schedPanel}${freshPanel}</div><aside class="side" aria-label="내 정보와 뉴스">${acct}${cal}${news}</aside></div>`;
+  // 시험·공채 일정: 확정은 D-day, 발표 전은 시기 글자. 날짜 칸은 확정이면 날짜(접수 기간이면 ~끝), 예정이면 '예정'
+  const exams = CNHv2.examList(d.EXAMS, today);
+  const examTr = exams.slice(0, PC_ROWS).map(x => { const l = CNHv2.examLabel(x, today); return trRow(x.id, href =>
+    `<td><span class="dd ${ddClass(l)}">${esc(l)}</span></td><td>${esc(x.type)}</td>${titleCell(x.title, href)}<td title="${esc(x.org)}">${esc(x.org)}</td><td class="num">${!x.date ? '예정' : x.end ? `${CNHv2.dateLabel(x.date)}~${x.end.slice(5, 7) === x.date.slice(5, 7) ? x.end.slice(8) : CNHv2.dateLabel(x.end)}` : `${CNHv2.dateLabel(x.date)} (${CNHv2.weekdayOf(x.date)})`}</td>`); }).join('');
+  const examPanel = `<section class="panel"><div class="panel-h"><h2>시험·공채 일정${exams.length > PC_ROWS ? `<small>${PC_ROWS}개 / 전체 ${exams.length}개</small>` : ''}</h2><a class="more" href="#exams">전체 일정·캘린더에 넣기</a></div>${examTr
+    ? `<table class="tbl"><colgroup><col class="c-dd"><col class="c-k"><col><col class="c-org"><col class="c-date"></colgroup><thead><tr><th>남은 날</th><th>구분</th><th>제목</th><th>기관</th><th>날짜</th></tr></thead><tbody>${examTr}</tbody></table>`
+    : '<p class="empty">다가오는 일정이 없어요</p>'}</section>`;
+
+  return `<div class="layout"><div class="col">${head}${schedPanel}${examPanel}${freshPanel}</div><aside class="side" aria-label="내 정보와 뉴스">${acct}${cal}${news}</aside></div>`;
 }
 
 // 홈 그리기 (다른 탭은 static/v2_pages.js 가 그려요)
@@ -196,7 +210,7 @@ V2.renderHome = function(){
   if (CNHv2.hasInterests(interests) && !editingInterests) ensureFresh();
   document.getElementById('pc-home').innerHTML = pcHomeHtml();
   const h = homeHtml();
-  document.getElementById('m-home').innerHTML = `${h.head}${h.schedSec}${h.freshSec}${h.newsSec}`;
+  document.getElementById('m-home').innerHTML = `${h.head}${h.schedSec}${h.examSec}${h.freshSec}${h.newsSec}`;
 };
 
 document.addEventListener('click', e => {

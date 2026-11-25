@@ -359,3 +359,87 @@ test('calIcs: 줄 구분자(U+2028·U+2029·U+0085)와 탭 밖의 제어문자�
   assert.ok(s.replace(/\r\n /g, '').split('\r\n').includes('SUMMARY:[마감] A B C D E F G H I\tJ'));
   assert.ok(!/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f\x85\u2028\u2029]/.test(s));
 });
+
+/* ---------- 시험·공채 일정 카드 ---------- */
+const EX = [
+  { id: 'exam-a', title: '9급 필기', org: '인사혁신처', date: '2027-03-27', link: 'https://www.mpm.go.kr/x' },
+  { id: 'exam-b', title: '9급 원서접수', org: '인사혁신처', date: '2027-01-25', end: '2027-01-29' },
+  { id: 'exam-c', title: '토목기사 1회 필기 접수', org: '한국산업인력공단', month: '2027-01' },
+  { id: 'exam-d', title: '지난 시험', org: 'x', date: '2026-11-01' },
+  { id: 'exam-e', title: '지난달 예정', org: 'x', month: '2026-10' },
+  { id: 'exam-f', title: '이번 달 예정', org: 'x', month: '2026-11' },
+  { id: 'exam-g', title: '올해 확정', org: 'x', date: '2026-12-05' },
+];
+
+test('examList: 지난 일정은 숨기고 다가오는 것부터, 예정(달만)은 그 달 맨 앞', () => {
+  assert.deepEqual(V.examList(EX, '2026-11-26').map((x) => x.id), ['exam-f', 'exam-g', 'exam-c', 'exam-b', 'exam-a']);
+  // 접수 기간 중이면 시작일이 지나도 보여요, 끝나면 숨겨요
+  assert.ok(V.examList(EX, '2027-01-27').some((x) => x.id === 'exam-b'));
+  assert.ok(!V.examList(EX, '2027-01-30').some((x) => x.id === 'exam-b'));
+  assert.deepEqual(V.examList(null, '2026-11-26'), []);
+});
+
+test('examLabel: 확정은 D-day(기간 중이면 접수 중), 예정은 시기 글자', () => {
+  assert.equal(V.examLabel(EX[0], '2026-11-26'), 'D-121');
+  assert.equal(V.examLabel(EX[0], '2027-03-27'), 'D-DAY');
+  assert.equal(V.examLabel(EX[1], '2027-01-27'), '진행 중');
+  // 12달 안이면 달만 (지난 달은 숨기니 늘 다가오는 그 달), 더 멀면 연도까지
+  assert.equal(V.examLabel(EX[2], '2026-11-26'), '1월쯤');
+  assert.equal(V.examLabel(EX[5], '2026-11-26'), '11월쯤');
+  assert.equal(V.examLabel({ month: '2027-10' }, '2026-11-26'), '10월쯤');
+  assert.equal(V.examLabel({ month: '2027-11' }, '2026-11-26'), '2027년 11월쯤');
+  assert.equal(V.examLabel({ month: '2028-04' }, '2026-11-26'), '2028년 4월쯤');
+});
+
+test('calEvent: 시험·공채는 확정 날짜만, 예정(달만)·지난 일정은 null', () => {
+  const e = V.calEvent('exam', EX[0], '2026-11-26');
+  assert.equal(e.date, '2027-03-27');
+  assert.equal(e.title, '[시험·공채] 9급 필기');
+  assert.equal(e.uid, 'exam-exam-a@civil-news-hub.vercel.app');
+  assert.equal(e.link, 'https://www.mpm.go.kr/x');
+  assert.ok(e.details.startsWith('인사혁신처\n'));
+  assert.equal(V.calEvent('exam', EX[2], '2026-11-26'), null);
+  assert.equal(V.calEvent('exam', EX[3], '2026-11-26'), null);
+  assert.ok(V.calIcs(e, '20261126T000000Z').includes('DTSTART;VALUE=DATE:20270327'));
+});
+
+/* ---------- 채용: 신입·인턴만 ---------- */
+test('studentJob: 신입·인턴·채용형·체험형·경력무관은 남기고 경력직·기간제·일용직은 빼요', () => {
+  const ok = (role, lvl) => V.studentJob({ role, lvl });
+  assert.ok(ok('2027년 상반기 채용연계형 인턴 채용', '인턴'));
+  assert.ok(ok('[신입/경력] 토목CM본부 PQ작성 직원 채용', '신입·경력'));
+  assert.ok(ok('2027년 상반기 신입직원 채용공고', '신입'));
+  assert.ok(ok('토목 설계 직원 채용', '경력무관'));
+  assert.ok(ok('[한국수자원공사] 2026년 하반기 AI 체험형 인턴 채용 공고', '인턴'));
+  assert.ok(!ok('국내 현장 토목 경력직 채용', '경력'));
+  assert.ok(!ok('경력사원 정규직, PJT 채용', '경력'));
+  assert.ok(!ok('환경시설관리처 기간제근로자(촉탁직, 일용직) 채용 공고', '신입·경력'));
+  assert.ok(!ok('철도안전처 기간제근로자 채용공고', '인턴'));
+  assert.ok(!ok('청송현대화사업팀 특수직(기술관리_건설사업) 채용 공고', '신입·경력'));
+  assert.ok(!ok('2027년 제1차 현장 기간제사원 채용 공고', '신입·경력'));
+  assert.ok(!ok('', ''));
+});
+
+test('jobList: "신입·인턴만" 칩은 studentJob 판정으로 걸러요', () => {
+  const list = [
+    { id: 'a', role: '신입 채용', lvl: '신입', deadline: '2026-12-01' },
+    { id: 'b', role: '기간제근로자 채용', lvl: '신입·경력', deadline: '2026-12-01' },
+    { id: 'c', role: '경력직 채용', lvl: '경력', deadline: '2026-12-01' },
+    { id: 'd', role: '체험형 인턴', lvl: '인턴', deadline: '2026-11-01' },
+  ];
+  assert.deepEqual(V.jobList(list, { lvl: '신입·인턴만' }, '2026-11-26').map((x) => x.id), ['a']);
+});
+
+test('v2_exams.js: 항목마다 출처·확인한 날, 확정(date) 또는 예정(month) 중 하나, 예정은 근거', () => {
+  const EXAMS = require('../static/v2_exams.js');
+  const ids = new Set();
+  for (const x of EXAMS) {
+    assert.ok(/^exam-/.test(x.id) && !ids.has(x.id), x.id); ids.add(x.id);
+    assert.ok(/^https:\/\//.test(x.link), x.id);
+    assert.ok(V.isDate(x.checked), x.id);
+    assert.ok(['시험', '공채'].includes(x.type), x.id);
+    assert.ok(V.isDate(x.date) !== /^\d{4}-\d{2}$/.test(x.month || ''), x.id);
+    if (x.end) assert.ok(V.isDate(x.end) && x.end > x.date, x.id);
+    if (x.month) assert.ok(x.basis && x.basis.includes('예정'), x.id);
+  }
+});
