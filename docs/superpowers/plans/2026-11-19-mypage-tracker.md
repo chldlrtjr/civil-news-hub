@@ -85,7 +85,7 @@ Expected: 전부 PASS
 
 - [ ] **Step 5: 실제 데이터 추출률 측정 (보고용, 코드 변경 없음)**
 
-Run: `ssh jcloud 'cd /home/ubuntu/workspace && venv/bin/python -c "import json;import jbnu_contest_scraper as j;from datetime import date;c=json.load(open(\"data/poster_ocr_cache.json\"));print(sum(1 for v in c.values() if j.find_result_date((v.get(\"raw\") or {}).get(\"transcript\") or \"\", date.today())), \"/\", len(c))"'`
+Run: `ssh jcloud 'cd <서버 홈>/workspace && venv/bin/python -c "import json;import jbnu_contest_scraper as j;from datetime import date;c=json.load(open(\"data/poster_ocr_cache.json\"));print(sum(1 for v in c.values() if j.find_result_date((v.get(\"raw\") or {}).get(\"transcript\") or \"\", date.today())), \"/\", len(c))"'`
 Expected: `N / M` 출력. 이 숫자를 최종 보고에 넣는다. (위비티·데브이벤트는 상세 페이지를 수집하지 않아 `result_date`가 비고, 카드는 "심사 N일째" + 수동 결과 기록으로 동작한다. 범위 밖으로 보고한다.)
 
 - [ ] **Step 6: 커밋**
@@ -309,5 +309,5 @@ Expected: `200`
 
 - [ ] **Step 4: 다음 정시 수집 후 `result_date` 확인**
 
-Run: `ssh jcloud 'cd /home/ubuntu/workspace && python3 -c "import json;cs=json.load(open(\"data/contests.json\"))[\"contests\"];print(sum(1 for c in cs if c.get(\"result_date\")),\"/\",len(cs))"'`
+Run: `ssh jcloud 'cd <서버 홈>/workspace && python3 -c "import json;cs=json.load(open(\"data/contests.json\"))[\"contests\"];print(sum(1 for c in cs if c.get(\"result_date\")),\"/\",len(cs))"'`
 Expected: 숫자 출력. Task 1 Step 5 결과와 함께 사용자에게 보고한다.

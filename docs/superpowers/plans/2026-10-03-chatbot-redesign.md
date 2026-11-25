@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- 저장소: `C:\Users\최익석\Desktop\goofy-borg`. 모든 명령은 이 폴더에서 Git Bash로 실행해요.
+- 저장소: `<로컬 저장소 폴더>`. 모든 명령은 이 폴더에서 Git Bash로 실행해요.
 - `main`에는 **커밋되지 않은 다른 작업**이 있어요(`index.html`, `static/index.html`, `app.js`, `mobile.html`, `scraper.py` 등). 커밋할 때는 **이 계획이 만든 파일만** `git add <경로>`로 올려요. `git add -A`나 `git add .`는 절대 쓰지 않아요.
 - `index.html`과 `static/index.html`은 다른 사람이 지금 편집 중이에요. Task 4 전까지는 **열지도 고치지도 않아요.** Task 4에서도 `<script>` 두 줄만 추가하고 **커밋하지 않아요**(그 파일의 나머지 변경이 같이 커밋되기 때문이에요).
 - `NOTION_PORTFOLIO_GUIDE.md`는 건드리지 않아요(`auto_sync_watcher.py`가 바뀌면 자동으로 커밋하고 `main`에 푸시해요).
@@ -44,7 +44,7 @@
 커밋되지 않은 변경은 작업 폴더에 그대로 남아요(커밋하지 않아요).
 
 ```bash
-cd "/c/Users/최익석/Desktop/goofy-borg"
+cd "<로컬 저장소 폴더>"
 git switch -c feature/chatbot-redesign
 git status --short
 ```

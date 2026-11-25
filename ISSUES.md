@@ -48,11 +48,11 @@
 - **관련 파일/모듈**: Nginx, Cloudflare Tunnel (`civil-tunnel.service`), 네트워크 환경
 - **상태**: 🟢 원인 규명 및 해결 방안 수립 완료 (Resolved)
 - **증상 및 문제 (Problem)**:
-  - 서버 IP(`113.198.66.75:80`)로 외부(스마트폰 LTE, 외부 PC)에서 다이렉트 접속 시 `Connection Refused (접속 거절)` 오류 발생.
+  - 서버 IP(`<서버 공인 IP>:80`)로 외부(스마트폰 LTE, 외부 PC)에서 다이렉트 접속 시 `Connection Refused (접속 거절)` 오류 발생.
   - 외부 중계 도구 없이 자체적으로 웹사이트를 외부로 띄울 수 있는지 검증 필요.
 - **원인 분석 (Root Cause)**:
-  - 서버의 공인 IP(`113.198.66.75`)가 전북대학교 학내 전산망(AS7560 Jeonbuk National University) 소속임.
-  - 서버 내부(`10.0.0.131`)에서는 Nginx가 200 OK로 정상 응답하나, 학교 정보전산원 상위 보안 방화벽에서 외부에서 학교 안으로 들어오는 인바운드 웹 포트(80, 443)를 원천 차단하고 있음.
+  - 서버의 공인 IP(`<서버 공인 IP>`)가 전북대학교 학내 전산망(AS7560 Jeonbuk National University) 소속임.
+  - 서버 내부(`<서버 내부 IP>`)에서는 Nginx가 200 OK로 정상 응답하나, 학교 정보전산원 상위 보안 방화벽에서 외부에서 학교 안으로 들어오는 인바운드 웹 포트(80, 443)를 원천 차단하고 있음.
   - 과거에 Cloudflare Tunnel을 사용했던 이유가 바로 이 학교 인바운드 방화벽을 아웃바운드 터널로 우회하기 위함이었음.
 - **해결 방법 및 조치 (Resolution)**:
   - 1안(고정 도메인 + Cloudflare 고정 터널): 임시 URL이 아닌 나만의 공식 도메인을 고정 터널에 연결하여 영구 주소화.
@@ -155,7 +155,7 @@
 
 ### [ISSUE-007] 루트 디스크 10GB 용량 고갈(Disk Full) 위기 극복 및 10GB 보조 디스크(`/dev/vdb`) 영구 마운트 확장
 - **발생 일시**: 2026-09-11 ~ 2026-09-16
-- **관련 파일/모듈**: `/dev/vda4`, `/dev/vdb`, `/etc/fstab`, `/home/ubuntu/data`, `/var/log`
+- **관련 파일/모듈**: `/dev/vda4`, `/dev/vdb`, `/etc/fstab`, `<서버 홈>/data`, `/var/log`
 - **상태**: 🟢 해결 완료 (Resolved)
 - **증상 및 문제 (Problem)**:
   - 루트 파티션(`/dev/vda4`, 총 8.7GB)의 디스크 사용률이 95% 이상 치솟으며 `No space left on device (디스크 공간 부족)` 에러 직면.
@@ -175,15 +175,15 @@
      - 미사용 보조 디스크 블록 장치인 `/dev/vdb`(10GB) 식별.
      - ext4 파일 시스템으로 포맷 수행: `sudo mkfs.ext4 -F /dev/vdb`
      - 데이터 전용 디렉토리 생성 및 마운트: `mkdir -p ~/data && sudo mount /dev/vdb ~/data`
-     - 권한 설정: `sudo chown -R ubuntu:ubuntu ~/data`
+     - 권한 설정: `sudo chown -R <계정>:<계정> ~/data`
      - 재부팅 시에도 영구 자동 마운트되도록 `/etc/fstab`에 등록:  
-       `/dev/vdb /home/ubuntu/data ext4 defaults 0 2`
+       `/dev/vdb <서버 홈>/data ext4 defaults 0 2`
 - **결과 및 효과 (Results)**:
   - 루트 파티션 가용 용량 확보(현재 여유 1.4GB 확보) 및 안정화.
-  - 데이터 저장 전용 10GB 신규 스토리지(`/home/ubuntu/data`) 확보로 **서버 전체 저장 용량을 기존 10GB에서 20GB로 2배 확장**.
+  - 데이터 저장 전용 10GB 신규 스토리지(`<서버 홈>/data`) 확보로 **서버 전체 저장 용량을 기존 10GB에서 20GB로 2배 확장**.
 - **재발 방지 대책 (Prevention)**:
   - 주기적인 `df -h` 모니터링.
-  - 대용량 데이터나 로그 보관 시 `/home/ubuntu/data` 전용 볼륨을 우선 활용하도록 분리.
+  - 대용량 데이터나 로그 보관 시 `<서버 홈>/data` 전용 볼륨을 우선 활용하도록 분리.
 
 ---
 

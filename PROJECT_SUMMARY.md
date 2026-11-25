@@ -24,13 +24,13 @@
 
 | :--- | :--- | :--- |
 
-| **운영 및 개발 원칙** | [`GEMINI.md`](file:///home/ubuntu/workspace/GEMINI.md) | 팩트 기반 공모전 수집 규칙, 카테고리 탭 고정 규격, 모바일 무경계 원칙, 북마크 표준 |
+| **운영 및 개발 원칙** | [`GEMINI.md`](GEMINI.md) | 팩트 기반 공모전 수집 규칙, 카테고리 탭 고정 규격, 모바일 무경계 원칙, 북마크 표준 |
 
-| **프로젝트 종합 현황** | [`PROJECT_SUMMARY.md`](file:///home/ubuntu/workspace/PROJECT_SUMMARY.md) | 지금까지 구현된 전체 기능, 상세 논의 내역, 브랜치 작업, 향후 로드맵 |
+| **프로젝트 종합 현황** | [`PROJECT_SUMMARY.md`](PROJECT_SUMMARY.md) | 지금까지 구현된 전체 기능, 상세 논의 내역, 브랜치 작업, 향후 로드맵 |
 
-| **이슈 및 문제 해결 기록** | [`ISSUES.md`](file:///home/ubuntu/workspace/ISSUES.md) | 발생 문제, 원인 분석, 조치 결과 및 재발 방지 대책 공식 기록 |
+| **이슈 및 문제 해결 기록** | [`ISSUES.md`](ISSUES.md) | 발생 문제, 원인 분석, 조치 결과 및 재발 방지 대책 공식 기록 |
 
-| **취업 대비 포트폴리오 가이드** | [`NOTION_PORTFOLIO_GUIDE.md`](file:///home/ubuntu/workspace/NOTION_PORTFOLIO_GUIDE.md) | 10대 기술 스택, 6대 핵심 기능 및 STAR 문제 해결 사례 총망라 |
+| **취업 대비 포트폴리오 가이드** | [`NOTION_PORTFOLIO_GUIDE.md`](NOTION_PORTFOLIO_GUIDE.md) | 10대 기술 스택, 6대 핵심 기능 및 STAR 문제 해결 사례 총망라 |
 
 
 
@@ -166,7 +166,7 @@ mindmap
 
   - **카드 그리드**: 모바일 1열, 태블릿 및 데스크탑 2열(`grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6`)로 전면 통일.
 
-  - [`GEMINI.md`](file:///C:/Users/최익석/Desktop/goofy-borg/GEMINI.md)에 불변 원칙(규칙 ⑥)으로 영구 등록.
+  - [`GEMINI.md`](GEMINI.md)에 불변 원칙(규칙 ⑥)으로 영구 등록.
 
 
 
@@ -348,7 +348,7 @@ mindmap
 
   4. **마이너/메이저 버전 고정**: 마이너(`0.1.0`) 및 메이저(`1.0.0`) 버전은 사용자의 직접 지시가 있을 때만 증가.
 
-  5. **규칙 문서화**: [`GEMINI.md`](file:///C:/Users/최익석/Desktop/goofy-borg/GEMINI.md) 제4조 및 본 문서에 영구 원칙으로 기록.
+  5. **규칙 문서화**: [`GEMINI.md`](GEMINI.md) 제4조 및 본 문서에 영구 원칙으로 기록.
 
 
 
@@ -562,17 +562,17 @@ mindmap
 
   - JCloud OpenStack 대시보드에서 보안 그룹 생성 시도 시 정책 제한 오류(`NeutronError: rule:create_security_group is disallowed by policy`) 발생.
 
-  - 외부 브라우저 접속 시 SSH 포트(`19131` / 내부 7777)로 잘못 접근하여 OpenSSH 데몬의 `banner exchange: invalid format` 거절 및 브라우저 연결 오류 발생.
+  - 외부 브라우저 접속 시 SSH 포트(`<SSH 외부 포트>` / 내부 <SSH 포트>)로 잘못 접근하여 OpenSSH 데몬의 `banner exchange: invalid format` 거절 및 브라우저 연결 오류 발생.
 
 - **해결 및 규격 동기화 내역**:
 
   1. **JCloud 1:1 NAT 포트포워딩 매핑 규격 정밀 반영 (`Project1.pdf` 가이드 준수)**:
 
-     - 학생 계정은 별도 보안 그룹 생성/수정이 불필요하며, 공용 IP(`113.198.66.75`)와 내부 IP(`10.0.0.131`, `xxx=131`) 간에 이미 사전 포트포워딩이 활성화되어 있음을 규명.
+     - 학생 계정은 별도 보안 그룹 생성/수정이 불필요하며, 공용 IP(`<서버 공인 IP>`)와 내부 IP(`<서버 내부 IP>`, `xxx=<번호>`) 간에 이미 사전 포트포워딩이 활성화되어 있음을 규명.
 
-     - 웹 브라우저 접속 주소: **`http://113.198.66.75:18131`** (내부 HTTP 80번 연동) 및 **`http://113.198.66.75:10131`** (내부 8080번 연동).
+     - 웹 브라우저 접속 주소: **`http://<서버 공인 IP>:<웹 외부 포트 1>`** (내부 HTTP 80번 연동) 및 **`http://<서버 공인 IP>:<웹 외부 포트 2>`** (내부 8080번 연동).
 
-     - SSH 접속 주소: **`113.198.66.75:19131`** (내부 7777번 연동).
+     - SSH 접속 주소: **`<서버 공인 IP>:<SSH 외부 포트>`** (내부 <SSH 포트>번 연동).
 
   2. **VS Code 포트포워딩(SSH 터널링) 최적 접속 대안 구축**:
 
@@ -806,17 +806,17 @@ mindmap
 
 - **구현 및 자동화 내역**:
 
-  1. **종합 기술 포트폴리오 문서화 ([`NOTION_PORTFOLIO_GUIDE.md`](file:///home/ubuntu/workspace/NOTION_PORTFOLIO_GUIDE.md))**:
+  1. **종합 기술 포트폴리오 문서화 ([`NOTION_PORTFOLIO_GUIDE.md`](NOTION_PORTFOLIO_GUIDE.md))**:
 
      - 1인 개발 역할 및 기여도 100%, Mermaid 아키텍처 다이어그램, 10대 기술 스택 선정 이유, 6대 핵심 기능, 6대 핵심 문제 해결 사례(STAR) 총망라.
 
-  2. **Notion 공식 API 자동 변환 스크립트 ([`sync_to_notion.py`](file:///home/ubuntu/workspace/sync_to_notion.py)) 개발**:
+  2. **Notion 공식 API 자동 변환 스크립트 ([`sync_to_notion.py`](sync_to_notion.py)) 개발**:
 
      - 마크다운의 헤딩, 콜아웃, 코드 블록, 인라인 서식(볼드, 링크, 인라인 코드) 및 2개 대형 데이터 표(Table)를 노션 API 규격 블록으로 100% 무손실 자동 파싱 (총 123개 블록).
 
      - Notion API의 1회 전송 100개 블록 제한을 안전하게 분할 전송(청크 크기 40개)하여 안정적인 무오류 업로드 구현.
 
-  3. **GitHub Actions 자동 동기화 워크플로우 ([`.github/workflows/sync_notion.yml`](file:///home/ubuntu/workspace/.github/workflows/sync_notion.yml)) 구축**:
+  3. **GitHub Actions 자동 동기화 워크플로우 ([`.github/workflows/sync_notion.yml`](.github/workflows/sync_notion.yml)) 구축**:
 
      - GitHub Secrets(`NOTION_TOKEN`) 연동을 통해, 포트폴리오 문서 수정 후 `git push` 시 또는 웹에서 'Run workflow' 클릭 한 번으로 사용자의 노션 페이지에 최신 포트폴리오가 100% 전자동으로 배포되도록 구성.
 
@@ -856,7 +856,7 @@ mindmap
 
 - **배경 및 요구사항**:
 
-  - 기존 '폰으로 보기' 모달은 공유기 내부 사설 IP(`http://192.168.25.58:8000/#news`)를 하드코딩하여, 동일 Wi-Fi가 아닌 LTE/5G 환경에서는 스마트폰 접속이 불가능하고 주소가 불일치하는 문제가 존재함.
+  - 기존 '폰으로 보기' 모달은 공유기 내부 사설 IP(`http://<공유기 내부 IP>:8000/#news`)를 하드코딩하여, 동일 Wi-Fi가 아닌 LTE/5G 환경에서는 스마트폰 접속이 불가능하고 주소가 불일치하는 문제가 존재함.
 
   - 사용자가 현재 스마트폰에서 실제로 사용하는 실시간 라이브 URL(`https://diverse-tattoo-exterior-reporting.trycloudflare.com/#news`)로 '폰으로 보기' 모달의 QR 코드와 복사 주소를 최신화하도록 요청.
 
@@ -938,7 +938,7 @@ mindmap
 
     - 데이터 fetch 시점뿐만 아니라 탭 렌더링(`renderCategoryTabs()`, `renderJobCategoryTabs()`, `renderContestCategoryTabs()`) 및 카운트 갱신 시점마다 실시간 데이터와 DOM의 카테고리 일치 여부를 즉시 교차 검증하여, 새 카테고리 감지 시 즉각 탭을 동적 생성하도록 이중 방어선 구축.
 
-  - **3) 프로젝트 개발 규칙 명문화 ([`GEMINI.md`](file:///home/ubuntu/workspace/GEMINI.md) 1-⑥ 절대 원칙 제정)**:
+  - **3) 프로젝트 개발 규칙 명문화 ([`GEMINI.md`](GEMINI.md) 1-⑥ 절대 원칙 제정)**:
 
     - "신규 카테고리 자동 감지 및 전체 건수 합산 일치 절대 원칙 (Dynamic Category Auto-sync)"을 영구 운영 원칙으로 등록하여, 향후 어떠한 개발 및 수정에서도 카테고리 하드코딩이나 합산 불일치가 발생하지 않도록 제도화 완료.
 
@@ -982,7 +982,7 @@ mindmap
 
     - 15개 기업(한국도로공사, 한국수자원공사, 국가철도공단, 한국토지주택공사, 한국철도공사, 현대건설, 대우건설, DL이앤씨, GS건설, 도화엔지니어링, 유신, 한국종합기술, 삼안, 국토안전관리원, 한국건설기술연구원) 공식 채용관 및 채용공고 게시판 딥링크로 전면 교체하여 100% HTTP 200 연결 검증 완료.
 
-  - **2) 마감 공고 즉시 내림(게시 제외) 원칙 준수 ([`GEMINI.md`](file:///home/ubuntu/workspace/GEMINI.md) 1-⑤)**:
+  - **2) 마감 공고 즉시 내림(게시 제외) 원칙 준수 ([`GEMINI.md`](GEMINI.md) 1-⑤)**:
 
     - 2026.09.11 18:00에 접수가 종료된 `포스코이앤씨` 공고를 피드 목록에서 즉시 완전 내림(제외) 처리.
 
@@ -992,7 +992,7 @@ mindmap
 
     - `YYYY.MM.DD ~ MM.DD (HH:MM 마감)` 형식의 마감 시간을 수집기 및 프론트엔드 `calculateDday()` 양쪽에서 분 단위까지 정밀 파싱하여, 당일 마감 시간이 경과하는 순간 즉시 `접수마감`으로 처리되어 목록에서 자동 제외되도록 기능 고도화.
 
-  - **4) 카테고리 합산 건수 100% 일치 보장 ([`GEMINI.md`](file:///home/ubuntu/workspace/GEMINI.md) 1-⑥)**:
+  - **4) 카테고리 합산 건수 100% 일치 보장 ([`GEMINI.md`](GEMINI.md) 1-⑥)**:
 
     - [전체] 15건 = [공기업·공공기관 5건] + [대형 건설사 4건] + [설계·엔지니어링 4건] + [전문기술·안전·연구 2건]으로 1건의 오차도 없이 100% 일치.
 
@@ -1010,7 +1010,7 @@ mindmap
 
 - **적용 상세 내역**:
 
-  - **1) 공고문 원본 자동 다운로더 & 파서 모듈 개발 ([`job_notice_parser.py`](file:///home/ubuntu/workspace/job_notice_parser.py))**:
+  - **1) 공고문 원본 자동 다운로더 & 파서 모듈 개발 ([`job_notice_parser.py`](job_notice_parser.py))**:
 
     - 디스크 임시 파일 없이 메모리 버퍼(`io.BytesIO`) 상에서 PDF를 안전하게 직접 스트리밍 수신 후 `pypdf`로 텍스트 및 테이블 구조를 파싱하는 고속 엔진 개발.
 
@@ -1062,7 +1062,7 @@ mindmap
 
     - [한국건설기술연구원 KICT] + [국토연구원 KRIHS] 2건 모두 실제 다운로드된 원본 공고문(PDF)에 기반한 오차 0%의 무결점 팩트 데이터로 완전 정착.
 
-  - **4) 전체 건수 및 카테고리 합산 100% 일치 ([`GEMINI.md`](file:///home/ubuntu/workspace/GEMINI.md) 1-⑥)**:
+  - **4) 전체 건수 및 카테고리 합산 100% 일치 ([`GEMINI.md`](GEMINI.md) 1-⑥)**:
 
     - [전체] 15건 = [공기업 5건] + [대형건설 4건] + [엔지니어링 4건] + [연구원 2건] (1건의 오차도 없이 100% 일치).
 
@@ -1192,13 +1192,13 @@ mindmap
 
 - **적용 및 고도화 상세 내역**:
 
-  - **1) 공모전 공식 요강 원본 실사 & 파싱 엔진 개발 ([`contest_notice_parser.py`](file:///home/ubuntu/workspace/contest_notice_parser.py))**:
+  - **1) 공모전 공식 요강 원본 실사 & 파싱 엔진 개발 ([`contest_notice_parser.py`](contest_notice_parser.py))**:
 
     - 주최기관(한국도로공사, 국토교통부, 한국수자원공사, 안전보건공단, 국가철도공단, 한국철도공사, SK에코플랜트, 삼성물산/E&A 등) 공식 웹사이트 및 요강 원본(PDF/HTML)을 직접 크롤링/파싱하는 전용 엔진 신설.
 
     - 시·분 단위 마감 시간(`HH:MM`), 총 상금 및 훈격별 상세 내역(`prize_details`), 주요 특전/혜택(`benefits`: 채용 가산점, 랩 입주, PoC 실증비 등), 공모 세부 분야 태그(`fields`), 참가 자격 요건(`target_details`), 제출 서류/규격(`submission_info`), 심사 절차(`evaluation_steps`), 운영사무국 연락처(`contact`) 등 10개 이상의 초정밀 팩트 데이터 추출 성공.
 
-  - **2) 토목 공모전 전담 수집 파이프라인 구축 ([`contest_scraper.py`](file:///home/ubuntu/workspace/contest_scraper.py))**:
+  - **2) 토목 공모전 전담 수집 파이프라인 구축 ([`contest_scraper.py`](contest_scraper.py))**:
 
     - 채용 공고 전담기(`job_scraper.py`)와 동등한 독립 파이프라인으로 전면 분리.
 
@@ -1208,11 +1208,11 @@ mindmap
 
       - [ALL 전체 10건] = [스마트·기술 3건] + [도로·디자인 1건] + [수자원·환경 2건] + [지반·안전 2건] + [철도·인프라 2건] (오차 0건, 100% 일치).
 
-  - **3) 자동화 워크플로우 통합 ([`scraper.py`](file:///home/ubuntu/workspace/scraper.py), [`cron_scrape.sh`](file:///home/ubuntu/workspace/cron_scrape.sh), [`.github/workflows/daily_crawl.yml`](file:///home/ubuntu/workspace/.github/workflows/daily_crawl.yml))**:
+  - **3) 자동화 워크플로우 통합 ([`scraper.py`](scraper.py), [`cron_scrape.sh`](cron_scrape.sh), [`.github/workflows/daily_crawl.yml`](.github/workflows/daily_crawl.yml))**:
 
     - 매일 07:00 KST cron 스크립트 및 GitHub Actions에 `contest_scraper.py`를 독립 단계로 편성하고, `scraper.py`와 Flask 백엔드(`app.py`)에서도 위임 호출되도록 이중 연동.
 
-  - **4) 프론트엔드 공모전 카드 & 상세 모달 UI 최고급 고도화 ([`static/contests.js`](file:///home/ubuntu/workspace/static/contests.js), [`index.html`](file:///home/ubuntu/workspace/index.html))**:
+  - **4) 프론트엔드 공모전 카드 & 상세 모달 UI 최고급 고도화 ([`static/contests.js`](static/contests.js), [`index.html`](index.html))**:
 
     - **공모전 카드**: 세부 공모 분야 칩(`#지하고속도로`, `#BIM` 등) 및 핵심 특전 뱃지(`🎁 채용가산점`, `🚀 현장 PoC 실증 지원` 등) 노출.
 
@@ -1284,7 +1284,7 @@ mindmap
 
 - **4중 방어 무결성 검증 체계(Zero-Tolerance Multi-Layer Integrity Shield) 구축**:
 
-  - **1) 백엔드 전담 무결성 검증 엔진 신설 ([`contest_validator.py`](file:///home/ubuntu/workspace/contest_validator.py))**:
+  - **1) 백엔드 전담 무결성 검증 엔진 신설 ([`contest_validator.py`](contest_validator.py))**:
 
     - **실시간 마감 검증**: `deadline_date` 및 `deadline_time`(시·분 단위)을 파싱하여 현재 KST 시각보다 1초라도 이전이면 무조건 `DEADLINE_EXPIRED`로 차단(DROP).
 
@@ -1294,25 +1294,25 @@ mindmap
 
     - **상태 및 플래그 검사**: `is_active: False` 또는 `status: 접수마감` 항목 즉시 배제.
 
-  - **2) 수집기 파이프라인 연동 ([`contest_scraper.py`](file:///home/ubuntu/workspace/contest_scraper.py), [`contest_notice_parser.py`](file:///home/ubuntu/workspace/contest_notice_parser.py))**:
+  - **2) 수집기 파이프라인 연동 ([`contest_scraper.py`](contest_scraper.py), [`contest_notice_parser.py`](contest_notice_parser.py))**:
 
     - 요강 파서가 공모전을 반환할 때마다 `contest_validator.validate_contest()`를 필수 통과하도록 하드 게이트 적용.
 
     - 수집 완료 후 최종 JSON 저장 직전 `filter_and_validate_contests()`로 전수 재검증을 수행하여 비인가 공모전 침투 0건 보장.
 
-  - **3) 프론트엔드 브라우저 런타임 삼중 방어선 ([`static/contests.js`](file:///home/ubuntu/workspace/static/contests.js))**:
+  - **3) 프론트엔드 브라우저 런타임 삼중 방어선 ([`static/contests.js`](static/contests.js))**:
 
     - 클라이언트 브라우저에서 `loadContestsData()` 수행 시, `isContestBanned()` 및 정밀 `parseDdayFromPeriod(c.period, c.status, c.deadline_date, c.deadline_time)`를 실시간 실행.
 
     - 서버 캐시나 레거시 JSON이 브라우저에 남아 있더라도 렌더링 직전 메모리 배열에서 즉각 영구 필터링 제거하여 0.001초도 화면에 노출되지 않도록 이중 안전망 구축.
 
-  - **4) 자동화 무결성 테스트 스크립트 작성 및 Cron 파이프라인 연동 ([`test_contests_integrity.py`](file:///home/ubuntu/workspace/test_contests_integrity.py), [`cron_scrape.sh`](file:///home/ubuntu/workspace/cron_scrape.sh))**:
+  - **4) 자동화 무결성 테스트 스크립트 작성 및 Cron 파이프라인 연동 ([`test_contests_integrity.py`](test_contests_integrity.py), [`cron_scrape.sh`](cron_scrape.sh))**:
 
     - 전체 공모전 목록을 전수 검사하여 마감/과거/블랙리스트 위반이 단 1건이라도 발견되거나, 전체 건수와 카테고리 합산이 불일치하면 `exit 1`로 자동화 크롤링을 즉시 중단시키는 독립 테스트 러너 구축.
 
     - 매일 07:00 KST 실행되는 `cron_scrape.sh`의 4단계(`[4/4] test_contests_integrity.py`)로 공식 편성.
 
-  - **5) 운영 규칙 헌법화 ([`GEMINI.md`](file:///home/ubuntu/workspace/GEMINI.md) Rule 1-⑦ 신설)**:
+  - **5) 운영 규칙 헌법화 ([`GEMINI.md`](GEMINI.md) Rule 1-⑦ 신설)**:
 
     - Rule 1-① 영구 배제 목록에 5대 과거/마감 공모전을 공식 명문화하고, Rule 1-⑦ '마감 및 과거 공모전 재발 방지 다중 방어 시스템 의무화 원칙'을 불변 규칙으로 영구 제정.
 
@@ -1538,7 +1538,7 @@ mindmap
 
 - **적용 및 자동화 상세 내역**:
 
-  - **1) cron 파이프라인 5단계 GitHub 자동 배포 확장 ([`cron_scrape.sh`](file:///home/ubuntu/workspace/cron_scrape.sh))**:
+  - **1) cron 파이프라인 5단계 GitHub 자동 배포 확장 ([`cron_scrape.sh`](cron_scrape.sh))**:
 
     - 기존 4단계(뉴스 &rarr; 공모전 &rarr; 채용 &rarr; 무결성 검증)에서 `[5/5] GitHub 자동 배포` 단계를 신설.
 
@@ -1632,7 +1632,7 @@ mindmap
 
 - **적용 및 고도화 상세 내역**:
 
-  - **1) 형태소/어근 겹침 방지 및 도메인 균형 선별 엔진 탑재 ([`scraper.py`](file:///home/ubuntu/workspace/scraper.py))**:
+  - **1) 형태소/어근 겹침 방지 및 도메인 균형 선별 엔진 탑재 ([`scraper.py`](scraper.py))**:
 
     - `is_overlapping()` 함수를 신설하여 단순 문자열 포함뿐 아니라 2글자 이상 핵심 어근(철도, 도로, 항만, 안전 등)이 겹치는 후순위 후보는 자동으로 필터링 배제.
 
@@ -1640,7 +1640,7 @@ mindmap
 
     - `data/news.json`에 비중복 정밀 키워드 10종(`고속도로`, `항만공사`, `국토부`, `철도망`, `AI`, `수자원공사`, `지천댐`, `싱크홀`, `GTX`, `하천정비`) 엄선 반영.
 
-  - **2) 프론트엔드 키워드 로드 시 Set 기반 완전 중복 방어선 구축 ([`static/app.js`](file:///home/ubuntu/workspace/static/app.js), [`app.js`](file:///home/ubuntu/workspace/app.js))**:
+  - **2) 프론트엔드 키워드 로드 시 Set 기반 완전 중복 방어선 구축 ([`static/app.js`](static/app.js), [`app.js`](app.js))**:
 
     - `news.json` 수신 시 `Array.from(new Set(...))`를 강제하여 어떤 상황에서도 브라우저 화면에 동일 키워드 버튼이 2개 이상 생성되지 않도록 2차 방어선 구축.
 
@@ -1656,7 +1656,7 @@ mindmap
 
     - 영문 약어(`AI`, `GTX`, `BIM`, `LH`)는 단어 경계(`\b`) 및 정식 명칭 매핑으로 오탐 완벽 방지.
 
-  - **5) 키워드 칩 바 글자 겹침 및 세로 꺾임 방지 스타일 규격화 ([`index.html`](file:///home/ubuntu/workspace/index.html), [`static/style.css`](file:///home/ubuntu/workspace/static/style.css))**:
+  - **5) 키워드 칩 바 글자 겹침 및 세로 꺾임 방지 스타일 규격화 ([`index.html`](index.html), [`static/style.css`](static/style.css))**:
 
     - `#newsKeywordChips`에 `min-w-max flex-nowrap whitespace-nowrap` 클래스 및 CSS 강제 적용.
 
@@ -1690,7 +1690,7 @@ mindmap
 
 - **적용 및 고도화 상세 내역**:
 
-  - **1) 8대 전문 도메인당 무조건 1개만 선정 (1-Keyword-Per-Domain 절대 원칙) ([`scraper.py`](file:///home/ubuntu/workspace/scraper.py))**:
+  - **1) 8대 전문 도메인당 무조건 1개만 선정 (1-Keyword-Per-Domain 절대 원칙) ([`scraper.py`](scraper.py))**:
 
     - `used_groups`를 활용하여 8대 세부 전문 도메인(도로, 항만/해양, 정책/부처, 철도, 스마트기술, 수자원, 지반/안전, 특수공법)에서 **각각 가장 점수가 높은 1개 대표 키워드만 엄선**.
 
@@ -1706,11 +1706,11 @@ mindmap
 
       `['고속도로', '항만공사', '국토부', '철도망', 'AI', '지천댐', '싱크홀', '신기술']`
 
-  - **2) 프론트엔드 렌더링 시점 `seenChips` 중복 원천 차단 ([`static/app.js`](file:///home/ubuntu/workspace/static/app.js), [`app.js`](file:///home/ubuntu/workspace/app.js))**:
+  - **2) 프론트엔드 렌더링 시점 `seenChips` 중복 원천 차단 ([`static/app.js`](static/app.js), [`app.js`](app.js))**:
 
     - `renderNewsKeywordChips()` 내부에서 `seenChips = new Set()`을 가동하여 어떤 데이터가 유입되더라도 동일한 키워드 뱃지가 화면에 2개 이상 렌더링되지 않도록 보장.
 
-  - **3) 백엔드 /api/news no-cache 헤더 및 API 호출 타임스탬프 버스터 탑재 ([`app.py`](file:///home/ubuntu/workspace/app.py))**:
+  - **3) 백엔드 /api/news no-cache 헤더 및 API 호출 타임스탬프 버스터 탑재 ([`app.py`](app.py))**:
 
     - Flask `/api/news` 응답에 `Cache-Control: no-cache, no-store, must-revalidate` 강제 주입.
 
@@ -1756,7 +1756,7 @@ mindmap
 
   - **구현 내용**:
 
-    - **1) 전북대 공식 아르바이트 수집 크롤러 엔진 구축 ([`jbnu_scraper.py`](file:///home/ubuntu/workspace/jbnu_scraper.py))**:
+    - **1) 전북대 공식 아르바이트 수집 크롤러 엔진 구축 ([`jbnu_scraper.py`](jbnu_scraper.py))**:
 
       - 전북대학교 공식 광장 아르바이트 게시판(`https://www.jbnu.ac.kr/web/unvrslife/square/sub02/1.do`)에서 실시간 32건 구인 공고 수집 및 정제.
 
@@ -1766,7 +1766,7 @@ mindmap
 
       - 시급 및 근무 시간(요일/시간대) 곱연산을 통해 한 달 예상 수입(예: `약 624,000원 / 월`, `단기 총 1,620,000원`)을 각 카드에 자동 계산 및 시각화.
 
-    - **3) 핀터레스트 스타일 매소너리 카드 그리드 레이아웃 ([`static/jbnu_alba.js`](file:///home/ubuntu/workspace/static/jbnu_alba.js))**:
+    - **3) 핀터레스트 스타일 매소너리 카드 그리드 레이아웃 ([`static/jbnu_alba.js`](static/jbnu_alba.js))**:
 
       - 모바일 1열, 태블릿 2열, 데스크탑 3열(`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6`) 반응형 컬럼.
 
@@ -1820,7 +1820,7 @@ mindmap
 
   - **해결 및 전면 개편 내역**:
 
-    - **1) 공고 팩트 기반 급여 및 근무 형태 4대 정밀 분석 엔진 탑재 ([`jbnu_scraper.py`](file:///home/ubuntu/workspace/jbnu_scraper.py))**:
+    - **1) 공고 팩트 기반 급여 및 근무 형태 4대 정밀 분석 엔진 탑재 ([`jbnu_scraper.py`](jbnu_scraper.py))**:
 
       - `parse_wage_and_work_condition`: 상호명, 공고 제목, 원본 급여 텍스트, 근무 시간을 교차 분석하여 4대 유형(`daily`, `hourly`, `monthly`, `negotiable`)으로 100% 정밀 분류.
 
@@ -1832,7 +1832,7 @@ mindmap
 
       - **급여 협의 (`negotiable`)**: `면접 후 협의`, `경력별 차등지급`, `수습 후 책정` 등 정직한 안내.
 
-    - **2) 카드 UI 하이라이트 정상화 ([`static/jbnu_alba.js`](file:///home/ubuntu/workspace/static/jbnu_alba.js), [`jbnu_alba.js`](file:///home/ubuntu/workspace/jbnu_alba.js))**:
+    - **2) 카드 UI 하이라이트 정상화 ([`static/jbnu_alba.js`](static/jbnu_alba.js), [`jbnu_alba.js`](jbnu_alba.js))**:
 
       - 가상의 월급 계산 박스를 배제하고, 공고 특성에 맞춘 `[⚡ 경기 당일 단기 스태프]`, `[⚡ 단기 집중 (야간)]`, `[⏱️ 시급제 알바]`, `[💼 전임·월급제]`, `[🤝 급여 협의]` 맞춤형 하이라이트 박스로 전환.
 
@@ -1842,7 +1842,7 @@ mindmap
 
       - 모달 상단 뱃지 동적 주입 (`#modalAlbaBadge`) 및 급여/근무조건 안내 개편.
 
-      - [`cron_scrape.sh`](file:///home/ubuntu/workspace/cron_scrape.sh)에 `jbnu_scraper.py` 및 `data/jbnu_albas.json` 자동 수집 및 GitHub 배포 단계 편입.
+      - [`cron_scrape.sh`](cron_scrape.sh)에 `jbnu_scraper.py` 및 `data/jbnu_albas.json` 자동 수집 및 GitHub 배포 단계 편입.
 
     - **4) 서비스 워커 및 캐시 버스팅 일괄 갱신**:
 
@@ -1856,7 +1856,7 @@ mindmap
 
   - **조치 내역**:
 
-    - **1) '상세보기' 버튼 전면 제거 및 카드 다이렉트 링크화 ([`jbnu_alba.js`](file:///home/ubuntu/workspace/jbnu_alba.js), [`static/jbnu_alba.js`](file:///home/ubuntu/workspace/static/jbnu_alba.js))**:
+    - **1) '상세보기' 버튼 전면 제거 및 카드 다이렉트 링크화 ([`jbnu_alba.js`](jbnu_alba.js), [`static/jbnu_alba.js`](static/jbnu_alba.js))**:
 
       - 기존 카드 하단 우측의 둔탁한 `[상세보기 >]` 버튼을 삭제하고, 깔끔한 `[바로가기 ↗]` 링크 인디케이터로 정비.
 
@@ -1878,7 +1878,7 @@ mindmap
 
   - **조치 내역**:
 
-    - **1) '바로가기' 텍스트/링크 버튼 전면 삭제 ([`jbnu_alba.js`](file:///home/ubuntu/workspace/jbnu_alba.js), [`static/jbnu_alba.js`](file:///home/ubuntu/workspace/static/jbnu_alba.js))**:
+    - **1) '바로가기' 텍스트/링크 버튼 전면 삭제 ([`jbnu_alba.js`](jbnu_alba.js), [`static/jbnu_alba.js`](static/jbnu_alba.js))**:
 
       - 푸터 우측에 노출되던 `[바로가기 ↗]` 버튼/링크를 완전히 제거.
 
@@ -1898,11 +1898,11 @@ mindmap
 
   - **조치 내역**:
 
-    - **1) 크롤러 엔진 캘린더 스케줄 데이터 필드 탑재 ([`jbnu_scraper.py`](file:///home/ubuntu/workspace/jbnu_scraper.py))**:
+    - **1) 크롤러 엔진 캘린더 스케줄 데이터 필드 탑재 ([`jbnu_scraper.py`](jbnu_scraper.py))**:
 
       - 각 알바 공고의 마감일(`deadline_date`) 및 단기·행사 근무일자(`work_dates`, 예: 전북현대 홈경기 `9월 16일`/`9월 20일`, 식품공장 야간단기 `9/15~9/23` 등)를 자동 파싱 및 정제하여 `data/jbnu_albas.json`에 탑재.
 
-    - **2) 상단 알바 캘린더 오픈 버튼 신설 ([`index.html`](file:///home/ubuntu/workspace/index.html), [`static/index.html`](file:///home/ubuntu/workspace/static/index.html))**:
+    - **2) 상단 알바 캘린더 오픈 버튼 신설 ([`index.html`](index.html), [`static/index.html`](static/index.html))**:
 
       - 전북대 알바 패널(`#tabPanelHome`) 정렬 드롭다운 좌측에 에메랄드 테마의 `[📅 알바 캘린더]` 버튼 배치.
 
@@ -1916,7 +1916,7 @@ mindmap
 
       - 날짜 클릭 시 하단 타임라인 리스트의 해당 일자로 매끄럽게 스크롤 이동 및 포커스 링 애니메이션 연동.
 
-    - **4) 월별 알바 일정 타임라인 리스트 & 다이렉트 원문 링크 ([`jbnu_alba.js`](file:///home/ubuntu/workspace/jbnu_alba.js), [`static/jbnu_alba.js`](file:///home/ubuntu/workspace/static/jbnu_alba.js))**:
+    - **4) 월별 알바 일정 타임라인 리스트 & 다이렉트 원문 링크 ([`jbnu_alba.js`](jbnu_alba.js), [`static/jbnu_alba.js`](static/jbnu_alba.js))**:
 
       - 날짜별 요일 뱃지(`16일 (수)`), 일정 유형(`⚡ 근무일`, `⏱️ 마감 D-Day`), 기업명, 공고명, 급여 및 근무시간 표시.
 
@@ -1934,7 +1934,7 @@ mindmap
 
   - **조치 내역**:
 
-    - **1) 날짜별 독립 필터링 엔진 구축 ([`jbnu_alba.js`](file:///home/ubuntu/workspace/jbnu_alba.js), [`static/jbnu_alba.js`](file:///home/ubuntu/workspace/static/jbnu_alba.js))**:
+    - **1) 날짜별 독립 필터링 엔진 구축 ([`jbnu_alba.js`](jbnu_alba.js), [`static/jbnu_alba.js`](static/jbnu_alba.js))**:
 
       - `albaCalendarSelectedDay` 상태 변수를 도입하여, 캘린더에서 임의의 날짜 셀을 클릭하면 즉시 해당 날짜(`ev.day === selectedDay`)에 해당하는 알바 공고들만 타임라인 리스트에 단독 나열되도록 전면 개편.
 
@@ -1984,7 +1984,7 @@ mindmap
 
 #### 63) PC ➔ GitHub ➔ Server 3단계 배포 파이프라인 수립 및 원터치 deploy.sh 스크립트 탑재 (ver 1.1.8)
 
-- **배경**: 사용자 로컬 컴퓨터(Windows / `C:\Users\최익석\Desktop\goofy-borg`)와 Orca 도구를 활용한 개발 환경에서 깃허브로 코드를 푸시하고, JCloud 우분투 서버로 즉시 반영·배포할 수 있는 표준화된 파이프라인 필요.
+- **배경**: 사용자 로컬 컴퓨터(Windows / `<로컬 저장소 폴더>`)와 Orca 도구를 활용한 개발 환경에서 깃허브로 코드를 푸시하고, JCloud 우분투 서버로 즉시 반영·배포할 수 있는 표준화된 파이프라인 필요.
 
 - **구축 내역**:
 
@@ -2006,7 +2006,7 @@ mindmap
 
      - ② 깃허브(`chldlrtjr/civil-news-hub`): 최신 코드 형상 관리
 
-     - ③ 서버(`10.0.0.131`): `./deploy.sh` 한 줄로 실시간 서비스 자동 배포 완료
+     - ③ 서버(`<서버 내부 IP>`): `./deploy.sh` 한 줄로 실시간 서비스 자동 배포 완료
 
 
 
@@ -2022,7 +2022,7 @@ mindmap
 
 - **구축 내역**:
 
-  1. **실시간 원격 변경 감시기 개발 ([`auto_deploy_watcher.sh`](file:///home/ubuntu/workspace/auto_deploy_watcher.sh))**:
+  1. **실시간 원격 변경 감시기 개발 ([`auto_deploy_watcher.sh`](auto_deploy_watcher.sh))**:
 
      - 30초 주기로 `git fetch origin main`을 수행하여 로컬 HEAD와 원격 origin/main의 해시를 비교.
 
@@ -2030,11 +2030,11 @@ mindmap
 
      - 5MB 초과 시 로그 자동 순환(Rotate) 처리로 디스크 고갈 원천 방지.
 
-  2. **우분투 상주 시스템 데몬 유닛 작성 ([`civil-auto-deploy.service`](file:///home/ubuntu/workspace/civil-auto-deploy.service))**:
+  2. **우분투 상주 시스템 데몬 유닛 작성 ([`civil-auto-deploy.service`](civil-auto-deploy.service))**:
 
      - systemd 서비스로 등록하여 서버 재부팅 시에도 24시간 백그라운드 자동 가동 및 장애 시 10초 내 자동 재시작(`Restart=always`) 보장.
 
-  3. **원터치 설치 자동화 스크립트 제작 ([`install_auto_deploy.sh`](file:///home/ubuntu/workspace/install_auto_deploy.sh))**:
+  3. **원터치 설치 자동화 스크립트 제작 ([`install_auto_deploy.sh`](install_auto_deploy.sh))**:
 
      - 서버 터미널에서 `bash install_auto_deploy.sh` 실행 시 권한 부여, 유닛 등록, daemon-reload 및 서비스 활성화를 원스톱으로 처리.
 
@@ -2048,13 +2048,13 @@ mindmap
 
   - 기본 루트 파티션(`/dev/vda4`, 9GB) 내에 3GB 크기의 가상 램 스왑 파일(`/swapfile`)이 상주하여 디스크 사용률이 86%(잔여 1.3GB)에 육박, 용량 고갈 위험에 노출됨.
 
-  - 신규 블록 스토리지(`/dev/vdb`, 10GB)가 `/home/ubuntu/data`에 추가되었으나 사용률 1%로 미활용 상태.
+  - 신규 블록 스토리지(`/dev/vdb`, 10GB)가 `<서버 홈>/data`에 추가되었으나 사용률 1%로 미활용 상태.
 
 - **작업 및 개선 내역**:
 
   1. **신규 4GB 스왑 파일 생성 및 즉시 활성화**:
 
-     - 신규 저장소 경로 `/home/ubuntu/data/swapfile`에 4GB 스왑 파일 생성(`sudo fallocate -l 4G`), 권한 600 설정 및 스왑 포맷(`mkswap`) 후 즉각 활성화(`swapon`).
+     - 신규 저장소 경로 `<서버 홈>/data/swapfile`에 4GB 스왑 파일 생성(`sudo fallocate -l 4G`), 권한 600 설정 및 스왑 포맷(`mkswap`) 후 즉각 활성화(`swapon`).
 
   2. **기존 루트 스왑 비활성화 및 영구 삭제**:
 
@@ -2062,7 +2062,7 @@ mindmap
 
   3. **부팅 자동 마운트(/etc/fstab) 및 systemd 동기화**:
 
-     - `/etc/fstab` 내 스왑 설정을 `/home/ubuntu/data/swapfile`로 갱신하고 스토리지 마운트 이후 로드되도록 마운트 순서 정렬.
+     - `/etc/fstab` 내 스왑 설정을 `<서버 홈>/data/swapfile`로 갱신하고 스토리지 마운트 이후 로드되도록 마운트 순서 정렬.
 
      - `systemctl daemon-reload` 및 `swapon -a` 검증 완료 (`home-ubuntu-data-swapfile.swap` 정상 active 상태 유지).
 
@@ -2074,11 +2074,11 @@ mindmap
 
 - **구축 내역**:
 
-  1. **PowerShell 기반 Windows Runtime 토스트 알림 모듈 ([`notify.ps1`](file:///C:/Users/최익석/Desktop/goofy-borg/notify.ps1))**:
+  1. **PowerShell 기반 Windows Runtime 토스트 알림 모듈 ([`notify.ps1`](notify.ps1))**:
 
      - `Windows.UI.Notifications.ToastNotificationManager` 네이티브 WinRT API를 직접 호출하여 별도 외부 프로그램 없이 윈도우 시스템 표준 토스트 알림창 및 효과음 송출.
 
-  2. **원클릭 수집·검증·푸시·알림 일괄 실행 배치 파일 ([`sync.bat`](file:///C:/Users/최익석/Desktop/goofy-borg/sync.bat))**:
+  2. **원클릭 수집·검증·푸시·알림 일괄 실행 배치 파일 ([`sync.bat`](sync.bat))**:
 
      - 더블 클릭 한 번으로 뉴스/채용/공모전/알바 크롤러 4종 실행 ➔ 데이터 무결성 검증 ➔ Git 커밋 & 푸시 ➔ Windows 토스트 팝업 알림까지 원스톱 자동화.
 
@@ -2136,7 +2136,7 @@ mindmap
 
 - **조치 내역**:
 
-  1. **데스크탑 GNB '토목 메인' 복귀 버튼 완전 삭제 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html))**:
+  1. **데스크탑 GNB '토목 메인' 복귀 버튼 완전 삭제 ([`index.html`](index.html), [`static/index.html`](static/index.html))**:
 
      - 알바 모드 진입 시 상단 우측에 노출되던 `gnbReturnMainBtn` (`<button id="gnbReturnMainBtn">토목 메인</button>`) 요소를 HTML 마크업에서 완전히 제거.
 
@@ -2166,7 +2166,7 @@ mindmap
 
 - **조치 내역**:
 
-  1. **SW중심대학사업단 전담 자동 크롤링 엔진 개발 ([`swuniv_scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/swuniv_scraper.py))**:
+  1. **SW중심대학사업단 전담 자동 크롤링 엔진 개발 ([`swuniv_scraper.py`](swuniv_scraper.py))**:
 
      - 공식 프로그램 신청 게시판(`swuniv.jbnu.ac.kr`) 실시간 수집 파이프라인 수립.
 
@@ -2178,7 +2178,7 @@ mindmap
 
      - 수집 데이터 `data/swuniv_programs.json` 및 `static/data/swuniv_programs.json` 자동 저장.
 
-  2. **프론트엔드 전담 모듈 개발 ([`swuniv.js`](file:///C:/Users/최익석/Desktop/goofy-borg/swuniv.js), [`static/swuniv.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/swuniv.js))**:
+  2. **프론트엔드 전담 모듈 개발 ([`swuniv.js`](swuniv.js), [`static/swuniv.js`](static/swuniv.js))**:
 
      - GEMINI.md 시안 B 기반 미니멀 언더라인 바 탭(SW융합, 산학협력, 교육, SW가치확산, 교육환경지원, SW기초, SW전공 등) 동적 생성 및 건수 100% 일치 보장.
 
@@ -2186,7 +2186,7 @@ mindmap
 
      - 포스터 썸네일, 카테고리 뱃지, D-Day 배지, 신청 바로가기 및 표준 북마크 리본 버튼(`<i data-lucide="bookmark"></i>`) 연동.
 
-  3. **전북대 알바/학교 모드 GNB 및 모바일 하단 네비게이션 동적 전환 연동 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`app.js`](file:///C:/Users/최익석/Desktop/goofy-borg/app.js))**:
+  3. **전북대 알바/학교 모드 GNB 및 모바일 하단 네비게이션 동적 전환 연동 ([`index.html`](index.html), [`app.js`](app.js))**:
 
      - 알바/학교 모드 진입 시 상단 GNB에 `[아르바이트]`와 `[SW중심대학사업단]` 탭이 나란히 노출되며 원클릭 실시간 무로딩 전환 지원.
 
@@ -2194,7 +2194,7 @@ mindmap
 
      - URL 해시 라우팅(`#swuniv`) 및 PWA/재방문 히스토리 동기화.
 
-  4. **모바일 뷰어 및 수집 파이프라인 동기화 ([`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html), [`sync.bat`](file:///C:/Users/최익석/Desktop/goofy-borg/sync.bat), [`cron_scrape.sh`](file:///C:/Users/최익석/Desktop/goofy-borg/cron_scrape.sh))**:
+  4. **모바일 뷰어 및 수집 파이프라인 동기화 ([`mobile.html`](mobile.html), [`sync.bat`](sync.bat), [`cron_scrape.sh`](cron_scrape.sh))**:
 
 #### 72) 전북대학교 SW중심대학사업단 접수마감 프로그램 자동 내림 및 실시간 방어선 구축 (ver 1.1.17)
 
@@ -2208,13 +2208,13 @@ mindmap
 
 - **조치 내역**:
 
-  1. **수집 엔진 필터링 게이트 탑재 ([`swuniv_scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/swuniv_scraper.py))**:
+  1. **수집 엔진 필터링 게이트 탑재 ([`swuniv_scraper.py`](swuniv_scraper.py))**:
 
      - 수집 루프에서 `final_status == "접수마감"`, `dday_badge == "마감"`, `days_left < 0`, `"마감" in raw_status_text` 조건 검출 시 파이프라인에서 즉시 `continue`로 원천 제외.
 
      - `data/swuniv_programs.json` 및 `static/data/swuniv_programs.json`에 현재 신청 가능한 유효/예정 프로그램(3건)만 저장되도록 정제.
 
-  2. **프론트엔드 실시간 3차 방어선 구축 ([`swuniv.js`](file:///C:/Users/최익석/Desktop/goofy-borg/swuniv.js), [`static/swuniv.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/swuniv.js))**:
+  2. **프론트엔드 실시간 3차 방어선 구축 ([`swuniv.js`](swuniv.js), [`static/swuniv.js`](static/swuniv.js))**:
 
      - 클라이언트 로딩 시 브라우저 KST 기준 마감일(`deadline_date < todayKstStr`) 경과 여부 및 마감 상태 실시간 재연산 필터 적용.
 
@@ -2238,7 +2238,7 @@ mindmap
 
 - **조치 내역**:
 
-  1. **임의 커밋/푸시 절대 금지 원칙 신설 ([`GEMINI.md`](file:///C:/Users/최익석/Desktop/goofy-borg/GEMINI.md))**:
+  1. **임의 커밋/푸시 절대 금지 원칙 신설 ([`GEMINI.md`](GEMINI.md))**:
 
      - 사용자가 "커밋해줘", "푸시해줘", "깃허브에 올려줘" 등 명시적으로 지시하기 전까지는 **AI 어시스턴트가 임의로 `git commit`, `git push`를 실행하는 것을 영구 금지**.
 
@@ -2266,13 +2266,13 @@ mindmap
 
 - **조치 내역**:
 
-  1. **상단 GNB 로고 아이콘 메인 홈 직행 확립 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`app.js`](file:///C:/Users/최익석/Desktop/goofy-borg/app.js))**:
+  1. **상단 GNB 로고 아이콘 메인 홈 직행 확립 ([`index.html`](index.html), [`app.js`](app.js))**:
 
      - `gnbHatBtn` 클릭 이벤트를 `switchMainTab('news')`로 전면 고정하여 어느 화면/탭(알바, SW사업단, 채용, 공모전, 마이페이지)에서든 즉시 토목 뉴스 피드로 100% 직행하도록 수정.
 
      - 안전모(`<i data-lucide="hard-hat"></i>`) 로고 아이콘과 "토목 뉴스 홈으로 이동" 툴팁을 상시 고정 유지.
 
-  2. **모바일 하단 네비게이션 토목 뉴스 상시 노출 ([`app.js`](file:///C:/Users/최익석/Desktop/goofy-borg/app.js))**:
+  2. **모바일 하단 네비게이션 토목 뉴스 상시 노출 ([`app.js`](app.js))**:
 
      - `updateMobileNavStyles`에서 알바/학교 모드 시에도 `mobileTabNews` 아이콘을 절대 숨기지 않고 항상 첫 번째 자리에 노출하여, 모바일에서도 언제든 토목 뉴스 아이콘 클릭으로 1초 만에 복귀 가능하도록 보장.
 
@@ -2282,7 +2282,7 @@ mindmap
 
      - 데스크탑 헤더 우측에도 `[🎓 전북대 알바]` 바로가기 버튼을 독립 배치하여 진입 동선 명확화.
 
-  4. **모바일 시뮬레이터 및 캐시 버스팅 갱신 ([`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html))**:
+  4. **모바일 시뮬레이터 및 캐시 버스팅 갱신 ([`mobile.html`](mobile.html))**:
 
      - `mobile.html` 상단 브랜드 로고 링크를 `./index.html#news`로 지정하고 iframe 및 스크립트 버전을 `v1119`(`?v=20260917_v1119`)로 갱신.
 
@@ -2300,7 +2300,7 @@ mindmap
 
 - **조치 내역**:
 
-  1. **상단 GNB 로고 아이콘 전북대 알바 직행 연결 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`app.js`](file:///C:/Users/최익석/Desktop/goofy-borg/app.js))**:
+  1. **상단 GNB 로고 아이콘 전북대 알바 직행 연결 ([`index.html`](index.html), [`app.js`](app.js))**:
 
      - `gnbHatBtn`의 `onclick`을 `handleGnbHatClick()`으로 연결하여 뉴스/일반 모드에서는 `switchMainTab('home')`(전북대 알바)으로 직행하도록 설정.
 
@@ -2308,11 +2308,11 @@ mindmap
 
      - 동적 상태 갱신(`updateGnbTabStyles`): 일반 모드 시 파란 안전모(`hard-hat`) + `title="전북대학교 아르바이트로 이동"`, 학교 모드 시 에메랄드 커피(`coffee`) + `title="토목 뉴스 홈으로 복귀"` 자동 반영.
 
-  2. **뉴스 헤더 본문 신문 아이콘 클릭 지원 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html))**:
+  2. **뉴스 헤더 본문 신문 아이콘 클릭 지원 ([`index.html`](index.html))**:
 
      - 뉴스 섹션 상단 제목 앞의 `<i data-lucide="newspaper"></i>` 아이콘을 클릭 가능한 버튼으로 래핑하여, 모바일이나 본문 영역에서 해당 아이콘을 터치하더라도 전북대 알바로 100% 직행하도록 UX 강화.
 
-  3. **모바일 시뮬레이터 동기화 ([`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html))**:
+  3. **모바일 시뮬레이터 동기화 ([`mobile.html`](mobile.html))**:
 
      - 좌측 상단 브랜드 로고에 `handleMobileBrandClick()`을 연결하여 모바일 뷰어 상단 바에서도 아이콘 클릭 시 전북대 알바와 토목 뉴스 간 무로딩 즉시 전환 지원.
 
@@ -2332,7 +2332,7 @@ mindmap
 
 - **조치 내역**:
 
-  1. **데스크탑 상단 GNB 토목 뉴스 탭 숨김 ([`app.js`](file:///C:/Users/최익석/Desktop/goofy-borg/app.js), [`static/app.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/app.js))**:
+  1. **데스크탑 상단 GNB 토목 뉴스 탭 숨김 ([`app.js`](app.js), [`static/app.js`](static/app.js))**:
 
      - `updateGnbTabStyles`에서 알바/학교 모드(`isAlbaMode`) 진입 시 `gnbTabNews` 버튼에 `classList.add('hidden')`을 적용하여, 채용·공모전과 마찬가지로 토목 뉴스 버튼도 완전히 숨김 처리.
 
@@ -2342,7 +2342,7 @@ mindmap
 
      - `updateMobileNavStyles`에서 알바 모드 시 `mobileTabNews`에 `classList.add('hidden')`을 적용하여, 모바일 하단바에서도 불필요한 토목 뉴스 버튼을 숨기고 `[아르바이트]`, `[SW사업단]`, `[마이페이지]` 탭만 노출.
 
-  3. **알바 & SW사업단 패널 본문 '토목 뉴스로 복귀' 버튼 완전 제거 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html))**:
+  3. **알바 & SW사업단 패널 본문 '토목 뉴스로 복귀' 버튼 완전 제거 ([`index.html`](index.html), [`static/index.html`](static/index.html))**:
 
      - 전북대 알바 및 SW사업단 본문 헤더 우측의 `[📰 토목 뉴스로 복귀]` 버튼을 영구 제거.
 
@@ -2378,11 +2378,11 @@ mindmap
 
 - **조치 내역**:
 
-  1. **상단 카테고리 탭 스티키 바 제거 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html))**:
+  1. **상단 카테고리 탭 스티키 바 제거 ([`index.html`](index.html), [`static/index.html`](static/index.html))**:
 
      - `#jbnuAlbaCategoryTabs` 및 상단 스티키 네비게이션 컨테이너를 제거하고, 헤더 바로 아래에 필터/정렬 옵션 바가 시원하게 연결되도록 마진 정돈.
 
-  2. **알바 카드 카테고리 뱃지 제거 및 레이아웃 최적화 ([`jbnu_alba.js`](file:///C:/Users/최익석/Desktop/goofy-borg/jbnu_alba.js), [`static/jbnu_alba.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/jbnu_alba.js))**:
+  2. **알바 카드 카테고리 뱃지 제거 및 레이아웃 최적화 ([`jbnu_alba.js`](jbnu_alba.js), [`static/jbnu_alba.js`](static/jbnu_alba.js))**:
 
      - 카드 1행의 `[카테고리 뱃지]`를 제거하고 좌측에 `[D-Day 뱃지]`, 우측에 `[조회수(👀)]`를 배치하여 밸런스 확보.
 
@@ -2412,7 +2412,7 @@ mindmap
 
 - **조치 내역**:
 
-  1. **모바일 전용 상단 헤더 바 신설 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html))**:
+  1. **모바일 전용 상단 헤더 바 신설 ([`index.html`](index.html), [`static/index.html`](static/index.html))**:
 
      - 스마트폰 화면 최상단에 미니멀 고정 헤더(`#mobileHeader`, `sticky top-0 z-40 md:hidden`)를 신설.
 
@@ -2422,7 +2422,7 @@ mindmap
 
      - 알바/학교 모드 진입 시 우측 버튼이 **`[📰 토목 뉴스]`** 복귀 버튼으로 스마트 전환되어 언제든 편리한 원터치 상호 전환 보장.
 
-  2. **모바일 하단 네비게이션 5대 메뉴 상시 제공 ([`app.js`](file:///C:/Users/최익석/Desktop/goofy-borg/app.js), [`static/app.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/app.js))**:
+  2. **모바일 하단 네비게이션 5대 메뉴 상시 제공 ([`app.js`](app.js), [`static/app.js`](static/app.js))**:
 
      - 하단 바를 `[토목 뉴스]`, `[채용 공고]`, `[공모전]`, `[전북대 알바]`, `[마이페이지]` 5개 균등 탭 구조로 개편.
 
@@ -2458,7 +2458,7 @@ mindmap
 
 - **조치 내역**:
 
-  1. **Gunicorn WSGI 설정 표준화 ([`gunicorn.conf.py`](file:///C:/Users/최익석/Desktop/goofy-borg/gunicorn.conf.py), [`civil-news-hub.service`](file:///C:/Users/최익석/Desktop/goofy-borg/civil-news-hub.service))**:
+  1. **Gunicorn WSGI 설정 표준화 ([`gunicorn.conf.py`](gunicorn.conf.py), [`civil-news-hub.service`](civil-news-hub.service))**:
 
      - 기존 sync 워커 3개(각 110MB+ RAM 점유, I/O 블로킹)에서 `gthread` 워커 모델(2 워커 * 4 스레드 = 최대 8개 동시 요청 비차단 처리)로 개편.
 
@@ -2468,13 +2468,13 @@ mindmap
 
      - 하트비트 임시 디렉토리를 RAM 기반 `/dev/shm`으로 지정하여 디스크 I/O 병목 제거.
 
-  2. **자동 배포 감시 데몬 초경량화 ([`auto_deploy_watcher.sh`](file:///C:/Users/최익석/Desktop/goofy-borg/auto_deploy_watcher.sh))**:
+  2. **자동 배포 감시 데몬 초경량화 ([`auto_deploy_watcher.sh`](auto_deploy_watcher.sh))**:
 
      - 30초마다 git fetch(하루 2,880회 디스크 I/O)를 치던 방식을 `git ls-remote origin refs/heads/main`으로 교체.
 
      - 원격의 최신 커밋 해시(문자열 단 한 줄)만 가볍게 조회하고 변경 시에만 `deploy.sh`를 실행하도록 개선하여 디스크 I/O와 네트워크 트래픽을 최소화하고 감시 주기를 60초로 완화.
 
-  3. **크롤링 배치 파이프라인 프로세스 우선권 양보 ([`cron_scrape.sh`](file:///C:/Users/최익석/Desktop/goofy-borg/cron_scrape.sh))**:
+  3. **크롤링 배치 파이프라인 프로세스 우선권 양보 ([`cron_scrape.sh`](cron_scrape.sh))**:
 
      - 5대 수집기 스크립트 실행 시 `nice -n 10`을 부여하여 크롤링 실행 중에도 실시간 웹 서빙(Gunicorn/Nginx)에 CPU 우선권을 양보하도록 최적화.
 
@@ -2482,11 +2482,11 @@ mindmap
 
      - 파이프라인 종료 시점에 `pkill -f "chrome|chromium"` 방어 코드를 탑재하여 예외 발생 시 잔여 헤드리스 브라우저 프로세스로 인한 메모리 잠식 영구 차단.
 
-  4. **Nginx 프록시 버퍼 및 타임아웃 최적화 템플릿 제공 ([`nginx_jcloud_tuning.conf`](file:///C:/Users/최익석/Desktop/goofy-borg/nginx_jcloud_tuning.conf))**:
+  4. **Nginx 프록시 버퍼 및 타임아웃 최적화 템플릿 제공 ([`nginx_jcloud_tuning.conf`](nginx_jcloud_tuning.conf))**:
 
      - `proxy_buffers 8 16k; proxy_buffer_size 32k;` 및 `proxy_read_timeout 90s;` 탑재.
 
-  5. **원터치 튜닝 배포 스크립트 제공 ([`apply_jcloud_tuning.sh`](file:///C:/Users/최익석/Desktop/goofy-borg/apply_jcloud_tuning.sh))**:
+  5. **원터치 튜닝 배포 스크립트 제공 ([`apply_jcloud_tuning.sh`](apply_jcloud_tuning.sh))**:
 
      - JCloud 우분투 서버에서 `bash apply_jcloud_tuning.sh` 실행 한 번으로 서비스 등록, daemon-reload, restart, 헬스체크까지 일괄 적용 지원.
 
@@ -2502,15 +2502,15 @@ mindmap
 
 - **조치 내역**:
 
-  1. **GitHub Actions 스케줄 개편 ([`.github/workflows/daily_crawl.yml`](file:///C:/Users/최익석/Desktop/goofy-borg/.github/workflows/daily_crawl.yml))**:
+  1. **GitHub Actions 스케줄 개편 ([`.github/workflows/daily_crawl.yml`](.github/workflows/daily_crawl.yml))**:
 
      - 기존 `0 2,6,10,14,22 * * *`에서 매시간 정각 실행되는 `0 * * * *` cron 스케줄로 변경.
 
-  2. **Ubuntu 로컬/서버 스케줄러 동기화 ([`cron_scrape.sh`](file:///C:/Users/최익석/Desktop/goofy-borg/cron_scrape.sh))**:
+  2. **Ubuntu 로컬/서버 스케줄러 동기화 ([`cron_scrape.sh`](cron_scrape.sh))**:
 
      - 상단 헤더 안내 주석을 `매시간 정각 KST 실행`으로 변경.
 
-  3. **원클릭 Crontab 갱신 지원 ([`apply_jcloud_tuning.sh`](file:///C:/Users/최익석/Desktop/goofy-borg/apply_jcloud_tuning.sh))**:
+  3. **원클릭 Crontab 갱신 지원 ([`apply_jcloud_tuning.sh`](apply_jcloud_tuning.sh))**:
 
      - JCloud 서버에서 `apply_jcloud_tuning.sh` 실행 시 crontab에 등록된 `cron_scrape.sh`를 자동으로 감지하여 `0 * * * *` (매시간 정각) 스케줄로 즉각 갱신하도록 자동화 코드 탑재.
 
@@ -2526,7 +2526,7 @@ mindmap
 
   - 오르카(Orca) 등 낮은 브라우저 창이나 분할창/웹뷰 환경에서 `fitPhoneToViewport()`가 뷰포트 높이에 맞추기 위해 강제로 `scale(0.55)`까지 과도하게 축소하여 글씨가 개미처럼 쪼그라들던 문제 발생.
 
-- **조치 내역 ([`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html), [`static/mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/mobile.html))**:
+- **조치 내역 ([`mobile.html`](mobile.html), [`static/mobile.html`](static/mobile.html))**:
 
   1. **Galaxy S24 Ultra 단독 적용**:
 
@@ -2556,7 +2556,7 @@ mindmap
 
   - 사용자 스크린샷 확인 결과: `phoneWrapper` 내의 `screenContainer`에 Tailwind 클래스 `flex-1`(`flex: 1 1 0%`)이 적용되어 있어, 오르카 웹뷰 렌더링 엔진에서 부모의 flex 수축 계산 시 인라인 높이(`height: 886px`)가 무시되고 세로 높이가 150px 남짓으로 붕괴(shrink)되어 납작한 팬케이크처럼 눌리는 현상 발생.
 
-- **조치 내역 ([`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html), [`static/mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/mobile.html))**:
+- **조치 내역 ([`mobile.html`](mobile.html), [`static/mobile.html`](static/mobile.html))**:
 
   1. **`flex-1` 제거 및 `flex-shrink-0 !important;` 강제**:
 
@@ -2582,7 +2582,7 @@ mindmap
 
   - 모바일 기기 화면(iframe 내부 또는 하단바)에서 이미 전용 탭 전환 및 네비게이션이 제공되고 있으므로, 시뮬레이터 상단 컨트롤 헤더의 탭 버튼 모음이 중복되고 시각적 공간을 차지하던 요소를 깔끔하게 제거.
 
-- **조치 내역 ([`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html), [`static/mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/mobile.html))**:
+- **조치 내역 ([`mobile.html`](mobile.html), [`static/mobile.html`](static/mobile.html))**:
 
   - 상단 헤더 내 중앙 탭 바로가기 스위처 컨테이너(`div.flex.items-center.bg-slate-800/90...`) 전면 삭제.
 
@@ -2594,7 +2594,7 @@ mindmap
 
 - **요청 사항**: 기존의 뻔한 게시판/카드 피드 형식을 완전히 백지화하고, 전혀 다른 패러다임과 유형의 새로운 웹사이트 5가지를 만들어 직접 보고 체험할 수 있도록 구현 요청.
 
-- **5대 혁신 아키타입 설계 및 구축 내역 ([`preview_5types.html`](file:///C:/Users/최익석/Desktop/goofy-borg/preview_5types.html))**:
+- **5대 혁신 아키타입 설계 및 구축 내역 ([`preview_5types.html`](preview_5types.html))**:
 
   1. **🌐 [유형 1] 공간 GIS 디지털 트윈 & 메가 인프라 관제 레이더 (Spatial Radar)**:
 
@@ -2640,7 +2640,7 @@ mindmap
 
 - **5번 시안 단독 영구 보관 및 임시 쇼케이스 일괄 정리 완료 (`v1.1.36`)**:
 
-  - **5번 시안 안전 보관**: 사용자의 "5번은 괜찮아서 나중에 약간 다르게 적용하고 싶으니 저장해두라"는 지시에 따라, 5번 아키타입(Civil Shorts Deck)의 모든 구조, 3D 플립 애니메이션, 데이터 및 인터랙션을 온전히 보존한 독립 단독 파일 **[`archived_concept5_shorts.html`](file:///C:/Users/최익석/Desktop/goofy-borg/archived_concept5_shorts.html)** 및 `static/archived_concept5_shorts.html`로 안전하게 백업 및 영구 보관 완료. (언제든 사용자가 요청 시 즉각 호출 및 커스텀 재적용 가능)
+  - **5번 시안 안전 보관**: 사용자의 "5번은 괜찮아서 나중에 약간 다르게 적용하고 싶으니 저장해두라"는 지시에 따라, 5번 아키타입(Civil Shorts Deck)의 모든 구조, 3D 플립 애니메이션, 데이터 및 인터랙션을 온전히 보존한 독립 단독 파일 **[`archived_concept5_shorts.html`](archived_concept5_shorts.html)** 및 `static/archived_concept5_shorts.html`로 안전하게 백업 및 영구 보관 완료. (언제든 사용자가 요청 시 즉각 호출 및 커스텀 재적용 가능)
 
   - **임시 쇼케이스 완전 제거**: `preview_5types.html` 및 `static/preview_5types.html` 파일을 완전히 삭제하고, 메인 사이트 헤더(`index.html`, `static/index.html`)에 임시 추가되었던 바로가기 버튼을 완벽하게 원복 제거하여 기존 사이트의 무결성 및 클린 상태 복원 완료.
 
@@ -2650,7 +2650,7 @@ mindmap
 
 - **요청 사항**: 불필요한 군더더기는 모두 배제하고, 반드시 서비스해야 하는 **5대 핵심 정보(토목 뉴스, 채용 공고문, 공모전, 전북대 알바, SW중심사업단 정보)**만을 완벽하게 내보이는 새로운 웹사이트 5가지를 완전히 다른 유형으로 구현 요청.
 
-- **5대 혁신 아키타입 구축 내역 ([`preview_5essential_types.html`](file:///C:/Users/최익석/Desktop/goofy-borg/preview_5essential_types.html))**:
+- **5대 혁신 아키타입 구축 내역 ([`preview_5essential_types.html`](preview_5essential_types.html))**:
 
   1. **📱 [유형 1] 숏폼 스토리 & 5대 스트림 덱 (Shorts Deck)**:
 
@@ -2690,7 +2690,7 @@ mindmap
 
 - **요청 사항**: 크롤링하는 정보들을 사람들이 보기 쉽고 이용하기 쉽게 재설계한 새로운 웹사이트 5가지 유형 제작 요청
 
-- **5대 혁신 UX 패러다임 구현 ([`preview_5designs.html`](file:///C:/Users/최익석/Desktop/goofy-borg/preview_5designs.html))**:
+- **5대 혁신 UX 패러다임 구현 ([`preview_5designs.html`](preview_5designs.html))**:
 
   1. **📰 [유형 1] 오늘의 올인원 데일리 다이제스트 (Daily Digest Stream)**:
 
@@ -2818,13 +2818,13 @@ mindmap
 
   1. **AI 3줄 요약 잔재 전면 삭제**:
 
-     - 크롤러 엔진([`scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/scraper.py)): `generate_summary_points()` 함수 및 기사 수집 루프 내 `summary_points` 생성 로직 완전 삭제.
+     - 크롤러 엔진([`scraper.py`](scraper.py)): `generate_summary_points()` 함수 및 기사 수집 루프 내 `summary_points` 생성 로직 완전 삭제.
 
-     - 데이터 어댑터([`static/data_adapter.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/data_adapter.js)): `a.summary_points` 매핑 참조 제거, 기사의 순수 원문 본문 스니펫(`a.snippet`)으로 `lede` 직접 연결.
+     - 데이터 어댑터([`static/data_adapter.js`](static/data_adapter.js)): `a.summary_points` 매핑 참조 제거, 기사의 순수 원문 본문 스니펫(`a.snippet`)으로 `lede` 직접 연결.
 
-     - 기존 저장 데이터([`data/news.json`](file:///C:/Users/최익석/Desktop/goofy-borg/data/news.json)): 기존 기사 객체들에 잔존하던 `summary_points` 속성 일괄 제거 및 정제.
+     - 기존 저장 데이터([`data/news.json`](data/news.json)): 기존 기사 객체들에 잔존하던 `summary_points` 속성 일괄 제거 및 정제.
 
-     - 레거시 프론트 컨트롤러([`static/app.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/app.js), [`app.js`](file:///C:/Users/최익석/Desktop/goofy-borg/app.js)): `generateArticleSummaryPoints()` 함수 및 카드 내 3줄 불릿 리스트 박스 전면 삭제.
+     - 레거시 프론트 컨트롤러([`static/app.js`](static/app.js), [`app.js`](app.js)): `generateArticleSummaryPoints()` 함수 및 카드 내 3줄 불릿 리스트 박스 전면 삭제.
 
   2. **'제목 + 본문 = 항상 정확히 4줄' 기본 베이스라인 완벽 복원**:
 
@@ -2888,7 +2888,7 @@ mindmap
 
 - **조치 내역**:
 
-  1. **데이터 어댑터([`static/data_adapter.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/data_adapter.js)) Stale-While-Revalidate 캐싱 엔진 탑재**:
+  1. **데이터 어댑터([`static/data_adapter.js`](static/data_adapter.js)) Stale-While-Revalidate 캐싱 엔진 탑재**:
 
      - `CivilData.getCached()`, `CivilData.saveCached()` 함수 구현.
 
@@ -2896,9 +2896,9 @@ mindmap
 
   2. **프론트엔드 동기식 로컬 캐시 즉시 복원 적용**:
 
-     - 데스크톱([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html)): 첫 렌더링 함수(`renderHome()`, `renderNews()`) 실행 직전 `CivilData.getCached()`를 호출하여 실제 최근 크롤링 데이터셋으로 배열과 알림 배너를 0.000초 만에 즉시 복원.
+     - 데스크톱([`index.html`](index.html), [`static/index.html`](static/index.html)): 첫 렌더링 함수(`renderHome()`, `renderNews()`) 실행 직전 `CivilData.getCached()`를 호출하여 실제 최근 크롤링 데이터셋으로 배열과 알림 배너를 0.000초 만에 즉시 복원.
 
-     - 모바일 인라인 및 단독 뷰([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html), [`static/mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/mobile.html)): 모바일 뷰에서도 동일하게 즉시 캐시 복원 적용.
+     - 모바일 인라인 및 단독 뷰([`index.html`](index.html), [`mobile.html`](mobile.html), [`static/mobile.html`](static/mobile.html)): 모바일 뷰에서도 동일하게 즉시 캐시 복원 적용.
 
   3. **Playwright 정밀 무결성 검증 완료**:
 
@@ -2928,13 +2928,13 @@ mindmap
 
      - 카카오 로그인 활성화, 개편된 플랫폼 키 하위 Redirect URI(`http://localhost:5000`) 및 메시지 전송 동의항목(`talk_message`) 연동.
 
-  2. **1회성 로컬 OAuth 인증 서버 구현 및 토큰 획득 ([`kakao_auth_receiver.py`](file:///C:/Users/최익석/Desktop/goofy-borg/kakao_auth_receiver.py))**:
+  2. **1회성 로컬 OAuth 인증 서버 구현 및 토큰 획득 ([`kakao_auth_receiver.py`](kakao_auth_receiver.py))**:
 
-     - 원클릭으로 브라우저를 띄워 인가 코드(Code)를 자동 수신하고, `access_token`과 60일 유효 `refresh_token`을 자동 발급받아 [`kakao_token.json`](file:///C:/Users/최익석/Desktop/goofy-borg/kakao_token.json)에 저장.
+     - 원클릭으로 브라우저를 띄워 인가 코드(Code)를 자동 수신하고, `access_token`과 60일 유효 `refresh_token`을 자동 발급받아 [`kakao_token.json`](kakao_token.json)에 저장.
 
      - 카카오톡 나와의 채팅방으로 축하 테스트 메시지 발송 완료 (`result_code: 0`).
 
-  3. **무중단 토큰 자동 갱신 및 터널 로그 감시 알리미 엔진 개발 ([`kakao_notifier.py`](file:///C:/Users/최익석/Desktop/goofy-borg/kakao_notifier.py))**:
+  3. **무중단 토큰 자동 갱신 및 터널 로그 감시 알리미 엔진 개발 ([`kakao_notifier.py`](kakao_notifier.py))**:
 
      - `refresh_token`을 활용한 만료 시 무중단 자동 연장(Zero-Maintenance Refresh) 탑재로 평생 재인증 불필요.
 
@@ -2946,13 +2946,13 @@ mindmap
 
   4. **우분투 서버 24시간 데몬 서비스 및 자동 설치 스크립트 제작**:
 
-     - [`civil-kakao-notifier.service`](file:///C:/Users/최익석/Desktop/goofy-borg/civil-kakao-notifier.service): 10초 간격 무부하 터널 주소 변경 감시 데몬 등록.
+     - [`civil-kakao-notifier.service`](civil-kakao-notifier.service): 10초 간격 무부하 터널 주소 변경 감시 데몬 등록.
 
-     - [`install_kakao_notifier.sh`](file:///C:/Users/최익석/Desktop/goofy-borg/install_kakao_notifier.sh): 우분투 서버 원클릭 의존성 설치 및 systemd 등록/가동 스크립트 작성.
+     - [`install_kakao_notifier.sh`](install_kakao_notifier.sh): 우분투 서버 원클릭 의존성 설치 및 systemd 등록/가동 스크립트 작성.
 
   5. **보안 강화**:
 
-     - [`.gitignore`](file:///C:/Users/최익석/Desktop/goofy-borg/.gitignore)에 `kakao_token.json`, `data/last_tunnel_url.txt`를 추가하여 민감 토큰의 Git 노출 원천 차단.
+     - [`.gitignore`](.gitignore)에 `kakao_token.json`, `data/last_tunnel_url.txt`를 추가하여 민감 토큰의 Git 노출 원천 차단.
 
 
 
@@ -2970,7 +2970,7 @@ mindmap
 
   - 동시에 스마트폰과 태블릿/아이패드를 구분하는 User-Agent 및 터치 플랫폼 판별 로직 부재.
 
-- **해결 및 구축 내역 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html))**:
+- **해결 및 구축 내역 ([`index.html`](index.html), [`static/index.html`](static/index.html))**:
 
   1. **태블릿 & 아이패드 제외 필터 탑재**:
 
@@ -3020,13 +3020,13 @@ mindmap
 
   1. **로컬 원격 동기화 완료**: `git pull origin main`을 실행하여 68개 누적 커밋(10월 6일 15:00 최신 크롤링 데이터셋)을 로컬에 완벽히 병합.
 
-  2. **[`run.bat`](file:///C:/Users/최익석/Desktop/goofy-borg/run.bat) 자동 동기화 엔진 탑재**:
+  2. **[`run.bat`](run.bat) 자동 동기화 엔진 탑재**:
 
      - 서버 구동 전 `git pull origin main --quiet`를 선제 실행하여 항상 깃허브의 실시간 데이터를 자동으로 내려받고 Flask 서버(`python app.py`)를 기동하도록 개선.
 
      - 오프라인 또는 네트워크 장애 시에도 에러로 중단되지 않고 로컬 캐시 데이터로 부드럽게 넘어가도록 예외 방어 처리.
 
-  3. **모바일 뷰 실시간성 표기 고도화 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html))**:
+  3. **모바일 뷰 실시간성 표기 고도화 ([`index.html`](index.html), [`mobile.html`](mobile.html))**:
 
      - 채용 공고 카드 및 바텀시트 모달에 하드코딩되어 있던 `(예시)` 접미사 전면 삭제.
 
@@ -3046,7 +3046,7 @@ mindmap
 
 - **구현 및 검증 완료 내역**:
 
-  1. **전북대 공지사항 전담 크롤러 모듈 개발 ([`jbnu_contest_scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/jbnu_contest_scraper.py))**:
+  1. **전북대 공지사항 전담 크롤러 모듈 개발 ([`jbnu_contest_scraper.py`](jbnu_contest_scraper.py))**:
 
      - 교내공지(`sub01.do`, menu=2377) 및 학생공지(`sub02.do`, menu=2378)에 대해 "공모전", "경진대회", "공모" 키워드로 실시간 크롤링 수행.
 
@@ -3074,7 +3074,7 @@ mindmap
 
      - `[217692]` **AI 활용 부정행위 예방 대국민 콘텐츠 공모전** (한국산업인력공단, 2026.09.16 ~ 10.15, 이사장상 · 650만원)
 
-  3. **통합 수집 파이프라인 연계 ([`contest_scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/contest_scraper.py))**:
+  3. **통합 수집 파이프라인 연계 ([`contest_scraper.py`](contest_scraper.py))**:
 
      - 기존 토목 대표 공모전 + 전북대 공모전 일괄 수집 및 중복 ID 자동 제거.
 
@@ -3082,11 +3082,11 @@ mindmap
 
      - 카테고리 탭 목록에 신규 카테고리 `전북대` 자동 등록 및 전체 건수(12건) == 개별 카테고리 합계(12건) 100% 일치 보장 (Rule 1-⑥).
 
-  4. **무결성 전수 검증 통과 ([`test_contests_integrity.py`](file:///C:/Users/최익석/Desktop/goofy-borg/test_contests_integrity.py))**:
+  4. **무결성 전수 검증 통과 ([`test_contests_integrity.py`](test_contests_integrity.py))**:
 
      - 12건 전수 데이터 무결성 검증 100% 통과 (exit 0).
 
-  5. **프론트엔드 연동 및 캐시 방지 ([`static/contests.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/contests.js), [`static/data_adapter.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/data_adapter.js))**:
+  5. **프론트엔드 연동 및 캐시 방지 ([`static/contests.js`](static/contests.js), [`static/data_adapter.js`](static/data_adapter.js))**:
 
      - `전북대` 틴트 뱃지 색상(`bg-teal-100 text-teal-800`) 및 탭 네비게이션 스타일 적용.
 
@@ -3132,7 +3132,7 @@ mindmap
 
      - `#m` 모바일 레이아웃 구조 온전히 유지 (뉴스 rowTitle/rowLede, 알바 alba-meta/alba-pay, 채용 lvl/exp 단일화, 챗봇 스크롤 인터랙션).
 
-  2. **수집기 및 데이터 스키마 정밀화 ([`jbnu_contest_scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/jbnu_contest_scraper.py), [`contest_scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/contest_scraper.py))**:
+  2. **수집기 및 데이터 스키마 정밀화 ([`jbnu_contest_scraper.py`](jbnu_contest_scraper.py), [`contest_scraper.py`](contest_scraper.py))**:
 
      - 9개 전북대 공모전에 대해 `id: "campus-{pst_id}"`, `source: "campus"`, `source_name`, 표준 카테고리(`토목·일반`, `도로·디자인`, `스마트·기술`) 매핑 완료.
 
@@ -3140,7 +3140,7 @@ mindmap
 
      - `test_contests_integrity.py` 100% 통과 (총 12건 중 마감 공모전 자동 제외 및 카테고리 합산 100% 일치).
 
-  3. **데이터 어댑터 고도화 ([`static/data_adapter.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/data_adapter.js))**:
+  3. **데이터 어댑터 고도화 ([`static/data_adapter.js`](static/data_adapter.js))**:
 
      - `isJbnu` 및 `campus` 판별 (`c.source === 'campus' || isJbnu`).
 
@@ -3184,13 +3184,13 @@ mindmap
 
 - **구현 및 검증 완료 내역**:
 
-  1. **전북대 포스터 추출 엔진 구현 ([`jbnu_contest_scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/jbnu_contest_scraper.py))**:
+  1. **전북대 포스터 추출 엔진 구현 ([`jbnu_contest_scraper.py`](jbnu_contest_scraper.py))**:
 
      - `extract_jbnu_poster_image(pst_id)` 구현: 팝업 배너 제외 및 본문 내 `max-width:100%` 포스터 이미지 URL 자동 파싱.
 
      - 교내 공모전 9건 중 포스터가 게재된 6건의 공식 포스터 URL 확보 완료 (포스터 없는 3건은 `""`로 안전 처리).
 
-  2. **외부 공모전 메타 이미지 파싱 ([`contest_scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/contest_scraper.py))**:
+  2. **외부 공모전 메타 이미지 파싱 ([`contest_scraper.py`](contest_scraper.py))**:
 
      - `extract_external_contest_image(link)` 구현: 도로경관디자인 대전, 건설 추락사고 예방 공모전의 `og:image` URL 확보 (2건).
 
@@ -3198,7 +3198,7 @@ mindmap
 
      - `test_contests_integrity.py` 데이터 무결성 검증 100% 통과 (exit 0).
 
-  3. **뉴스 원문 디코더 및 대표 이미지 파이프라인 개발 ([`scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/scraper.py))**:
+  3. **뉴스 원문 디코더 및 대표 이미지 파이프라인 개발 ([`scraper.py`](scraper.py))**:
 
      - `googlenewsdecoder` 기반의 구글 뉴스 암호화 링크 원문 URL 디코딩 및 병렬 메타태그 스크래핑 엔진 (`extract_news_og_image`, `enrich_articles_with_images`) 구현.
 
@@ -3224,13 +3224,13 @@ mindmap
 
 - **구현 및 검증 완료 내역**:
 
-  1. **스크래퍼 정제 엔진 고도화 ([`scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/scraper.py))**:
+  1. **스크래퍼 정제 엔진 고도화 ([`scraper.py`](scraper.py))**:
 
      - `extract_news_og_image` 함수 내에 키워드 블랙리스트(`logo`, `snslogo`, `oglogo`, `default`, `noimage`) 자동 배제 로직 추가.
 
      - `http://` 시작 이미지에 대한 `https://` 변환 및 실시간 접근 가능성(200 OK) 헤더 검증 로직 반영.
 
-  2. **뉴스 데이터 파일 정제 반영 ([`data/news.json`](file:///C:/Users/최익석/Desktop/goofy-borg/data/news.json))**:
+  2. **뉴스 데이터 파일 정제 반영 ([`data/news.json`](data/news.json))**:
 
      - 전체 128건 중 로고 키워드 포함 이미지 3건 및 HTTPS 접속 불가 9건(총 12건) 제외 처리.
 
@@ -3252,27 +3252,27 @@ mindmap
 
 - **구현 및 최신화 완료 내역**:
 
-  1. **토목 뉴스 파이프라인 수집 완료 ([`data/news.json`](file:///C:/Users/최익석/Desktop/goofy-borg/data/news.json))**:
+  1. **토목 뉴스 파이프라인 수집 완료 ([`data/news.json`](data/news.json))**:
 
      - 도로·교량·철도, 수자원·하천·항만, 터널·지반·안전, 스마트건설·정책 등 총 167건 토픽 기사(중복 146건 군집화) 최신 수집 완료.
 
      - 대표 이미지(og:image) 140건 확보 및 HTTPS 검증 완료.
 
-  2. **채용 공고 최신화 ([`data/jobs.json`](file:///C:/Users/최익석/Desktop/goofy-borg/data/jobs.json))**:
+  2. **채용 공고 최신화 ([`data/jobs.json`](data/jobs.json))**:
 
      - 마감 공고 자동 제외 및 실시간 유효 채용 공고 4건 동기화.
 
-  3. **전북대 알바 공고 수집 및 장애 대비 안전장치 보강 ([`jbnu_scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/jbnu_scraper.py), [`data/jbnu_albas.json`](file:///C:/Users/최익석/Desktop/goofy-borg/data/jbnu_albas.json))**:
+  3. **전북대 알바 공고 수집 및 장애 대비 안전장치 보강 ([`jbnu_scraper.py`](jbnu_scraper.py), [`data/jbnu_albas.json`](data/jbnu_albas.json))**:
 
      - 실시간 유효 아르바이트 공고 32건 정상 수집 및 정제 완료.
 
      - 일시적 네트워크 장애나 DNS 에러 발생 시 기존 캐시 데이터를 0건으로 덮어쓰지 않고 안전하게 유지하는 방어 로직 추가.
 
-  4. **SW중심대학 프로그램 최신화 ([`data/swuniv_programs.json`](file:///C:/Users/최익석/Desktop/goofy-borg/data/swuniv_programs.json))**:
+  4. **SW중심대학 프로그램 최신화 ([`data/swuniv_programs.json`](data/swuniv_programs.json))**:
 
      - 2건의 최신 교육 프로그램 동기화 완료.
 
-  5. **공모전 수집 및 4중 무결성 전수 검증 통과 ([`data/contests.json`](file:///C:/Users/최익석/Desktop/goofy-borg/data/contests.json))**:
+  5. **공모전 수집 및 4중 무결성 전수 검증 통과 ([`data/contests.json`](data/contests.json))**:
 
      - 전북대 및 전국 단위 실시간 유효 공모전 12건 팩트 검증 완료 (`test_contests_integrity.py` 100% 통과).
 
@@ -3302,23 +3302,23 @@ mindmap
 
 - **재발 방지 영구 조치 내역**:
 
-  1. **정적 데이터 번들 자동 생성기 구축 ([`build_data_bundle.py`](file:///C:/Users/최익석/Desktop/goofy-borg/build_data_bundle.py))**:
+  1. **정적 데이터 번들 자동 생성기 구축 ([`build_data_bundle.py`](build_data_bundle.py))**:
 
-     - 실제 수집된 JSON 파일(`news.json`, `contests.json`, `jobs.json`, `jbnu_albas.json`, `swuniv_programs.json`)을 정적 JS 파일([`static/cnh_data_bundle.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/cnh_data_bundle.js))로 즉시 컴파일하는 빌더 개발.
+     - 실제 수집된 JSON 파일(`news.json`, `contests.json`, `jobs.json`, `jbnu_albas.json`, `swuniv_programs.json`)을 정적 JS 파일([`static/cnh_data_bundle.js`](static/cnh_data_bundle.js))로 즉시 컴파일하는 빌더 개발.
 
      - `file:///` 환경에서도 CORS 차단 없이 100% 실제 데이터 167건, 공모전 12건, 채용 4건, 알바 32건이 0ms 만에 즉시 렌더링되도록 구현.
 
-  2. **가짜 예시 데이터 전면 영구 삭제 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html))**:
+  2. **가짜 예시 데이터 전면 영구 삭제 ([`index.html`](index.html), [`mobile.html`](mobile.html))**:
 
      - `index.html` 및 `mobile.html` 소스코드 내에 존재하던 모든 `(예시)` 더미 데이터 배열을 전면 도려내고, `CivilData.getInitialData()`를 통해 정적 번들의 실제 팩트 데이터를 직접 바인딩하도록 수정.
 
      - 어떤 오류나 오프라인 상황에서도 가짜 예시 데이터가 노출될 수 있는 가능성을 시스템적으로 0%로 영구 차단.
 
-  3. **데이터 어댑터 정밀 고도화 ([`static/data_adapter.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/data_adapter.js))**:
+  3. **데이터 어댑터 정밀 고도화 ([`static/data_adapter.js`](static/data_adapter.js))**:
 
      - 정적 번들 데이터(1순위) → 브라우저 캐시(2순위) → 실시간 네트워크 API/JSON(3순위, 백그라운드 SWR 갱신) 파이프라인 정립.
 
-  4. **수집 및 배포 파이프라인 영구 연동 ([`sync.bat`](file:///C:/Users/최익석/Desktop/goofy-borg/sync.bat))**:
+  4. **수집 및 배포 파이프라인 영구 연동 ([`sync.bat`](sync.bat))**:
 
      - `sync.bat` [7/7] 단계에 `python build_data_bundle.py`를 영구 배치하여, 수집이 돌 때마다 번들이 자동 생성되고 Git에 동기화되도록 보장.
 
@@ -3340,7 +3340,7 @@ mindmap
 
 - **조치 내역**:
 
-  1. **과도한 32px 폰트 크기 20px 축소 ([`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html), [`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html))**:
+  1. **과도한 32px 폰트 크기 20px 축소 ([`mobile.html`](mobile.html), [`index.html`](index.html))**:
 
      - `.tile .n` 및 `#m .tile .n` 글자 크기를 32px에서 **20px**(`font-weight: 700; letter-spacing: -0.02em; line-height: 1.2`)로 단정하게 최적화.
 
@@ -3372,7 +3372,7 @@ mindmap
 
 - **조치 내역**:
 
-  1. **데스크톱 상세 드로어 및 클릭 인터랙션 활성화 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html))**:
+  1. **데스크톱 상세 드로어 및 클릭 인터랙션 활성화 ([`index.html`](index.html), [`static/index.html`](static/index.html))**:
 
      - `renderJbnu()`: 알바 카드에 `class="card click" data-open="alba:${a.id}" tabindex="0"`, SW 카드에 `class="card click title-first" data-open="sw:${s.id}" tabindex="0"` 부여로 마우스 호버 리프트 효과 및 클릭 활성화.
 
@@ -3382,7 +3382,7 @@ mindmap
 
      - 저장한 항목(북마크) 및 홈 화면 마감 임박 타임라인 레일에서 알바/SW 항목 클릭 시 상세 드로어가 즉시 열리도록 `open: 'alba:' + a.id`, `open: 'sw:' + s.id` 연동.
 
-  2. **모바일 상세 바텀시트 및 터치 인터랙션 활성화 ([`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html), [`static/mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/mobile.html), [`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html))**:
+  2. **모바일 상세 바텀시트 및 터치 인터랙션 활성화 ([`mobile.html`](mobile.html), [`static/mobile.html`](static/mobile.html), [`index.html`](index.html))**:
 
      - `albaRow`: `<div class="row click" data-open="a:${a.id}">` (모바일 인라인) 및 `<button class="row" data-open="a:${a.id}">` (단독 모바일)로 터치 인터랙션 활성화.
 
@@ -3396,7 +3396,7 @@ mindmap
 
      - 모바일 홈 마감 임박 퀵스트립에서 SW 타일 탭 시 상세 바텀시트 직결(`open: 's:' + s.id`).
 
-  3. **실시간 데이터 어댑터 및 정적 번들 동기화 ([`static/data_adapter.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/data_adapter.js), [`static/cnh_data_bundle.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/cnh_data_bundle.js))**:
+  3. **실시간 데이터 어댑터 및 정적 번들 동기화 ([`static/data_adapter.js`](static/data_adapter.js), [`static/cnh_data_bundle.js`](static/cnh_data_bundle.js))**:
 
      - `ALBA` 및 `SW` 파싱 데이터에 마감일(`deadline_date`), 급여 표시(`wage_display`), 시간(`time`), 인원(`person`), 장소/마일리지 등 상세 필드 완벽 보강.
 
@@ -3428,11 +3428,11 @@ mindmap
 
 - **조치 내역**:
 
-  1. **Flask 서버 전역 캐시 방지 헤더 강제 ([`app.py`](file:///C:/Users/최익석/Desktop/goofy-borg/app.py))**: `after_request` 훅에서 HTML, JSON, JS에 대해 `Cache-Control: no-cache, no-store, must-revalidate`, `Pragma: no-cache`, `Expires: 0`을 전송하도록 설정.
+  1. **Flask 서버 전역 캐시 방지 헤더 강제 ([`app.py`](app.py))**: `after_request` 훅에서 HTML, JSON, JS에 대해 `Cache-Control: no-cache, no-store, must-revalidate`, `Pragma: no-cache`, `Expires: 0`을 전송하도록 설정.
 
-  2. **PWA 서비스워커 로컬호스트 캐시 우회 및 버전 갱신 ([`sw.js`](file:///C:/Users/최익석/Desktop/goofy-borg/sw.js))**: `CACHE_NAME = 'civil-news-hub-v1.1.60'`, `localhost`/`127.0.0.1` 접속 시 캐시를 100% 우회하여 실시간 로컬 파일을 직접 fetch하도록 보장, 구버전 캐시 즉각 삭제.
+  2. **PWA 서비스워커 로컬호스트 캐시 우회 및 버전 갱신 ([`sw.js`](sw.js))**: `CACHE_NAME = 'civil-news-hub-v1.1.60'`, `localhost`/`127.0.0.1` 접속 시 캐시를 100% 우회하여 실시간 로컬 파일을 직접 fetch하도록 보장, 구버전 캐시 즉각 삭제.
 
-  3. **클라이언트단 캐시 킬러 & 구버전 SW 등록 해제기 탑재 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html))**: 페이지 로딩 즉시 `navigator.serviceWorker.getRegistrations()`를 통해 로컬 환경의 구 SW를 강제 `unregister()`하고, `caches.delete()`로 구 캐시 및 `localStorage('cnh-live-cache-v1')`를 자동 퍼지.
+  3. **클라이언트단 캐시 킬러 & 구버전 SW 등록 해제기 탑재 ([`index.html`](index.html), [`mobile.html`](mobile.html))**: 페이지 로딩 즉시 `navigator.serviceWorker.getRegistrations()`를 통해 로컬 환경의 구 SW를 강제 `unregister()`하고, `caches.delete()`로 구 캐시 및 `localStorage('cnh-live-cache-v1')`를 자동 퍼지.
 
   4. **상세 모달/드로어 하드코딩 예시 문구 전면 정제**: 공모전 및 채용의 하드코딩 텍스트를 실제 공고 데이터 필드(`c.campus ? '공지 원문에서 세부 제출 서류를 확인하세요' : '공식 공고 및 접수처 원문 참조'`, `j.summary`)로 교체하고, `data-dummy` 및 "예시 데이터라서..." 토스트 코드 완전 삭제.
 
@@ -3452,7 +3452,7 @@ mindmap
 
 - **구현 및 조치 내역**:
 
-  1. **네이버 검색 오픈 API 연동 모듈 탑재 ([`scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/scraper.py))**:
+  1. **네이버 검색 오픈 API 연동 모듈 탑재 ([`scraper.py`](scraper.py))**:
 
      - `fetch_naver_news_for_term(term, client_id, client_secret, display=15)` 함수 구현 (`https://openapi.naver.com/v1/search/news.json`).
 
@@ -3470,7 +3470,7 @@ mindmap
 
      - 키가 미설정된 상태에서는 구글 뉴스 RSS 단독 모드로 매끄럽게 자동 폴백(Fallback)되어 에러 없이 정상 가동.
 
-  4. **환경설정 템플릿 갱신 ([`.env.example`](file:///C:/Users/최익석/Desktop/goofy-borg/.env.example))**:
+  4. **환경설정 템플릿 갱신 ([`.env.example`](.env.example))**:
 
      - `NAVER_CLIENT_ID` 및 `NAVER_CLIENT_SECRET` 설정 항목 추가.
 
@@ -3488,7 +3488,7 @@ mindmap
 
 - **해결 조치**:
 
-  1. **API 키가 100% 필요 없는 다이렉트 네이버 뉴스 스크래퍼 탑재 ([`scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/scraper.py))**:
+  1. **API 키가 100% 필요 없는 다이렉트 네이버 뉴스 스크래퍼 탑재 ([`scraper.py`](scraper.py))**:
 
      - `scrape_naver_news_direct(term, max_items=10, now_kst=None)` 함수 구현.
 
@@ -3549,7 +3549,7 @@ mindmap
 - **조치 내역**:
   1. **백그라운드 실행 파일 전면 삭제**:
      - `run_background.bat` 및 `stop_server.bat` 물리적 파일 영구 삭제.
-  2. **단일 표준 실행기(`run.bat`)로 가이드 일원화 ([README.md](file:///C:/Users/최익석/Desktop/goofy-borg/README.md))**:
+  2. **단일 표준 실행기(`run.bat`)로 가이드 일원화 ([README.md](README.md))**:
      - 프로젝트 실행 가이드를 `run.bat` 단일 실행 체계로 개편.
      - 사용자가 `run.bat` 콘솔 창을 닫으면 서버가 즉시 100% 완전 종료되어 백그라운드에 프로세스가 단 1개도 남지 않도록 보장.
      - 게임 플레이 시 cmd 콘솔 팝업으로 인한 화면 튕김(알트탭 현상) 원천 차단 완료.
@@ -3635,10 +3635,10 @@ mindmap
 - **사용자 요청**:
   - "기사 북마크 오른쪽 아래로 옮겨줘" -> 기존 상단 메타 행(`.news-meta`) 우측에 위치하던 북마크 버튼을 기사 카드의 오른쪽 하단으로 재배치 요청.
 - **조치 내역**:
-  1. **DOM 구조 개편 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html))**:
+  1. **DOM 구조 개편 ([`index.html`](index.html))**:
      - 기존 `.news-meta` 내부에 있던 `${bmBtn(n.id)}`를 제거하여 카테고리/출처 메타 헤더를 깔끔하게 정돈.
      - 썸네일과 북마크를 관장하는 우측 전담 컨테이너 `<div class="news-aside">${thumbHtml}${bmBtn(n.id)}</div>` 도입.
-  2. **CSS 레이아웃 및 정렬 최적화 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html))**:
+  2. **CSS 레이아웃 및 정렬 최적화 ([`index.html`](index.html))**:
      - `.news`에 `align-items: stretch`를 적용하여 양쪽 컬럼의 높이를 카드의 최대 높이로 자동 일치.
      - 좌측 본문 컨테이너(`.news-body`)의 `.cluster-wrap`에 `margin-top: auto`를 적용하여 좌측 하단 정렬.
      - 우측 전담 컨테이너(`.news-aside`)를 세로 플렉스(`flex-direction: column; align-items: flex-end; justify-content: space-between;`)로 설정하고, `.bm` 버튼에 `margin-top: auto`를 적용하여 카드 우측 최하단에 항상 밀착 고정.
@@ -3656,12 +3656,12 @@ mindmap
   - "사진이 깨지고 화질이 좀 안좋은데 어떻게 하면 개선될까? 1,2,3,4번 다 적용해보자 한번에 적용하지 말고 롤백 하기 쉽게 서브로 나눠서 한개씩 적용시켜줘"
   - 1단계(CMS 고화질 원본 자동 복원) 단독 적용 요청.
 - **조치 내역**:
-  1. **고화질 원본 복원 엔진 개발 ([`scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/scraper.py))**:
+  1. **고화질 원본 복원 엔진 개발 ([`scraper.py`](scraper.py))**:
      - `upgrade_to_high_res_image(url)` 함수 신설.
      - NDSoft CMS 패턴(`/thumbnail/` -> `/photo/`, `_v150`, `_v200`, `_v300` 정규식 감지 및 제거) 탑재.
      - Daum/Kakao CDN 패턴(`?fname=` 디코딩을 통한 원본 추출), Naver News/pstatic 패턴(`?type=w800` 치환), 일반 축소판(`_thumb`, `_small` 제거) 통합.
      - `requests.head()` 검증을 거쳐 원본 파일이 HTTP 200으로 실존할 때만 안전하게 치환.
-  2. **데이터셋 고화질 업그레이드 전수 실행 ([`data/news.json`](file:///C:/Users/최익석/Desktop/goofy-borg/data/news.json))**:
+  2. **데이터셋 고화질 업그레이드 전수 실행 ([`data/news.json`](data/news.json))**:
      - 기존에 수집되어 있던 150px 초저화질 썸네일 15건을 1200px+ Full-HD 고해상도 원본 사진으로 실시간 검증 및 치환 완료 (파일 용량 평균 50KB ➡️ 300~790KB로 최대 15배 향상).
   3. **데이터 번들 최신화 및 무결성 검증**:
      - `build_data_bundle.py` 재컴파일하여 `static/cnh_data_bundle.js`에 Full-HD 이미지 즉시 반영.
@@ -3675,7 +3675,7 @@ mindmap
   - 이에 따라 무조건 프록시를 경유하는 위험을 배제하고, **국내 초고속 직결 1차 로드 + 실패 시 글로벌 CDN 프록시(`wsrv.nl`) 2차 폴백**의 '지능형 이중화 로더' 구조로 안전하게 설계.
 - **조치 내역**:
   1. **지능형 이중화 로더 (Smart Resilient Fallback Loader) 구현**:
-     - [`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html) 및 [`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html)의 `thumbHtml` / `thumb` 함수 개편:
+     - [`index.html`](index.html) 및 [`mobile.html`](mobile.html)의 `thumbHtml` / `thumb` 함수 개편:
      - 1차: `data-orig-src`를 통해 고화질 원본 이미지 직결(`referrerpolicy="no-referrer"`).
      - 2차(오류 발생 시): `onerror` 이벤트에서 `wsrv.nl` 글로벌 WebP 최적화 프록시(`w=240&h=240&fit=cover&output=webp&q=85`)로 자동 전환.
      - 3차(프록시까지 실패 시): `this.parentNode.remove()`를 통해 빈 엑박이나 깨진 아이콘 없이 100% 텍스트로 자연스럽게 확장.
@@ -3711,7 +3711,7 @@ mindmap
 - **배경 및 목적**:
   - 기존 277건 기사 중 73건만 원본 언론사 사진(`og:image`)이 존재하고, 나머지 204건은 사진이 누락되어 텍스트만 노출되는 시각적 불균형 해소.
 - **적용 내용**:
-  1. **토목/인프라 전문 큐레이션 사진 모듈 구축 ([`curated_news_photos.py`](file:///C:/Users/최익석/Desktop/goofy-borg/curated_news_photos.py))**:
+  1. **토목/인프라 전문 큐레이션 사진 모듈 구축 ([`curated_news_photos.py`](curated_news_photos.py))**:
      - 9개 토목 전문 세부 도메인(교량, 도로/고속도로, 철도/고속철도, 수자원/댐/하천, 항만/해양, 터널/TBM, 지반/안전진단, 스마트건설/BIM/드론, 대형토공/중장비)별 총 28개 고해상도 가로 3:2 Unsplash 팩트 사진 풀 구축 (전수 HTTP 200 검증 통과).
      - 기사 제목 및 본문 요약의 키워드를 형태소 분석하여 가장 적합한 도메인 사진 풀에 결정적(MD5 Hash 기반) 매핑 (`get_curated_news_photo`).
   2. **100% 무손실 분리 및 안전한 롤백 보장**:
@@ -3719,9 +3719,9 @@ mindmap
      - 사진이 없던 204건에만 `is_curated_image: True` 플래그와 함께 매칭.
      - 롤백 필요 시 `curated_news_photos.rollback_curated_photos()`를 호출하면 0.01초 만에 204건의 사진을 즉시 제거하여 초기 상태로 100% 원상복구 가능.
   3. **수집기 파이프라인 및 정적 번들 연동**:
-     - [`scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/scraper.py): `enrich_articles_with_images()` 직후 `enrich_articles_with_curated_photos()` 자동 실행 연동.
-     - [`data/news.json`](file:///C:/Users/최익석/Desktop/goofy-borg/data/news.json) 및 [`static/cnh_data_bundle.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/cnh_data_bundle.js)에 277건 전수 고화질 사진 탑재 완료.
-     - [`static/data_adapter.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/data_adapter.js): `isCurated` 플래그 안전 전달.
+     - [`scraper.py`](scraper.py): `enrich_articles_with_images()` 직후 `enrich_articles_with_curated_photos()` 자동 실행 연동.
+     - [`data/news.json`](data/news.json) 및 [`static/cnh_data_bundle.js`](static/cnh_data_bundle.js)에 277건 전수 고화질 사진 탑재 완료.
+     - [`static/data_adapter.js`](static/data_adapter.js): `isCurated` 플래그 안전 전달.
   4. **전수 검증**:
      - `test_contests_integrity.py` 100% PASS.
      - 전체 277건 기사 100% 사진 렌더링 검증 완료.
@@ -3729,10 +3729,10 @@ mindmap
 ### 98. 기사 메타 영역 시간 표시 전면 제거 및 언론사 단독 표기 클린업 (v1.1.74)
 - **요청 사항**: 기사 카드 메타 영역에 노출되던 상대 시간(예: `서울경제TV · 0초 전`, `N분 전`)을 제거하여 시간 정보 없이 언론사/출처명만 깔끔하게 노출하도록 변경.
 - **적용 내용**:
-  1. **데스크톱 기사 카드 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html))**:
+  1. **데스크톱 기사 카드 ([`index.html`](index.html))**:
      - `<span>${n.src} · ${n.ago}</span>` ➡️ `<span>${n.src}</span>`로 시간 노출 제거.
      - 북마크 저장 목록의 기사 서브텍스트: `sub: `${n.src} · ${n.ago}`` ➡️ `sub: n.src`.
-  2. **모바일 피드 및 단독창 ([`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html), `#m`)**:
+  2. **모바일 피드 및 단독창 ([`mobile.html`](mobile.html), `#m`)**:
      - `newsHero`, `newsRow`: `<span>${n.ago}</span>` 태그 제거하여 카테고리 뱃지 + 언론사명 + 관련 기사 건수만 간결하게 배치.
   3. **기사 상세 바텀시트 모달 (공통)**:
      - 상세 모달 헤더의 `<span>${n.ago}</span>` 태그 제거.
@@ -3743,14 +3743,14 @@ mindmap
 ### 99. 모든 기사에 '같은 보도자료 기사' 버튼 상시 노출 및 0건 표출 지원 (v1.1.75)
 - **요청 사항**: '같은 보도자료 기사 N건' 버튼을 모든 기사 카드에 상시 노출하고, 겹치는 기사가 없을 경우 `0건`으로 표시하도록 변경.
 - **적용 내용**:
-  1. **기사 카드 렌더러 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html))**:
+  1. **기사 카드 렌더러 ([`index.html`](index.html), [`static/index.html`](static/index.html))**:
      - 기존 `n.n > 0` 조건부 렌더링을 제거하고 모든 기사 카드에서 `<div class="cluster-wrap">` 및 `<button class="cluster-btn">`을 상시 노출.
      - 겹치는 기사가 없을 때 `같은 보도자료 기사 0건`으로 정확히 표출.
      - 0건일 때 버튼 클릭 시 팝오버 목록에 "동일한 보도자료 기사가 없습니다" 안내문 표출 및 호버 시 다크 반전 없는 `.empty-cluster` 전용 스타일링 추가.
-  2. **모바일 인라인 뷰 및 상세 바텀시트 ([`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html), [`static/mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/mobile.html))**:
+  2. **모바일 인라인 뷰 및 상세 바텀시트 ([`mobile.html`](mobile.html), [`static/mobile.html`](static/mobile.html))**:
      - `newsHero`, `newsRow`: 클러스터 건수를 계산하여 일관되게 `관련 N건`(0건 포함) 표출.
      - 상세 바텀시트: `같은 보도자료로 쓴 기사 N건` 영역을 상시 노출하며 0건 시 "동일한 보도자료 기사가 없습니다." 안내 항목 표출.
-  3. **이미지 프리뷰 페이지 ([`preview_news_images.html`](file:///C:/Users/최익석/Desktop/goofy-borg/preview_news_images.html))**:
+  3. **이미지 프리뷰 페이지 ([`preview_news_images.html`](preview_news_images.html))**:
      - 조건부 표시를 제거하고 `관련 보도자료 N건`(0건 포함) 상시 노출.
   4. **무결성 및 정적 파일 동기화**:
      - `index.html` ↔ `static/index.html`, `mobile.html` ↔ `static/mobile.html` 100% 일치 확인.
@@ -3761,13 +3761,13 @@ mindmap
 - **적용 내용**:
   1. **큐레이션 예시 사진 원상 복구 및 수집기 연동 해제**:
      - `curated_news_photos.rollback_curated_photos()`를 실행하여 `data/news.json`에서 204건의 임의 큐레이션 사진을 즉시 제거하고 원본 상태로 복원 (실제 언론사 원본 사진 73건만 유지).
-     - [`scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/scraper.py): `enrich_articles_with_curated_photos()` 호출을 제거하여 향후 수집 시에도 임의 예시 사진이 삽입되지 않도록 영구 차단.
-     - `build_data_bundle.py`를 실행하여 [`static/cnh_data_bundle.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/cnh_data_bundle.js)에 롤백된 순수 데이터셋 재컴파일.
-  2. **언론사(회사) 이름 전용 썸네일 컴포넌트 구축 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html))**:
+     - [`scraper.py`](scraper.py): `enrich_articles_with_curated_photos()` 호출을 제거하여 향후 수집 시에도 임의 예시 사진이 삽입되지 않도록 영구 차단.
+     - `build_data_bundle.py`를 실행하여 [`static/cnh_data_bundle.js`](static/cnh_data_bundle.js)에 롤백된 순수 데이터셋 재컴파일.
+  2. **언론사(회사) 이름 전용 썸네일 컴포넌트 구축 ([`index.html`](index.html), [`static/index.html`](static/index.html))**:
      - 원본 사진이 없는 기사에 대해 기존 3:2 와이드(120×80px) 종횡비 박스 안에 해당 기사의 언론사/출처명(`n.src`)을 세련되게 띄우는 `.news-thumb.news-thumb-co` 뱃지 렌더링.
      - CSS: `font-size: 13px; font-weight: 700; color: var(--muted);`에 모던 그라데이션 베이스(`linear-gradient(135deg, var(--surface-2), var(--line))`) 및 카드 호버 시 `color: var(--ink)` 하이라이트 반응형 인터랙션 적용.
      - 원본 사진 로딩 실패(`onerror`) 시에도 빈 박스나 엑박 없이 즉시 언론사(회사) 이름 썸네일로 자동 전환되는 안전 폴백 탑재.
-  3. **모바일 뷰 및 단독창 동기화 ([`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html), [`static/mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/mobile.html))**:
+  3. **모바일 뷰 및 단독창 동기화 ([`mobile.html`](mobile.html), [`static/mobile.html`](static/mobile.html))**:
      - `thumb(src, cls, isCurated, co)` 함수 개편: 사진이 없거나 로드 실패 시 `.thumb.thumb-co`를 통해 96×64px 규격으로 언론사명을 정중앙에 선명하게 표출.
   4. **무결성 및 정적 파일 동기화**:
      - `index.html` ↔ `static/index.html`, `mobile.html` ↔ `static/mobile.html` 100% 일치 확인.
@@ -3782,7 +3782,7 @@ mindmap
 ### 102. 메인 리드 기사 5대 디자인 시안 완성 및 비교 쇼케이스 구축 (v1.1.78)
 - **요청 사항**: 5가지 경우의 수로 다시 리드 기사 디자인 제작 요청.
 - **적용 내용**:
-  1. **5대 시안 설계 및 전용 쇼케이스 페이지 ([`preview_lead_options.html`](file:///C:/Users/최익석/Desktop/goofy-borg/preview_lead_options.html)) 개발**:
+  1. **5대 시안 설계 및 전용 쇼케이스 페이지 ([`preview_lead_options.html`](preview_lead_options.html)) 개발**:
      - 시안 1: 상단 와이드 히어로 배너형 (Upper Hero Banner)
      - 시안 2: 좌우 5:5 웅장 스플릿 매거진형 (5:5 Split Editorial)
      - 시안 3: 시네마틱 풀 비주얼 오버레이형 (Cinematic Visual Overlay)
@@ -3793,7 +3793,7 @@ mindmap
 ### 103. 시안 3(시네마틱 오버레이) 사진 5종 가독성 검증 시스템 구축 (v1.1.79)
 - **요청 사항**: "시안 3 좋은데 다른 사진들 중에 사진 색깔 때문에 글씨가 안 보이는 경우가 있는지 확인하자"
 - **적용 내용**:
-  1. **5대 극한 건설 환경 사진 전수 검증 페이지 ([`preview_option3_test.html`](file:///C:/Users/최익석/Desktop/goofy-borg/preview_option3_test.html)) 구축**:
+  1. **5대 극한 건설 환경 사진 전수 검증 페이지 ([`preview_option3_test.html`](preview_option3_test.html)) 구축**:
      - ☀️ 1. 초고휘도 대낮·하늘 (역광/화이트): 대비비 14.2:1 (AAA 통과)
      - 🔥 2. 원색 고채도 장비 (붉은 크레인/주황): 대비비 15.6:1 (AAA 통과)
      - 🌑 3. 칠흑 같은 지하 터널 (저조도 암흑): 대비비 18.9:1 (최고 대비)
@@ -3813,15 +3813,15 @@ mindmap
      - `font-size: 14px; line-height: 1.55; color: rgba(226, 235, 245, 0.92);`로 조정하여 시각적 피로도를 제거하고 1.5초 내 핵심 속독 보장.
      - 본문 분량이 줄어듦에 따라 카드 중앙의 배경 사진이 시원하게 개방되어 시네마틱한 비주얼 효과가 극대화됨.
   3. **전체 파일 일괄 반영 및 동기화**:
-     - [`preview_option3_test.html`](file:///C:/Users/최익석/Desktop/goofy-borg/preview_option3_test.html) (사진 5종 검증 페이지)
-     - [`preview_lead_options.html`](file:///C:/Users/최익석/Desktop/goofy-borg/preview_lead_options.html) (5대 시안 쇼케이스)
-     - [`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html) 및 [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html)
+     - [`preview_option3_test.html`](preview_option3_test.html) (사진 5종 검증 페이지)
+     - [`preview_lead_options.html`](preview_lead_options.html) (5대 시안 쇼케이스)
+     - [`index.html`](index.html) 및 [`static/index.html`](static/index.html)
      - `test_contests_integrity.py` 100% PASS 검증 완료.
 
 ### 105. 시안 3(시네마틱 오버레이) 메인 공식 기본 채택 및 테스트 툴바 정리 (v1.1.81)
 - **요청 사항**: "어 깔끔하게 정리해줘 추가 세부 조정은 없고 깃허브는 아직 기다려"
 - **적용 내용**:
-  1. **메인 화면 정식 리드 기사 고정 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html))**:
+  1. **메인 화면 정식 리드 기사 고정 ([`index.html`](index.html), [`static/index.html`](static/index.html))**:
      - 시안 3(시네마틱 풀 비주얼 오버레이, 24px 볼드 제목, 2줄 압축 본문)을 `#briefing`의 정식 공식 리드 기사 카드 렌더러로 영구 확정 적용.
      - 테스트용으로 상단에 배치되었던 임시 시안 전환 바(`.lead-switcher`, 5개 버튼 및 링크)를 완전히 제거하여 미니멀하고 군더더기 없는 완성형 UI 구현.
      - 프로토타입 전용 스크립트(`leadOpt` 전역 변수 및 클릭 이벤트 분기)를 제거하고 `renderLeadArticle(n)`이 바로 최고 품질의 시네마틱 카드를 생성하도록 최적화.
@@ -3837,17 +3837,17 @@ mindmap
 - **원인 분석**:
   - 일반 기사 카드의 `.cluster-btn .n`에 정의된 `color: var(--ink)`(라이트 모드에서 짙은 남색 `#0F2A44`) 규칙이 리드 기사의 어두운 시네마틱 오버레이 배경 위에서도 적용되어, 숫자(`2`)가 배경색에 묻혀 보이지 않는 현상 발생.
 - **적용 내용**:
-  - [`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html):
+  - [`index.html`](index.html), [`static/index.html`](static/index.html):
     `#ca .briefing .news.lead .cluster-btn .n { color: inherit; }` 추가.
   - 마우스 호버 시에도 `color: #fff` 및 틴트 배경(`rgba(255,255,255,0.28)`)을 유지하여 기본 상태와 호버 상태 모두에서 '같은 보도자료 기사' 텍스트와 숫자가 100% 동일한 선명한 화이트(`rgb(255, 255, 255)`)로 또렷하게 표출되도록 완벽 조치.
-  - [`preview_option3_test.html`](file:///C:/Users/최익석/Desktop/goofy-borg/preview_option3_test.html) 및 [`preview_lead_options.html`](file:///C:/Users/최익석/Desktop/goofy-borg/preview_lead_options.html)에도 동일 동기화.
+  - [`preview_option3_test.html`](preview_option3_test.html) 및 [`preview_lead_options.html`](preview_lead_options.html)에도 동일 동기화.
   - `test_contests_integrity.py` 100% PASS 검증 완료.
 
 ### 107. 보도자료 군집 사진 우선 대표 기사 자동 승격 엔진 도입 (v1.1.83)
 - **요청 사항**:
   - "우리가 기사들 가져올때 사진을 가져오는데 사진이 없는 기사들은 그 회사 이름을 가져오기로 했잖아 근데 겹치는 보도자료 기사들중에 조회수가 높은게 나오게 했는데 거기서 보이는 기사가 사진이 없는 기사면 조회순대로 내려가면서 사진이 있는 기사를 내보이는거 어때 아예 없는건 그냥 놔두고"
 - **개발 내용**:
-  - **2단계 스마트 병렬 이미지 추출 및 대표 기사 선발 엔진 구축** ([`scraper.py`](file:///C:/Users/최익석/Desktop/goofy-borg/scraper.py)):
+  - **2단계 스마트 병렬 이미지 추출 및 대표 기사 선발 엔진 구축** ([`scraper.py`](scraper.py)):
     - **1단계 (대표 후보 병렬 스캔)**: 군집화된 모든 보도자료 클러스터의 '조회수 1위 기사'들의 메타태그(`og:image`)를 병렬 일괄 추출.
     - **2단계 (사진 부재 군집 타겟 스캔)**: 1위 기사에 사진이 없는 다중 기사 군집에 한해, 후속 2~4순위 기사들의 사진을 병렬로 신속 추가 추출.
     - **3단계 (사진 우선 대표 승격)**: 조회순으로 내려가며 **사진이 존재하는 첫 번째 기사를 메인 대표 기사(`primary_article`)로 즉시 승격**. 원래 1위 기사 및 타 언론사 기사는 '관련 기사(모두보기)' 목록으로 안전하게 이동.
@@ -3855,7 +3855,7 @@ mindmap
   - **성과 및 검증**:
     - 대표 토픽 280건 중 **대표 사진 확보 건수가 기존 5건에서 260건(약 93%)으로 대폭 증가**.
     - 총 8건의 보도자료 군집에서 사진이 있는 기사가 대표 기사로 자동 승격되어 피드의 시각적 퀄리티와 몰입도 극대화.
-    - [`build_data_bundle.py`](file:///C:/Users/최익석/Desktop/goofy-borg/build_data_bundle.py) 실행을 통해 정적 데이터 번들([`static/cnh_data_bundle.js`](file:///C:/Users/최익석/Desktop/goofy-borg/static/cnh_data_bundle.js)) 100% 동기화 완료.
+    - [`build_data_bundle.py`](build_data_bundle.py) 실행을 통해 정적 데이터 번들([`static/cnh_data_bundle.js`](static/cnh_data_bundle.js)) 100% 동기화 완료.
   - **Git 상태**: 사용자 명시 지시 없는 임의 커밋/푸시 원천 금지 규칙에 따라 로컬 워크스페이스 완료 상태 유지.
 
 ### 108. 기사 카드 회사 이름(언론사) 1줄 고정 & 말줄임표 처리로 제목·본문 높이 칼정렬 (v1.1.84)
@@ -3866,13 +3866,13 @@ mindmap
   - 이로 인해 아래에 위치한 기사 헤드라인 제목(`<h3>`, `.row-title`)과 팩트 요약 본문(`p.lede`, `.row-sub`)의 시작 높이가 20~25px 밑으로 들쭉날쭉 밀려 내려가는 현상 발생.
 - **적용 내용**:
   - **CSS 1줄 강제 & 말줄임표(`ellipsis`) 처리**:
-    - [`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html):
+    - [`index.html`](index.html), [`static/index.html`](static/index.html):
       `#ca .news-meta`: `flex-wrap: nowrap; min-width: 0; overflow: hidden;`
       `#ca .news-meta .src`: `white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; flex: none;`
       `#ca .briefing .news.lead .cat-tag`: `white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: calc(100% - 50px);`
       `#m .row-meta`: `flex-wrap: nowrap; min-width: 0; overflow: hidden;`
       `#m .row-meta .src`: `white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; flex: none;`
-    - [`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html), [`static/mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/mobile.html):
+    - [`mobile.html`](mobile.html), [`static/mobile.html`](static/mobile.html):
       `.row-meta`: `flex-wrap: nowrap; min-width: 0; overflow: hidden;`
       `.row-meta .src`: `white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; flex: none;`
   - **템플릿 마크업 동기화**:
@@ -3901,7 +3901,7 @@ mindmap
   - 기존 기사 카드가 좌측(`.news-body`)과 우측(`.news-aside`)의 2컬럼 레이아웃으로 분리되어 있어, 본문 요약(`p.lede`)이 좌측 컬럼의 좁은 가로폭 안에만 갇혀 있었음.
   - 이로 인해 우측 썸네일(사진 또는 언론사명 박스) 바로 아래 공간(사용자가 표시한 빨간 동그라미 영역)이 완전히 하얗게 텅 빈 채 방치되고, 북마크 버튼만 맨 아래에 덜렁 놓이는 레이아웃 불균형 발생.
 - **적용 내용**:
-  - **3단 모던 카드 아키텍처 개편** ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html)):
+  - **3단 모던 카드 아키텍처 개편** ([`index.html`](index.html), [`static/index.html`](static/index.html)):
     - **1단 (상단 헤더 `.news-header`)**: 좌측에 카테고리/회사명 메타 및 2줄 헤드라인 제목(`.news-title-wrap`), 우측에 컴팩트 썸네일(`${thumbHtml}`, 110x74px)을 나란히 배치.
     - **2단 (중간 본문 `p.lede`)**: `width: 100%`를 부여하여 **썸네일 아래(빨간 동그라미 친 곳)까지 카드의 좌우 전체 가로폭을 시원하게 꽉 채우도록 확장**. 2줄 요약 텍스트가 풍성하게 채워지며 우측 빈 공간이 완벽히 해소됨.
     - **3단 (하단 푸터 `.news-footer`)**: 좌측에 [같은 보도자료 기사 n건 ▾], 우측에 [북마크 버튼]을 나란히 양 끝 정렬(`justify-content: space-between; margin-top: auto;`)하여 카드의 상하 대칭과 시각적 안정감 극대화.
@@ -3926,7 +3926,7 @@ mindmap
   - `onerror="..."` HTML 속성 내부에서 언론사 대체 태그를 작성할 때 `<span class=\"thumb-co-name\">`와 같이 큰따옴표가 포함되어, 브라우저 HTML 파서가 `class="`에서 `onerror` 속성을 닫힌 것으로 오인.
   - 이로 인해 뒤쪽 스크립트 문법 마감 구문인 `';}">` 가 일반 화면 텍스트로 인식되어 기사 사진 우측에 노출됨.
 - **적용 내용**:
-  - 문자열 HTML 삽입 방식 대신 안전한 표준 DOM API (`document.createElement('span')`, `.className = 'thumb-co-name'`, `.textContent = co`, `.replaceChildren(s)`) 구조로 개편 ([`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html), [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html), [`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html), [`static/mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/mobile.html)).
+  - 문자열 HTML 삽입 방식 대신 안전한 표준 DOM API (`document.createElement('span')`, `.className = 'thumb-co-name'`, `.textContent = co`, `.replaceChildren(s)`) 구조로 개편 ([`index.html`](index.html), [`static/index.html`](static/index.html), [`mobile.html`](mobile.html), [`static/mobile.html`](static/mobile.html)).
   - 따옴표 충돌이 원천적으로 불가능해져 찌꺼기 텍스트 완전 소멸 및 언론사명 특수문자 안전성 확보.
   - `test_contests_integrity.py` 100% PASS 검증 완료.
   - **Git 상태**: 사용자 명시 지시 없는 임의 커밋/푸시 원천 금지 규칙 준수 (로컬 워크스페이스 대기).
@@ -3939,11 +3939,11 @@ mindmap
   - 카테고리 목록 행(`contestRow`)에서는 포스터 썸네일을 완전히 제거하여 D-Day 배지, 카테고리/훈격 태그, 제목, 상금/주최기관 정보가 가로 전체 폭을 시원하게 활용하도록 개선.
   - 공모전 행을 클릭하여 열리는 바텀 시트(상세 화면)에서만 포스터 사진을 깨끗한 종횡비로 온전하게 렌더링하고, 탭 시 원본 고해상도 이미지를 바로 확인할 수 있는 '크게 보기' 링크 추가.
 - **적용 내용**:
-  - [`index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/index.html) 및 [`static/index.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/index.html):
+  - [`index.html`](index.html) 및 [`static/index.html`](static/index.html):
     - `contestRow`: `${thumb(c.image,'t-poster')}` 제거 및 메타/상금 레이아웃 최적화.
     - 바텀 시트(`type === 'c'`): 포스터 클릭 시 원본 고해상도 새 탭 확인 및 '크게 보기' 오버레이 배지 추가.
     - 스크립트 캐시 버스팅 파라미터(`v=20261018_2116`) 동기화.
-  - [`mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/mobile.html) 및 [`static/mobile.html`](file:///C:/Users/최익석/Desktop/goofy-borg/static/mobile.html):
+  - [`mobile.html`](mobile.html) 및 [`static/mobile.html`](static/mobile.html):
     - `contestRow`: `${thumb(c.image, 't-poster')}` 제거.
     - 바텀 시트: 포스터 '크게 보기' 링크 및 반응형 컨테이너 적용.
     - 스크립트 캐시 버스팅 파라미터(`v=20261018_2116`) 동기화.
@@ -4071,7 +4071,7 @@ mindmap
 
 - **온라인 라이브 서비스**: [https://chldlrtjr.github.io/civil-news-hub/](https://chldlrtjr.github.io/civil-news-hub/)
 
-- **보관된 5번 시안**: [`archived_concept5_shorts.html`](file:///C:/Users/최익석/Desktop/goofy-borg/archived_concept5_shorts.html)
+- **보관된 5번 시안**: [`archived_concept5_shorts.html`](archived_concept5_shorts.html)
 
 
 
