@@ -197,7 +197,8 @@
   const calNextDay = (date) => new Date(Date.parse(date + 'T00:00:00Z') + 86400000).toISOString().slice(0, 10).replace(/-/g, '');
   const calDay = (date) => date.replace(/-/g, '');
   // RFC 5545: 글자 값의 \ ; , 줄바꿈 이스케이프, 75바이트(UTF-8) 넘는 줄은 CRLF+공백으로 접기(글자 단위라 한글이 안 깨짐)
-  const icsText = (s) => s.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r\n?|\n/g, '\\n');
+  const icsText = (s) => s.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r\n?|\n/g, '\\n')
+    .replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f\x85\u2028\u2029]/g, ' ');  // 탭 밖의 제어문자·유니코드 줄 구분자는 공백 (일부 달력 앱이 파일을 거부해요)
   const utf8Len = (ch) => { const c = ch.codePointAt(0); return c < 0x80 ? 1 : c < 0x800 ? 2 : c < 0x10000 ? 3 : 4; };
   function icsFold(line) {
     const out = []; let cur = '', size = 0, max = 75;

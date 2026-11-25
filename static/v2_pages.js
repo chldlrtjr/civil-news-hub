@@ -1,7 +1,7 @@
 /* v2 탭 화면: 뉴스·공모전·채용·전북대·마이·저장·검색과 주소(#해시) 이동.
    PC는 "목록 + 오른쪽 상세" 두 칸(눌러도 페이지가 바뀌지 않고 오른쪽에 자세히), 모바일은 "목록 + 아래에서 올라오는 상세 시트".
    두 화면은 같은 데이터·북마크·진행 카드를 쓰고 마크업은 각자 가져요. 이모지 금지.
-   index.html(v2) 의 인라인 스크립트(V2, LS, interests, editingInterests, KIND, isWeb, linkOf, renderAuth)와 v2_state.js 를 이어서 써요. */
+   static/v2_main.js(V2, LS, interests, editingInterests, KIND, isWeb, linkOf, renderAuth)와 v2_state.js 를 이어서 써요. */
 (() => {
   const D = () => V2.data;
   const PER = { pc: 10, m: 6 };  // 처음 보여 줄 줄 수 (덜어내기 규칙 2), 더 보기로 같은 수만큼 더
@@ -78,11 +78,13 @@
   const withAll = (counts, total) => ({ all: total, ...counts });
 
   /* ---------- 상세 (PC 오른쪽 칸과 모바일 시트가 같은 내용) ---------- */
+  // 못 불러온 포스터(주소 오류·CSP img-src 밖 주소)는 빈 칸 대신 지워요. CSP 가 인라인 onerror 를 막아서 문서에서 가로채요(error 는 거품이 안 올라와 캡처로)
+  document.addEventListener('error', (e) => { if (e.target instanceof HTMLImageElement && e.target.classList.contains('poster')) e.target.remove(); }, true);
   function detailHtml(kind, x, titleId) {
     const t = V2.today, rows = [], blocks = [];
     const dl = (k, v) => { if (v) rows.push(`<div><dt>${k}</dt><dd>${v}</dd></div>`); };
     // 상세 사진은 이제 포스터만: 무엇의 포스터인지 대체 텍스트로 알려요 (내용은 아래 글로도 제공)
-    const img = (src, title) => (isWeb(src) ? `<img class="dt-img poster" src="${esc(src)}" alt="${esc(title)} 포스터" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : '');
+    const img = (src, title) => (isWeb(src) ? `<img class="dt-img poster" src="${esc(src)}" alt="${esc(title)} 포스터" loading="lazy" referrerpolicy="no-referrer">` : '');
     const due = (d) => (CNHv2.isDate(d) ? `${dayText(d)} ${ddPill(CNHv2.ddayOf(d, t))}` : '상시 모집');
     let meta = '', media = '', lede = '', dd = '';
     if (kind === 'news') {
@@ -125,7 +127,7 @@
     }
     // 마감일 캘린더에 넣기: 마감일이 오늘 이후인 공모전·채용만 (calEvent 가 아니면 null)
     const ev = CNHv2.calEvent(kind, x, t);
-    const cal = ev ? `<div class="dt-cal"><span>마감일 캘린더에 넣기</span><a class="btn sm" href="${esc(CNHv2.calGoogleUrl(ev))}" target="_blank" rel="noopener noreferrer">Google 캘린더</a>`
+    const cal = ev ? `<div class="dt-cal" role="group" aria-label="마감일 캘린더에 넣기"><span>마감일 캘린더에 넣기</span><a class="btn sm" href="${esc(CNHv2.calGoogleUrl(ev))}" target="_blank" rel="noopener noreferrer">Google 캘린더<span class="sr"> (새 탭)</span></a>`
       + `<button type="button" class="btn sm" data-ics="${kind}:${esc(x.id)}">다른 캘린더 (.ics)</button></div>` : '';
     return `<article class="dt"><div class="dt-top"><span class="dt-kind">${KIND_NAME[kind]}</span>${dd}</div>`
       + `<h2 class="dt-t"${titleId ? ` id="${titleId}"` : ''}>${esc(kind === 'job' ? x.role : x.title)}</h2>${meta ? `<p class="dt-meta">${esc(meta)}</p>` : ''}`

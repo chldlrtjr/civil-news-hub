@@ -14,3 +14,5 @@
 # 운영자 실명·근거 없는 수치가 든 옛 구조도(README용)는 공개 안 함
 /static/architecture_diagram.jpg
 !vercel.json
+# Vercel 빌드 단계의 데이터 번들 형식 검사 (vercel.json buildCommand)
+!check_data_bundle.js
