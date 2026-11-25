@@ -95,6 +95,17 @@ EXCLUDE_KEYWORDS = [
 # 이보다 오래된 기사는 수집하지 않음 (구글 RSS는 when:3d로 이미 제한, 네이버 직접 수집의 과거 기사 차단용)
 MAX_ARTICLE_AGE_DAYS = 7
 
+
+# shortcut: defusedxml 없이 DTD·엔티티 선언이 든 응답은 통째로 거부(정상 응답엔 없음), 파서를 바꿀 일이 생기면 defusedxml 로
+_XML_DTD = re.compile(rb"<!\s*(DOCTYPE|ENTITY)", re.I)
+
+
+def parse_xml_safely(data):
+    if _XML_DTD.search(data):
+        raise ValueError("DTD/엔티티 선언이 든 XML 은 거부해요")
+    return ET.fromstring(data)
+
+
 def clean_html(raw_html):
     """HTML 태그 제거 및 특수문자 변환"""
     if not raw_html:
@@ -143,7 +154,7 @@ def fetch_rss_for_term(term, when="3d"):
     try:
         with urllib.request.urlopen(req, timeout=8) as response:
             content = response.read()
-            root = ET.fromstring(content)
+            root = parse_xml_safely(content)
             return root.findall("./channel/item")
     except Exception as e:
         print(f"    [RSS 수집 에러 ({term})]: {e}")

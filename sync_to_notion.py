@@ -16,6 +16,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 PAGE_ID = "3d5009a14e198038ba3ff62b74d18e03"
 FILE_PATH = os.path.join(os.path.dirname(__file__), "NOTION_PORTFOLIO_GUIDE.md")
+HTTP_TIMEOUT = 30
 
 def parse_inline(text):
     """
@@ -230,7 +231,7 @@ def clear_existing_blocks(token, page_id):
         target_url = url + (f"?start_cursor={start_cursor}" if start_cursor else "")
         req = urllib.request.Request(target_url, headers=headers)
         try:
-            with urllib.request.urlopen(req) as resp:
+            with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT) as resp:
                 data = json.loads(resp.read().decode())
                 for b in data.get("results", []):
                     block_ids.append(b["id"])
@@ -246,7 +247,7 @@ def clear_existing_blocks(token, page_id):
         def del_block(bid):
             del_req = urllib.request.Request(f"https://api.notion.com/v1/blocks/{bid}", headers=headers, method="DELETE")
             try:
-                with urllib.request.urlopen(del_req) as r:
+                with urllib.request.urlopen(del_req, timeout=HTTP_TIMEOUT) as r:
                     return True
             except Exception:
                 return False
@@ -273,7 +274,7 @@ def append_blocks_to_notion(token, page_id, blocks):
         req = urllib.request.Request(url, data=payload, headers=headers, method="PATCH")
 
         try:
-            with urllib.request.urlopen(req) as resp:
+            with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT) as resp:
                 if resp.status == 200:
                     current_idx = (i // chunk_size) + 1
                     print(f"  ✅ [{current_idx}/{total_chunks}] 블록 업로드 완료 ({len(chunk)}개)")
@@ -288,21 +289,15 @@ def append_blocks_to_notion(token, page_id, blocks):
     return True
 
 def main():
-    token = os.environ.get("NOTION_TOKEN")
-    append_mode = False
-    
-    for arg in sys.argv[1:]:
-        if arg == "--append":
-            append_mode = True
-        elif not token:
-            token = arg.strip()
+    # 토큰은 환경변수로만: 명령행 인자는 프로세스 목록·셸 기록에 남아요
+    token = os.environ.get("NOTION_TOKEN", "").strip()
+    append_mode = "--append" in sys.argv[1:]
 
     if not token:
         print("=" * 60)
         print("📌 Notion 자동 업로드를 위한 토큰(API Key)이 필요합니다.")
         print("사용법:")
-        print("  1) python3 sync_to_notion.py <노션_시크릿_토큰>")
-        print("  2) export NOTION_TOKEN='secret_xxx' && python3 sync_to_notion.py")
+        print("  NOTION_TOKEN 환경변수에 넣고 실행: python3 sync_to_notion.py [--append]")
         print("=" * 60)
         sys.exit(1)
 
