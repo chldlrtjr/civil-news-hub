@@ -1,7 +1,7 @@
 #!/bin/bash
 # 매일 08:40 KST(crontab): 아침 요약을 Codex로 만들어 data/digest.json 으로 push 해요.
 # 09:00 trigger_digest.sh 가 Actions를 깨우면 Actions는 이 파일로 카드를 만들어 텔레그램 발송만 해요.
-# Codex 는 daily_digest.py 안에서 비밀 파일을 못 읽는 digest 사용자로 돌아요(server/setup_digest_user.sh).
+# Codex 는 daily_digest.py 안에서 도구(셸·웹검색 등)를 모두 끈 채 빈 임시 폴더에서 돌아요.
 cd /home/ubuntu/workspace || exit 1
 source server/deploy_guard.sh
 LOG=/home/ubuntu/workspace/cron_scrape.log

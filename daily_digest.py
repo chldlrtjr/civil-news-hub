@@ -30,6 +30,7 @@ import sys
 import json
 import argparse
 import subprocess
+import tempfile
 import unicodedata
 from datetime import datetime, timedelta, timezone
 
@@ -158,31 +159,26 @@ def parse_ai_items(text, n):
     return None
 
 
-# Codex 는 비밀 파일(.env·토큰·git 설정)을 읽을 수 없는 별도 OS 사용자 digest 로만 돌려요(server/setup_digest_user.sh).
-# 기사 글에 숨긴 지시를 따르더라도 읽을 수 있는 건 digest 자신의 Codex 로그인뿐이에요
-DIGEST_USER = "digest"
-CODEX_BIN = "/usr/bin/codex"  # sudoers 에 적힌 경로와 같아야 해요
-DIGEST_WORKDIR = "/home/digest/work"  # 빈 폴더
+# 요약은 글을 글로 바꾸는 일뿐이라 도구가 필요 없어요: 기사에 숨긴 지시가 파일을 읽거나 명령을 돌리지 못하게 전부 꺼요.
+# jcloud 는 학교에서 빌린 서버라 계정·sudo 같은 서버 설정은 바꾸지 않고, 실행 옵션으로만 막아요
+CODEX_OFF = ["shell_tool", "apps", "plugins", "browser_use", "browser_use_external", "computer_use", "image_generation", "memories"]
 
 
 def summarize_with_codex(articles):
     """jcloud에 ChatGPT 계정으로 로그인한 Codex CLI로 요약. 실패하면 None → 스니펫 요약"""
     prompt = build_prompt(articles)
-    cmd = [
-        # timeout 이 sudo 에 SIGTERM 을 보내면 sudo 가 codex 에 전해요(ubuntu 는 digest 프로세스를 직접 못 죽여요)
-        "timeout", "-k", "10", str(CODEX_TIMEOUT),
-        "sudo", "-n", "-u", DIGEST_USER, "-H", CODEX_BIN, "exec",
-        "--skip-git-repo-check", "--ephemeral", "-s", "read-only", "-c", 'web_search="disabled"',
-        "-C", DIGEST_WORKDIR, "-",
-    ]
     for attempt in range(CODEX_TRIES):
-        try:
-            # 프롬프트는 stdin, 답은 stdout 으로만 받아요(digest 홈은 700 이라 파일로는 못 주고받아요)
-            r = subprocess.run(cmd, input=prompt, capture_output=True, text=True, encoding="utf-8",
-                               timeout=CODEX_TIMEOUT + 30, cwd="/")
-        except (OSError, subprocess.TimeoutExpired) as e:
-            print(f"[-] Codex 실행 실패: {e}")
-            continue
+        with tempfile.TemporaryDirectory() as tmp:  # 빈 폴더에서 실행
+            cmd = ["timeout", "-k", "10", str(CODEX_TIMEOUT), "codex", "exec",
+                   "--skip-git-repo-check", "--ephemeral", "-s", "read-only", "-c", 'web_search="disabled"',
+                   *[a for f in CODEX_OFF for a in ("-c", f"features.{f}=false")], "-C", tmp, "-"]
+            try:
+                # 프롬프트는 stdin, 답은 stdout 으로만 받아요
+                r = subprocess.run(cmd, input=prompt, capture_output=True, text=True, encoding="utf-8",
+                                   timeout=CODEX_TIMEOUT + 30, cwd=tmp)
+            except (OSError, subprocess.TimeoutExpired) as e:
+                print(f"[-] Codex 실행 실패: {e}")
+                continue
         text = r.stdout or ""
         items = parse_ai_items(text, len(articles)) if r.returncode == 0 else None
         if items:

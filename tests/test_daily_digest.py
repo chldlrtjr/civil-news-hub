@@ -78,10 +78,12 @@ def test_codex_answer_with_fence_parsed_and_failure_retried(monkeypatch):
     monkeypatch.setattr(dd, "secret_windows", set)
     assert dd.summarize_with_codex(arts) == good
     cmd, kw = calls[0]
-    # 비밀 파일을 못 읽는 digest 사용자로, 프롬프트는 stdin·답은 stdout 으로만 주고받아요
-    assert len(calls) == 2 and cmd[cmd.index("sudo"):][:5] == ["sudo", "-n", "-u", "digest", "-H"]
-    assert cmd[cmd.index("-H") + 1:][:2] == [dd.CODEX_BIN, "exec"] and cmd[-1] == "-" and "-o" not in cmd
-    assert 'web_search="disabled"' in cmd and kw["input"] and kw["cwd"] == "/"
+    # 학교 서버라 계정·sudo 를 바꾸지 않아요: ubuntu 그대로 실행하되 도구(셸·웹검색 등)를 실행 옵션으로 끄고,
+    # 빈 임시 폴더에서 프롬프트는 stdin·답은 stdout 으로만 주고받아요
+    assert len(calls) == 2 and "sudo" not in cmd and cmd[cmd.index("codex"):][:2] == ["codex", "exec"]
+    assert cmd[-1] == "-" and "-o" not in cmd and 'web_search="disabled"' in cmd
+    assert "features.shell_tool=false" in cmd and kw["input"]
+    assert kw["cwd"] == cmd[cmd.index("-C") + 1] and kw["cwd"] != "/"
 
 
 def test_codex_failure_log_hides_secret_like_stderr(monkeypatch, tmp_path, capsys):
