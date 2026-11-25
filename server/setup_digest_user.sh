@@ -54,7 +54,8 @@ echo "$OWNER ALL=($U) NOPASSWD: $CODEX_BIN" > "$tmp"
 chmod 440 "$tmp"
 visudo -cf "$tmp" >/dev/null
 install -m 440 -o root -g root "$tmp" "$SUDOERS_FILE"
-visudo -c >/dev/null
+# 전체 설정이 깨지면 sudo 를 아예 못 쓰게 되니, 그때는 방금 넣은 파일을 바로 빼요
+visudo -c >/dev/null || { rm -f "$SUDOERS_FILE"; echo "sudoers 전체 검사 실패: $SUDOERS_FILE 를 다시 뺐어요"; exit 1; }
 
 # 4. ubuntu 홈 잠그기 (지금 755)
 chmod 700 "$OWNER_HOME"
