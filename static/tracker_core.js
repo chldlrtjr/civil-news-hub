@@ -97,7 +97,25 @@
     return items.slice().sort((x, y) => (!x.deadline) - (!y.deadline) || (x.deadline < y.deadline ? 1 : x.deadline > y.deadline ? -1 : 0));
   }
 
-  const API = { STAGES, LABEL, startFromPeriod, stageOf, needsAttention, makeCard, refreshFromSource, mergeTracked, visible, sameTracked, sortActive, sortRecords, sortPicker, daysBetween };
+  // Supabase user_saved 상한(supabase/schema.sql)과 같은 값: 넘으면 DB 가 저장을 거절하므로 올리기 전에 잘라요
+  const MAX_SAVED = 1000, MAX_TRACKED = 200, MAX_TRACKED_BYTES = 90000;
+  const bytes = (v) => new TextEncoder().encode(JSON.stringify(v)).length;
+  const capIds = (ids, max = MAX_SAVED) => (ids.length > max ? ids.slice(-max) : ids);
+  // 오래된 삭제 표시부터, 그다음 오래 손대지 않은 카드부터 빼요 (남는 카드 순서는 그대로)
+  function capTracked(cards, max = MAX_TRACKED, maxBytes = MAX_TRACKED_BYTES) {
+    let n = cards.length, size = bytes(cards);
+    if (n <= max && size <= maxBytes) return cards;
+    const order = cards.slice().sort((x, y) => (x.deleted ? 0 : 1) - (y.deleted ? 0 : 1)
+      || ((x.updatedAt || '') < (y.updatedAt || '') ? -1 : (x.updatedAt || '') > (y.updatedAt || '') ? 1 : 0));
+    const drop = new Set();
+    for (const card of order) {
+      if (n <= max && size <= maxBytes) break;
+      drop.add(card); n--; size -= bytes(card) + 1;
+    }
+    return cards.filter((card) => !drop.has(card));
+  }
+
+  const API = { MAX_SAVED, MAX_TRACKED, MAX_TRACKED_BYTES, capIds, capTracked, STAGES, LABEL, startFromPeriod, stageOf, needsAttention, makeCard, refreshFromSource, mergeTracked, visible, sameTracked, sortActive, sortRecords, sortPicker, daysBetween };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   else window.CNHTracker = API;
 })();

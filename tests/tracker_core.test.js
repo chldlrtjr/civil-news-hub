@@ -117,3 +117,35 @@ test('resultLabel: 대략 시기 글자 복사·갱신', () => {
   assert.equal(k.resultLabel, '12월 중');
   assert.equal(refreshFromSource({...k, resultLabel:''}, {id:'1', resultDate:'2026-12-20', resultLabel:'12월 중'}).resultLabel, '12월 중');
 });
+
+// Supabase user_saved 상한(supabase/schema.sql)을 넘지 않게 올리기 전에 잘라요
+const { capTracked, capIds, MAX_TRACKED, MAX_TRACKED_BYTES, MAX_SAVED } = require('../static/tracker_core.js');
+const tomb = (id, at) => ({ id, deleted: true, updatedAt: at });
+test('상한 값은 schema.sql 제약과 맞아요 (ids 1000개, tracked 200개)', () => {
+  assert.equal(MAX_SAVED, 1000);
+  assert.equal(MAX_TRACKED, 200);
+  const sql = require('node:fs').readFileSync(require('node:path').join(__dirname, '..', 'supabase', 'schema.sql'), 'utf8');
+  assert.match(sql, /jsonb_array_length\(ids\) <= 1000/);
+  assert.match(sql, /jsonb_array_length\(tracked\) <= 200/);
+});
+test('capTracked: 상한 안이면 그대로', () => {
+  const l = [c({ id: 'a' }), tomb('b', '2026-11-01T00:00:00Z')];
+  assert.deepEqual(capTracked(l), l);
+});
+test('capTracked: 개수를 넘으면 오래된 삭제 표시부터, 그다음 오래된 카드부터 빼고 순서는 유지', () => {
+  const l = [c({ id: 'live-old', updatedAt: '2026-01-01T00:00:00Z' }), tomb('t-new', '2026-11-02T00:00:00Z'),
+    c({ id: 'live-new', updatedAt: '2026-11-03T00:00:00Z' }), tomb('t-old', '2026-10-01T00:00:00Z')];
+  assert.deepEqual(capTracked(l, 3).map((x) => x.id), ['live-old', 't-new', 'live-new']);
+  assert.deepEqual(capTracked(l, 1).map((x) => x.id), ['live-new']);
+});
+test('capTracked: 바이트 상한을 넘으면 줄여요', () => {
+  const big = Array.from({ length: 50 }, (_, i) => c({ id: 'b' + i, title: '가'.repeat(1000), updatedAt: '2026-11-' + String(i % 28 + 1).padStart(2, '0') }));
+  const out = capTracked(big);
+  assert.ok(Buffer.byteLength(JSON.stringify(out)) <= MAX_TRACKED_BYTES);
+  assert.ok(out.length > 0 && out.length < 50);
+});
+test('capIds: 최근에 넣은 쪽(뒤쪽) max 개만 남겨요', () => {
+  assert.deepEqual(capIds(['a', 'b', 'c'], 2), ['b', 'c']);
+  assert.deepEqual(capIds(['a'], 2), ['a']);
+  assert.equal(capIds(Array.from({ length: 1005 }, (_, i) => 'i' + i)).length, 1000);
+});
