@@ -95,6 +95,16 @@ class AlbaFailureTest(unittest.TestCase):
                 jbnu_scraper.scrape_jbnu_albas(max_pages=1)
             replace.assert_not_called()
 
+    def test_page_without_rows_raises_and_keeps_file(self):
+        # 200으로 온 점검 페이지·구조 변경: 빈 목록으로 덮어쓰지 않고 실패(알림)
+        resp = mock.MagicMock()
+        resp.__enter__.return_value.read.return_value = "<html><body>시스템 점검 중입니다</body></html>".encode()
+        with mock.patch.object(jbnu_scraper.urllib.request, "urlopen", return_value=resp), \
+                mock.patch.object(jbnu_scraper.os, "replace") as replace:
+            with self.assertRaises(jbnu_scraper.AlbaFetchError):
+                jbnu_scraper.scrape_jbnu_albas(max_pages=1)
+            replace.assert_not_called()
+
 
 class SwunivPeriodTest(unittest.TestCase):
     ref = date(2026, 10, 28)
@@ -139,6 +149,23 @@ class SwunivDuplicateTest(unittest.TestCase):
 class SwunivFailureTest(unittest.TestCase):
     def test_both_boards_unreachable_raises(self):
         with mock.patch.object(swuniv_scraper, "safe_fetch", return_value=None), \
+                mock.patch.object(swuniv_scraper.os, "replace") as replace:
+            with self.assertRaises(swuniv_scraper.SwunivFetchError):
+                swuniv_scraper.save_swuniv_programs()
+            replace.assert_not_called()
+
+    def test_boards_open_but_without_rows_raise(self):
+        with mock.patch.object(swuniv_scraper, "safe_fetch", return_value="<html><body>점검 중</body></html>"), \
+                mock.patch.object(swuniv_scraper.os, "replace") as replace:
+            with self.assertRaises(swuniv_scraper.SwunivFetchError):
+                swuniv_scraper.save_swuniv_programs()
+            replace.assert_not_called()
+
+    def test_one_board_unreadable_raises(self):
+        # 한 게시판만 실패해도 저장하지 않아요 (그 게시판 항목이 조용히 사라지지 않게)
+        def fake(url):
+            return None if "gc=Program" in url else "<table><tbody><tr>" + "<td>1</td>" * 5 + "</tr></tbody></table>"
+        with mock.patch.object(swuniv_scraper, "safe_fetch", side_effect=fake), \
                 mock.patch.object(swuniv_scraper.os, "replace") as replace:
             with self.assertRaises(swuniv_scraper.SwunivFetchError):
                 swuniv_scraper.save_swuniv_programs()

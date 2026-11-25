@@ -332,6 +332,7 @@ def scrape_jbnu_albas(max_pages=2):
     all_jobs = []
     seen_ids = set()
     ok_pages = 0
+    rows_seen = 0  # 마감 글까지 센 게시판 행 수: 열렸는데 0이면 사이트 구조가 바뀐 것
     closed_count = 0
 
     for page in range(1, max_pages + 1):
@@ -352,6 +353,7 @@ def scrape_jbnu_albas(max_pages=2):
             continue
 
         trs = re.findall(r'<tr class="tr-normal".*?</tr>', table_m[0], re.DOTALL)
+        rows_seen += len(trs)
         for tr in trs:
             # 고유 번호
             pst_m = re.search(r'pf_DetailMove\(\'(\d+)\'\)', tr)
@@ -496,6 +498,8 @@ def scrape_jbnu_albas(max_pages=2):
     # 게시판을 한 페이지도 못 읽었으면 기존 데이터 유지 + 실패 처리 (cron 알림)
     if ok_pages == 0:
         raise AlbaFetchError("전북대 아르바이트 게시판에 접속하지 못했습니다 — 기존 데이터를 유지합니다")
+    if rows_seen == 0:
+        raise AlbaFetchError("게시판은 열렸지만 글 목록을 하나도 찾지 못했습니다(사이트 구조 변경·점검 의심) — 기존 데이터를 유지합니다")
     if closed_count:
         print(f"  [-] 접수 마감 공고 {closed_count}건 제외")
 

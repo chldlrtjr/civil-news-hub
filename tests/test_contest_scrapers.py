@@ -236,6 +236,31 @@ class SourceFallbackTest(unittest.TestCase):
         self.assertEqual(raw[0]["source"], "manual")
 
 
+class JbnuBoardTitleFilterTest(unittest.TestCase):
+    def test_only_contest_like_titles_become_candidates(self):
+        # 본문에 '공모'가 들어 있어 검색에 걸린 장학금·졸업·모집 공지는 후보에서 빠져요 (2026-11-25 실제 노출 사례)
+        titles = ["AI 바이브 코딩 챌린지 공모전", "2026학년도 AI Agent 활용 문제해결 경진대회 운영 안내",
+                  "2027학년도 1학기 국가장학금 1차 신청 및 '신입생 전액 장학금' 안내",
+                  "2026학년도 전기 졸업자격인증 신청 안내", "제27기 학생홍보대사 모집 안내"]
+        rows = "".join(f'<tr><td class="td-title"><a class="title" onclick="pf_DetailMove(\'{i}\')">{t}</a></td></tr>'
+                       for i, t in enumerate(titles))
+        resp = mock.MagicMock()
+        resp.__enter__.return_value.read.return_value = f"<table><tbody>{rows}</tbody></table>".encode()
+        with mock.patch.object(jbnu.urllib.request, "urlopen", return_value=resp):
+            found, _ = jbnu.scrape_jbnu_board("https://x", 1, ["공모"], max_pages=1)
+        self.assertEqual([f["title"] for f in found], titles[:2])
+
+    def test_maintenance_page_without_board_table_is_failure(self):
+        # 200으로 온 점검 페이지를 성공으로 세면 전북대 공모전이 조용히 0건이 돼요 → JbnuFetchError 로 이전 항목 유지
+        resp = mock.MagicMock()
+        resp.__enter__.return_value.read.return_value = "<html><body>시스템 점검 중</body></html>".encode()
+        with mock.patch.object(jbnu.urllib.request, "urlopen", return_value=resp):
+            found, ok = jbnu.scrape_jbnu_board("https://x", 1, ["공모"], max_pages=1)
+            self.assertEqual((found, ok), ([], 0))
+            with self.assertRaises(jbnu.JbnuFetchError):
+                jbnu.fetch_jbnu_contest_notices()
+
+
 if __name__ == "__main__":
     unittest.main()
 

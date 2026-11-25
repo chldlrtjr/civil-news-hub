@@ -250,7 +250,7 @@ def fetch_swuniv_programs(max_pages=3):
     """SW중심대학사업단 온라인 신청 게시판(gc=Program) 크롤링"""
     programs = []
     seen_ids = set()
-    ok_pages = 0
+    rows_seen = 0
     now_kst = datetime.now(KST)
 
     for page in range(1, max_pages + 1):
@@ -258,10 +258,10 @@ def fetch_swuniv_programs(max_pages=3):
         html = safe_fetch(url)
         if not html:
             continue
-        ok_pages += 1
 
         soup = BeautifulSoup(html, "html.parser")
         items = soup.select("a.Fix_ListBtns")
+        rows_seen += len(items)
         if not items:
             continue
 
@@ -353,7 +353,7 @@ def fetch_swuniv_programs(max_pages=3):
                 "collected_at": now_kst.strftime("%Y-%m-%d %H:%M")
             })
 
-    return programs if ok_pages else None  # 한 페이지도 못 읽었으면 None (게시판 0건과 구분)
+    return programs if rows_seen else None  # 못 읽었거나, 열렸는데 글 목록이 없으면(구조 변경) None
 
 
 def fetch_swuniv_notices(existing_programs=None, max_pages=2):
@@ -362,7 +362,7 @@ def fetch_swuniv_notices(existing_programs=None, max_pages=2):
     """
     notices = []
     seen_ids = set()
-    ok_pages = 0
+    rows_seen = 0
     now_kst = datetime.now(KST)
     today = now_kst.date()
 
@@ -380,10 +380,10 @@ def fetch_swuniv_notices(existing_programs=None, max_pages=2):
         html = safe_fetch(url)
         if not html:
             continue
-        ok_pages += 1
 
         soup = BeautifulSoup(html, "html.parser")
         rows = soup.select("table tbody tr")
+        rows_seen += sum(len(tr.find_all("td")) >= 5 for tr in rows)  # 레이아웃용 표가 아닌 실제 게시글 행만
         if not rows:
             continue
 
@@ -545,19 +545,21 @@ def fetch_swuniv_notices(existing_programs=None, max_pages=2):
                 "collected_at": now_kst.strftime("%Y-%m-%d %H:%M")
             })
 
-    return notices if ok_pages else None  # 한 페이지도 못 읽었으면 None (게시판 0건과 구분)
+    return notices if rows_seen else None  # 못 읽었거나, 열렸는데 글 목록이 없으면(구조 변경) None
 
 def save_swuniv_programs():
-    """두 게시판을 모두 읽지 못하면 SwunivFetchError (기존 데이터 유지)"""
+    """두 게시판 중 하나라도 못 읽거나 글 목록이 없으면 SwunivFetchError (기존 데이터 유지)"""
     os.makedirs(DATA_DIR, exist_ok=True)
 
     print("[*] Fetching SW Univ programs from swuniv.jbnu.ac.kr...")
     progs = fetch_swuniv_programs(max_pages=3)
     nots = fetch_swuniv_notices(existing_programs=progs, max_pages=2)
-    if progs is None and nots is None:
-        raise SwunivFetchError("SW사업단 프로그램·공지 게시판에 모두 접속하지 못했습니다 — 기존 데이터를 유지합니다")
+    # 한쪽만 실패해도 저장하지 않아요: 그 게시판 항목만 조용히 사라지지 않게 (기존 데이터 유지 + 알림)
+    failed = [name for name, v in (("프로그램", progs), ("공지", nots)) if v is None]
+    if failed:
+        raise SwunivFetchError(f"SW사업단 {'·'.join(failed)} 게시판을 읽지 못했거나 글 목록이 없습니다(구조 변경 의심) — 기존 데이터를 유지합니다")
 
-    all_programs = (progs or []) + (nots or [])
+    all_programs = progs + nots
     # 마감일 임박순 정렬 (상시모집 999는 후순위)
     all_programs.sort(key=lambda x: (x["days_left"] if x["days_left"] >= 0 else 9999))
 

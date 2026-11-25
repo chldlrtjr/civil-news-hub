@@ -41,6 +41,7 @@ test('서버에 세션이 없어 라이브러리가 에러를 돌려줘도 이 �
   const b = boot({ error: { name: 'AuthSessionMissingError', message: 'Auth session missing!' } });
   await b.clickLogout();
   assert.ok(b.calls.removed.includes('sb-ref-auth-token'));
+  assert.ok(b.calls.removed.includes('cnh-saved') && b.calls.removed.includes('cnh-tracked'));
   assert.equal(b.store['sb-ref-auth-token'], undefined);
   assert.equal(b.calls.reloads, 1);
 });

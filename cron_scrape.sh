@@ -37,12 +37,14 @@ run_step "[6/8] 정적 데이터 번들 컴파일 중" build_data_bundle.py || t
 
 # 7. 공모전 데이터 무결성 전수 검증 (GEMINI.md Rule 1-⑦) — 실패 시 잘못된 데이터가 배포되지 않도록 push 중단
 INTEGRITY_OK=1
+DATA_OK=1  # 이번 회차 데이터가 사이트에 올라갔거나 바뀐 게 없음 (생존 신호 성공/실패 구분)
 run_step "[7/8] 공모전 무결성 전수 검증 중" test_contests_integrity.py || INTEGRITY_OK=0
 
 # 8. GitHub 자동 배포 (data 변경분 commit + push → GitHub Pages 자동 반영)
 echo "[8/8] GitHub 자동 배포 중..." >> "$LOG_FILE"
 if [ "$INTEGRITY_OK" -eq 0 ]; then
   echo "  ⛔ 무결성 검증 실패 — 이번 회차 push 건너뜀" >> "$LOG_FILE"
+  DATA_OK=0
 else
 git add data/news.json data/contests.json data/jobs.json data/work24_cache.json data/jbnu_albas.json data/swuniv_programs.json static/cnh_data_bundle.js >> "$LOG_FILE" 2>&1
 
@@ -66,6 +68,7 @@ else
   if [ "$PUSH_OK" -eq 0 ]; then
     echo "  ❌ push 3회 연속 실패 — 다음 크롤링 시 재시도됩니다." >> "$LOG_FILE"
     FAILED_STEPS+=("git push")
+    DATA_OK=0
   else
     echo "  ✅ GitHub push 성공 → GitHub Pages 자동 배포 트리거됨" >> "$LOG_FILE"
   fi
@@ -92,6 +95,14 @@ if [ "$CURRENT_FAILS" != "$PREV_FAILS" ]; then
   if "$SCRIPT_DIR/venv/bin/python3" kakao_notifier.py --message "$ALERT" >> "$LOG_FILE" 2>&1; then
     echo "$CURRENT_FAILS" > "$FAIL_STATE_FILE"  # 발송 성공 시에만 상태 저장 → 실패하면 다음 회차에 재시도
   fi
+fi
+
+# 생존 신호: 핑이 끊기거나(jcloud 정지) /fail(이번 회차 데이터가 사이트에 못 올라감)이면 healthchecks.io 가 메일로 알려요
+# 수집기 일부 실패는 카카오 알림 몫이라 여기선 성공으로 둬요 (같은 일로 알림이 두 번 오지 않게)
+HC_PING_URL="$(grep -m1 '^HC_PING_URL=' "$SCRIPT_DIR/.env" 2>/dev/null | cut -d= -f2- | sed 's/[[:space:]]#.*//' | tr -d "\"' \r")"
+if [ -n "$HC_PING_URL" ]; then
+  [ "$DATA_OK" -eq 1 ] || HC_PING_URL="${HC_PING_URL%/}/fail"
+  curl -fsS -m 10 --retry 3 "$HC_PING_URL" > /dev/null 2>&1 || echo "  ⚠️  생존 신호 전송 실패" >> "$LOG_FILE"
 fi
 
 # 9. 잔여 좀비 브라우저 프로세스 정리 (메모리 고갈 방지)

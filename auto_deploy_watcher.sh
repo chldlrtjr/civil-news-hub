@@ -39,7 +39,10 @@ while true; do
     LOCAL_HASH=$(git rev-parse HEAD 2>/dev/null)
 
     # 2. 로컬과 원격의 최신 커밋 해시 비교
-    if [ -n "$LOCAL_HASH" ] && [ -n "$REMOTE_HASH" ] && [ "$LOCAL_HASH" != "$REMOTE_HASH" ]; then
+    # 원격이 로컬 이력에 이미 있으면(로컬이 같거나 앞섬 = 수집 커밋 push 대기·재시도 중) 배포하지 않아요:
+    # reset --hard 가 아직 못 올린 수집 커밋을 지우지 않게. 원격 커밋이 로컬에 없으면 is-ancestor 가 실패 → 배포
+    if [ -n "$LOCAL_HASH" ] && [ -n "$REMOTE_HASH" ] && [ "$LOCAL_HASH" != "$REMOTE_HASH" ] \
+        && ! git merge-base --is-ancestor "$REMOTE_HASH" HEAD 2>/dev/null; then
         NOW=$(date '+%Y-%m-%d %H:%M:%S')
 
         echo ""
@@ -50,7 +53,8 @@ while true; do
 
         # 3. 배포 스크립트 실행 (deploy.sh 내에서 git fetch & reset 수행)
         if [ -x "$DEPLOY_SCRIPT" ] || [ -f "$DEPLOY_SCRIPT" ]; then
-            bash "$DEPLOY_SCRIPT"
+            # 수집 cron과 같은 잠금: 수집 도중 reset --hard 로 그 회차 데이터를 지우지 않게
+            flock /tmp/cnh_git.lock bash "$DEPLOY_SCRIPT"
             DEPLOY_RESULT=$?
             if [ $DEPLOY_RESULT -eq 0 ]; then
                 echo "[$NOW] ✅ 자동 배포가 성공적으로 완료되었습니다!"

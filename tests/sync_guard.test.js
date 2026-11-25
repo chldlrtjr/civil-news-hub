@@ -11,29 +11,30 @@ const indexBlock = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => 
 const SOURCES = [['old.html', indexBlock], ['static/v2_state.js', fs.readFileSync(path.join(__dirname, '..', 'static', 'v2_state.js'), 'utf8')]];
 const Tracker = require('../static/tracker_core.js');
 
-function boot(block, remoteRow) {
+function boot(block, remoteRow, initialStore = {}) {
   const calls = [];
-  let authCb = null;
+  let authCb = null, clickH = null;
   let resolveSelect;
   const fakeSB = {
-    auth: { onAuthStateChange: cb => { authCb = cb; }, signOut: async () => {}, signInWithOAuth: async () => {} },
+    auth: { onAuthStateChange: cb => { authCb = cb; }, signOut: async () => { calls.push(['signOut']); return { error: null }; }, signInWithOAuth: async () => {} },
     from: () => ({
       upsert: async row => { calls.push(['upsert', JSON.parse(JSON.stringify(row))]); return { error: null }; },
       select: () => ({ eq: () => ({ maybeSingle: () => { calls.push(['select']); return new Promise(r => { resolveSelect = () => r({ data: remoteRow, error: null }); }); } }) }),
     }),
   };
-  const store = {};
+  const store = { ...initialStore };
   const ctx = {
     window: { supabase: { createClient: () => fakeSB } },
     localStorage: { getItem: k => store[k] ?? null, setItem: (k, v) => { store[k] = v; }, removeItem: k => { delete store[k]; } },
-    document: { addEventListener: () => {}, hidden: false, querySelectorAll: () => [] },
+    document: { addEventListener: (t, f) => { if (t === 'click') clickH = f; }, hidden: false, querySelectorAll: () => [] },
     navigator: { userAgent: 'node' }, location: { origin: 'x', pathname: '/', href: 'x' },
     matchMedia: () => ({ matches: false }), console, setTimeout, clearTimeout, Date, JSON, Promise, Map, Set,
     CNHTracker: Tracker, alert: () => {},
   };
   vm.createContext(ctx);
-  vm.runInContext(block + '\n;this.__t = { get tracked(){ return tracked; }, set tracked(v){ tracked = v; }, persistTracked, trackRemove, pullSavedRemote };', ctx);
-  return { ctx, calls, login: () => authCb('SIGNED_IN', { user: { id: 'u1', user_metadata: {} } }), resolveSelect: () => resolveSelect() };
+  vm.runInContext(block + '\n;this.__t = { get saved(){ return saved; }, get tracked(){ return tracked; }, set tracked(v){ tracked = v; }, persistTracked, persistSaved, trackRemove, pullSavedRemote };', ctx);
+  return { ctx, calls, store, login: () => authCb('SIGNED_IN', { user: { id: 'u1', user_metadata: {} } }), emit: (ev, s) => authCb(ev, s), resolveSelect: () => resolveSelect(),
+    click: auth => clickH({ target: { closest: () => ({ dataset: { auth } }) } }) };
 }
 const tick = (ms = 0) => new Promise(r => setTimeout(r, ms));
 
@@ -73,3 +74,107 @@ test(`[${name}] 원격과 같은 내용이면 탭에 돌아올 때 다시 저장
   assert.equal(b.calls.filter(c => c[0] === 'upsert').length, 0);
 });
 }
+
+// 아래는 v2_state.js 에만 고친 규칙 (old.html 은 2026-11-24부터 배포 제외)
+const V2 = SOURCES[1][1];
+test('[static/v2_state.js] 다른 기기에서 저장 취소한 북마크는 탭에 돌아와도 되살아나지 않아요', async () => {
+  const row = { ids: ['X'], tracked: [] };
+  const b = boot(V2, row);
+  b.login(); await tick(5); b.resolveSelect(); await tick(20);
+  assert.deepEqual([...b.ctx.__t.saved], ['X']);
+  row.ids = [];  // 다른 기기에서 X 저장 취소
+  b.ctx.__t.pullSavedRemote(); await tick(5); b.resolveSelect(); await tick(400);
+  assert.deepEqual([...b.ctx.__t.saved], []);
+  assert.equal(b.calls.filter(c => c[0] === 'upsert').length, 0);
+});
+
+test('[static/v2_state.js] 로그아웃하면 이 브라우저의 저장 목록·진행 카드를 지우고 다음 계정에 섞지 않아요', async () => {
+  const row = { ids: ['X'], tracked: [Tracker.makeCard('contest', { id: 'c1', title: 'x' }, '2026-11-19', '2026-11-19T01:00:00Z')] };
+  const b = boot(V2, row);
+  b.login(); await tick(5); b.resolveSelect(); await tick(20);
+  assert.ok(b.store['cnh-saved'].includes('X'));
+  b.emit('SIGNED_OUT', null); await tick(5);
+  assert.deepEqual([...b.ctx.__t.saved], []);
+  assert.equal(b.ctx.__t.tracked.length, 0);
+  assert.equal(b.store['cnh-saved'], undefined);
+  assert.equal(b.store['cnh-tracked'], undefined);
+  row.ids = []; row.tracked = [];  // 다음 사람(u2)의 빈 계정
+  b.emit('SIGNED_IN', { user: { id: 'u2', user_metadata: {} } }); await tick(5); b.resolveSelect(); await tick(400);
+  assert.equal(b.calls.filter(c => c[0] === 'upsert').length, 0);
+});
+
+const ups = b => b.calls.filter(c => c[0] === 'upsert');
+test('[static/v2_state.js] 비로그인 때 모은 북마크는 첫 로그인 때 계정에 합쳐요', async () => {
+  const b = boot(V2, { ids: ['B'], tracked: [] }, { 'cnh-saved': '["A"]' });
+  b.login(); await tick(5); b.resolveSelect(); await tick(400);
+  assert.deepEqual([...b.ctx.__t.saved].sort(), ['A', 'B']);
+  assert.deepEqual(ups(b).at(-1)[1].ids.sort(), ['A', 'B']);
+  assert.equal(b.store['cnh-saved-uid'], 'u1');
+});
+
+test('[static/v2_state.js] 새로고침해도 다른 기기에서 저장 취소한 북마크가 되살아나지 않아요 (이미 이 계정 사본)', async () => {
+  const b = boot(V2, { ids: [], tracked: [] }, { 'cnh-saved': '["X"]', 'cnh-saved-uid': 'u1' });
+  b.login(); await tick(5); b.resolveSelect(); await tick(400);
+  assert.deepEqual([...b.ctx.__t.saved], []);
+  assert.equal(ups(b).length, 0);
+});
+
+test('[static/v2_state.js] 다른 계정의 사본은 새 계정에 섞지 않아요', async () => {
+  const b = boot(V2, { ids: ['B'], tracked: [] }, { 'cnh-saved': '["A"]', 'cnh-saved-uid': 'other' });
+  b.login(); await tick(5); b.resolveSelect(); await tick(400);
+  assert.deepEqual([...b.ctx.__t.saved], ['B']);
+  assert.equal(ups(b).length, 0);
+});
+
+test('[static/v2_state.js] 불러오는 사이 로그아웃하면 늦게 온 응답으로 옛 계정 목록을 다시 쓰지 않아요', async () => {
+  const b = boot(V2, { ids: ['SECRET'], tracked: [] });
+  b.login(); await tick(5);
+  b.emit('SIGNED_OUT', null); await tick(5);
+  b.resolveSelect(); await tick(20);
+  assert.deepEqual([...b.ctx.__t.saved], []);
+  assert.equal(b.store['cnh-saved'], undefined);
+});
+
+test('[static/v2_state.js] 계정 사본이 남은 채 로그인이 풀린 상태로 열면(세션 만료·공용 PC) 지워요', async () => {
+  const b = boot(V2, null, { 'cnh-saved': '["X"]', 'cnh-tracked': '[]', 'cnh-saved-uid': 'u1' });
+  b.emit('INITIAL_SESSION', null); await tick(5);
+  assert.deepEqual([...b.ctx.__t.saved], []);
+  assert.equal(b.store['cnh-saved'], undefined);
+  assert.equal(b.store['cnh-saved-uid'], undefined);
+});
+
+test('[static/v2_state.js] 비로그인 목록은 로그인 안 한 상태로 열어도 그대로예요', async () => {
+  const b = boot(V2, null, { 'cnh-saved': '["X"]' });
+  b.emit('INITIAL_SESSION', null); await tick(5);
+  assert.deepEqual([...b.ctx.__t.saved], ['X']);
+});
+
+test('[static/v2_state.js] 불러오는 사이 누른 북마크는 지워지지 않고 올라가요', async () => {
+  const b = boot(V2, { ids: ['OLD'], tracked: [] });
+  b.login(); await tick(5); b.resolveSelect(); await tick(20);
+  b.ctx.__t.pullSavedRemote(); await tick(5);
+  b.ctx.__t.saved.add('NEW'); b.ctx.__t.persistSaved();
+  b.resolveSelect(); await tick(400);
+  assert.deepEqual([...b.ctx.__t.saved].sort(), ['NEW', 'OLD']);
+  assert.deepEqual(ups(b).at(-1)[1].ids.sort(), ['NEW', 'OLD']);
+});
+
+test('[static/v2_state.js] 저장 직후 로그아웃해도 그 변경을 먼저 계정에 올려요', async () => {
+  const b = boot(V2, { ids: [], tracked: [] });
+  b.login(); await tick(5); b.resolveSelect(); await tick(20);
+  b.ctx.__t.saved.add('Y'); b.ctx.__t.persistSaved();
+  await b.click('logout');
+  const order = b.calls.map(c => c[0]).filter(n => n !== 'select');
+  assert.deepEqual(order, ['upsert', 'signOut']);
+  assert.deepEqual(ups(b)[0][1].ids, ['Y']);
+});
+
+test('[static/v2_state.js] 첫 불러오기 전에 누른 변경이 계정과 같아지면 다음 탭 복귀 불러오기를 막지 않아요', async () => {
+  const b = boot(V2, { ids: ['X'], tracked: [] }, { 'cnh-saved': '["X"]', 'cnh-saved-uid': 'u1' });
+  b.login(); await tick(5);
+  b.ctx.__t.persistSaved(); await tick(350);  // 불러오기 전 변경: 아직 못 올림
+  b.resolveSelect(); await tick(20);
+  const before = b.calls.filter(c => c[0] === 'select').length;
+  b.ctx.__t.pullSavedRemote(); await tick(5);
+  assert.equal(b.calls.filter(c => c[0] === 'select').length, before + 1);
+});

@@ -57,12 +57,12 @@ svg{width:20px;height:20px;flex:none}
 #v2pc .logo{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:600;white-space:nowrap}
 #v2pc .logo b,#v2m .logo b{font-size:14px;background:var(--ink);color:var(--bg);padding:4px 6px;border-radius:8px}
 #v2pc .tabs{display:flex;gap:4px;flex:1}
-#v2pc .tabs a{padding:8px 12px;border-radius:8px;font-size:16px;color:var(--muted);transition:color .3s,background-color .3s}
+#v2pc .tabs a{padding:8px 12px;border-radius:8px;font-size:16px;white-space:nowrap;color:var(--muted);transition:color .3s,background-color .3s}
 #v2pc .tabs a:hover{color:var(--ink)}
 #v2pc .tabs a[aria-current="page"]{color:var(--ink);font-weight:600;background:var(--surface-2)}
 #v2pc .util{display:flex;align-items:center;gap:8px}
 #v2pc .ibtn{display:grid;place-items:center;width:40px;height:40px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
-#v2pc .login{height:40px;padding:0 16px;border-radius:12px;background:var(--ink);color:var(--bg);font-size:14px;font-weight:600}
+#v2pc .login{height:40px;padding:0 16px;white-space:nowrap;border-radius:12px;background:var(--ink);color:var(--bg);font-size:14px;font-weight:600}
 #v2pc .who{font-size:14px;color:var(--muted)}
 #v2pc main{padding-block:40px 120px}
 
@@ -376,6 +376,13 @@ a.tk-t:hover{text-decoration:underline}
   #v2pc .gnb .wrap{gap:20px}
   #v2pc .who{display:none}
 }
+/* 태블릿 세로·좁은 PC 창: 첫 줄 로고+메뉴, 둘째 줄 검색+로그인 (글자 꺾임·가로 넘침 방지, Tab 이동 순서 = 보이는 순서) */
+@media (max-width:1023px){
+  #v2pc .gnb .wrap{flex-wrap:wrap;height:auto;row-gap:8px;padding-block:12px}
+  #v2pc .gsearch{flex:1 1 calc(100% - 200px)}  /* 로고·메뉴 줄에 못 들어가게 커서 항상 둘째 줄로 */
+  #v2pc .md-detail{top:136px;max-height:calc(100vh - 160px)}  /* 머리 높이 80 → 약 112px */
+}
+@media (max-width:719px){ #v2pc .logo{font-size:0} }  /* 로고 글자를 숨기고 CNH 배지만 (배지는 14px 고정) */
 
 /* ---------- 모바일 탭: 머리 → 필터 한 줄 → 목록, 누르면 아래 시트 ---------- */
 #v2m .m-head{padding:20px 20px 12px;background:var(--surface)}
@@ -485,7 +492,7 @@ a.tk-t:hover{text-decoration:underline}
     <div class="age-acts"><button type="button" class="btn" data-age-cancel>취소</button><button type="submit" class="btn pri">확인하고 구글 로그인</button></div>
   </form>
 </dialog>
-<script src="./static/v2_state.js?v=20261124c"></script>
+<script src="./static/v2_state.js?v=20261125"></script>
 <script>
 /* ---------- v2 화면: 데이터 준비, PC/모바일 고르기, 로그인 버튼, 테마 ---------- */
 const V2 = {

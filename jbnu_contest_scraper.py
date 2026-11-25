@@ -29,8 +29,10 @@ KST = timezone(timedelta(hours=9))
 # 배제 키워드 목록 (설명회, 취소, 단순 동아리 모집 등)
 EXCLUDE_KEYWORDS = [
     "설명회", "취소", "신입기수", "동아리", "선발", "단기근무", "합격", "결과발표",
-    "마약", "도민체육대회", "아동권리영화제"
+    "마약", "도민체육대회", "아동권리영화제", "참관", "공동연구", "연구사업"
 ]
+# 게시판 검색은 본문까지 봐서 장학금·졸업 공지도 걸려요 → 제목에 공모전다운 말이 있는 글만 후보로
+CONTEST_TITLE_RE = re.compile(r"공모|경진|대회|챌린지|해커톤|데이터톤|메이커톤|프롬프톤|아이디어|콘테스트|어워드|hackathon|challenge|contest", re.I)
 
 # 전북대 공모전 검증 팩트 데이터베이스 (Verified Fact Knowledge Base)
 VERIFIED_JBNU_FACTS = {
@@ -383,9 +385,13 @@ def scrape_jbnu_board(base_url: str, menu_id: int, keywords: list, max_pages: in
             except Exception as e:
                 print(f"⚠️ [JBNU Scraper] {base_url} (menu={menu_id}, kw='{kw}') 페이지 {page} 오류: {e}")
                 continue
-            ok_requests += 1
 
             soup = BeautifulSoup(html, "html.parser")
+            # 검색 결과가 없어도 게시판 표는 있어요(고정 공지 행). 표가 없으면 점검·구조 변경 → 성공으로 안 셈
+            if not soup.select_one("table tbody"):
+                print(f"⚠️ [JBNU Scraper] {base_url} (menu={menu_id}, kw='{kw}') 페이지 {page}: 게시판 표 없음")
+                continue
+            ok_requests += 1
             rows = soup.select("table tbody tr")
             for tr in rows:
                 title_a = tr.select_one("td.td-title a.title")
@@ -404,6 +410,8 @@ def scrape_jbnu_board(base_url: str, menu_id: int, keywords: list, max_pages: in
 
                 # 배제 키워드 필터링 (설명회, 취소, 동아리 등)
                 if any(ex in title_text for ex in EXCLUDE_KEYWORDS):
+                    continue
+                if not CONTEST_TITLE_RE.search(title_text):
                     continue
 
                 # 날짜 및 작성자
