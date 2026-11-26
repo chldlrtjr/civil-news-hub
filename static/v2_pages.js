@@ -177,7 +177,7 @@
         title: '채용', sub: `지원할 수 있는 공고 ${CNHv2.jobList(d.JOBS, {}, t).length}개 · 마감 가까운 순`,
         filters: chips('jobLvl', JOB_LVLS.map((l) => [l, l]), ui.jobLvl, counts) + select('jobOrg', JOB_ORGS, ui.jobOrg, '기관 구분'),
         groups: [{ key: 'jobs', entries: as('job', CNHv2.jobList(d.JOBS, { lvl: ui.jobLvl, org: ui.jobOrg }, t)), empty: '조건에 맞는 공고가 없어요. 채용 형태나 기관을 바꿔 보세요' }],
-        foot: pages.length ? `<details class="fold"><summary>공채 소식에 안 올라오는 기관 채용 페이지<span>${pages.length}</span></summary><ul class="fold-links">${pages.map((p) =>
+        foot: pages.length ? `<details class="fold"><summary>주요 기관·기업 공식 채용 페이지<span>${pages.length}</span></summary><ul class="fold-links">${pages.map((p) =>
           `<li><a href="${esc(p.link)}" target="_blank" rel="noopener noreferrer"><b>${esc(p.co)}</b><span>${GRP_NAME[p.grp] || ''}</span></a></li>`).join('')}</ul></details>` : '',
       };
     }

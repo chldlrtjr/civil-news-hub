@@ -169,7 +169,7 @@ window.CivilData = (() => {
         };
       });
     }
-    // 공채속보에 안 올라오는 주요 기관·기업의 공식 채용 페이지 링크
+    // 주요 기관·기업의 공식 채용 페이지 링크 (일부는 career_sites.py 가 공고도 직접 가져와요)
     const CAREER_PAGES = ((jobsData && jobsData.career_pages) || []).map(p => ({
       co: p.company, grp: JOB_GRP[p.category_id] || 'major', link: p.link
     }));
