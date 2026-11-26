@@ -86,8 +86,10 @@
     const dl = (k, v) => { if (v) rows.push(`<div><dt>${k}</dt><dd>${v}</dd></div>`); };
     // 상세 사진은 이제 포스터만: 무엇의 포스터인지 대체 텍스트로 알려요 (내용은 아래 글로도 제공)
     const img = (src, title) => (isWeb(src) ? `<img class="dt-img poster" src="${esc(src)}" alt="${esc(title)} 포스터" loading="lazy" referrerpolicy="no-referrer">` : '');
-    const due = (d) => (CNHv2.isDate(d) ? `${dayText(d)} ${ddPill(CNHv2.ddayOf(d, t))}` : '상시 모집');
-    let meta = '', media = '', lede = '', dd = '';
+    const due = (d) => (CNHv2.isDate(d) ? dayText(d) : '상시 모집');
+    // 접수 기간 끝날이 마감일이면 '마감' 줄은 겹쳐서 빼요
+    const period = (p, d) => { dl('접수 기간', esc(p)); if (!(p && CNHv2.isDate(d) && p.includes(d.replace(/-/g, '.')))) dl('마감', due(d)); };
+    let meta = '', media = '', lede = '';
     if (kind === 'news') {
       // 기사 사진은 언론사 허락이 없어 보여 주지 않아요(저작권): 제목·출처·원문 링크만
       meta = [x.src, x.ago].filter(Boolean).join(' · ');
@@ -97,49 +99,53 @@
       if (rel.length) blocks.push(`<h3 class="dt-h">같은 소식을 다룬 기사 ${rel.length}</h3><ul class="dt-links">${rel.map((r) =>
         `<li><a href="${esc(r.link)}" target="_blank" rel="noopener noreferrer"><b>${esc(r.publisher)}</b>${esc(r.title)}</a></li>`).join('')}</ul>`);
     } else if (kind === 'contest') {
-      meta = x.org; media = img(x.image, x.title); dd = ddPill(CNHv2.ddayOf(x.deadline, t));
+      meta = x.org; media = img(x.image, x.title);
       dl('분야', `<i class="dot" style="--dot:var(--c-${COLOR[x.category] || 'general'})"></i>${esc(x.category)}`);
-      dl('주최', esc(x.org)); dl('접수 기간', esc(x.period)); dl('마감', due(x.deadline));
+      period(x.period, x.deadline);
       dl('결과 발표', esc(x.resultLabel || dayText(x.resultDate)));
       dl('시상', [x.award && esc(x.award), x.prize ? `<b class="prize">총 ${x.prize.toLocaleString('ko-KR')}만 원</b>` : ''].filter(Boolean).join(' · '));
       dl('대상', esc(x.targetText || (x.target || []).join(', '))); dl('출처', esc(x.srcName));
       if (x.description) lede = `<p class="dt-p">${esc(x.description)}</p>`;
     } else if (kind === 'job') {
-      meta = x.co; dd = ddPill(CNHv2.ddayOf(x.deadline, t));
-      dl('기관', esc(x.co)); dl('구분', GRP_NAME[x.grp] || ''); dl('채용 형태', esc(x.lvl)); dl('근무지', esc(x.loc));
-      dl('접수 기간', esc(x.period)); dl('마감', due(x.deadline));
+      meta = [x.co, x.loc, x.lvl].filter(Boolean).join(' · ');
+      dl('구분', GRP_NAME[x.grp] || ''); period(x.period, x.deadline);
       const steps = (x.steps || []).filter((s) => s && s !== '공고 원문 참조');
-      if (steps.length) blocks.push(`<h3 class="dt-h">전형 단계</h3><ol class="dt-steps">${steps.map((s) => `<li>${esc(s)}</li>`).join('')}</ol>`);
-      if ((x.welfare || []).length) blocks.push(`<div class="dt-tags">${x.welfare.map((w) => `<span>${esc(w)}</span>`).join('')}</div>`);
-      if (x.summary) blocks.push(`<h3 class="dt-h">지원 자격</h3><p class="dt-p pre">${esc(x.summary)}</p>`);
+      dl('전형 단계', steps.map((s, i) => `${i + 1}. ${esc(s)}`).join(' → '));
+      dl('참고', (x.welfare || []).map(esc).join(' · '));
+      // 지원 자격은 잘린 채, 모집 부문은 '外'로 줄거나(고용24) 넓은 직무 분류만(잡알리오) 받아 와서 원문 확인으로
+      blocks.push('<p class="dt-note">모집 부문과 지원 자격은 원문에서 확인해 주세요</p>');
     } else if (kind === 'alba') {
-      meta = x.where; dd = ddPill(CNHv2.ddayOf(x.deadline_date, t));
-      dl('근무처', esc(x.where)); dl('급여', `<b class="prize">${esc(x.wageText)}</b>`); dl('근무 시간', esc(x.time));
+      meta = x.where;
+      dl('급여', `<b class="prize">${esc(x.wageText)}</b>`); dl('근무 시간', esc(x.time));
       dl('모집 인원', esc(x.person)); dl('분류', esc(x.tag)); dl('등록일', dayText(x.reg_date)); dl('마감', due(x.deadline_date));
     } else if (kind === 'exam') {
-      meta = x.org; dd = ddPill(CNHv2.examLabel(x, t));
-      dl('구분', esc(x.type)); dl('기관', esc(x.org));
+      meta = x.org;
+      dl('구분', esc(x.type));
       const full = (d) => `${d.replace(/-/g, '.')} (${CNHv2.weekdayOf(d)})`;  // 내년 일정이 많아 연도까지
       dl(x.end ? '기간' : '날짜', x.date ? full(x.date) + (x.end ? ' ~ ' + full(x.end) : '') : `${esc(CNHv2.examLabel(x, t))} (발표 전, 예정)`);
       dl('확인한 날', esc(x.checked.replace(/-/g, '.')));
       if (x.basis) lede = `<p class="dt-p">${esc(x.basis)}</p>`;
     } else {
-      meta = x.kind; media = img(x.image, x.title); dd = ddPill(CNHv2.ddayOf(x.deadline_date, t));
-      dl('종류', esc(x.kind)); dl('활동 기간', esc(x.when)); dl('정원', esc(x.seats));
+      meta = x.kind; media = img(x.image, x.title);
+      dl('활동 기간', esc(x.when)); dl('정원', esc(x.seats));
       dl('장소', x.location && x.location !== '-' ? esc(x.location) : ''); dl('마감', due(x.deadline_date));
     }
-    const acts = [isWeb(x.link) ? `<a class="btn pri" href="${esc(x.link)}" target="_blank" rel="noopener noreferrer">${kind === 'exam' ? '출처 보기' : '원문 보기'}${I.out}</a>` : '', kind === 'exam' ? '' : saveBtn(x.id, 'btn', true)];
+    // 누르는 것은 모두 아래 고정 줄에: 원문 → 도전 목록 → 캘린더
+    const acts = [isWeb(x.link) ? `<a class="btn pri" href="${esc(x.link)}" target="_blank" rel="noopener noreferrer">${kind === 'exam' ? '출처 보기' : '원문 보기'}${I.out}</a>` : ''];
     if (kind === 'contest' || kind === 'job') {
       const on = CNHTracker.visible(tracked).some((c) => c.id === String(x.id));
       acts.push(on ? '<a class="btn" href="#my">도전 중 · 마이에서 보기</a>' : `<button type="button" class="btn" data-track="${kind}:${esc(x.id)}">도전 목록에 추가</button>`);
     }
     // 캘린더에 넣기: 마감일이 오늘 이후인 공모전·채용, 확정 날짜인 시험·공채만 (아니면 calEvent 가 null)
     const ev = CNHv2.calEvent(kind, x, t), calName = kind === 'exam' ? '일정 캘린더에 넣기' : '마감일 캘린더에 넣기';
-    const cal = ev ? `<div class="dt-cal" role="group" aria-label="${calName}"><span>${calName}</span><a class="btn sm" href="${esc(CNHv2.calGoogleUrl(ev))}" target="_blank" rel="noopener noreferrer">Google 캘린더<span class="sr"> (새 탭)</span></a>`
-      + `<button type="button" class="btn sm" data-ics="${kind}:${esc(x.id)}">다른 캘린더 (.ics)</button></div>` : '';
-    return `<article class="dt"><div class="dt-top"><span class="dt-kind">${KIND_NAME[kind]}</span>${dd}</div>`
-      + `<h2 class="dt-t"${titleId ? ` id="${titleId}"` : ''}>${esc(kind === 'job' ? x.role : x.title)}</h2>${meta ? `<p class="dt-meta">${esc(meta)}</p>` : ''}`
-      + `${media}<div class="dt-acts">${acts.join('')}</div>${cal}${lede}${rows.length ? `<dl class="dt-dl">${rows.join('')}</dl>` : ''}${blocks.join('')}</article>`;
+    if (ev) acts.push(`<details class="dt-calm"><summary class="btn">캘린더에 넣기</summary><div class="dt-menu" role="group" aria-label="${calName}">`
+      + `<a href="${esc(CNHv2.calGoogleUrl(ev))}" target="_blank" rel="noopener noreferrer">Google 캘린더<span class="sr"> (새 탭)</span></a>`
+      + `<button type="button" data-ics="${kind}:${esc(x.id)}">다른 캘린더 (.ics)</button></div></details>`);
+    const bar = acts.filter(Boolean).join('');
+    // 종류 이름은 여러 종류가 섞이는 화면(홈·저장·검색·마이)에서만
+    const kindTag = ['home', 'saved', 'search', 'my'].includes(ui.route) ? `<p class="dt-kind">${KIND_NAME[kind]}</p>` : '';
+    return `<article class="dt">${kindTag}<h2 class="dt-t"${titleId ? ` id="${titleId}"` : ''}>${esc(kind === 'job' ? x.role : x.title)}</h2>${meta ? `<p class="dt-meta">${esc(meta)}</p>` : ''}`
+      + `${media}${rows.length ? `<dl class="dt-dl">${rows.join('')}</dl>` : ''}${lede}${blocks.join('')}${bar ? `<div class="dt-bar">${bar}</div>` : ''}</article>`;
   }
 
   /* ---------- 탭마다 무엇을 보여 줄지 (두 화면이 같이 써요) ---------- */
@@ -333,7 +339,7 @@
     const sel = scope + q(dataAttr(k), el.dataset[k]) + ('v' in el.dataset ? q('data-v', el.dataset.v) : '') + (el.dataset.id ? q('data-id', el.dataset.id) : '');
     // 삭제 확인처럼 버튼이 바뀌는 경우: 같은 카드의 "취소" → 휴지통 → 같은 카드의 아무 버튼 순으로 찾아요
     const fallbacks = el.dataset.id ? [scope + q('data-trk', 'del-no') + q('data-id', el.dataset.id), scope + q('data-trk', 'del') + q('data-id', el.dataset.id), scope + q('data-id', el.dataset.id)] : [];
-    if (k === 'track') fallbacks.push(scope + '.dt-acts a[href="#my"]');  // "도전 목록에 추가"를 누르면 마이 링크로 바뀌어요
+    if (k === 'track') fallbacks.push(scope + '.dt-bar a[href="#my"]');  // "도전 목록에 추가"를 누르면 마이 링크로 바뀌어요
     return [sel, ...fallbacks];
   }
   function restoreFocus(sels) {
@@ -420,6 +426,8 @@
 
   document.addEventListener('click', (e) => {
     const t = e.target;
+    // 캘린더 메뉴: 항목을 고르거나 바깥을 누르면 닫아요
+    document.querySelectorAll('details.dt-calm[open]').forEach((d) => { if (!d.contains(t) || t.closest('.dt-menu a, .dt-menu button')) d.open = false; });
     const open = t.closest('[data-open]');
     if (open) {
       if (isPhoneView()) { openSheet(open.dataset.open); return; }
@@ -431,7 +439,7 @@
     if (sv) { const id = sv.dataset.save; saved.has(id) ? saved.delete(id) : saved.add(id); persistSaved(); return; }
     const tr = t.closest('[data-track]');
     if (tr) { const f = findItem(tr.dataset.track); if (f) trackAdd(f.kind, f.item); return; }
-    const gc = t.closest('.dt-cal a');
+    const gc = t.closest('.dt-menu a');
     if (gc) { if (leftInApp(gc.href)) e.preventDefault(); return; }
     const ic = t.closest('[data-ics]');
     if (ic) { const f = findItem(ic.dataset.ics); const ev = f && CNHv2.calEvent(f.kind, f.item, V2.today); if (ev && !leftInApp(location.href)) downloadIcs(ev, ic.dataset.ics); return; }

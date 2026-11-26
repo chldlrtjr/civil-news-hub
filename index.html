@@ -20,7 +20,7 @@
 <!-- static/vendor 는 vercel.json 에서 1년 캐시(immutable): 파일을 바꿀 땐 이름도 바꿔요(예: supabase-2.x.y.js) -->
 <script src="./static/vendor/supabase.js"></script>
 <script src="./static/tracker_core.js?v=20261126b"></script>
-<script src="./static/v2_core.js?v=20261126d"></script>
+<script src="./static/v2_core.js?v=20261127c"></script>
 <style>
 /* v2 (2026-11-23부터 기본 사이트): madia-design 기준. PC(#v2pc)와 모바일(#v2m)은 별도 화면이고, 규칙은 각자 범위 안에만 둬요 */
 :root{
@@ -281,28 +281,26 @@ a.h-row:hover .h-t{text-decoration:underline}
 .fold-links a:hover{border-color:var(--ink)}
 .fold-links span{flex:none;font-size:12px;color:var(--muted)}
 /* 상세 */
-.dt-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.dt-kind{font-size:14px;color:var(--muted)}
+.dt-kind{margin:0 0 8px;font-size:14px;color:var(--muted)}
 .dt-t{margin:0;font-size:20px;font-weight:600}
 .dt-meta{margin:8px 0 0;font-size:14px;color:var(--muted)}
 .dt-img{display:block;width:100%;max-height:280px;object-fit:cover;margin-top:16px;border-radius:12px;background:var(--surface-2)}
 .dt-img.poster{max-height:480px;object-fit:contain}
-.dt-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
-.dt-cal{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px}
-.dt-cal>span{font-size:14px;color:var(--muted)}
 .dt-p{margin:16px 0 0;font-size:14px;color:var(--ink)}
-.dt-p.pre{white-space:pre-line;margin-top:0}
 .dt-dl{display:grid;gap:8px;margin:16px 0 0;padding-top:16px;border-top:1px solid var(--surface-2)}
 .dt-dl div{display:grid;grid-template-columns:80px minmax(0,1fr);gap:12px;align-items:baseline;font-size:14px}
 .dt-dl dt{color:var(--muted)}
 .dt-dl dd{margin:0}
-.dt-dl .dd{min-width:0;margin-left:6px;font-size:12px;padding:2px 8px}
 .dt-h{margin:24px 0 8px;font-size:14px;font-weight:600}
-.dt-steps{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none;counter-reset:st}
-.dt-steps li{counter-increment:st;padding:4px 12px;border-radius:999px;background:var(--surface-2);font-size:14px}
-.dt-steps li::before{content:counter(st) ". ";color:var(--muted)}
-.dt-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
-.dt-tags span{padding:4px 8px;border-radius:8px;background:var(--surface-2);font-size:12px;color:var(--muted)}
+.dt-note{margin:16px 0 0;font-size:14px;color:var(--muted)}
+/* 누르는 것은 상세 아래에 고정: 글이 길어도 버튼이 늘 보여요 */
+.dt-bar{position:sticky;bottom:0;z-index:2;display:flex;flex-wrap:wrap;gap:8px;margin-top:24px;padding:16px 0;border-top:1px solid var(--line);background:var(--surface)}
+/* 메뉴는 버튼 줄 기준으로 오른쪽 끝에 맞춰 띄워요: 버튼이 줄바꿈돼도 상세 칸 밖으로 안 넘쳐요 */
+.dt-calm summary{list-style:none;cursor:pointer}
+.dt-calm summary::-webkit-details-marker{display:none}
+.dt-menu{position:absolute;right:0;bottom:calc(100% + 8px);display:grid;min-width:184px;padding:8px;border:1px solid var(--line);border-radius:12px;background:var(--surface);box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.dt-menu a,.dt-menu button{display:block;width:100%;padding:10px 12px;border:0;border-radius:8px;background:none;color:inherit;font:inherit;font-size:14px;text-align:left;white-space:nowrap;cursor:pointer}
+.dt-menu a:hover,.dt-menu button:hover{background:var(--surface-2)}
 .dt-links{margin:0;padding:0;list-style:none}
 .dt-links a{display:block;padding:8px 0;border-top:1px solid var(--surface-2);font-size:14px}
 .dt-links a:hover{text-decoration:underline}
@@ -360,7 +358,7 @@ a.tk-t:hover{text-decoration:underline}
 #v2pc .md.wide{grid-template-columns:minmax(0,1fr) 320px}
 #v2pc .md.solo{grid-template-columns:minmax(0,1fr)}
 #v2pc .md-list{min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
-#v2pc .md-detail{position:sticky;top:104px;max-height:calc(100vh - 128px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px}
+#v2pc .md-detail{position:sticky;top:104px;max-height:calc(100vh - 128px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px 24px 0}
 #v2pc .me-side{display:flex;flex-direction:column;gap:16px;min-width:0}
 #v2pc .me-card h2{margin:0;font-size:16px;font-weight:600}
 #v2pc .me-card .btn{margin-top:16px;width:100%}
@@ -381,7 +379,6 @@ a.tk-t:hover{text-decoration:underline}
   #v2pc .md.wide{grid-template-columns:minmax(0,1fr) 300px}
   #v2pc .gnb .wrap{gap:20px}
   #v2pc .who{display:none}
-  #v2pc .dt-cal>span{flex-basis:100%}  /* 상세 칸이 좁아 .ics 버튼만 둘째 줄로 떨어지지 않게: 안내 글을 한 줄, 두 버튼을 다음 줄에 */
 }
 /* 태블릿 세로·좁은 PC 창: 첫 줄 로고+메뉴, 둘째 줄 검색+로그인 (글자 꺾임·가로 넘침 방지, Tab 이동 순서 = 보이는 순서) */
 @media (max-width:1023px){
@@ -428,9 +425,9 @@ a.tk-t:hover{text-decoration:underline}
 #v2m .sheet-grab{position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:center;height:48px;margin:0 -20px;background:var(--surface)}
 #v2m .sheet-grab span{width:40px;height:4px;border-radius:999px;background:var(--line)}
 #v2m .sheet-grab .ibtn{position:absolute;right:8px;top:2px}
-#v2m .dt-acts .btn{flex:1}
-#v2m .dt-cal>span{flex-basis:100%}
-#v2m .dt-cal .btn{flex:1;height:40px}
+#v2m .sheet-box .dt-bar{bottom:calc(-24px - env(safe-area-inset-bottom,0px));padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+#v2m .dt-bar>.btn,#v2m .dt-calm{flex:1 1 0}
+#v2m .dt-bar .btn{width:100%;height:44px}
 </style>
 </head>
 <body>
@@ -506,6 +503,6 @@ a.tk-t:hover{text-decoration:underline}
 <script src="./static/v2_state.js?v=20261126b"></script>
 <script src="./static/v2_exams.js?v=20261126b"></script>
 <script src="./static/v2_main.js?v=20261126b"></script>
-<script src="./static/v2_pages.js?v=20261126c"></script>
+<script src="./static/v2_pages.js?v=20261127d"></script>
 </body>
 </html>

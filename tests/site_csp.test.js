@@ -51,16 +51,14 @@ test('Vercel 빌드 단계에서 데이터 번들 형식을 검사해요 (검사
   assert.ok(read('.vercelignore').split(/\r?\n/).includes('!check_data_bundle.js'));  // Windows 작업 사본(CRLF)에서도
 });
 
-test('마감일 캘린더 줄: 묶음 이름과 새 탭 안내(화면읽기)', () => {
+test('캘린더 메뉴: 묶음 이름과 새 탭 안내(화면읽기), 버튼 줄은 상세 아래 고정', () => {
   const pages = read('static/v2_pages.js');
-  assert.ok(pages.includes('<div class="dt-cal" role="group" aria-label="${calName}"><span>${calName}</span>'));
+  assert.ok(pages.includes('<div class="dt-menu" role="group" aria-label="${calName}">'));
   assert.ok(pages.includes("calName = kind === 'exam' ? '일정 캘린더에 넣기' : '마감일 캘린더에 넣기'"));
   assert.ok(/Google 캘린더<span class="sr">\s*\(새 탭\)<\/span><\/a>/.test(pages));
   const css = read('index.html');
-  assert.ok(/#v2m \.dt-cal \.btn\{flex:1;height:40px\}/.test(css));
-  // PC 1024~1199px: 안내 글을 한 줄 다 쓰게 해서 두 버튼이 같은 줄에
-  const narrow = css.split('@media (max-width:1199px){').slice(1).map((b) => b.slice(0, b.indexOf('\n}')));
-  assert.ok(narrow.some((b) => b.includes('#v2pc .dt-cal>span{flex-basis:100%}')));
+  assert.ok(css.includes('.dt-bar{position:sticky;bottom:0;'));
+  assert.ok(css.includes('#v2m .dt-bar .btn{width:100%;height:44px}'));  // 휴대폰은 엄지로 누르기 좋게 44px
 });
 
 test('모바일 시험·공채 하단 안내(.l-note)는 목록처럼 좌우 20px', () => {
