@@ -172,5 +172,17 @@ class SwunivFailureTest(unittest.TestCase):
             replace.assert_not_called()
 
 
+class SwunivThumbnailTest(unittest.TestCase):
+    def test_relative_image_is_joined_to_page_url(self):
+        # 본문 이미지가 '../r/ID' 면 'https://swuniv.jbnu.ac.kr../r/ID' 가 아니라 '/r/ID' 로 (검수 M-4)
+        detail = "https://swuniv.jbnu.ac.kr/main/jbnusw?gc=605XOAS&do=view&bwrite_id=T1"
+        board = ('<table><tbody><tr><td>1</td><td><a href="' + detail + '">SW 멘토링 상시 모집</a></td>'
+                 '<td>a</td><td>b</td><td>2026.11.20</td></tr></tbody></table>')
+        view = '<div class="board_view"><div class="content_wrap">안내 <img src="../r/VJOBLsDRSkqw"></div></div>'
+        with mock.patch.object(swuniv_scraper, "safe_fetch", side_effect=lambda u: view if "do=view" in u else board):
+            notices = swuniv_scraper.fetch_swuniv_notices(max_pages=1)
+        self.assertEqual([n["thumbnail"] for n in notices], ["https://swuniv.jbnu.ac.kr/r/VJOBLsDRSkqw"])
+
+
 if __name__ == "__main__":
     unittest.main()

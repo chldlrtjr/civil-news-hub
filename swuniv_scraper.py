@@ -18,6 +18,7 @@ import re
 import sys
 import json
 import time
+import urllib.parse
 from datetime import datetime, timezone, timedelta
 from bs4 import BeautifulSoup
 import safe_http
@@ -275,7 +276,7 @@ def fetch_swuniv_programs(max_pages=3):
             seen_ids.add(program_id)
 
             img_el = it.find("img")
-            thumbnail = img_el["src"] if img_el and img_el.has_attr("src") else ""
+            thumbnail = urllib.parse.urljoin(url, img_el["src"]) if img_el and img_el.get("src") else ""
             img_alt = img_el.get("alt", "") if img_el else ""
 
             status_el = it.select_one(".status span")
@@ -462,7 +463,7 @@ def fetch_swuniv_notices(existing_programs=None, max_pages=2):
                             if imgs and not thumbnail:
                                 first_img = imgs[0].get("src", "")
                                 if first_img:
-                                    thumbnail = first_img if first_img.startswith("http") else "https://swuniv.jbnu.ac.kr" + first_img
+                                    thumbnail = urllib.parse.urljoin(href, first_img)  # '../r/ID' 같은 상대 주소도 올바르게
 
                         # 본문 전체 텍스트에서 기간 및 상시 파싱
                         if not period and detail_text:
