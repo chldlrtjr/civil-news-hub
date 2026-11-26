@@ -36,7 +36,7 @@ class YooshinTest(unittest.TestCase):
         jobs = career_sites.parse_yooshin(ys_page(ys_row(157, "경력", "모집중", "공항부(공항)", "경력직 채용", "2026.10.29 ~\n 2027.01.28 ")), TODAY)
         self.assertEqual(len(jobs), 1)
         j = jobs[0]
-        self.assertEqual((j["id"], j["company"], j["title"], j["deadline_date"]), ("yooshin-157", "유신", "경력직 채용", "2027-01-28"))
+        self.assertEqual((j["id"], j["company"], j["title"], j["deadline_date"]), ("yooshin-157", "유신", "[공항부(공항)] 경력직 채용", "2027-01-28"))
         self.assertEqual(j["period"], "2026.10.29 ~ 2027.01.28")
         self.assertEqual(j["link"], "https://www.yooshin.com/career/opportunities/157")
         self.assertEqual((j["career"], j["fields"], j["source"]), ("경력", ["공항부(공항)"], career_sites.YOOSHIN))
@@ -109,3 +109,58 @@ class CategoryNameTest(unittest.TestCase):
         import job_scraper
         for cid, name in career_sites.CATEGORY_NAMES.items():
             self.assertEqual(job_scraper.CATEGORY_NAMES[cid], name)
+
+
+def rc(sn, title, end, status="IN_SUBMISSION", career="CAREER", kind="GENERAL", tags=("수시",)):
+    return {"positionSn": sn, "title": title, "submissionStatus": status, "openStatus": "OPEN", "careerType": career,
+            "recruitmentType": kind, "startDateTime": "2026-11-20T00:00:00", "endDateTime": end,
+            "tagList": [{"tagSn": 1, "tagName": t} for t in tags]}
+
+
+def rc_page(*rows):
+    return {"pagination": {"page": 1, "size": 100, "totalCount": len(rows), "totalPages": 1}, "list": list(rows)}
+
+
+class RecruiterTest(unittest.TestCase):
+    def parse(self, data, site=None):
+        return career_sites.parse_recruiter(data, site or career_sites.RECRUITER_SITES[0], TODAY)
+
+    def test_open_civil_posting(self):
+        j = self.parse(rc_page(rc(1, "[DL이앤씨] 토목사업본부 교량 경력직 채용", "2026-12-27T23:59:59")))[0]
+        self.assertEqual((j["id"], j["company"], j["deadline_date"], j["period"]), ("dlenc-1", "DL이앤씨", "2026-12-27", "2026.11.20 ~ 2026.12.27"))
+        self.assertEqual(j["link"], "https://dlenc.recruiter.co.kr/career/jobs/1")
+        self.assertEqual((j["career"], j["category_id"], j["tags"]), ("경력", "builder", ["수시"]))
+
+    def test_new_grad_open_hiring_is_kept(self):
+        j = self.parse(rc_page(rc(2, "2026년 GS건설 하반기 신입사원 채용", "2026-12-01T23:00:59", career="NEW", tags=("신입",))))[0]
+        self.assertEqual(j["career"], "신입")
+
+    def test_closed_expired_non_civil_dropped(self):
+        page = rc_page(rc(3, "토목 경력직", "2026-12-27T23:59:59", status="POST_SUBMISSION"),  # 접수 끝
+                       rc(4, "토목 경력직", "2026-11-26T23:59:59"),                             # 날짜 지남
+                       rc(5, "[DL이앤씨] 건축구조모듈러팀(재료part) 경력직 채용", "2026-12-27T23:59:59"),  # 건축 '구조'
+                       rc(6, "[DL이앤씨] 주택사업본부 하자소송관리 경력직 채용", "2026-12-09T23:59:59"))
+        self.assertEqual(self.parse(page), [])
+
+    def test_permanent_pool_is_rolling(self):
+        j = self.parse(rc_page(rc(7, "토목 시공 상시 채용", "2028-12-31T23:59:59", kind="PERMANENT", career="NEW_CAREER")))[0]
+        self.assertEqual((j["deadline_date"], j["period"], j["career"]), ("", "2026.11.20 ~ 채용 시 마감", "신입·경력"))
+
+    def test_bad_shape_raises(self):
+        for bad in [{"code": "IllegalArgumentException"}, [], {"pagination": {}, "list": [{"positionSn": 1}]}]:
+            with self.subTest(bad=bad), self.assertRaises(career_sites.ParseError):
+                self.parse(bad)
+
+    def test_collect_posts_with_prefix_and_host_lock(self):
+        r = mock.Mock(status_code=200)
+        r.json.return_value = rc_page()
+        with mock.patch.object(career_sites.safe_http, "fetch", return_value=r) as f:
+            self.assertEqual(career_sites.collect_recruiter(career_sites.RECRUITER_SITES[2], TODAY), [])
+        kw = f.call_args.kwargs
+        self.assertEqual(kw["hosts"], {"api-recruiter.recruiter.co.kr"})
+        self.assertEqual(kw["headers"]["prefix"], "dohwa.recruiter.co.kr")
+        self.assertEqual(kw["json_body"]["pageableRq"]["page"], 1)
+
+    def test_sites_list_has_all_sources(self):
+        self.assertEqual([n for n, _ in career_sites.SITES],
+                         ["유신 채용 페이지", "한국건설기술연구원 채용 페이지", "DL이앤씨 채용 페이지", "GS건설 채용 페이지", "도화엔지니어링 채용 페이지"])

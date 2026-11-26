@@ -35,6 +35,12 @@ class CollectSourceTest(unittest.TestCase):
             data = job_scraper.scrape_civil_jobs()
         self.assertEqual(data["failed_sources"], ["고용24 공채속보", "유신 채용 페이지"])
 
+    def test_company_aliases_match_work24_hangul_names(self):
+        # 고용24 는 회사 이름을 한글로 적어요(예: 에스지씨이앤씨): 직접 수집한 영문 이름과 같은 회사로 봐야 중복이 안 생겨요
+        n = job_scraper.normalize_company
+        self.assertEqual(n("GS건설"), n("지에스건설(주)"))
+        self.assertEqual(n("DL이앤씨"), n("디엘이앤씨 주식회사"))
+
     def test_keyless_source_called_without_key(self):
         with mock.patch.object(job_scraper, "load_api_key") as key:
             jobs, failed = job_scraper.collect_source("유신 채용 페이지", None, lambda k: [{"id": "y"}])

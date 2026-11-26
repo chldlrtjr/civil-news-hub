@@ -26,11 +26,12 @@ KICT_VIEW = "https://www.kict.re.kr/announcementRecruitWeb/getAnnouncementRecrui
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; civil-news-hub/1.0)"}
 
 # 토목 관련 부문·직무이거나 학생이 지원할 수 있는 채용(연수직·인턴·신입 공채)
-CIVIL_RE = re.compile(r"토목|인프라|도로|교량|구조|토질|지반|터널|철도|항만|공항|수자원|댐|하천|상하수도|상수도|하수|단지|측량|교통"
+# ('구조'만으로는 건축구조와 구분이 안 돼서 뺌: DL이앤씨 '건축구조모듈러팀')
+CIVIL_RE = re.compile(r"토목|인프라|도로|교량|토질|지반|터널|철도|항만|공항|수자원|댐|하천|상하수도|상수도|하수|단지|측량|교통"
                       r"|건설사업관리|CM|연수직|학생연구원|신진연구원|인턴|신입|공개채용|공채")
 DATE = r"(\d{4})[./](\d{2})[./](\d{2})"
 # job_scraper.JOB_CATEGORIES 와 같은 이름 (서로 import 하지 않게 여기 적고 테스트로 맞는지 확인)
-CATEGORY_NAMES = {"public": "공기업·공공기관", "engineering": "설계·엔지니어링"}
+CATEGORY_NAMES = {"public": "공기업·공공기관", "builder": "건설·민간기업", "engineering": "설계·엔지니어링"}
 
 
 class ParseError(Exception):
@@ -84,6 +85,8 @@ def parse_yooshin(text, today):
         if kind not in ("신입", "공채") and not CIVIL_RE.search(dept + " " + title):
             continue
         career = "신입" if kind in ("신입", "공채") else "경력"
+        if dept and dept not in title:  # 제목이 '경력직 채용'뿐인 공고가 있어 사이트처럼 부문을 앞에 붙여요
+            title = f"[{dept}] {title}"
         jobs.append(_job(YOOSHIN, f"yooshin-{sn}", "유신", "engineering", title, start, end,
                          f"https://www.yooshin.com/career/opportunities/{sn}", career,
                          fields=[dept] if dept else [], tags=[kind] if kind else [], company_type="설계·엔지니어링"))
@@ -127,3 +130,56 @@ def collect_yooshin(today):
 
 def collect_kict(today):
     return parse_kict(_get(KICT_URL, "www.kict.re.kr"), today)
+
+
+# 채용 솔루션 recruiter.co.kr(JOBFLEX)을 쓰는 회사: 목록 API 하나에 prefix 헤더만 바꿔요.
+# api-recruiter.recruiter.co.kr/robots.txt 가 /position/ 을 허용 (미리보기·이력서 경로만 막음)
+RECRUITER_API = "https://api-recruiter.recruiter.co.kr/position/v1/jobflex"
+RECRUITER_SITES = [("DL이앤씨", "dlenc", "builder"), ("GS건설", "gsenc", "builder"), ("도화엔지니어링", "dohwa", "engineering")]
+RECRUITER_CAREER = {"NEW": "신입", "CAREER": "경력"}
+
+
+def parse_recruiter(data, site, today):
+    """JOBFLEX 목록: 제목·접수 시작·마감 시각·접수 상태·신입/경력이 정리돼 와요 (본문은 이미지라 안 씀)"""
+    company, prefix, category = site
+    if not isinstance(data, dict) or not isinstance(data.get("list"), list) or "pagination" not in data:
+        raise ParseError(f"{company} 채용 목록 응답 형식이 바뀌었어요")
+    jobs, read = [], 0
+    for x in data["list"]:
+        if not isinstance(x, dict):
+            continue
+        sn, title = x.get("positionSn"), (x.get("title") or "").strip()
+        start, end = str(x.get("startDateTime") or "")[:10], str(x.get("endDateTime") or "")[:10]
+        if not (sn and title and re.fullmatch(r"\d{4}-\d{2}-\d{2}", start) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", end)):
+            continue
+        read += 1
+        tags = [t.get("tagName") for t in x.get("tagList") or [] if isinstance(t, dict) and t.get("tagName")]
+        if x.get("submissionStatus") != "IN_SUBMISSION" or end < today or not CIVIL_RE.search(title):
+            continue
+        rolling = x.get("recruitmentType") == "PERMANENT"  # 상시 인재풀: 마감일이 몇 년 뒤라 상시로
+        career = "인턴" if "인턴" in title else RECRUITER_CAREER.get(x.get("careerType"), "신입·경력")
+        jobs.append(_job(f"{company} 채용 페이지", f"{prefix}-{sn}", company, category, title, start, "" if rolling else end,
+                         f"https://{prefix}.recruiter.co.kr/career/jobs/{sn}", career, tags=tags,
+                         company_type=CATEGORY_NAMES[category]))
+    if data["list"] and not read:
+        raise ParseError(f"{company} 공고는 있는데 접수 기간을 하나도 못 읽었어요")
+    return jobs
+
+
+def collect_recruiter(site, today):
+    company, prefix, _category = site
+    r = safe_http.fetch(RECRUITER_API, headers={**HEADERS, "prefix": f"{prefix}.recruiter.co.kr"},
+                        hosts={"api-recruiter.recruiter.co.kr"}, json_body={"pageableRq": {"page": 1, "size": 100}, "filter": {}})
+    if r.status_code != 200:
+        raise ParseError(f"{company} 채용 목록 응답 {r.status_code}")
+    try:
+        data = r.json()
+    except ValueError as e:
+        raise ParseError(f"{company} 채용 목록이 JSON 이 아니에요") from e
+    # shortcut: 첫 100건만 읽음 (지금 회사마다 10건 안팎), 100건을 넘기는 회사가 생기면 다음 쪽도 읽기
+    return parse_recruiter(data, site, today)
+
+
+# job_scraper 가 출처 이름으로 결과·실패를 관리해요 (이름 = 공고의 source 값)
+SITES = [(YOOSHIN, collect_yooshin), (KICT, collect_kict)] + [
+    (f"{site[0]} 채용 페이지", lambda today, site=site: collect_recruiter(site, today)) for site in RECRUITER_SITES]

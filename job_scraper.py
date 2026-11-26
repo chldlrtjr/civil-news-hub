@@ -458,8 +458,13 @@ def collect_jobalio_jobs(api_key):
     return jobs
 
 
+# 고용24 는 회사 이름을 한글로 적어요: 기관 채용 페이지에서 직접 가져온 영문 이름을 같은 이름으로 맞춤
+COMPANY_ALIASES = {"지에스건설": "GS건설", "디엘이앤씨": "DL이앤씨"}
+
+
 def normalize_company(name):
-    return re.sub(r"\(주\)|주식회사|\s", "", name or "")
+    name = re.sub(r"\(주\)|주식회사|\s", "", name or "")
+    return COMPANY_ALIASES.get(name, name)
 
 
 def load_previous_jobs(source):
@@ -497,8 +502,7 @@ def scrape_civil_jobs():
     work24_jobs, work24_failed = collect_source("고용24 공채속보", "WORK24_API_KEY", collect_work24_jobs)
     # 공채 API 에 안 올라오는 기관은 공식 채용 페이지 목록에서 직접 (career_sites.py)
     today = now_kst.strftime("%Y-%m-%d")
-    site_results = [(name, *collect_source(name, None, lambda _k, f=fn: f(today)))
-                    for name, fn in ((career_sites.YOOSHIN, career_sites.collect_yooshin), (career_sites.KICT, career_sites.collect_kict))]
+    site_results = [(name, *collect_source(name, None, lambda _k, f=fn: f(today))) for name, fn in career_sites.SITES]
     failed_sources = [name for name, failed in (("잡알리오", alio_failed), ("고용24 공채속보", work24_failed)) if failed]
     failed_sources += [name for name, _jobs, failed in site_results if failed]
 

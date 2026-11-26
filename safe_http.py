@@ -65,9 +65,10 @@ def _check(url, hosts):
             raise BlockedError(f"내부 주소로 가는 요청 거부: {p.hostname} → {ip}")
 
 
-def fetch(url, headers=None, timeout=4, deadline=10, image=False, hosts=None) -> requests.Response:
+def fetch(url, headers=None, timeout=4, deadline=10, image=False, hosts=None, json_body=None) -> requests.Response:
     """
     GET 후 본문을 다 읽고 닫은 requests.Response (r.status_code, r.content, r.text, r.encoding 그대로 사용).
+    json_body 를 주면 그 내용을 JSON 으로 POST 해요(채용 플랫폼 목록 API 등). POST 는 리다이렉트를 따라가지 않아요.
     image=True 면 Content-Type 이 png·jpeg·webp·gif 일 때만, 10MB 를 넘으면 포기. 아니면 2MB 에서 잘라 냄.
     timeout 은 요청 한 번의 연결·읽기 한도, deadline 은 리다이렉트·본문 읽기까지 한 건 전체 한도(초).
     안전 규칙에 걸리면 BlockedError, 네트워크 오류는 requests 예외 그대로.
@@ -83,11 +84,14 @@ def fetch(url, headers=None, timeout=4, deadline=10, image=False, hosts=None) ->
     limit = IMAGE_MAX if image else HTML_MAX
     for _ in range(MAX_REDIRECTS + 1):
         _check(url, hosts)
-        r = requests.get(url, headers=headers, timeout=min(timeout, left()), stream=True, allow_redirects=False)
+        send = (lambda **kw: requests.post(url, json=json_body, **kw)) if json_body is not None else (lambda **kw: requests.get(url, **kw))
+        r = send(headers=headers, timeout=min(timeout, left()), stream=True, allow_redirects=False)
         r.url = url
         if not r.is_redirect:
             break
         r.close()
+        if json_body is not None:
+            raise BlockedError(f"POST 응답의 리다이렉트는 따라가지 않아요: {url[:100]}")
         url = urllib.parse.urljoin(url, r.headers["Location"])
     else:
         raise BlockedError(f"리다이렉트 {MAX_REDIRECTS}번 초과: {url[:100]}")

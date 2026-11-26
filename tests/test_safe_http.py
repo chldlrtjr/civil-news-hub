@@ -75,6 +75,24 @@ class SafeFetchTest(unittest.TestCase):
         self.assertTrue(get.call_args.kwargs["stream"])
         self.assertEqual(get.call_args.kwargs["headers"], {"User-Agent": "x"})
 
+    def test_post_json_sends_body_without_redirects(self):
+        with mock.patch.object(safe_http.requests, "post", return_value=resp(body=b'{"list":[]}')) as post, \
+                mock.patch.object(safe_http.requests, "get") as get:
+            r = safe_http.fetch("https://news.example.com/api", json_body={"a": 1}, hosts={"news.example.com"})
+        self.assertEqual(r.json(), {"list": []})
+        self.assertEqual((post.call_args.kwargs["json"], post.call_args.kwargs["allow_redirects"]), ({"a": 1}, False))
+        get.assert_not_called()
+
+    def test_post_redirect_is_refused(self):
+        with mock.patch.object(safe_http.requests, "post", return_value=resp(302, headers={"Location": "https://other.example.org/"})), \
+                self.assertRaises(safe_http.BlockedError):
+            safe_http.fetch("https://news.example.com/api", json_body={})
+
+    def test_post_still_checks_address(self):
+        with mock.patch.object(safe_http.requests, "post") as post, self.assertRaises(safe_http.BlockedError):
+            safe_http.fetch("https://intranet.example.com/api", json_body={})
+        post.assert_not_called()
+
     def test_public_redirect_is_followed(self):
         with self.get(resp(302, headers={"Location": "https://other.example.org/b"}), resp(body=b"ok")) as get:
             r = safe_http.fetch("https://news.example.com/a")
