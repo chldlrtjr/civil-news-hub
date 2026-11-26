@@ -46,7 +46,7 @@ JOBALIO_LIST_URL = "https://apis.data.go.kr/1051000/recruitment/list"
 JOBALIO_PAGE_SIZE = 1000
 JOBALIO_NCS_CONSTRUCTION = "R600014"  # NCS 대분류 '건설' (토목·건축 구분 없음)
 # '건설' 분야 공고 중 제목으로 토목 관련성을 판단하는 단어
-JOBALIO_CIVIL_HINT_RE = re.compile(r"건설사업|현장|감독|공사원가|매입기술|상수관망|하수|도로|철도|교량|터널|항만|댐|하천|지반|측량|시설관리|토지")
+JOBALIO_CIVIL_HINT_RE = re.compile(r"건설사업|현장|감독|공사원가|매입기술|상수관망|상수도|정수장|하수|도로|철도|교량|터널|항만|댐|하천|지반|측량|시설관리|토지")
 # 본문에서 '직무(분야)' 형태로 지정된 모집 분야. 토목 자격으로 지원 가능한 분야가 하나도 없으면 제외
 # 직무명 바로 뒤 괄호만 모집 분야로 봄: '감독(전기)', '매입기술역(건축/기계/전기)', '촉탁나급(토목)'
 # ('해당분야(건설·전기…) 실무경력' 같은 경력 조건 괄호는 제외)
@@ -70,7 +70,7 @@ ENGINEERING_NAME_RE = re.compile(r"엔지니어링|기술공단|기술단|건축
 # 공채속보에 잘 올라오지 않는 주요 기관·기업의 공식 채용 페이지 (공고 내용은 만들지 않고 링크만 제공)
 CAREER_PAGES = [
     {"company": "한국도로공사", "category_id": "public", "link": "https://www.ex.co.kr"},
-    {"company": "한국수자원공사", "category_id": "public", "link": "https://www.kwater.or.kr/kor/sub01/sub04/sub01/list.do?s_mid=108"},
+    {"company": "한국수자원공사", "category_id": "public", "link": "https://k-water.recruiter.co.kr/career/home"},
     {"company": "국가철도공단", "category_id": "public", "link": "https://www.kr.or.kr/boardCnts/list.do?boardID=72"},
     {"company": "한국토지주택공사", "category_id": "public", "link": "https://www.lh.or.kr/board.es?mid=a10602040000&bid=0035"},
     {"company": "한국건설기술연구원", "category_id": "public", "link": "https://www.kict.re.kr/announcementRecruitWeb/getAnnouncementRecruitList.es?mid=a10513030000"},
@@ -78,8 +78,8 @@ CAREER_PAGES = [
     {"company": "대우건설", "category_id": "builder", "link": "https://recruit.daewooenc.com/"},
     {"company": "DL이앤씨", "category_id": "builder", "link": "https://dlenc.recruiter.co.kr/career/Main"},
     {"company": "GS건설", "category_id": "builder", "link": "https://gsenc.recruiter.co.kr/career/home"},
-    {"company": "포스코이앤씨", "category_id": "builder", "link": "https://recruit.posco.com"},
-    {"company": "유신", "category_id": "engineering", "link": "https://www.yooshin.com/career/career_opportunities"},
+    {"company": "포스코이앤씨", "category_id": "builder", "link": "https://poscoenc.careerlink.kr/jobs"},
+    {"company": "유신", "category_id": "engineering", "link": "https://www.yooshin.com/career/opportunities"},
     {"company": "삼안", "category_id": "engineering", "link": "https://samaneng.com/board/recruit2/index.html"},
     # 동명기술공단(dmec.co.kr)은 구형 DHE 암호화만 지원해 최신 브라우저에서 접속 불가 → 제외 (2026-10)
     {"company": "도화엔지니어링", "category_id": "engineering", "link": "https://dohwa.recruiter.co.kr/career/home"},

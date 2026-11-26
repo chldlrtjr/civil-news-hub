@@ -42,6 +42,28 @@ class CareerPagesTest(unittest.TestCase):
         self.assertNotIn("http://www.dmec.co.kr", links)
         self.assertIn("https://samaneng.com/board/recruit2/index.html", links)
 
+    def test_fixed_links_2026_11(self):
+        """수자원공사 옛 주소는 '페이지를 찾을 수 없음', 포스코는 그룹 사이트(수집·안내 대상 아님), 유신은 직무 소개 페이지였음"""
+        links = {p["company"]: p["link"] for p in job_scraper.CAREER_PAGES}
+        self.assertEqual(links["한국수자원공사"], "https://k-water.recruiter.co.kr/career/home")
+        self.assertEqual(links["포스코이앤씨"], "https://poscoenc.careerlink.kr/jobs")
+        self.assertEqual(links["유신"], "https://www.yooshin.com/career/opportunities")
+
+
+class JobalioCivilHintTest(unittest.TestCase):
+    def _item(self, title):
+        return {"recrutPbancTtl": title, "ncsCdLst": job_scraper.JOBALIO_NCS_CONSTRUCTION, "recrutPblntSn": "1",
+                "pbancBgngYmd": "20261112", "pbancEndYmd": "20261127"}
+
+    def test_water_supply_operation_is_kept(self):
+        # 하수도 시설운영 공고는 이미 들어오는데 같은 종류의 상수도·정수장 공고만 빠지고 있었음
+        for t in ["[한국수자원공사] 나주수도지사 특수직(지방상수도 시설운영) 채용 공고",
+                  "[한국수자원공사] 통영수도센터 욕지정수장 특수직(수탁운영_지방상수도 시설운영) 채용 공고"]:
+            self.assertIsNotNone(job_scraper.parse_jobalio_job(self._item(t)), t)
+
+    def test_unrelated_construction_ncs_still_dropped(self):
+        self.assertIsNone(job_scraper.parse_jobalio_job(self._item("휴게소 매장 운영 기간제근로자")))
+
 
 
 class WebLinkTest(unittest.TestCase):
