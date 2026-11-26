@@ -31,6 +31,8 @@ import urllib.parse
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone, timedelta
 
+import career_sites
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 JOBS_JSON_PATH = os.path.join(DATA_DIR, "jobs.json")
@@ -469,9 +471,10 @@ def load_previous_jobs(source):
 
 
 def collect_source(name, key_name, collector):
-    """출처별 수집 → (공고 목록, 실패 여부). 키가 없거나 실패하면 해당 출처의 이전 수집 결과를 유지"""
-    api_key = load_api_key(key_name)
-    if not api_key:
+    """출처별 수집 → (공고 목록, 실패 여부). 키가 없거나 실패하면 해당 출처의 이전 수집 결과를 유지.
+    key_name 이 None 이면 키 없이 도는 출처(기관 채용 페이지 직접 수집)"""
+    api_key = load_api_key(key_name) if key_name else None
+    if key_name and not api_key:
         print(f"  [!] {key_name}가 없어 {name} 이전 수집 결과를 유지합니다.")
     else:
         try:
@@ -492,7 +495,12 @@ def scrape_civil_jobs():
 
     alio_jobs, alio_failed = collect_source("잡알리오", "JOBALIO_API_KEY", collect_jobalio_jobs)
     work24_jobs, work24_failed = collect_source("고용24 공채속보", "WORK24_API_KEY", collect_work24_jobs)
+    # 공채 API 에 안 올라오는 기관은 공식 채용 페이지 목록에서 직접 (career_sites.py)
+    today = now_kst.strftime("%Y-%m-%d")
+    site_results = [(name, *collect_source(name, None, lambda _k, f=fn: f(today)))
+                    for name, fn in ((career_sites.YOOSHIN, career_sites.collect_yooshin), (career_sites.KICT, career_sites.collect_kict))]
     failed_sources = [name for name, failed in (("잡알리오", alio_failed), ("고용24 공채속보", work24_failed)) if failed]
+    failed_sources += [name for name, _jobs, failed in site_results if failed]
 
     # 같은 공고가 양쪽에 올라온 경우(기관명+마감일 일치) 정보가 많은 잡알리오 쪽을 사용
     alio_keys = {(normalize_company(j["company"]), j["deadline_date"]) for j in alio_jobs}
@@ -500,6 +508,10 @@ def scrape_civil_jobs():
     if duplicates:
         print(f"  [i] 중복 공고 {len(duplicates)}건은 잡알리오 정보로 표시")
     jobs = alio_jobs + [j for j in work24_jobs if j not in duplicates]
+    # 직접 수집한 공고가 공채 API 에도 있으면(기관명+마감일 일치) 모집 분야 정보가 있는 API 쪽을 써요
+    api_keys = {(normalize_company(j["company"]), j["deadline_date"]) for j in jobs}
+    jobs += [j for _name, site_jobs, _f in site_results for j in site_jobs
+             if (normalize_company(j["company"]), j["deadline_date"]) not in api_keys]
 
     collected_jobs = []
     for job in jobs:
@@ -515,7 +527,7 @@ def scrape_civil_jobs():
     jobs_data = {
         "last_updated": now_kst.strftime("%Y-%m-%d %H:%M"),
         "last_updated_display": now_kst.strftime("%Y년 %m월 %d일 %H:%M"),
-        "source": "잡알리오(공공기관 채용정보) · 고용24 공채속보 Open API",
+        "source": "잡알리오(공공기관 채용정보) · 고용24 공채속보 Open API · 기관 공식 채용 페이지",
         "total_count": len(collected_jobs),
         "failed_sources": failed_sources,
         "categories": JOB_CATEGORIES,

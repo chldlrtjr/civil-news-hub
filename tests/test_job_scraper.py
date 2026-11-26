@@ -29,11 +29,27 @@ class CollectSourceTest(unittest.TestCase):
             self.assertTrue(job_scraper.collect_source("고용24 공채속보", "WORK24_API_KEY", lambda k: [])[1])
 
     def test_failed_sources_in_result(self):
-        results = {"JOBALIO_API_KEY": ([], False), "WORK24_API_KEY": ([], True)}
-        with mock.patch.object(job_scraper, "collect_source", side_effect=lambda n, k, c: results[k]), \
+        results = {"고용24 공채속보": ([], True), "유신 채용 페이지": ([], True)}
+        with mock.patch.object(job_scraper, "collect_source", side_effect=lambda n, k, c: results.get(n, ([], False))), \
                 mock.patch.object(job_scraper, "write_json_atomic"):
             data = job_scraper.scrape_civil_jobs()
-        self.assertEqual(data["failed_sources"], ["고용24 공채속보"])
+        self.assertEqual(data["failed_sources"], ["고용24 공채속보", "유신 채용 페이지"])
+
+    def test_keyless_source_called_without_key(self):
+        with mock.patch.object(job_scraper, "load_api_key") as key:
+            jobs, failed = job_scraper.collect_source("유신 채용 페이지", None, lambda k: [{"id": "y"}])
+        key.assert_not_called()
+        self.assertEqual((jobs, failed), ([{"id": "y"}], False))
+
+    def test_direct_site_jobs_merged_and_api_duplicates_win(self):
+        api = {"id": "w24-1", "company": "(주)유신", "deadline_date": "2027-01-28", "title": "공항 경력"}
+        site = [{"id": "yooshin-157", "company": "유신", "deadline_date": "2027-01-28", "title": "경력직 채용"},
+                {"id": "kict-1", "company": "한국건설기술연구원", "deadline_date": "2027-01-10", "title": "연수직"}]
+        results = {"고용24 공채속보": ([api], False), "유신 채용 페이지": (site[:1], False), "한국건설기술연구원 채용 페이지": (site[1:], False)}
+        with mock.patch.object(job_scraper, "collect_source", side_effect=lambda n, k, c: results.get(n, ([], False))), \
+                mock.patch.object(job_scraper, "write_json_atomic"):
+            data = job_scraper.scrape_civil_jobs()
+        self.assertEqual([j["id"] for j in data["jobs"]], ["kict-1", "w24-1"])
 
 
 class CareerPagesTest(unittest.TestCase):
