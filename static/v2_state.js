@@ -52,8 +52,9 @@ async function writeSavedRemote(){
 }
 // DB 상한(supabase/schema.sql)을 넘으면 저장이 통째로 거절돼요: 이 브라우저 사본째로 잘라 두어야 불러오기 때 또 올리지 않아요
 function capSynced(){
-  const t = CNHTracker.capTracked(tracked), ids = CNHTracker.capIds([...saved]);
+  const t = CNHTracker.capTracked(tracked, kstToday()), ids = CNHTracker.capIds([...saved]);
   if (t === tracked && ids.length === saved.size) return;
+  console.warn(`저장 상한을 넘어 진행 카드 ${tracked.length - t.length}개, 북마크 ${saved.size - ids.length}개를 정리했어요`);
   if (t !== tracked){ tracked = t; storeTrackedLocal(); }
   if (ids.length !== saved.size){ saved.clear(); ids.forEach(id => saved.add(id)); storeSavedLocal(); }
   notifySaved();

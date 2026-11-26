@@ -156,6 +156,7 @@ window.CivilData = (() => {
           color: colors[idx % colors.length],
           role: j.title,
           lvl: j.career || '경력무관',
+          career: j.career || '',  // 판정용 원래 값 (CNHv2.studentJob 이 화면용 기본값 '경력무관'을 학생 공고로 세지 않게)
           exp: '',
           steps: (j.steps && j.steps.length) ? j.steps : ['공고 원문 참조'],
           end: daysLeft,

@@ -403,6 +403,26 @@ test('calEvent: 시험·공채는 확정 날짜만, 예정(달만)·지난 일�
   assert.ok(V.calIcs(e, '20261126T000000Z').includes('DTSTART;VALUE=DATE:20270327'));
 });
 
+test('calEvent: 접수 기간(date~end)은 끝날까지 버튼이 보이고, 캘린더 일정도 끝날 다음 날까지', () => {
+  const e = V.calEvent('exam', EX[1], '2027-01-27');  // 접수 도중
+  assert.ok(e);
+  assert.equal(e.date, '2027-01-25');
+  assert.equal(e.endDate, '2027-01-29');
+  const s = V.calIcs(e, '20261126T000000Z');
+  assert.ok(s.includes('DTSTART;VALUE=DATE:20270125\r\n') && s.includes('DTEND;VALUE=DATE:20270130\r\n'));
+  assert.ok(V.calGoogleUrl(e).includes('&dates=20270125/20270130&'));
+  assert.ok(V.calEvent('exam', EX[1], '2027-01-29'));
+  assert.equal(V.calEvent('exam', EX[1], '2027-01-30'), null);
+  // 하루짜리·끝이 이상한 일정은 시작일 하루
+  assert.ok(V.calIcs(V.calEvent('exam', EX[0], '2026-11-26'), 'x').includes('DTEND;VALUE=DATE:20270328'));
+  for (const end of ['2027-02-30', '2027-01-20', '']) {
+    const b = V.calEvent('exam', { ...EX[1], end }, '2026-11-26');
+    assert.ok(V.calIcs(b, 'x').includes('DTEND;VALUE=DATE:20270126'), end);
+  }
+  // 공모전·채용은 마감일 하루 그대로 (end 가 있어도)
+  assert.ok(V.calIcs(V.calEvent('contest', { ...C, end: '2027-12-31' }, '2026-11-26'), 'x').includes('DTEND;VALUE=DATE:' + V.calNextDay(C.deadline)));
+});
+
 /* ---------- 채용: 신입·인턴만 ---------- */
 test('studentJob: 신입·인턴·채용형·체험형·경력무관은 남기고 경력직·기간제·일용직은 빼요', () => {
   const ok = (role, lvl) => V.studentJob({ role, lvl });
@@ -418,6 +438,32 @@ test('studentJob: 신입·인턴·채용형·체험형·경력무관은 남기�
   assert.ok(!ok('청송현대화사업팀 특수직(기술관리_건설사업) 채용 공고', '신입·경력'));
   assert.ok(!ok('2027년 제1차 현장 기간제사원 채용 공고', '신입·경력'));
   assert.ok(!ok('', ''));
+});
+
+test('studentJob: 신입과 경력직이 함께 적힌 공고는 남기고, 비정규·경력 연수 공고와 비어 있던 채용 형태(경력무관 기본값)는 빼요', () => {
+  const ok = (role, lvl, career = lvl) => V.studentJob({ role, lvl, career });
+  assert.ok(ok('2027년 신입 및 경력직 채용', '신입·경력'));
+  assert.ok(ok('[신입/경력사원] 토목 설계 채용', '신입·경력'));
+  assert.ok(ok('채용형 인턴 및 경력사원 모집', '인턴'));
+  assert.ok(ok('체험형 인턴·경력직 동시 모집', '인턴'));
+  assert.ok(!ok('공무직(시설관리) 신입 채용', '신입'));
+  assert.ok(!ok('위촉연구원 신입 모집', '신입'));
+  assert.ok(!ok('육아휴직 대체인력 신입 채용', '신입'));
+  assert.ok(!ok('토목 현장소장 채용 (경력 5년 이상)', '경력무관'));
+  assert.ok(!ok('토목 설계 경력10년 이상 신입 가능', '신입'));
+  // 수집 때 채용 형태가 비어 data_adapter 가 '경력무관'으로 채운 공고는 자동으로 넣지 않아요
+  assert.ok(!ok('토목 현장 기술자 채용', '경력무관', ''));
+  assert.ok(ok('토목 현장 신입 기술자 채용', '경력무관', ''));
+  assert.ok(ok('토목 설계 직원 채용', '경력무관'));  // 원래 '경력무관'이라고 적힌 공고는 그대로
+});
+
+test('data_adapter: 채용 형태가 비면 화면엔 경력무관, 판정용 career 는 빈 값', () => {
+  const ctx = { window: { CNH_STATIC_DATA: { news: { articles: [{ id: 'n1', title: 't' }] },
+    jobs: { jobs: [{ id: 'j1', title: '토목 현장 기술자 채용', career: '' }, { id: 'j2', title: '설계', career: '신입' }] } } }, console, Date, JSON };
+  require('node:vm').runInNewContext(require('node:fs').readFileSync(require('node:path').join(__dirname, '..', 'static', 'data_adapter.js'), 'utf8'), ctx);
+  const jobs = ctx.window.CivilData.getInitialData().JOBS;
+  assert.deepEqual(jobs.map((j) => [j.lvl, j.career]), [['경력무관', ''], ['신입', '신입']]);
+  assert.equal(V.studentJob(jobs[0]), false);
 });
 
 test('jobList: "신입·인턴만" 칩은 studentJob 판정으로 걸러요', () => {
@@ -442,4 +488,9 @@ test('v2_exams.js: 항목마다 출처·확인한 날, 확정(date) 또는 예�
     if (x.end) assert.ok(V.isDate(x.end) && x.end > x.date, x.id);
     if (x.month) assert.ok(x.basis && x.basis.includes('예정'), x.id);
   }
+});
+
+test('v2_exams.js: 토목기사 3회 근거의 2026 실기 기간은 Q-net 공고대로 10.24~11.15', () => {
+  const cv3 = require('../static/v2_exams.js').find((x) => x.id === 'exam-2027-cv3');
+  assert.ok(cv3.basis.includes('실기 10.24~11.15'), cv3.basis);
 });

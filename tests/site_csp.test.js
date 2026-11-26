@@ -62,3 +62,7 @@ test('마감일 캘린더 줄: 묶음 이름과 새 탭 안내(화면읽기)', (
   const narrow = css.split('@media (max-width:1199px){').slice(1).map((b) => b.slice(0, b.indexOf('\n}')));
   assert.ok(narrow.some((b) => b.includes('#v2pc .dt-cal>span{flex-basis:100%}')));
 });
+
+test('모바일 시험·공채 하단 안내(.l-note)는 목록처럼 좌우 20px', () => {
+  assert.ok(read('index.html').includes('#v2m .l-note{padding:16px 20px}'));
+});

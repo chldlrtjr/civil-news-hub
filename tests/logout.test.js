@@ -7,10 +7,10 @@ const vm = require('node:vm');
 
 const src = fs.readFileSync(path.join(__dirname, '..', 'static', 'v2_state.js'), 'utf8');
 
-function boot(signOutResult) {
+function boot(signOutResult, extraStore = {}, con = console) {
   const calls = { signOut: [], removed: [], reloads: 0 };
   let clickHandler = null;
-  const store = { 'sb-ref-auth-token': '{"access_token":"x"}' };
+  const store = { 'sb-ref-auth-token': '{"access_token":"x"}', ...extraStore };
   const ctx = {
     window: { supabase: { createClient: () => ({
       auth: {
@@ -22,7 +22,7 @@ function boot(signOutResult) {
     localStorage: { getItem: k => store[k] ?? null, setItem: (k, v) => { store[k] = v; }, removeItem: k => { calls.removed.push(k); delete store[k]; } },
     document: { addEventListener: (t, f) => { if (t === 'click') clickHandler = f; }, hidden: false },
     navigator: { userAgent: 'node' }, location: { origin: 'x', pathname: '/', href: 'x', reload: () => { calls.reloads++; } },
-    console, setTimeout, clearTimeout, Date, JSON, Promise, Map, Set, CNHTracker: require('../static/tracker_core.js'),
+    console: con, setTimeout, clearTimeout, Date, JSON, Promise, Map, Set, CNHTracker: require('../static/tracker_core.js'),
   };
   vm.createContext(ctx);
   vm.runInContext(src, ctx);
@@ -98,4 +98,16 @@ test('화면에 넣는 글자(esc)에서 수집 데이터의 이모지를 빼고
   assert.equal(vm.runInContext('esc(input)', ctx), ' 지하철 파업  &lt;b&gt;');
   ctx.input = '\u{1F1F0}\u{1F1F7}국기 \u{1F44D}\u{1F3FD}엄지 \u{1F468}‍\u{1F527}정비';  // 국기·피부색·ZWJ 결합
   assert.equal(vm.runInContext('esc(input)', ctx), '국기 엄지 정비');
+});
+
+test('상한을 넘어 잘라 내면 콘솔에 경고 한 줄 (사용자 안내 화면은 없음)', () => {
+  const warns = [];
+  const con = { ...console, warn: (...a) => warns.push(a.join(' ')) };
+  const cards = Array.from({ length: 205 }, (_, i) => ({ id: 'k' + i, kind: 'contest', title: 't', deadline: '2099-01-01', updatedAt: '2026-11-01T00:00:00Z' }));
+  const b = boot({ error: null }, { 'cnh-tracked': JSON.stringify(cards) }, con);
+  b.ctx.capSynced();
+  assert.equal(warns.length, 1);
+  assert.match(warns[0], /5/);
+  b.ctx.capSynced();
+  assert.equal(warns.length, 1);  // 이미 잘랐으면 조용히
 });

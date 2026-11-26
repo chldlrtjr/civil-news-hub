@@ -98,14 +98,15 @@
   }
 
   // Supabase user_saved 상한(supabase/schema.sql)과 같은 값: 넘으면 DB 가 저장을 거절하므로 올리기 전에 잘라요
-  const MAX_SAVED = 1000, MAX_TRACKED = 200, MAX_TRACKED_BYTES = 90000;
+  const MAX_SAVED = 1000, MAX_TRACKED = 200, MAX_TRACKED_BYTES = 80000;  // DB 128KB 행 상한에 jsonb 오버헤드·북마크 1000개 몫 여유
   const bytes = (v) => new TextEncoder().encode(JSON.stringify(v)).length;
   const capIds = (ids, max = MAX_SAVED) => (ids.length > max ? ids.slice(-max) : ids);
-  // 오래된 삭제 표시부터, 그다음 오래 손대지 않은 카드부터 빼요 (남는 카드 순서는 그대로)
-  function capTracked(cards, max = MAX_TRACKED, maxBytes = MAX_TRACKED_BYTES) {
+  // 빼는 순서: 삭제 표시 → 끝난 카드(결과 발표·마감 미제출) → 진행 중, 같은 무리 안에선 오래 손대지 않은 것부터 (남는 카드 순서는 그대로)
+  const dropRank = (c, today) => (c.deleted ? 0 : ['result', 'missed'].includes(stageOf(c, today)) ? 1 : 2);
+  function capTracked(cards, today, max = MAX_TRACKED, maxBytes = MAX_TRACKED_BYTES) {
     let n = cards.length, size = bytes(cards);
     if (n <= max && size <= maxBytes) return cards;
-    const order = cards.slice().sort((x, y) => (x.deleted ? 0 : 1) - (y.deleted ? 0 : 1)
+    const order = cards.slice().sort((x, y) => dropRank(x, today) - dropRank(y, today)
       || ((x.updatedAt || '') < (y.updatedAt || '') ? -1 : (x.updatedAt || '') > (y.updatedAt || '') ? 1 : 0));
     const drop = new Set();
     for (const card of order) {

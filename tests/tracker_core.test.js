@@ -130,19 +130,33 @@ test('상한 값은 schema.sql 제약과 맞아요 (ids 1000개, tracked 200개)
 });
 test('capTracked: 상한 안이면 그대로', () => {
   const l = [c({ id: 'a' }), tomb('b', '2026-11-01T00:00:00Z')];
-  assert.deepEqual(capTracked(l), l);
+  assert.deepEqual(capTracked(l, T), l);
 });
 test('capTracked: 개수를 넘으면 오래된 삭제 표시부터, 그다음 오래된 카드부터 빼고 순서는 유지', () => {
   const l = [c({ id: 'live-old', updatedAt: '2026-01-01T00:00:00Z' }), tomb('t-new', '2026-11-02T00:00:00Z'),
     c({ id: 'live-new', updatedAt: '2026-11-03T00:00:00Z' }), tomb('t-old', '2026-10-01T00:00:00Z')];
-  assert.deepEqual(capTracked(l, 3).map((x) => x.id), ['live-old', 't-new', 'live-new']);
-  assert.deepEqual(capTracked(l, 1).map((x) => x.id), ['live-new']);
+  assert.deepEqual(capTracked(l, T, 3).map((x) => x.id), ['live-old', 't-new', 'live-new']);
+  assert.deepEqual(capTracked(l, T, 1).map((x) => x.id), ['live-new']);
 });
 test('capTracked: 바이트 상한을 넘으면 줄여요', () => {
   const big = Array.from({ length: 50 }, (_, i) => c({ id: 'b' + i, title: '가'.repeat(1000), updatedAt: '2026-11-' + String(i % 28 + 1).padStart(2, '0') }));
-  const out = capTracked(big);
+  const out = capTracked(big, T);
   assert.ok(Buffer.byteLength(JSON.stringify(out)) <= MAX_TRACKED_BYTES);
   assert.ok(out.length > 0 && out.length < 50);
+});
+test('capTracked: 삭제 표시 → 끝난 카드(결과·마감) → 진행 중 순으로 빼요 (최근에 고쳤어도 끝난 카드가 먼저)', () => {
+  const l = [c({ id: 'todo-old', updatedAt: '2026-01-01T00:00:00Z' }),
+    c({ id: 'sub-old', submittedAt: '2026-01-02', updatedAt: '2026-01-02T00:00:00Z' }),
+    c({ id: 'result-new', result: 'pass', resultAt: T, updatedAt: '2026-11-22T00:00:00Z' }),
+    c({ id: 'missed-new', deadline: '2026-11-01', updatedAt: '2026-11-21T00:00:00Z' }),
+    tomb('t', '2026-11-22T00:00:00Z')];
+  assert.deepEqual(capTracked(l, T, 4).map((x) => x.id), ['todo-old', 'sub-old', 'result-new', 'missed-new']);
+  assert.deepEqual(capTracked(l, T, 3).map((x) => x.id), ['todo-old', 'sub-old', 'result-new']);
+  assert.deepEqual(capTracked(l, T, 2).map((x) => x.id), ['todo-old', 'sub-old']);
+  assert.deepEqual(capTracked(l, T, 1).map((x) => x.id), ['sub-old']);
+});
+test('tracked 바이트 상한은 80KB 이하 (DB 128KB 행 상한에 jsonb 오버헤드·북마크 몫 여유)', () => {
+  assert.ok(MAX_TRACKED_BYTES <= 80000);
 });
 test('capIds: 최근에 넣은 쪽(뒤쪽) max 개만 남겨요', () => {
   assert.deepEqual(capIds(['a', 'b', 'c'], 2), ['b', 'c']);

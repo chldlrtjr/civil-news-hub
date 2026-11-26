@@ -131,9 +131,15 @@
     const open = (list || []).filter((x) => isOpen(x.deadline, today) && (cat === 'all' || x.category === cat));
     return sort === 'new' ? newestFirst(open, (x) => x.startDate || '') : open.slice().sort(soonest((x) => x.deadline));
   }
-  // 학생에게 맞는 공고: 채용 형태·제목에 신입·인턴·채용형·체험형·경력무관이 있고, 제목이 경력직·기간제·일용직·촉탁·계약직·PJT·특수직(K-water 비정규 기술직)이 아닌 것
-  const STUDENT_IN = /인턴|신입|채용형|체험형|경력무관/, STUDENT_OUT = /경력직|경력사원|기간제|일용직|촉탁|계약직|PJT|특수직/i;
-  const studentJob = (x) => STUDENT_IN.test((x.lvl || '') + ' ' + (x.role || '')) && !STUDENT_OUT.test(x.role || '');
+  // 학생에게 맞는 공고: 채용 형태·제목에 신입·인턴·채용형·체험형·경력무관이 있고, 제목이 기간제·일용직·촉탁·계약직·PJT·특수직(K-water 비정규 기술직)·공무직·위촉·대체인력·'경력 N년'이 아닌 것.
+  // 경력직·경력사원은 제목에 신입·인턴·채용형·체험형이 함께 있으면('[신입/경력직]') 남겨요. 채용 형태는 원래 값(career, data_adapter 가 비면 '')으로 봐서 화면용 기본값 '경력무관'은 세지 않아요
+  const STUDENT_IN = /인턴|신입|채용형|체험형|경력무관/, STUDENT_TITLE = /인턴|신입|채용형|체험형/, CAREER_ONLY = /경력직|경력사원/,
+    STUDENT_OUT = /기간제|일용직|촉탁|계약직|PJT|특수직|공무직|위촉|대체인력|경력\s*\d+\s*년/i;
+  const studentJob = (x) => {
+    const role = x.role || '';
+    return STUDENT_IN.test(('career' in x ? x.career : x.lvl || '') + ' ' + role) && !STUDENT_OUT.test(role)
+      && !(CAREER_ONLY.test(role) && !STUDENT_TITLE.test(role));
+  };
   const lvlMatch = (x, lvl) => (lvl === '전체' ? true : lvl === '신입·인턴만' ? studentJob(x) : (x.lvl || '').includes(lvl));
   function jobList(list, { lvl = '전체', org = 'all' } = {}, today) {
     return (list || []).filter((x) => isOpen(x.deadline, today) && lvlMatch(x, lvl) && (org === 'all' || x.grp === org))
@@ -203,12 +209,14 @@
   const CAL_DATE = { contest: (x) => x.deadline, job: (x) => x.deadline, exam: (x) => x.date };
   function calEvent(kind, item, today) {
     const date = CAL_DATE[kind] && CAL_DATE[kind](item);
-    if (!realDate(date) || date < today) return null;
+    // 시험 접수 기간(date~end)은 끝날까지 버튼이 보이고, 캘린더에도 끝날까지 여러 날 일정으로
+    const endDate = kind === 'exam' && realDate(item.end) && item.end > date ? item.end : date;
+    if (!realDate(date) || endDate < today) return null;
     const job = kind === 'job', org = (job ? item.co : item.org) || '';
     // 링크·ID 에 줄바꿈이 섞이면 .ics 에 줄이 끼어들어요: 공백·제어문자 없는 http(s) 주소만, ID 는 그런 글자를 - 로
     const raw = String(item.link || '').trim(), link = /^https?:\/\/[^\s\x00-\x1f\x7f]+$/i.test(raw) ? raw : '';
     return {
-      uid: `${kind}-${String(item.id).replace(/[\s\x00-\x1f\x7f]+/g, '-')}@civil-news-hub.vercel.app`, date, link,
+      uid: `${kind}-${String(item.id).replace(/[\s\x00-\x1f\x7f]+/g, '-')}@civil-news-hub.vercel.app`, date, endDate, link,
       title: kind === 'exam' ? '[시험·공채] ' + (item.title || '') : '[마감] ' + (job ? `${item.role || ''}${org ? ` (${org})` : ''}` : item.title || ''),
       details: [org, link, '토목 뉴스 브리핑에서 추가'].filter(Boolean).join('\n'),
     };
@@ -234,7 +242,7 @@
     // 알림: 마감 3일 전·1일 전 오전 9시 (일정 시작 = 마감일 0시 기준)
     const alarm = (trigger) => ['BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + icsText(ev.title), 'TRIGGER:' + trigger, 'END:VALARM'];
     const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//civil-news-hub//ko', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
-      'BEGIN:VEVENT', 'UID:' + ev.uid, 'DTSTAMP:' + stamp, 'DTSTART;VALUE=DATE:' + calDay(ev.date), 'DTEND;VALUE=DATE:' + calNextDay(ev.date),
+      'BEGIN:VEVENT', 'UID:' + ev.uid, 'DTSTAMP:' + stamp, 'DTSTART;VALUE=DATE:' + calDay(ev.date), 'DTEND;VALUE=DATE:' + calNextDay(ev.endDate || ev.date),
       'SUMMARY:' + icsText(ev.title), 'DESCRIPTION:' + icsText(ev.details), ...(ev.link ? ['URL:' + ev.link] : []),
       ...alarm('-PT63H'), ...alarm('-PT15H'), 'END:VEVENT', 'END:VCALENDAR'];
     return lines.map(icsFold).join('\r\n') + '\r\n';
@@ -242,7 +250,7 @@
   // 앱 속 브라우저(카카오톡·인스타 등)는 파일 내려받기와 구글 로그인을 막아요. v2_state.js 로그인 버튼과 같은 규칙
   const inAppBrowser = (ua) => (/KAKAOTALK/i.test(ua) ? 'kakao' : /; wv\)|FBAN|FBAV|Instagram|NAVER\(inapp|Line\//i.test(ua) ? 'other' : '');
   const calGoogleUrl = (ev) => 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(ev.title)
-    + '&dates=' + calDay(ev.date) + '/' + calNextDay(ev.date) + '&details=' + encodeURIComponent(ev.details);
+    + '&dates=' + calDay(ev.date) + '/' + calNextDay(ev.endDate || ev.date) + '&details=' + encodeURIComponent(ev.details);
 
   // 로그인 연령: 출생연도 기준 19세가 되는 해부터 (청소년 보호법 제2조 제1호와 같은 연 나이 셈법)
   function loginAllowed(birthYear, thisYear) {
