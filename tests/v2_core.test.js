@@ -423,59 +423,6 @@ test('calEvent: 접수 기간(date~end)은 끝날까지 버튼이 보이고, 캘
   assert.ok(V.calIcs(V.calEvent('contest', { ...C, end: '2027-12-31' }, '2026-11-26'), 'x').includes('DTEND;VALUE=DATE:' + V.calNextDay(C.deadline)));
 });
 
-/* ---------- 채용: 신입·인턴만 ---------- */
-test('studentJob: 신입·인턴·채용형·체험형·경력무관은 남기고 경력직·기간제·일용직은 빼요', () => {
-  const ok = (role, lvl) => V.studentJob({ role, lvl });
-  assert.ok(ok('2027년 상반기 채용연계형 인턴 채용', '인턴'));
-  assert.ok(ok('[신입/경력] 토목CM본부 PQ작성 직원 채용', '신입·경력'));
-  assert.ok(ok('2027년 상반기 신입직원 채용공고', '신입'));
-  assert.ok(ok('토목 설계 직원 채용', '경력무관'));
-  assert.ok(ok('[한국수자원공사] 2026년 하반기 AI 체험형 인턴 채용 공고', '인턴'));
-  assert.ok(!ok('국내 현장 토목 경력직 채용', '경력'));
-  assert.ok(!ok('경력사원 정규직, PJT 채용', '경력'));
-  assert.ok(!ok('환경시설관리처 기간제근로자(촉탁직, 일용직) 채용 공고', '신입·경력'));
-  assert.ok(!ok('철도안전처 기간제근로자 채용공고', '인턴'));
-  assert.ok(!ok('청송현대화사업팀 특수직(기술관리_건설사업) 채용 공고', '신입·경력'));
-  assert.ok(!ok('2027년 제1차 현장 기간제사원 채용 공고', '신입·경력'));
-  assert.ok(!ok('', ''));
-});
-
-test('studentJob: 신입과 경력직이 함께 적힌 공고는 남기고, 비정규·경력 연수 공고와 비어 있던 채용 형태(경력무관 기본값)는 빼요', () => {
-  const ok = (role, lvl, career = lvl) => V.studentJob({ role, lvl, career });
-  assert.ok(ok('2027년 신입 및 경력직 채용', '신입·경력'));
-  assert.ok(ok('[신입/경력사원] 토목 설계 채용', '신입·경력'));
-  assert.ok(ok('채용형 인턴 및 경력사원 모집', '인턴'));
-  assert.ok(ok('체험형 인턴·경력직 동시 모집', '인턴'));
-  assert.ok(!ok('공무직(시설관리) 신입 채용', '신입'));
-  assert.ok(!ok('위촉연구원 신입 모집', '신입'));
-  assert.ok(!ok('육아휴직 대체인력 신입 채용', '신입'));
-  assert.ok(!ok('토목 현장소장 채용 (경력 5년 이상)', '경력무관'));
-  assert.ok(!ok('토목 설계 경력10년 이상 신입 가능', '신입'));
-  // 수집 때 채용 형태가 비어 data_adapter 가 '경력무관'으로 채운 공고는 자동으로 넣지 않아요
-  assert.ok(!ok('토목 현장 기술자 채용', '경력무관', ''));
-  assert.ok(ok('토목 현장 신입 기술자 채용', '경력무관', ''));
-  assert.ok(ok('토목 설계 직원 채용', '경력무관'));  // 원래 '경력무관'이라고 적힌 공고는 그대로
-});
-
-test('data_adapter: 채용 형태가 비면 화면엔 경력무관, 판정용 career 는 빈 값', () => {
-  const ctx = { window: { CNH_STATIC_DATA: { news: { articles: [{ id: 'n1', title: 't' }] },
-    jobs: { jobs: [{ id: 'j1', title: '토목 현장 기술자 채용', career: '' }, { id: 'j2', title: '설계', career: '신입' }] } } }, console, Date, JSON };
-  require('node:vm').runInNewContext(require('node:fs').readFileSync(require('node:path').join(__dirname, '..', 'static', 'data_adapter.js'), 'utf8'), ctx);
-  const jobs = ctx.window.CivilData.getInitialData().JOBS;
-  assert.deepEqual(jobs.map((j) => [j.lvl, j.career]), [['경력무관', ''], ['신입', '신입']]);
-  assert.equal(V.studentJob(jobs[0]), false);
-});
-
-test('jobList: "신입·인턴만" 칩은 studentJob 판정으로 걸러요', () => {
-  const list = [
-    { id: 'a', role: '신입 채용', lvl: '신입', deadline: '2026-12-01' },
-    { id: 'b', role: '기간제근로자 채용', lvl: '신입·경력', deadline: '2026-12-01' },
-    { id: 'c', role: '경력직 채용', lvl: '경력', deadline: '2026-12-01' },
-    { id: 'd', role: '체험형 인턴', lvl: '인턴', deadline: '2026-11-01' },
-  ];
-  assert.deepEqual(V.jobList(list, { lvl: '신입·인턴만' }, '2026-11-26').map((x) => x.id), ['a']);
-});
-
 test('v2_exams.js: 항목마다 출처·확인한 날, 확정(date) 또는 예정(month) 중 하나, 예정은 근거', () => {
   const EXAMS = require('../static/v2_exams.js');
   const ids = new Set();

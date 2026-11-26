@@ -85,7 +85,8 @@ def parse_yooshin(text, today):
         if kind not in ("신입", "공채") and not CIVIL_RE.search(dept + " " + title):
             continue
         career = "신입" if kind in ("신입", "공채") else "경력"
-        if dept and dept not in title:  # 제목이 '경력직 채용'뿐인 공고가 있어 사이트처럼 부문을 앞에 붙여요
+        # 제목이 '경력직 채용'뿐인 공고가 있어 사이트처럼 부문을 앞에 붙여요 (괄호 앞 부문명이 이미 제목에 있으면 그대로)
+        if dept and dept.split("(")[0].strip() not in title:
             title = f"[{dept}] {title}"
         jobs.append(_job(YOOSHIN, f"yooshin-{sn}", "유신", "engineering", title, start, end,
                          f"https://www.yooshin.com/career/opportunities/{sn}", career,

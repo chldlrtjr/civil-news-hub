@@ -16,7 +16,7 @@
   const NEWS_CATS = [['all', '전체'], ['general', '토목 종합'], ['road', '도로·철도'], ['water', '수자원·항만'], ['tunnel', '터널·지반'], ['smart', '스마트건설']];
   const CONTEST_CATS = [['all', '전체'], ['토목', '토목'], ['컴퓨터공학', '컴퓨터공학'], ['전북대', '전북대']];
   const COLOR = { general: 'general', road: 'road', water: 'water', tunnel: 'tunnel', smart: 'smart', '토목': 'road', '컴퓨터공학': 'smart', '전북대': 'water' };
-  const JOB_LVLS = ['전체', '신입·인턴만', '인턴', '신입', '경력'];  // 신입·인턴만: CNHv2.studentJob (경력직·기간제·일용직 빼고)
+  const JOB_LVLS = ['전체', '인턴', '신입', '경력'];
   const JOB_ORGS = [['all', '모든 기관'], ['public', '공기업·공공기관'], ['major', '건설·민간기업'], ['design', '설계·엔지니어링']];
   const GRP_NAME = { public: '공기업·공공기관', major: '건설·민간기업', design: '설계·엔지니어링' };
   const KIND_NAME = { news: '뉴스', contest: '공모전', job: '채용', alba: '알바', sw: 'SW 프로그램', exam: '시험·공채' };

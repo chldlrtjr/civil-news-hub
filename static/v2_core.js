@@ -133,14 +133,7 @@
   }
   // 학생에게 맞는 공고: 채용 형태·제목에 신입·인턴·채용형·체험형·경력무관이 있고, 제목이 기간제·일용직·촉탁·계약직·PJT·특수직(K-water 비정규 기술직)·공무직·위촉·대체인력·'경력 N년'이 아닌 것.
   // 경력직·경력사원은 제목에 신입·인턴·채용형·체험형이 함께 있으면('[신입/경력직]') 남겨요. 채용 형태는 원래 값(career, data_adapter 가 비면 '')으로 봐서 화면용 기본값 '경력무관'은 세지 않아요
-  const STUDENT_IN = /인턴|신입|채용형|체험형|경력무관/, STUDENT_TITLE = /인턴|신입|채용형|체험형/, CAREER_ONLY = /경력직|경력사원/,
-    STUDENT_OUT = /기간제|일용직|촉탁|계약직|PJT|특수직|공무직|위촉|대체인력|경력\s*\d+\s*년/i;
-  const studentJob = (x) => {
-    const role = x.role || '';
-    return STUDENT_IN.test(('career' in x ? x.career : x.lvl || '') + ' ' + role) && !STUDENT_OUT.test(role)
-      && !(CAREER_ONLY.test(role) && !STUDENT_TITLE.test(role));
-  };
-  const lvlMatch = (x, lvl) => (lvl === '전체' ? true : lvl === '신입·인턴만' ? studentJob(x) : (x.lvl || '').includes(lvl));
+  const lvlMatch = (x, lvl) => (lvl === '전체' ? true : (x.lvl || '').includes(lvl));
   function jobList(list, { lvl = '전체', org = 'all' } = {}, today) {
     return (list || []).filter((x) => isOpen(x.deadline, today) && lvlMatch(x, lvl) && (org === 'all' || x.grp === org))
       .sort(soonest((x) => x.deadline));
@@ -259,7 +252,7 @@
   }
 
   const API = { loginAllowed, relTime, ddayLabel, dateLabel, scheduleItems, urgentFallback, INTEREST_GROUPS, hasInterests, freshItems, rememberSeen, readJSON, isPhone, monthGrid, shiftMonth, weekdayOf,
-    isDate, ddayOf, contestList, jobList, studentJob, examList, examLabel, albaList, newsList, countBy, searchAll, savedList,
+    isDate, ddayOf, contestList, jobList, examList, examLabel, albaList, newsList, countBy, searchAll, savedList,
     calEvent, calNextDay, calIcs, calGoogleUrl, inAppBrowser };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   else window.CNHv2 = API;

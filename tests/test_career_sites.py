@@ -41,6 +41,10 @@ class YooshinTest(unittest.TestCase):
         self.assertEqual(j["link"], "https://www.yooshin.com/career/opportunities/157")
         self.assertEqual((j["career"], j["fields"], j["source"]), ("경력", ["공항부(공항)"], career_sites.YOOSHIN))
 
+    def test_dept_not_repeated_when_title_has_it(self):
+        jobs = career_sites.parse_yooshin(ys_page(ys_row(153, "경력", "모집중", "교통인프라부문(도로부)", "교통인프라부문 전력망사업 경력직 채용(구조/토질)", "2026.09.29 ~ 채용 시 마감")), TODAY)
+        self.assertEqual(jobs[0]["title"], "교통인프라부문 전력망사업 경력직 채용(구조/토질)")
+
     def test_rolling_posting_has_no_deadline(self):
         jobs = career_sites.parse_yooshin(ys_page(ys_row(153, "경력", "모집중", "교통인프라부문(도로부)", "전력망사업 경력직 채용(구조/토질)", "2026.09.29 ~\n  채용 시 마감 ")), TODAY)
         self.assertEqual((jobs[0]["deadline_date"], jobs[0]["period"]), ("", "2026.09.29 ~ 채용 시 마감"))
