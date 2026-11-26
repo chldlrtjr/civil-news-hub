@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-27 03:00",
-  "last_updated_display": "2026년 11월 27일 03:00",
-  "source": "잡알리오(공공기관 채용정보) · 고용24 공채속보 Open API",
-  "total_count": 25,
+  "last_updated": "2026-11-27 05:00",
+  "last_updated_display": "2026년 11월 27일 05:00",
+  "source": "잡알리오(공공기관 채용정보) · 고용24 공채속보 Open API · 기관 공식 채용 페이지",
+  "total_count": 31,
   "failed_sources": [],
   "categories": [
     {
@@ -344,6 +344,43 @@
         "1차면접",
         "2차면접",
         "채용검진"
+      ]
+    },
+    {
+      "id": "alio-307243",
+      "source": "잡알리오",
+      "company": "한국수자원공사",
+      "company_type": "공공기관",
+      "category_id": "public",
+      "category_name": "공기업·공공기관",
+      "title": "[한국수자원공사] 나주수도지사 특수직(지방상수도 시설운영) 채용 공고",
+      "fields": [
+        "건설",
+        "기계",
+        "전기.전자",
+        "정보통신",
+        "환경.에너지.안전"
+      ],
+      "career": "신입·경력",
+      "is_intern": false,
+      "intern_type": "",
+      "civil_match": "건설 분야 · 공고문 확인",
+      "location": "전남광주",
+      "period": "2026.11.19 ~ 2026.12.03",
+      "deadline_date": "2026-12-03",
+      "tags": [
+        "건설 분야 · 공고문 확인",
+        "비정규직",
+        "1명"
+      ],
+      "link": "https://k-water.recruiter.co.kr",
+      "summary": "□ 연령, 성별, 학력 제한 없음 □ 남자의 경우 병역필 또는 면제자(병역특례 근무중인 자 제외) □ 우리 공사 인사규정에 의한 결격사유가 없는 자 □ 채용예정일부터 현업 전일근무가 가능한 자",
+      "steps": [
+        "1차 전형",
+        "인성검사",
+        "2차 전형",
+        "인성면접",
+        "실무면접"
       ]
     },
     {
@@ -740,6 +777,82 @@
       ]
     },
     {
+      "id": "alio-307371",
+      "source": "잡알리오",
+      "company": "한국수자원공사",
+      "company_type": "공공기관",
+      "category_id": "public",
+      "category_name": "공기업·공공기관",
+      "title": "[한국수자원공사] 경남서부권지사 통영수도센터 욕지정수장 특수직(수탁운영_지방상수도 시설운영) 채용 공고",
+      "fields": [
+        "사업관리",
+        "건설",
+        "기계",
+        "전기.전자",
+        "정보통신",
+        "환경.에너지.안전"
+      ],
+      "career": "신입·경력",
+      "is_intern": false,
+      "intern_type": "",
+      "civil_match": "건설 분야 · 공고문 확인",
+      "location": "경남",
+      "period": "2026.11.25 ~ 2026.12.09",
+      "deadline_date": "2026-12-09",
+      "tags": [
+        "건설 분야 · 공고문 확인",
+        "비정규직",
+        "2명"
+      ],
+      "link": "https://k-water.recruiter.co.kr/",
+      "summary": "□ 연령, 성별, 학력 제한 없음 □ 남자의 경우 병역필 또는 면제자(병역특례 근무중인 자 제외) □ 우리 공사 인사규정에 의한 결격사유가 없는 자 □ 채용예정일부터 현업 전일근무가 가능한 자",
+      "steps": [
+        "1차 전형",
+        "인성검사",
+        "2차 전형",
+        "인성면접",
+        "실무면접"
+      ]
+    },
+    {
+      "id": "alio-307370",
+      "source": "잡알리오",
+      "company": "한국수자원공사",
+      "company_type": "공공기관",
+      "category_id": "public",
+      "category_name": "공기업·공공기관",
+      "title": "[한국수자원공사] 경남서부권지사 통영수도센터 특수직(수탁운영_지방상수도 시설운영) 채용 공고",
+      "fields": [
+        "사업관리",
+        "건설",
+        "기계",
+        "전기.전자",
+        "정보통신",
+        "환경.에너지.안전"
+      ],
+      "career": "신입·경력",
+      "is_intern": false,
+      "intern_type": "",
+      "civil_match": "건설 분야 · 공고문 확인",
+      "location": "경남",
+      "period": "2026.11.25 ~ 2026.12.09",
+      "deadline_date": "2026-12-09",
+      "tags": [
+        "건설 분야 · 공고문 확인",
+        "비정규직",
+        "1명"
+      ],
+      "link": "https://k-water.recruiter.co.kr/",
+      "summary": "□ 연령, 성별, 학력 제한 없음 □ 남자의 경우 병역필 또는 면제자(병역특례 근무중인 자 제외) □ 우리 공사 인사규정에 의한 결격사유가 없는 자 □ 채용예정일부터 현업 전일근무가 가능한 자",
+      "steps": [
+        "1차 전형",
+        "인성검사",
+        "2차 전형",
+        "인성면접",
+        "실무면접"
+      ]
+    },
+    {
       "id": "alio-307499",
       "source": "잡알리오",
       "company": "주택관리공단(주)",
@@ -805,6 +918,43 @@
       ]
     },
     {
+      "id": "alio-307473",
+      "source": "잡알리오",
+      "company": "한국수자원공사",
+      "company_type": "공공기관",
+      "category_id": "public",
+      "category_name": "공기업·공공기관",
+      "title": "[한국수자원공사] 광주수도지사 특수직(수탁운영_지방상수도 시설운영) 채용 공고",
+      "fields": [
+        "건설",
+        "기계",
+        "전기.전자",
+        "정보통신",
+        "환경.에너지.안전"
+      ],
+      "career": "신입·경력",
+      "is_intern": false,
+      "intern_type": "",
+      "civil_match": "건설 분야 · 공고문 확인",
+      "location": "경기",
+      "period": "2026.11.26 ~ 2026.12.10",
+      "deadline_date": "2026-12-10",
+      "tags": [
+        "건설 분야 · 공고문 확인",
+        "비정규직",
+        "1명"
+      ],
+      "link": "https://k-water.recruiter.co.kr/",
+      "summary": "□ 연령, 성별, 학력 제한 없음 □ 남자의 경우 병역필 또는 면제자(병역특례 근무중인 자 제외) □ 우리 공사 인사규정에 의한 결격사유가 없는 자 □ 채용예정일부터 현업 전일근무가 가능한 자",
+      "steps": [
+        "1차 전형",
+        "인성검사",
+        "2차 전형",
+        "인성면접",
+        "실무면접"
+      ]
+    },
+    {
       "id": "alio-307444",
       "source": "잡알리오",
       "company": "주택관리공단(주)",
@@ -867,6 +1017,54 @@
         "신체검사",
         "입사"
       ]
+    },
+    {
+      "id": "yooshin-157",
+      "source": "유신 채용 페이지",
+      "company": "유신",
+      "company_type": "설계·엔지니어링",
+      "category_id": "engineering",
+      "category_name": "설계·엔지니어링",
+      "title": "[공항부(공항)] 경력직 채용",
+      "fields": [
+        "공항부(공항)"
+      ],
+      "career": "경력",
+      "is_intern": false,
+      "intern_type": "",
+      "location": "공고 원문 참조",
+      "period": "2026.10.29 ~ 2027.01.28",
+      "deadline_date": "2027-01-28",
+      "tags": [
+        "경력"
+      ],
+      "link": "https://www.yooshin.com/career/opportunities/157",
+      "summary": "",
+      "steps": []
+    },
+    {
+      "id": "yooshin-153",
+      "source": "유신 채용 페이지",
+      "company": "유신",
+      "company_type": "설계·엔지니어링",
+      "category_id": "engineering",
+      "category_name": "설계·엔지니어링",
+      "title": "[교통인프라부문(도로부)] 교통인프라부문 전력망사업 경력직 채용(구조/토질)",
+      "fields": [
+        "교통인프라부문(도로부)"
+      ],
+      "career": "경력",
+      "is_intern": false,
+      "intern_type": "",
+      "location": "공고 원문 참조",
+      "period": "2026.09.29 ~ 채용 시 마감",
+      "deadline_date": "",
+      "tags": [
+        "경력"
+      ],
+      "link": "https://www.yooshin.com/career/opportunities/153",
+      "summary": "",
+      "steps": []
     }
   ],
   "career_pages": [
@@ -878,7 +1076,7 @@
     {
       "company": "한국수자원공사",
       "category_id": "public",
-      "link": "https://www.kwater.or.kr/kor/sub01/sub04/sub01/list.do?s_mid=108"
+      "link": "https://k-water.recruiter.co.kr/career/home"
     },
     {
       "company": "국가철도공단",
@@ -918,12 +1116,12 @@
     {
       "company": "포스코이앤씨",
       "category_id": "builder",
-      "link": "https://recruit.posco.com"
+      "link": "https://poscoenc.careerlink.kr/jobs"
     },
     {
       "company": "유신",
       "category_id": "engineering",
-      "link": "https://www.yooshin.com/career/career_opportunities"
+      "link": "https://www.yooshin.com/career/opportunities"
     },
     {
       "company": "삼안",
