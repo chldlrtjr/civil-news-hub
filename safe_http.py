@@ -11,11 +11,13 @@ Civil News Hub - 외부 주소 안전 조회 (safe_http.py)
 """
 
 import ipaddress
+import re
 import socket
 import time
 import urllib.parse
 
 import requests
+import urllib3.util
 
 HTML_MAX = 2 * 1024 * 1024
 IMAGE_MAX = 10 * 1024 * 1024
@@ -29,10 +31,24 @@ class BlockedError(Exception):
     """안전 규칙(스킴·주소·허용 호스트·크기·형식·시간)에 걸려 조회를 거부함"""
 
 
+_ODD_CHARS = re.compile(r"[\\\x00-\x20\x7f]")
+
+
 def allowed(url, hosts=None) -> bool:
-    """스킴이 http(s)이고, hosts 가 있으면 그 목록 안의 호스트인지 (DNS 확인은 안 함)"""
-    p = urllib.parse.urlsplit(url)
-    return p.scheme in ("http", "https") and bool(p.hostname) and (hosts is None or p.hostname in hosts)
+    """스킴이 http(s)이고, hosts 가 있으면 그 목록 안의 호스트인지 (DNS 확인은 안 함)
+    백슬래시·공백·제어문자·userinfo(@)가 든 주소는 거부하고, requests 가 쓰는 urllib3 파서로도 읽어
+    스킴·호스트·포트가 같을 때만 허용 (http://127.0.0.1\\@www.jbnu.ac.kr/ 처럼 두 파서가 다른 곳을 가리키는 주소 차단)"""
+    if not isinstance(url, str) or _ODD_CHARS.search(url):
+        return False
+    try:
+        p, u = urllib.parse.urlsplit(url), urllib3.util.parse_url(url)
+        if p.scheme not in ("http", "https") or not p.hostname or "@" in p.netloc or u.auth is not None:
+            return False
+        # 한글 도메인은 requests 처럼 xn-- 로 바꿔 비교. 잘못된 포트·IDNA·urllib3 파싱 오류는 모두 ValueError
+        same = (u.scheme, (u.host or "").strip("[]"), u.port) == (p.scheme, p.hostname.encode("idna").decode("ascii"), p.port)
+    except ValueError:
+        return False
+    return same and (hosts is None or p.hostname in hosts)
 
 
 def _check(url, hosts):
@@ -43,7 +59,9 @@ def _check(url, hosts):
     for *_, sockaddr in socket.getaddrinfo(p.hostname, p.port or (443 if p.scheme == "https" else 80), type=socket.SOCK_STREAM):
         ip = ipaddress.ip_address(sockaddr[0].split("%")[0])
         ip = getattr(ip, "ipv4_mapped", None) or ip  # ::ffff:127.0.0.1 같은 IPv4 매핑 주소
-        if not ip.is_global:
+        # NAT64(64:ff9b::)·::ffff:0:a.b.c.d·::a.b.c.d 는 is_reserved, 멀티캐스트는 is_multicast 라 is_global 만으론 통과해요
+        if (not ip.is_global or ip.is_private or ip.is_loopback or ip.is_link_local
+                or ip.is_multicast or ip.is_reserved or ip.is_unspecified):
             raise BlockedError(f"내부 주소로 가는 요청 거부: {p.hostname} → {ip}")
 
 
@@ -78,7 +96,12 @@ def fetch(url, headers=None, timeout=4, deadline=10, image=False, hosts=None) ->
         ctype = r.headers.get("Content-Type", "").split(";")[0].strip().lower()
         if image and ctype not in IMAGE_TYPES:
             raise BlockedError(f"이미지 형식 아님({ctype or '없음'}): {url[:100]}")
-        if int(r.headers.get("Content-Length") or 0) > limit:
+        try:
+            declared = int(r.headers.get("Content-Length") or 0)
+        except ValueError:  # '10, 10' 같은 비정상 헤더는 없는 셈 치고 아래에서 읽으며 잼
+            declared = 0
+        # HTML 은 미리 거절하지 않고 2MB 까지 읽고 자름, 이미지만 선언 크기로 바로 포기
+        if image and declared > limit:
             raise BlockedError(f"응답이 {limit // 1024 // 1024}MB 초과: {url[:100]}")
         body = bytearray()
         while len(body) <= limit:

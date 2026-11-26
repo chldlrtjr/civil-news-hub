@@ -23,6 +23,12 @@ DNS = {
     "metadata.example.com": "169.254.169.254",
     "mapped.example.com": "::ffff:127.0.0.1",
     "other.example.org": "8.8.8.8",
+    # is_global 이 True 로 나오지만 막아야 하는 주소 (검수 I-1)
+    "nat64.example.com": "64:ff9b::7f00:1",
+    "translated.example.com": "::ffff:0:127.0.0.1",
+    "compat.example.com": "::127.0.0.1",
+    "mcast.example.com": "224.0.0.1",
+    "mcast6.example.com": "ff02::1",
 }
 
 
@@ -98,10 +104,57 @@ class SafeFetchTest(unittest.TestCase):
         self.assertEqual(get.call_count, 4)  # 처음 1번 + 리다이렉트 3번
 
     def test_declared_size_over_limit_gives_up_without_reading(self):
-        big = resp(body=b"x", headers={"Content-Type": "text/html", "Content-Length": str(3 * 1024 * 1024)})
+        big = resp(body=b"x", headers={"Content-Type": "image/png", "Content-Length": str(11 * 1024 * 1024)})
         with self.get(big), self.assertRaises(safe_http.BlockedError):
-            safe_http.fetch("https://news.example.com/a")
+            safe_http.fetch("https://news.example.com/p.png", image=True)
         self.assertEqual(big.raw.buf.tell(), 0)
+
+    def test_html_declared_over_limit_is_read_and_cut(self):
+        n = safe_http.HTML_MAX + 5000
+        with self.get(resp(body=b"a" * n, headers={"Content-Type": "text/html", "Content-Length": str(n)})):
+            self.assertEqual(len(safe_http.fetch("https://news.example.com/a").content), safe_http.HTML_MAX)
+
+    def test_malformed_content_length_is_ignored(self):
+        for cl in ["10, 10", "abc", "-5", " "]:
+            with self.subTest(cl=cl):
+                with self.get(resp(body=b"<p>ok</p>", headers={"Content-Type": "text/html", "Content-Length": cl})):
+                    self.assertEqual(safe_http.fetch("https://news.example.com/a").content, b"<p>ok</p>")
+                with self.get(resp(body=b"img", headers={"Content-Type": "image/png", "Content-Length": cl})):
+                    self.assertEqual(safe_http.fetch("https://news.example.com/p", image=True).content, b"img")
+
+    def test_backslash_userinfo_trick_is_refused(self):
+        # urlsplit 은 www.jbnu.ac.kr 로, requests(urllib3)는 127.0.0.1:6800 으로 읽는 주소 (검수 C-1 재현)
+        url = "http://127.0.0.1:6800\\@www.jbnu.ac.kr/common/file.do"
+        self.assertFalse(safe_http.allowed(url, safe_http.JBNU_HOSTS))
+        for hosts in (safe_http.JBNU_HOSTS, None):
+            with self.subTest(hosts=hosts), self.get() as get:
+                with self.assertRaises(safe_http.BlockedError):
+                    safe_http.fetch(url, hosts=hosts)
+                get.assert_not_called()
+        with self.get(resp(302, headers={"Location": url})) as get, self.assertRaises(safe_http.BlockedError):
+            safe_http.fetch("https://www.jbnu.ac.kr/a", hosts=safe_http.JBNU_HOSTS)
+        self.assertEqual(get.call_count, 1)  # 리다이렉트 Location 도 같은 검사
+
+    def test_odd_characters_userinfo_and_bad_port_are_refused(self):
+        for url in ["https://user@www.jbnu.ac.kr/a", "https://a:b@news.example.com/", "https://news.example.com/a b",
+                    "https://news.example.com/a\tb", "https://news.example.com/\x00", "https://news.example.com/\x7f",
+                    "https://news.example.com\\x/", " https://news.example.com/", "https://news.example.com/a\n",
+                    "https://news.example.com:99999/", "https://news.example.com:x/"]:
+            with self.subTest(url=url), self.get() as get:
+                self.assertFalse(safe_http.allowed(url))
+                with self.assertRaises(safe_http.BlockedError):
+                    safe_http.fetch(url)
+                get.assert_not_called()
+        self.assertTrue(safe_http.allowed("https://WWW.JBNU.ac.kr:443/a?x=1&y=%20#t", safe_http.JBNU_HOSTS))
+        self.assertTrue(safe_http.allowed("http://[2001:db8::1]:8080/a"))
+
+    def test_special_addresses_that_look_global_are_refused(self):
+        for host in ["nat64.example.com", "translated.example.com", "compat.example.com", "mcast.example.com",
+                     "mcast6.example.com", "0.0.0.0", "[::]"]:
+            with self.subTest(host=host), self.get() as get:
+                with self.assertRaises(safe_http.BlockedError):
+                    safe_http.fetch(f"http://{host}/")
+                get.assert_not_called()
 
     def test_html_over_limit_is_cut(self):
         with self.get(resp(body=b"a" * (safe_http.HTML_MAX + 5000))):
