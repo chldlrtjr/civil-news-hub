@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-27 17:01:05",
-  "last_updated_display": "11월 27일 17:01",
-  "total_count": 39,
-  "featured_count": 39,
+  "last_updated": "2026-11-27 18:00:59",
+  "last_updated_display": "11월 27일 18:00",
+  "total_count": 38,
+  "featured_count": 38,
   "categories": [
     "ALL",
     "토목",
@@ -10,39 +10,6 @@
     "컴퓨터공학"
   ],
   "contests": [
-    {
-      "id": "devevent-8d7556e973",
-      "source": "devevent",
-      "source_name": "데브이벤트",
-      "track": "it",
-      "title": "2026 Devfest: AFK - Away From Keyboard",
-      "organizer": "GDG Campus Korea",
-      "category": "컴퓨터공학",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.10.30 ~ 11.27 마감",
-      "start_date": "2026-10-30",
-      "deadline_date": "2026-11-27",
-      "deadline_time": "18:00",
-      "fields": [
-        "오프라인(서울 마포구)",
-        "대회",
-        "AI"
-      ],
-      "description": "GDG Campus Korea 주최 · 오프라인(서울 마포구), 유료, 대회, AI",
-      "link": "https://event-us.kr/gdgcampuskorea/event/138371",
-      "image": "",
-      "is_active": true,
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
     {
       "id": "devevent-0ab417feda",
       "source": "devevent",
