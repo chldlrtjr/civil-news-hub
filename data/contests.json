@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-28 01:01:13",
-  "last_updated_display": "11월 28일 01:01",
-  "total_count": 37,
-  "featured_count": 37,
+  "last_updated": "2026-11-28 02:01:41",
+  "last_updated_display": "11월 28일 02:01",
+  "total_count": 34,
+  "featured_count": 34,
   "categories": [
     "ALL",
     "토목",
@@ -1021,35 +1021,6 @@
       }
     },
     {
-      "id": "campus-219799",
-      "source": "campus",
-      "source_name": "교내공지",
-      "title": "2026 JBNU 학생설계전공 공모전 기간연장(마이크로디그리 분야) 안내(~12.22)",
-      "organizer": "교무처 교무과",
-      "category": "전북대",
-      "badge_color": "teal",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.11.13 ~ 12.22 (17:00 마감)",
-      "deadline_date": "2026-12-22",
-      "deadline_time": "17:00",
-      "result_date": "2027-01-05",
-      "result_label": "",
-      "description": "2026 JBNU 학생설계전공 공모전 기간연장 ( 마이크로디그리 분야 ) 안내 (~12.22) 내가 설계하는 나만의 전문 분야 , 새로운 가능성을 펼쳐보세요 ! 학생설계전공 · 학생설계마이크로디그리 신규 아이디어와 우수 사례를 발굴하기 위한 공모전을 진행하고 있습니다 . 현재 학생설계전공 분야는 접수가 마감되었으며 , 학생설계마이크로디그리 분야에 한해 접수…",
-      "link": "https://www.jbnu.ac.kr/web/Board/219799/detailView.do",
-      "image": "https://www.jbnu.ac.kr/common/file.do?file=hlV94A2RbmAIO5hwEa3/p0KwnhdC0Xca3PT2QKiElpejJsWd+h4pWjxMTBxsXUQM",
-      "is_active": true,
-      "track": "campus",
-      "dday_info": {
-        "text": "D-24",
-        "days": 24,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
       "id": "campus-219676",
       "source": "campus",
       "source_name": "학생공지",
@@ -1074,36 +1045,6 @@
       "dday_info": {
         "text": "D-29",
         "days": 29,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "campus-220380",
-      "source": "campus",
-      "source_name": "교내공지",
-      "title": "2026학년도 J-ABLE 활용 학습 수기 공모전 운영 안내",
-      "organizer": "교육혁신본부 교육혁신부",
-      "category": "전북대",
-      "badge_color": "teal",
-      "prize": "최우수상 1명(30만원), 우수상 3명(20만원), 장려상 6명(15만원), 입상 10명(10만원)",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.11.27 ~ 12.31 (23:59 마감)",
-      "deadline_date": "2026-12-31",
-      "deadline_time": "23:59",
-      "result_date": "2027-01-15",
-      "result_label": "",
-      "description": "전북대학교 글로컬대학 30 교육혁신본부 2026학년도 J-ABLE 활용 학습 수기 공모전 * JBNU AI Based Learning & Evaluation 지금부터 J-ABLE로 공부해요! 공모 내용 J-ABLE 프로그램 참여 계기 및 참여 과정 AI 맞춤형 보완 학습을 활용한 학습 과정 및 방법 프로그램 참여 전·후 학습 태도 및 성취도 변화 등 참여 …",
-      "link": "https://www.jbnu.ac.kr/web/Board/220380/detailView.do",
-      "image": "https://www.jbnu.ac.kr/common/file.do?file=5VWGtgZFlrU8GU01RXC+Y8Ps8Ynycjtvg/STGzsnrDabogArox7F3zTHPRWuKQj7",
-      "is_active": true,
-      "deadline_source": "poster",
-      "track": "campus",
-      "dday_info": {
-        "text": "D-33",
-        "days": 33,
         "is_urgent": false,
         "is_closed": false
       }
@@ -1136,36 +1077,6 @@
       "dday_info": {
         "text": "D-33",
         "days": 33,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "campus-219961",
-      "source": "campus",
-      "source_name": "교내공지",
-      "title": "2026학년도 AI Agent 활용 문제해결 경진대회 운영 안내",
-      "organizer": "교육혁신본부 교육혁신부",
-      "category": "전북대",
-      "badge_color": "teal",
-      "prize": "총 상금 510만원! 최우수상 60만원, 우수상 40만원, 장 려 상 30만원, 입 상 15만원",
-      "target": "학부 재학생(팀별 2인 이상)",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.11.17 ~ 01.06 (23:59 마감)",
-      "deadline_date": "2027-01-06",
-      "deadline_time": "23:59",
-      "result_date": "",
-      "result_label": "",
-      "description": "교육혁신본부 전북대학교 글컬대학 30 AI Agent 활용 문제해결 경진대회 AI Agent를 처음 접해보는 학생도 참여 가능! 일상의 문제를 AI Agent로 해결하라! AI Agent를 활용한 나만의 창의적인 문제해결 아이디어를 펼쳐보세요! AI Agent 특강 11. 25.(수) 14:00-16:00 AI 이해 및 프롬프트 엔지니어링 11. 30.(월…",
-      "link": "https://www.jbnu.ac.kr/web/Board/219961/detailView.do",
-      "image": "https://www.jbnu.ac.kr/common/file.do?file=eNEzIkfZi/JrSOIPfxBjmUtTLO4P6oW8h3H4e/ViXgXUJ+/5j/Y8gExVae5WJIBC",
-      "is_active": true,
-      "deadline_source": "poster",
-      "track": "campus",
-      "dday_info": {
-        "text": "D-39",
-        "days": 39,
         "is_urgent": false,
         "is_closed": false
       }
