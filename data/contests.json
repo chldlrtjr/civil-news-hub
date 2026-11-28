@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-28 12:00:55",
-  "last_updated_display": "11월 28일 12:00",
-  "total_count": 37,
-  "featured_count": 37,
+  "last_updated": "2026-11-28 13:00:56",
+  "last_updated_display": "11월 28일 13:00",
+  "total_count": 36,
+  "featured_count": 36,
   "categories": [
     "ALL",
     "토목",
@@ -10,40 +10,6 @@
     "컴퓨터공학"
   ],
   "contests": [
-    {
-      "id": "devevent-560e7322cc",
-      "source": "devevent",
-      "source_name": "데브이벤트",
-      "track": "it",
-      "title": "DevFest Cloud x Pangyo 2026",
-      "organizer": "GDG Cloud Korea · GDG Pangyo",
-      "category": "컴퓨터공학",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.11.17 ~ 11.28 마감",
-      "start_date": "2026-11-17",
-      "deadline_date": "2026-11-28",
-      "deadline_time": "13:00",
-      "fields": [
-        "오프라인(경기 성남)",
-        "대회",
-        "AI",
-        "클라우드"
-      ],
-      "description": "GDG Cloud Korea · GDG Pangyo 주최 · 오프라인(경기 성남), 유료, 대회, AI, 클라우드",
-      "link": "https://event-us.kr/gdgcloudkr/event/140493",
-      "image": "",
-      "is_active": true,
-      "dday_info": {
-        "text": "오늘마감",
-        "days": 0,
-        "is_urgent": true,
-        "is_closed": false
-      }
-    },
     {
       "id": "devevent-3e382a594c",
       "source": "devevent",
