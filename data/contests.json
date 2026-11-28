@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-28 23:01:03",
-  "last_updated_display": "11월 28일 23:01",
-  "total_count": 36,
-  "featured_count": 36,
+  "last_updated": "2026-11-29 00:01:27",
+  "last_updated_display": "11월 29일 00:01",
+  "total_count": 35,
+  "featured_count": 35,
   "categories": [
     "ALL",
     "토목",
@@ -37,8 +37,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-1",
-        "days": 1,
+        "text": "오늘마감",
+        "days": 0,
         "is_urgent": true,
         "is_closed": false
       }
@@ -70,8 +70,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-1",
-        "days": 1,
+        "text": "오늘마감",
+        "days": 0,
         "is_urgent": true,
         "is_closed": false
       }
@@ -103,8 +103,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-1",
-        "days": 1,
+        "text": "오늘마감",
+        "days": 0,
         "is_urgent": true,
         "is_closed": false
       }
@@ -136,8 +136,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-1",
-        "days": 1,
+        "text": "오늘마감",
+        "days": 0,
         "is_urgent": true,
         "is_closed": false
       }
@@ -169,8 +169,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-2",
-        "days": 2,
+        "text": "D-1",
+        "days": 1,
         "is_urgent": true,
         "is_closed": false
       }
@@ -202,8 +202,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-2",
-        "days": 2,
+        "text": "D-1",
+        "days": 1,
         "is_urgent": true,
         "is_closed": false
       }
@@ -235,8 +235,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-3",
-        "days": 3,
+        "text": "D-2",
+        "days": 2,
         "is_urgent": true,
         "is_closed": false
       }
@@ -269,8 +269,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-3",
-        "days": 3,
+        "text": "D-2",
+        "days": 2,
         "is_urgent": true,
         "is_closed": false
       }
@@ -304,8 +304,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-5",
-        "days": 5,
+        "text": "D-4",
+        "days": 4,
         "is_urgent": false,
         "is_closed": false
       }
@@ -337,8 +337,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-5",
-        "days": 5,
+        "text": "D-4",
+        "days": 4,
         "is_urgent": false,
         "is_closed": false
       }
@@ -370,8 +370,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-6",
-        "days": 6,
+        "text": "D-5",
+        "days": 5,
         "is_urgent": false,
         "is_closed": false
       }
@@ -403,8 +403,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-7",
-        "days": 7,
+        "text": "D-6",
+        "days": 6,
         "is_urgent": false,
         "is_closed": false
       }
@@ -436,8 +436,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-7",
-        "days": 7,
+        "text": "D-6",
+        "days": 6,
         "is_urgent": false,
         "is_closed": false
       }
@@ -466,8 +466,8 @@
       "deadline_source": "poster",
       "track": "campus",
       "dday_info": {
-        "text": "D-8",
-        "days": 8,
+        "text": "D-7",
+        "days": 7,
         "is_urgent": false,
         "is_closed": false
       }
@@ -482,7 +482,7 @@
       "category": "토목",
       "badge_color": "emerald",
       "prize": "",
-      "target": "제한없음",
+      "target": "",
       "status": "접수중",
       "status_color": "emerald",
       "period": "2026.11.20 ~ 12.06 마감",
@@ -498,12 +498,9 @@
       "link": "https://hackathon.imaginationgroup.co.kr/kwater/",
       "image": "",
       "is_active": true,
-      "prize_total": "1천만원이하",
-      "prize_first": "300만원",
-      "homepage": "https://hackathon.imaginationgroup.co.kr/kwater/",
       "dday_info": {
-        "text": "D-8",
-        "days": 8,
+        "text": "D-7",
+        "days": 7,
         "is_urgent": false,
         "is_closed": false
       }
@@ -535,43 +532,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-8",
-        "days": 8,
-        "is_urgent": false,
-        "is_closed": false
-      }
-    },
-    {
-      "id": "wevity-112519",
-      "source": "wevity_it",
-      "source_name": "위비티",
-      "title": "한전KPS AI 활용 전력설비 정비 및 안전지원 서비스 아이디어 공모전",
-      "organizer": "한전KPS",
-      "category": "컴퓨터공학",
-      "badge_color": "blue",
-      "prize": "",
-      "target": "제한없음, 기타",
-      "status": "접수중",
-      "status_color": "emerald",
-      "period": "2026.11.23 ~ 12.06 마감",
-      "deadline_date": "2026-12-06",
-      "deadline_time": "23:59",
-      "fields": [
-        "기획/아이디어"
-      ],
-      "description": "한전KPS 주최 · 분야: 기획/아이디어",
-      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=112519",
-      "image": "",
-      "is_active": true,
-      "deadline_source": "wevity_detail",
-      "start_date": "2026-11-23",
-      "prize_total": "1천만원이하",
-      "prize_first": "100만원",
-      "homepage": "https://www.kps.co.kr/web/Board/47820/detailView.do?pageIndex=1&menu=2467",
-      "track": "it",
-      "dday_info": {
-        "text": "D-8",
-        "days": 8,
+        "text": "D-7",
+        "days": 7,
         "is_urgent": false,
         "is_closed": false
       }
@@ -604,8 +566,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-9",
-        "days": 9,
+        "text": "D-8",
+        "days": 8,
         "is_urgent": false,
         "is_closed": false
       }
@@ -637,8 +599,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-9",
-        "days": 9,
+        "text": "D-8",
+        "days": 8,
         "is_urgent": false,
         "is_closed": false
       }
@@ -672,8 +634,8 @@
       "prize_total": "5천만원~3천만원",
       "homepage": "https://kubic.kmu.ac.kr/kubic2025/35015/subview.do?enc=Zm5jdDF8QEB8JTJGYmJzJTJGa3ViaWMyMDI1JTJGMjQ0MSUyRjI0MTkxNyUyRmFydGNsVmlldy5kbyUzRnBhZ2UlM0QxJTI2ZmluZFR5cGUlM0QlMjZmaW5kV29yZCUzRCUyNmZpbmRDbFNlcSUzRCUyNmZpbmRPcG53cmQlM0QlMjZyZ3NCZ25kZVN0ciUzRCUyNnJn",
       "dday_info": {
-        "text": "D-11",
-        "days": 11,
+        "text": "D-10",
+        "days": 10,
         "is_urgent": false,
         "is_closed": false
       }
@@ -708,8 +670,8 @@
       "prize_first": "20만원",
       "homepage": "https://bigtori.kalis.or.kr/contest/ai-idea-contest",
       "dday_info": {
-        "text": "D-12",
-        "days": 12,
+        "text": "D-11",
+        "days": 11,
         "is_urgent": false,
         "is_closed": false
       }
@@ -741,8 +703,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-13",
-        "days": 13,
+        "text": "D-12",
+        "days": 12,
         "is_urgent": false,
         "is_closed": false
       }
@@ -774,8 +736,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-13",
-        "days": 13,
+        "text": "D-12",
+        "days": 12,
         "is_urgent": false,
         "is_closed": false
       }
@@ -808,8 +770,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-13",
-        "days": 13,
+        "text": "D-12",
+        "days": 12,
         "is_urgent": false,
         "is_closed": false
       }
@@ -842,8 +804,8 @@
       "homepage": "https://dbedu.sen.go.kr/CMS/school/school02/school0202/1360510_2820.html",
       "track": "it",
       "dday_info": {
-        "text": "D-13",
-        "days": 13,
+        "text": "D-12",
+        "days": 12,
         "is_urgent": false,
         "is_closed": false
       }
@@ -877,8 +839,8 @@
       "homepage": "https://smartcity-ai.kr/",
       "track": "civil",
       "dday_info": {
-        "text": "D-16",
-        "days": 16,
+        "text": "D-15",
+        "days": 15,
         "is_urgent": false,
         "is_closed": false
       }
@@ -912,8 +874,8 @@
       "homepage": "https://www.sjcu.ac.kr/aispark/main/index.asp",
       "track": "it",
       "dday_info": {
-        "text": "D-22",
-        "days": 22,
+        "text": "D-21",
+        "days": 21,
         "is_urgent": false,
         "is_closed": false
       }
@@ -946,8 +908,8 @@
       "homepage": "https://game.saaskr.com/awards",
       "track": "it",
       "dday_info": {
-        "text": "D-22",
-        "days": 22,
+        "text": "D-21",
+        "days": 21,
         "is_urgent": false,
         "is_closed": false
       }
@@ -980,8 +942,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-23",
-        "days": 23,
+        "text": "D-22",
+        "days": 22,
         "is_urgent": false,
         "is_closed": false
       }
@@ -1009,8 +971,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-24",
-        "days": 24,
+        "text": "D-23",
+        "days": 23,
         "is_urgent": false,
         "is_closed": false
       }
@@ -1038,8 +1000,8 @@
       "is_active": true,
       "track": "campus",
       "dday_info": {
-        "text": "D-29",
-        "days": 29,
+        "text": "D-28",
+        "days": 28,
         "is_urgent": false,
         "is_closed": false
       }
@@ -1068,8 +1030,8 @@
       "deadline_source": "poster",
       "track": "campus",
       "dday_info": {
-        "text": "D-33",
-        "days": 33,
+        "text": "D-32",
+        "days": 32,
         "is_urgent": false,
         "is_closed": false
       }
@@ -1100,8 +1062,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-33",
-        "days": 33,
+        "text": "D-32",
+        "days": 32,
         "is_urgent": false,
         "is_closed": false
       }
@@ -1130,8 +1092,8 @@
       "deadline_source": "poster",
       "track": "campus",
       "dday_info": {
-        "text": "D-39",
-        "days": 39,
+        "text": "D-38",
+        "days": 38,
         "is_urgent": false,
         "is_closed": false
       }
@@ -1164,8 +1126,8 @@
       "image": "",
       "is_active": true,
       "dday_info": {
-        "text": "D-43",
-        "days": 43,
+        "text": "D-42",
+        "days": 42,
         "is_urgent": false,
         "is_closed": false
       }
@@ -1221,8 +1183,8 @@
       "is_active": true,
       "track": "civil",
       "dday_info": {
-        "text": "D-33",
-        "days": 33,
+        "text": "D-32",
+        "days": 32,
         "is_urgent": false,
         "is_closed": false
       },
