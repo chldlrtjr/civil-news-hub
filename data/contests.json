@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-11-29 00:01:27",
-  "last_updated_display": "11월 29일 00:01",
-  "total_count": 35,
-  "featured_count": 35,
+  "last_updated": "2026-11-29 01:00:51",
+  "last_updated_display": "11월 29일 01:00",
+  "total_count": 36,
+  "featured_count": 36,
   "categories": [
     "ALL",
     "토목",
@@ -672,6 +672,41 @@
       "dday_info": {
         "text": "D-11",
         "days": 11,
+        "is_urgent": false,
+        "is_closed": false
+      }
+    },
+    {
+      "id": "wevity-112567",
+      "source": "wevity",
+      "source_name": "위비티",
+      "title": "[울산항만공사] 울산항 해상 벙커링 솔루션 아이디어 공모전",
+      "organizer": "울산항만공사",
+      "category": "토목",
+      "badge_color": "emerald",
+      "prize": "",
+      "target": "제한없음",
+      "status": "접수중",
+      "status_color": "emerald",
+      "period": "2026.11.23 ~ 12.11 마감",
+      "deadline_date": "2026-12-11",
+      "deadline_time": "23:59",
+      "fields": [
+        "기획/아이디어"
+      ],
+      "description": "울산항만공사 주최 · 분야: 기획/아이디어",
+      "link": "https://www.wevity.com/?c=find&s=1&gub=1&cidx=1&gbn=view&ix=112567",
+      "image": "",
+      "is_active": true,
+      "deadline_source": "wevity_detail",
+      "start_date": "2026-11-23",
+      "prize_total": "1천만원이하",
+      "prize_first": "500만원",
+      "homepage": "https://upa.or.kr/portal/board/post/view.do?bcIdx=676&mid=0601000000&idx=16863",
+      "track": "civil",
+      "dday_info": {
+        "text": "D-12",
+        "days": 12,
         "is_urgent": false,
         "is_closed": false
       }
